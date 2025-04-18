@@ -1,0 +1,21 @@
+Main Website :
+          1. Lanidng Page :
+                    [-] Add navbar with resources page links & Discord community link
+                    [x] Add backgorund elements + docs widget
+                    [-] Main Hero section content + Animated testimonials widget
+          2. Resources Page :
+                    [-] Background endless scrolling pages
+                    [-] Main section content + link to other page
+                    [-] Add Resources Hub page + subject links
+                    [-] Add Subject Pages with custom headers and link widgets
+          3. Community Page :
+                    [-] Add main section content + Discord Link
+          4. Footer Section :
+                    [-] Add main background text + foreground elements
+                    [-] Add animated widgets and links
+                    [-] Add page navigation area + Community link
+
+Website Todos :
+          [-] Add fonts (Poppins & Grandmaster) and Implement Styling
+          [-] Import all project logos and headers for website coding
+          [-] Add mobile and other device responsiveness
