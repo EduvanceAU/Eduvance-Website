@@ -53,3 +53,29 @@ body {
   font-family: 'GrandstanderLocal', cursive;
   letter-spacing: -2px;
 }
+
+@keyframes scrollUp {
+  0% {
+    transform: translateY(100%);
+  }
+  100% {
+    transform: translateY(-100%);
+  }
+}
+
+.scroll-up {
+  animation: scrollUp 25s linear infinite;
+}
+
+@keyframes scrollDown {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(100%);
+  }
+}
+
+.scroll-down {
+  animation: scrollDown 25s linear infinite;
+}
