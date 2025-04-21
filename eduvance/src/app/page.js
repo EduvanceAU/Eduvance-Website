@@ -70,6 +70,12 @@ export default function Home() {
         className="w-60 h-auto z-10 absolute top-[550px] right-[1150px]"
       />
 
+      <img
+        src="bgCrypto.png"
+        alt=" "
+        className="w-300 h-auto z-10 absolute top-[50px] right-[120px]"
+      />
+
       <a
         href="https://discord.gg/your-invite-code"
         target="_blank"
@@ -87,6 +93,78 @@ export default function Home() {
         <span>Subject Support</span>
         <span>Revision Guides</span>
         <span>Expert Resources</span>
+      </div>
+
+      <div className="overflow-hidden h-[800px] w-full flex justify-center absolute top-[800px]">
+        <div className="flex flex-row gap-x-12">
+          
+          {/* Column 1 - Scroll Up */}
+          <div className="scroll-up flex flex-col gap-2 items-center">
+            {[...Array(9)].map((_, i) => (
+              <img key={i} src="/Page.png" alt="note" className="w-55 h-auto" />
+            ))}
+
+            {[...Array(9)].map((_, i) => (
+              <img key={i} src="/Page.png" alt="note" className="w-55 h-auto" />
+            ))}
+          </div>
+
+          {/* Column 2 - Scroll Down */}
+          <div className="scroll-down flex flex-col gap-2 items-center">
+            {[...Array(9)].map((_, i) => (
+              <img key={i} src="/Page.png" alt="note" className="w-55 h-auto" />
+            ))}
+
+            {[...Array(9)].map((_, i) => (
+              <img key={i} src="/Page.png" alt="note" className="w-55 h-auto" />
+            ))}
+          </div>
+
+          {/* Column 3 - Scroll Up */}
+          <div className="scroll-up flex flex-col gap-2 items-center">
+            {[...Array(9)].map((_, i) => (
+              <img key={i} src="/Page.png" alt="note" className="w-55 h-auto" />
+            ))}
+
+            {[...Array(9)].map((_, i) => (
+              <img key={i} src="/Page.png" alt="note" className="w-55 h-auto" />
+            ))}
+          </div>
+
+          {/* Column 4 - Scroll Down */}
+          <div className="scroll-down flex flex-col gap-2 items-center">
+            {[...Array(9)].map((_, i) => (
+              <img key={i} src="/Page.png" alt="note" className="w-55 h-auto" />
+            ))}
+
+            {[...Array(9)].map((_, i) => (
+              <img key={i} src="/Page.png" alt="note" className="w-55 h-auto" />
+            ))}
+          </div>
+
+          {/* Column 5 - Scroll Up */}
+          <div className="scroll-up flex flex-col gap-2 items-center">
+            {[...Array(9)].map((_, i) => (
+              <img key={i} src="/Page.png" alt="note" className="w-55 h-auto" />
+            ))}
+
+            {[...Array(9)].map((_, i) => (
+              <img key={i} src="/Page.png" alt="note" className="w-55 h-auto" />
+            ))}
+          </div>
+
+        </div>
+      </div>
+
+      <div className="inset-0 flex items-center justify-center absolute top-[1200px]">
+        <div className="w-[700px] h-[500px] rounded-full bg-white blur-2xl opacity-100 absolute" />
+
+        <h1
+          className="text-5xl font-semibold tracking-[-0.05em] z-10 text-black w-[400px] absolute left-[450px]"
+          style={{ fontFamily: 'Poppins, sans-serif' }}
+        >
+          Study Materials to level up your revision
+        </h1>
       </div>
 
     </main>
