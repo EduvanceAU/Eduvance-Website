@@ -33,7 +33,7 @@ body {
   font-family: "Poppins", sans-serif;
   font-weight: 600;
   font-style: normal;
-  letter-spacing: -4px;
+  letter-spacing: -0.5px;
 }
 
 @font-face {
@@ -44,7 +44,12 @@ body {
   font-display: swap;
 }
 
-.font-grand-local {
+.font-grand-local-header {
   font-family: 'GrandstanderLocal', cursive;
   letter-spacing: -3.5px;
+}
+
+.font-grand-local {
+  font-family: 'GrandstanderLocal', cursive;
+  letter-spacing: -2px;
 }
