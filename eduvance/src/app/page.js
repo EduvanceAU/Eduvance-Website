@@ -165,6 +165,24 @@ export default function Home() {
         >
           Study Materials to level up your revision
         </h1>
+
+        <img src="Tags.png" alt="subjects" className="absolute w-35 h-auto z-10 top-[-25px] right-[550px]" />
+
+        <h3 className="absolute top-[80px] left-[450px] font-semibold text-stone-500" style={{ fontFamily: 'Poppins, sans-serif' }}>
+          Find revision resources for your Exam Board and Subject
+        </h3>
+
+        <a
+          href="https://discord.gg/your-invite-code"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="absolute top-[120px] right-[450px]"
+        >
+          <button className="bg-[#2D74F8] text-[#FFFFFF] px-9 py-4 rounded-[50px] text-xl poppins-semibold shadow-lg flex items-center gap-5">
+            <img src="/discordLogo.png" alt="Discord" className="w-6 h-auto" />
+            Explore Resources
+          </button>
+        </a>
       </div>
 
     </main>
