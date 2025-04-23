@@ -172,19 +172,16 @@ export default function Home() {
           Find revision resources for your Exam Board and Subject
         </h3>
 
-        <a
-          href="https://discord.gg/your-invite-code"
-          target="_blank"
-          rel="noopener noreferrer"
+        <Link
+          href="/resources"
           className="absolute top-[120px] right-[450px]"
         >
-          <button className="bg-[#2D74F8] text-[#FFFFFF] px-9 py-4 rounded-[50px] text-xl poppins-semibold shadow-lg flex items-center gap-5">
-            <img src="/discordLogo.png" alt="Discord" className="w-6 h-auto" />
+          <button className="bg-[#2D74F8] text-[#FFFFFF] px-6 py-2 rounded-[50px] text-xl poppins-semibold shadow-lg flex items-center gap-2">
             Explore Resources
+            <img src="/ArrowR.png" alt="Arrow Right" className="w-6 h-auto" />
           </button>
-        </a>
+        </Link>
       </div>
-
     </main>
   );
 }
