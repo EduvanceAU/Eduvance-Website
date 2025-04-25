@@ -43,89 +43,50 @@ export default function Resources() {
         </h1>
 
         <div className="flex flex-col items-start gap-y-3 absolute top-[280px] left-[800px]">
-        <button className="flex items-center justify-between w-[550px] px-6 py-4 bg-[#BAD1FD] rounded-[12px] group hover:bg-[#A8C6FF] transition-all duration-200 border-[#153064] border-1">
-          <p
-            className="text-xl font-[550] text-[#153064] leading-[20px] tracking-tight text-left"
-            style={{ fontFamily: 'Poppins, sans-serif' }}
-          >
-            Physics Revision Resources
-          </p>
-          <img
-            src="/BArrowR.png"
-            alt="Arrow Right"
-            className="w-6 h-auto group-hover:translate-x-1 transition-transform duration-200"
-          />
-        </button>
+          <Link href="/sub_links/physics">
+            <button className="flex items-center justify-between w-[550px] px-6 py-4 bg-[#BAD1FD] rounded-[12px] group hover:bg-[#A8C6FF] transition-all duration-200 border-[#153064] border-1">
+              <p className="text-xl font-[550] text-[#153064] leading-[20px] tracking-tight text-left" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                Physics Revision Resources
+              </p>
+              <img src="/BArrowR.png" alt="Arrow Right" className="w-6 h-auto group-hover:translate-x-1 transition-transform duration-200" />
+            </button>
+          </Link>
 
-        <button className="flex items-center justify-between w-[550px] px-6 py-4 bg-[#BAD1FD] rounded-[12px] group hover:bg-[#A8C6FF] transition-all duration-200 border-[#153064] border-1">
-          <p
-            className="text-xl font-[550] text-[#153064] leading-[20px] tracking-tight text-left"
-            style={{ fontFamily: 'Poppins, sans-serif' }}
-          >
-            Chemistry Revision Resources
-          </p>
-          <img
-            src="/BArrowR.png"
-            alt="Arrow Right"
-            className="w-6 h-auto group-hover:translate-x-1 transition-transform duration-200"
-          />
-        </button>
+          <Link href="/sub_links/chemistry">
+            <button className="flex items-center justify-between w-[550px] px-6 py-4 bg-[#BAD1FD] rounded-[12px] group hover:bg-[#A8C6FF] transition-all duration-200 border-[#153064] border-1">
+              <p className="text-xl font-[550] text-[#153064] leading-[20px] tracking-tight text-left" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                Chemistry Revision Resources
+              </p>
+              <img src="/BArrowR.png" alt="Arrow Right" className="w-6 h-auto group-hover:translate-x-1 transition-transform duration-200" />
+            </button>
+          </Link>
 
-        <button className="flex items-center justify-between w-[550px] px-6 py-4 bg-[#BAD1FD] rounded-[12px] group hover:bg-[#A8C6FF] transition-all duration-200 border-[#153064] border-1">
-          <p
-            className="text-xl font-[550] text-[#153064] leading-[20px] tracking-tight text-left"
-            style={{ fontFamily: 'Poppins, sans-serif' }}
-          >
-            Biology Revision Resources
-          </p>
-          <img
-            src="/BArrowR.png"
-            alt="Arrow Right"
-            className="w-6 h-auto group-hover:translate-x-1 transition-transform duration-200"
-          />
-        </button>
+          <Link href="/sub_links/biology">
+            <button className="flex items-center justify-between w-[550px] px-6 py-4 bg-[#BAD1FD] rounded-[12px] group hover:bg-[#A8C6FF] transition-all duration-200 border-[#153064] border-1">
+              <p className="text-xl font-[550] text-[#153064] leading-[20px] tracking-tight text-left" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                Biology Revision Resources
+              </p>
+              <img src="/BArrowR.png" alt="Arrow Right" className="w-6 h-auto group-hover:translate-x-1 transition-transform duration-200" />
+            </button>
+          </Link>
 
-        <button className="flex items-center justify-between w-[550px] px-6 py-4 bg-[#BAD1FD] rounded-[12px] group hover:bg-[#A8C6FF] transition-all duration-200 border-[#153064] border-1">
-          <p
-            className="text-xl font-[550] text-[#153064] leading-[20px] tracking-tight text-left"
-            style={{ fontFamily: 'Poppins, sans-serif' }}
-          >
-            Mathematics Revision Resources
-          </p>
-          <img
-            src="/BArrowR.png"
-            alt="Arrow Right"
-            className="w-6 h-auto group-hover:translate-x-1 transition-transform duration-200"
-          />
-        </button>
+          <Link href="/sub_links/maths">
+            <button className="flex items-center justify-between w-[550px] px-6 py-4 bg-[#BAD1FD] rounded-[12px] group hover:bg-[#A8C6FF] transition-all duration-200 border-[#153064] border-1">
+              <p className="text-xl font-[550] text-[#153064] leading-[20px] tracking-tight text-left" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                Mathematics Revision Resources
+              </p>
+              <img src="/BArrowR.png" alt="Arrow Right" className="w-6 h-auto group-hover:translate-x-1 transition-transform duration-200" />
+            </button>
+          </Link>
 
-        <button className="flex items-center justify-between w-[550px] px-6 py-4 bg-[#BAD1FD] rounded-[12px] group hover:bg-[#A8C6FF] transition-all duration-200 border-[#153064] border-1">
-          <p
-            className="text-xl font-[550] text-[#153064] leading-[20px] tracking-tight text-left"
-            style={{ fontFamily: 'Poppins, sans-serif' }}
-          >
-            Psychology Revision Resources
-          </p>
-          <img
-            src="/BArrowR.png"
-            alt="Arrow Right"
-            className="w-6 h-auto group-hover:translate-x-1 transition-transform duration-200"
-          />
-        </button>
-
-        <button className="flex items-center justify-between w-[550px] px-6 py-4 bg-[#BAD1FD] rounded-[12px] group hover:bg-[#A8C6FF] transition-all duration-200 border-[#153064] border-1">
-          <p
-            className="text-xl font-[550] text-[#153064] leading-[20px] tracking-tight text-left"
-            style={{ fontFamily: 'Poppins, sans-serif' }}
-          >
-            Geography Revision Resources
-          </p>
-          <img
-            src="/BArrowR.png"
-            alt="Arrow Right"
-            className="w-6 h-auto group-hover:translate-x-1 transition-transform duration-200"
-          />
-        </button>
+          <Link href="/sub_links/psychology">
+            <button className="flex items-center justify-between w-[550px] px-6 py-4 bg-[#BAD1FD] rounded-[12px] group hover:bg-[#A8C6FF] transition-all duration-200 border-[#153064] border-1">
+              <p className="text-xl font-[550] text-[#153064] leading-[20px] tracking-tight text-left" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                Psychology Revision Resources
+              </p>
+              <img src="/BArrowR.png" alt="Arrow Right" className="w-6 h-auto group-hover:translate-x-1 transition-transform duration-200" />
+            </button>
+          </Link>
         </div>
       </div>
     </main>
