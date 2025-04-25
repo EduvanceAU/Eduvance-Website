@@ -42,7 +42,7 @@ export default function Home() {
       {/* Gradient Box in Background */}
       <div className="absolute w-[95vw] h-[85vh] bg-gradient-to-b from-[#679CFF] to-[#0C60FB] rounded-2xl shadow-xl z-0" />
 
-      <h1 className="font-grand-local-header text-7xl lg:text-7xl tracking-tight text-center z-10 relative text-white leading-[90px] absolute top-[-40px] left-[15px]">
+      <h1 className="font-grand-local-header text-7xl lg:text-7xl tracking-tight text-center z-10 relative text-white leading-[90px] absolute top-[-20px] left-[15px]">
         Advancing with
         <br />
         ‎ ‎ ‎ ducation
@@ -55,7 +55,7 @@ export default function Home() {
       <img
         src="/Logo1.png"
         alt="Eduvance"
-        className="w-26 h-auto z-10 absolute top-90 right-202"
+        className="w-26 h-auto z-10 absolute top-[360px] left-[510px]"
       />
 
       <img
