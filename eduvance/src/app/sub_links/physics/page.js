@@ -44,15 +44,15 @@ export default function Resources() {
               </h3>
           
               <div className="absolute top-[-20px] flex justify-center items-center space-x-8 mt-40">
-                <Link href="/page1" className="w-95 h-40 bg-[#F2F6FF] rounded-xl border-[1.5px] border-[#153064] flex items-center justify-center text-[#153064] hover:bg-[#BAD1FD] transition-all duration-300 cursor-pointer">
+                <Link href="/page1" className="w-95 h-40 bg-[#F2F6FF] rounded-xl border-[1.5px] border-[#153064] flex items-end justify-start pl-4 pb-4 text-[#153064] hover:bg-[#BAD1FD] transition-all duration-300 cursor-pointer">
                   Revision Notes
                 </Link>
           
-                <Link href="/page2" className="w-95 h-40 bg-[#F2F6FF] rounded-xl border-[1.5px] border-[#153064] flex items-center justify-center text-[#153064] hover:bg-[#BAD1FD] transition-all duration-300 cursor-pointer">
+                <Link href="/page2" className="w-95 h-40 bg-[#F2F6FF] rounded-xl border-[1.5px] border-[#153064] flex items-end justify-start pl-4 pb-4 text-[#153064] hover:bg-[#BAD1FD] transition-all duration-300 cursor-pointer">
                   Exam Questions
                 </Link>
           
-                <Link href="/page3" className="w-95 h-40 bg-[#F2F6FF] rounded-xl border-[1.5px] border-[#153064] flex items-center justify-center text-[#153064] hover:bg-[#BAD1FD] transition-all duration-300 cursor-pointer">
+                <Link href="/page3" className="w-95 h-40 bg-[#F2F6FF] rounded-xl border-[1.5px] border-[#153064] flex items-end justify-start pl-4 pb-4 text-[#153064] hover:bg-[#BAD1FD] transition-all duration-300 cursor-pointer">
                   Past Papers
                 </Link>
               </div>
@@ -74,10 +74,41 @@ export default function Resources() {
               </Link>
             </>
           ) : (
-            <div className="p-4 w-[300px] bg-green-100 rounded-xl text-center">
-              <h1 className="text-2xl font-semibold text-[#153064]">📗 You selected Option 2</h1>
-              <p className="mt-2 text-[#153064]">This is the content shown for Option 2.</p>
-            </div>
+            <>
+              <h3 className="font-semibold text-2xl text-[#153064] tracking-[-1px] absolute top-[90px] left-[1px]" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                IGCSE Physics Resources
+              </h3>
+          
+              <div className="absolute top-[-20px] flex justify-center items-center space-x-8 mt-40">
+                <Link href="/page1" className="w-95 h-40 bg-[#F2F6FF] rounded-xl border-[1.5px] border-[#153064] flex items-end justify-start pl-4 pb-4 text-[#153064] hover:bg-[#BAD1FD] transition-all duration-300 cursor-pointer">
+                  Revision Notes
+                </Link>
+          
+                <Link href="/page2" className="w-95 h-40 bg-[#F2F6FF] rounded-xl border-[1.5px] border-[#153064] flex items-end justify-start pl-4 pb-4 text-[#153064] hover:bg-[#BAD1FD] transition-all duration-300 cursor-pointer">
+                  Exam Questions
+                </Link>
+          
+                <Link href="/page3" className="w-95 h-40 bg-[#F2F6FF] rounded-xl border-[1.5px] border-[#153064] flex items-end justify-start pl-4 pb-4 text-[#153064] hover:bg-[#BAD1FD] transition-all duration-300 cursor-pointer">
+                  Past Papers
+                </Link>
+              </div>
+
+              <Link href="/sub_links/psychology">
+                <button className="absolute top-[320px] left-[-1px] flex items-center justify-between w-[1205px] px-6 py-4 bg-[#BAD1FD] rounded-[12px] group hover:bg-[#A8C6FF] transition-all duration-200 border-[#153064] border-1">
+                  <p className="text-xl font-[550] text-[#153064] leading-[20px] tracking-tight text-left" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                    International GCSE Physics Course Overview
+                  </p>
+                </button>
+              </Link>
+
+              <Link href="/sub_links/psychology">
+                <button className="absolute top-[390px] left-[-1px] flex items-center justify-between w-[1205px] px-6 py-4 bg-[#BAD1FD] rounded-[12px] group hover:bg-[#A8C6FF] transition-all duration-200 border-[#153064] border-1">
+                  <p className="text-xl font-[550] text-[#153064] leading-[20px] tracking-tight text-left" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                    International GCSE Physics Course Specifications
+                  </p>
+                </button>
+              </Link>
+            </>
           )}
         </div>
 
