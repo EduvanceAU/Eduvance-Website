@@ -182,6 +182,21 @@ export default function Home() {
           </button>
         </Link>
       </div>
+
+      <div className="inset-0 flex items-center justify-center absolute top-[1200px]">
+        <img src="BackgroundCircle.png" className="absolute w-auto h-auto z-10 top-[370px]" />
+        <img src="DiscussionIcon.png" className="absolute w-[200px] h-auto z-10 top-[470px]" />
+
+        <h3 className="font-semibold text-3xl tracking-[-1.5px] absolute top-[565px] z-10" style={{ fontFamily: 'Poppins, sans-serif' }}>
+          Join a global community of students with over
+        </h3>
+
+        <img src="NumberText.png" className="w-[650px] h-auto absolute top-[600px] z-10" />
+
+        <h1 className="font-semibold text-3xl tracking-[-1.5px] absolute top-[900px] z-10" style={{ fontFamily: 'Poppins, sans-serif' }}>
+          Your Study Circle, Just a Click Away
+        </h1>
+      </div>
     </main>
   );
 }
