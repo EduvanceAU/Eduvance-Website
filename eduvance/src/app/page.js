@@ -197,6 +197,15 @@ export default function Home() {
           Your Study Circle, Just a Click Away
         </h1>
       </div>
+
+      <div className="inset-0 flex items-center justify-center absolute top-[2760px]">
+        <div className="w-full h-[800px] bg-[#357BFD]">
+          <img src="EduvanceFooter.png" className="absolute top-[-320px] left-[70px] h-auto w-[1300px]" />
+          <div className="bg-gradient-to-b from-[#FFFFFF] to-[#357BFD] w-[700px] h-[500px] z-20 absolute top-[0px]">
+            <h1>Hello World</h1>
+          </div>
+        </div>
+      </div>
     </main>
   );
 }
