@@ -183,28 +183,18 @@ export default function Home() {
         </Link>
       </div>
 
-      <div className="inset-0 flex items-center justify-center absolute top-[1200px]">
-        <img src="BackgroundCircle.png" className="absolute w-auto h-auto z-10 top-[370px]" />
-        <img src="DiscussionIcon.png" className="absolute w-[200px] h-auto z-10 top-[470px]" />
-
-        <h3 className="font-semibold text-3xl tracking-[-1.5px] absolute top-[565px] z-10" style={{ fontFamily: 'Poppins, sans-serif' }}>
-          Join a global community of students with over
-        </h3>
-
-        <img src="NumberText.png" className="w-[650px] h-auto absolute top-[600px] z-10" />
-
-        <h1 className="font-semibold text-3xl tracking-[-1.5px] absolute top-[900px] z-10" style={{ fontFamily: 'Poppins, sans-serif' }}>
-          Your Study Circle, Just a Click Away
-        </h1>
-      </div>
-
-      <div className="inset-0 flex items-center justify-center absolute top-[2760px]">
-        <div className="w-full h-[800px] bg-[#357BFD]">
-          <img src="EduvanceFooter.png" className="absolute top-[-320px] left-[70px] h-auto w-[1300px]" />
-          <div className="bg-gradient-to-b from-[#FFFFFF] to-[#357BFD] w-[700px] h-[500px] z-20 absolute top-[0px]">
-            <h1>Hello World</h1>
-          </div>
+      <div className="absolute top-[1700px] w-full flex flex-col items-center justify-center">
+        <div className="px-6 py-1 border-4 border-[#4B89FD] rounded-full text-black flex items-center justify-center w-fit font-semibold tracking-[-0.7px] text-lg" style={{ fontFamily: 'Poppins, sans-serif' }}>
+          Trusted by +16,700 Students worldwide
         </div>
+
+        <h1 className="font-semibold text-5xl tracking-[-2px] text-center w-[550px] absolute top-[70px]" style={{ fontFamily: 'Poppins, sans-serif' }}>
+          Complete Academic Support Ecosystem
+        </h1>
+
+        <h3 className="font-medium text-[21px] tracking-[-0.7px] leading-[20px] text-center w-[520px] absolute top-[190px]" style={{ fontFamily: 'Poppins, sans-serif' }}>
+          Connect instantly with like-minded learners. Ask questions, share resources, and stay motivated — all in one place
+        </h3>
       </div>
     </main>
   );
