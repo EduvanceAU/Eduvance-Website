@@ -246,6 +246,10 @@ export default function Home() {
             </div>
           </div>
         </div>
+        
+        <div className="absolute top-[750px] w-full flex flex-col items-center justify-center bg-[#357BFD] w-full h-[600px]">
+          <img src="EduvanceFooter.png" className="h-auto w-[1000px] z-10"/>
+        </div>
 
       </div>
     </main>
