@@ -247,8 +247,45 @@ export default function Home() {
           </div>
         </div>
         
-        <div className="absolute top-[750px] w-full flex flex-col items-center justify-center bg-[#357BFD] w-full h-[600px]">
-          <img src="EduvanceFooter.png" className="h-auto w-[1000px] z-10"/>
+        <div className="absolute top-[750px] w-full flex flex-col items-center justify-center bg-[#357BFD] w-full h-[800px]">
+          <img src="EduvanceFooter.png" className="h-auto w-[1300px] absolute top-[100px] z-10"/>
+
+          <div className="rounded-2xl p-6 w-full max-w-[1350px] mx-auto bg-gradient-to-b from-[#FFFFFF] via-[#FAFCFF] to-[#357BFD] flex flex-col md:flex-row gap-6 shadow-[0px_-10px_30px_#357BFD40]">
+            {/* Left Column */}
+            <div className="flex-1 flex flex-col items-start">
+              <img src="/your-image-path.png" alt="Visual" className="w-32 h-32 object-contain mb-4" />
+              <p className="text-[#153064] text-base leading-relaxed tracking-tight font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur luctus, nulla nec fermentum dictum, lorem justo feugiat justo, nec facilisis nulla tellus in sapien.
+              </p>
+            </div>
+
+            {/* Right Column - 3 Inner Columns */}
+            <div className="flex-[2] grid grid-cols-1 sm:grid-cols-3 gap-4">
+              {/* Column 1 */}
+              <div className="flex flex-col">
+                <h3 className="text-[#153064] text-lg font-semibold mb-2" style={{ fontFamily: 'Poppins, sans-serif' }}>Resources</h3>
+                <a href="#" className="text-[#153064] hover:underline">Revision Notes</a>
+                <a href="#" className="text-[#153064] hover:underline">Past Papers</a>
+                <a href="#" className="text-[#153064] hover:underline">Mark Schemes</a>
+              </div>
+
+              {/* Column 2 */}
+              <div className="flex flex-col">
+                <h3 className="text-[#153064] text-lg font-semibold mb-2" style={{ fontFamily: 'Poppins, sans-serif' }}>Guides</h3>
+                <a href="#" className="text-[#153064] hover:underline">Exam Tips</a>
+                <a href="#" className="text-[#153064] hover:underline">Time Management</a>
+                <a href="#" className="text-[#153064] hover:underline">Subject Strategies</a>
+              </div>
+
+              {/* Column 3 */}
+              <div className="flex flex-col">
+                <h3 className="text-[#153064] text-lg font-semibold mb-2" style={{ fontFamily: 'Poppins, sans-serif' }}>Community</h3>
+                <a href="#" className="text-[#153064] hover:underline">Study Groups</a>
+                <a href="#" className="text-[#153064] hover:underline">Discord Server</a>
+                <a href="#" className="text-[#153064] hover:underline">Join Events</a>
+              </div>
+            </div>
+          </div>
         </div>
 
       </div>
