@@ -250,42 +250,48 @@ export default function Home() {
         <div className="absolute top-[750px] w-full flex flex-col items-center justify-center bg-[#357BFD] w-full h-[800px]">
           <img src="EduvanceFooter.png" className="h-auto w-[1300px] absolute top-[100px] z-10"/>
 
-          <div className="rounded-2xl p-6 w-full max-w-[1350px] mx-auto bg-gradient-to-b from-[#FFFFFF] via-[#FAFCFF] to-[#357BFD] flex flex-col md:flex-row gap-6 shadow-[0px_-10px_30px_#357BFD40]">
+          <div className="rounded-2xl p-6 w-full max-w-[1350px] h-[500px] mx-auto bg-gradient-to-b from-[#FFFFFF] via-[#FAFCFF] to-[#357BFD] flex flex-col md:flex-row gap-8 shadow-[0px_-10px_30px_#357BFD40] absolute top-[255px]">
             {/* Left Column */}
-            <div className="flex-1 flex flex-col items-start">
-              <img src="/your-image-path.png" alt="Visual" className="w-32 h-32 object-contain mb-4" />
-              <p className="text-[#153064] text-base leading-relaxed tracking-tight font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur luctus, nulla nec fermentum dictum, lorem justo feugiat justo, nec facilisis nulla tellus in sapien.
+            <div className="flex-1 flex flex-col items-start mt-[60px]">
+              <img src="BiggerLogo.png" className="w-auto h-15 object-contain mb-4" />
+              <p className="text-[#757575] text-base leading-5 tracking-tight font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                A growing student-led community built for learners across AS, A Levels, AP, and undergrad programs. From revision and learning resources to solving your doubts, we’re here to make education easier, smarter, and more connected
               </p>
             </div>
 
             {/* Right Column - 3 Inner Columns */}
-            <div className="flex-[2] grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="flex-[2] grid grid-cols-1 sm:grid-cols-3 gap-1 mt-[70px]">
               {/* Column 1 */}
               <div className="flex flex-col">
-                <h3 className="text-[#153064] text-lg font-semibold mb-2" style={{ fontFamily: 'Poppins, sans-serif' }}>Resources</h3>
-                <a href="#" className="text-[#153064] hover:underline">Revision Notes</a>
-                <a href="#" className="text-[#153064] hover:underline">Past Papers</a>
-                <a href="#" className="text-[#153064] hover:underline">Mark Schemes</a>
+                <h3 className="text-black tracking-[-0.6px] text-lg font-[550] mb-2" style={{ fontFamily: 'Poppins, sans-serif' }}>Navigation</h3>
+                <a href="#" className="text-[#757575] tracking-[-0.5px] font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>Home</a>
+                <a href="#" className="text-[#757575] tracking-[-0.5px] font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>Resources</a>
+                <a href="#" className="text-[#757575] tracking-[-0.5px] font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>Past Papers</a>
+                <a href="#" className="text-[#757575] tracking-[-0.5px] font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>Match with a Tutor</a>
+                <a href="#" className="text-[#757575] tracking-[-0.5px] font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>About</a>
+                <a href="#" className="text-[#757575] tracking-[-0.5px] font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>Community</a>
               </div>
 
               {/* Column 2 */}
               <div className="flex flex-col">
-                <h3 className="text-[#153064] text-lg font-semibold mb-2" style={{ fontFamily: 'Poppins, sans-serif' }}>Guides</h3>
-                <a href="#" className="text-[#153064] hover:underline">Exam Tips</a>
-                <a href="#" className="text-[#153064] hover:underline">Time Management</a>
-                <a href="#" className="text-[#153064] hover:underline">Subject Strategies</a>
+                <h3 className="text-black tracking-[-0.6px] text-lg font-[550] mb-2" style={{ fontFamily: 'Poppins, sans-serif' }}>Legal Info</h3>
+                <a href="#" className="text-[#757575] tracking-[-0.5px] font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>Community Guidelines</a>
+                <a href="#" className="text-[#757575] tracking-[-0.5px] font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>Terms of Services</a>
+                <a href="#" className="text-[#757575] tracking-[-0.5px] font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>Privacy Policy</a>
               </div>
 
               {/* Column 3 */}
               <div className="flex flex-col">
-                <h3 className="text-[#153064] text-lg font-semibold mb-2" style={{ fontFamily: 'Poppins, sans-serif' }}>Community</h3>
-                <a href="#" className="text-[#153064] hover:underline">Study Groups</a>
-                <a href="#" className="text-[#153064] hover:underline">Discord Server</a>
-                <a href="#" className="text-[#153064] hover:underline">Join Events</a>
+                <h3 className="text-black tracking-[-0.6px] text-lg font-[550] mb-2" style={{ fontFamily: 'Poppins, sans-serif' }}>Join the Community</h3>
+                <a href="" className="text-[#757575] tracking-[-0.5px] font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>Join the Discord Server</a>
+                <a href="#" className="text-[#757575] tracking-[-0.5px] font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>Become a community contributor</a>
+                <a href="#" className="text-[#757575] tracking-[-0.5px] font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>Become a tutor</a>
               </div>
             </div>
           </div>
+
+          <img src="DocsFooter.png" className="h-auto w-[350px] absolute top-[518px] left-[70px]" />
+          <img src="CardWidgets.png" className="h-auto w-[425px] absolute top-[518px] right-[70px]" />
         </div>
 
       </div>
