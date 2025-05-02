@@ -116,31 +116,30 @@ export default function Home() {
       </section>
 
       {/* Study Materials Section */}
-      <section className="w-full py-24 relative">
-        <div className="inset-0 flex items-center justify-center relative">
+      <section className="w-full py-24 relative top-[-1500px]">
+        <div className="relative flex items-center justify-center text-center top-[-200px]">
+          {/* Blurred Background */}
           <div className="w-[700px] h-[500px] rounded-full bg-white blur-2xl opacity-100 absolute" />
-          
-          <div className="container mx-auto px-4 flex flex-col lg:flex-row items-center justify-between relative z-10">
-            
-            <div className="w-full lg:w-1/2 text-center lg:text-left">
-              <h1
-                className="text-4xl lg:text-5xl font-semibold tracking-[-0.05em] text-black max-w-[400px] mx-auto lg:mx-0"
-                style={{ fontFamily: 'Poppins, sans-serif' }}
-              >
-                Study Materials to level up your revision
-              </h1>
-              
-              <h3 className="mt-4 font-semibold text-stone-500" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                Find revision resources for your Exam Board and Subject
-              </h3>
-              
-              <Link href="/resources" className="inline-block mt-8">
-                <button className="bg-[#2D74F8] text-[#FFFFFF] px-6 py-2 rounded-[50px] text-xl poppins-semibold shadow-lg flex items-center gap-2">
-                  Explore Resources
-                  <img src="/ArrowR.png" alt="Arrow Right" className="w-6 h-auto" />
-                </button>
-              </Link>
-            </div>
+
+          {/* Heading + Button */}
+          <div className="relative z-10 max-w-xl mx-auto">
+            <h1
+              className="text-4xl lg:text-5xl font-semibold tracking-[-0.05em] text-black"
+              style={{ fontFamily: 'Poppins, sans-serif' }}
+            >
+              Study Materials to level up your revision
+            </h1>
+
+            <h3 className="mt-4 font-[600] text-[#878787] tracking-[-0.5px] text-xl" style={{ fontFamily: 'Poppins, sans-serif' }}>
+              Find revision resources for your Exam Board and Subject
+            </h3>
+
+            <Link href="/resources" className="inline-block mt-6">
+              <button className="bg-[#2D74F8] text-[#FFFFFF] px-6 py-2 rounded-[50px] text-xl poppins-semibold shadow-lg flex items-center gap-2">
+                Explore Resources
+                <img src="/ArrowR.png" alt="Arrow Right" className="w-6 h-auto" />
+              </button>
+            </Link>
           </div>
         </div>
       </section>
