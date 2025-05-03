@@ -30,33 +30,32 @@ const ScrollingColumn = ({ direction, count = 9 }) => (
 export default function Home() {
   return (
     <main className="min-h-screen bg-white relative overflow-x-hidden">
-      {/* Responsive Navigation */}
       <nav className="w-full h-[60px] flex justify-between items-center px-4 md:px-6 py-4 z-50 fixed top-0 left-0 bg-white bg-opacity-95">
         {/* Left Side: Logo and Name */}
         <div className="flex items-center gap-2">
           <Image src="/SmallLogo.png" alt="Eduvance" width={35} height={35} />
-          <span className="font-grand-local text-2xl text-black">Eduvance</span>
+          <span className="font-grand-local text-xl sm:text-2xl text-black">Eduvance</span>
         </div>
         
-        {/* Center: Nav Links - Hidden on mobile, shown on larger screens */}
-        <div className="hidden md:flex gap-5 flex-wrap justify-center">
-          <Link href="#" className="text-[#555555] text-base poppins-semibold hover:text-black transition">
+        {/* Center: Nav Links - Always visible, responsive font size */}
+        <div className="flex flex-wrap gap-3 sm:gap-4 md:gap-5 justify-center items-center">
+          <Link href="#" className="text-[#555555] text-sm sm:text-base lg:text-lg poppins-semibold hover:text-black transition">
             About Edexcel
           </Link>
-          <Link href="#" className="text-[#555555] text-base poppins-semibold hover:text-black transition">
+          <Link href="#" className="text-[#555555] text-sm sm:text-base lg:text-lg poppins-semibold hover:text-black transition">
             IAL Edexcel Resources
           </Link>
-          <Link href="#" className="text-[#555555] text-base poppins-semibold hover:text-black transition">
+          <Link href="#" className="text-[#555555] text-sm sm:text-base lg:text-lg poppins-semibold hover:text-black transition">
             IGCSE Edexcel Resources
           </Link>
-          <Link href="#" className="text-[#555555] text-base poppins-semibold hover:text-black transition">
+          <Link href="#" className="text-[#555555] text-sm sm:text-base lg:text-lg poppins-semibold hover:text-black transition">
             More
           </Link>
         </div>
-
+        
         {/* Right Side: Join Now Button */}
         <div>
-          <button className="bg-[#1871F2] text-white border-2 border-white px-4 py-1 rounded-[10px] hover:bg-blue-700 transition text-base poppins-semibold shadow-lg">
+          <button className="bg-[#1871F2] text-white border-2 border-white px-4 py-1 rounded-[10px] hover:bg-blue-700 transition text-sm sm:text-base poppins-semibold shadow-lg">
             Join Now
           </button>
         </div>
@@ -65,14 +64,14 @@ export default function Home() {
       {/* Hero Section */}
       <section className="w-full min-h-screen flex flex-col relative pt-16">
         {/* Gradient Box in Background */}
-        <div className="absolute top-[80px] w-[95vw] h-[85vh] bg-gradient-to-b from-[#4E8CFF] to-[#0C60FB] rounded-2xl shadow-xl z-0 left-1/2 transform -translate-x-1/2" />
+        <div className="absolute w-[95vw] h-[85vh] bg-gradient-to-b from-[#4E8CFF] to-[#0C60FB] rounded-2xl shadow-xl z-0 left-1/2 transform -translate-x-1/2 mb-[-50px]" />
 
         <div className="container mx-auto px-4 relative z-10">
-          <div className="flex flex-col items-center justify-center gap-12">
+          <div className="flex flex-col items-center justify-center text-center gap-8">
 
-            <img src="Headline.png" className="w-[800px] h-auto relative top-[130px]" />
+            <img src="Headline.png" className="w-[800px] h-auto z-10 mt-30" />
 
-            <h3 className="font-semibold text-center z-10 relative text-white leading-[22px] absolute top-[80px] w-[550px] text-xl">
+            <h3 className="font-semibold text-white leading-[22px] text-xl max-w-[550px] z-10">
               Education drives progress. Eduvance helps you learn, revise, and stay ahead in your academic journey
             </h3>
 
@@ -81,29 +80,32 @@ export default function Home() {
               href="https://discord.gg/your-invite-code"
               target="_blank"
               rel="noopener noreferrer"
+              className="z-10"
             >
-              <button className="bg-[#FFFFFF] text-[#428CF9] border-5 border-[#639afe] px-9 py-4 rounded-[16px] text-xl poppins-semibold shadow-lg flex items-center gap-5 relative top-[70px]">
+              <button className="bg-white text-[#428CF9] border-5 border-[#639afe] px-9 py-4 rounded-[16px] text-xl poppins-semibold shadow-lg flex items-center gap-5">
                 <img src="/discordLogo.png" alt="Discord" className="w-9 h-auto" />
                 Join our Discord Server
               </button>
             </a>
-
-            <img
-              src="bgCrypto.png"
-              alt=" "
-              className="w-300 h-auto relative top-[-550px] right-[20px]"
-            />
-            <img
-              src="DocWidgets.png"
-              alt=" "
-              className="w-75 h-auto relative top-[-950px] right-[550px]"
-            />
           </div>
+
+          {/* Decorative Images (Positioned with absolute so they don’t mess layout) */}
+          <img
+            src="bgCrypto.png"
+            alt="Decorative Crypto"
+            className="absolute left-1/2 transform -translate-x-1/2 -translate-y-140 w-[80%] max-w-[1000px] h-auto z-20"
+          />
+          <img
+            src="DocWidgets.png"
+            alt=" "
+            className="absolute w-[300px] h-auto transform -translate-y-40 left-[-50px] z-0"
+          />
         </div>
       </section>
 
+
       {/* Scrolling Papers Section */}
-      <section className="w-full overflow-hidden py-16 relative top-[-1000px]">
+      <section className="w-full overflow-hidden py-16 relative top-[-80px]">
         <div className="overflow-hidden h-[800px] w-full flex justify-center">
           <div className="flex flex-row gap-x-6 md:gap-x-12">
             <ScrollingColumn direction="scroll-up" />
@@ -116,7 +118,7 @@ export default function Home() {
       </section>
 
       {/* Study Materials Section */}
-      <section className="w-full py-24 relative top-[-1500px]">
+      <section className="w-full py-24 relative top-[-500px]">
         <div className="relative flex items-center justify-center text-center top-[-200px]">
           {/* Blurred Background */}
           <div className="w-[700px] h-[500px] rounded-full bg-white blur-2xl opacity-100 absolute" />
