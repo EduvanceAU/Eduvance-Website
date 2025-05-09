@@ -1,7 +1,7 @@
 "use client";
 import Image from 'next/image';
 import Link from "next/link";
-import { useState, useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 // Reusable components
 const TestimonialCard = ({ content, icon, headline, rotation }) => (
@@ -16,16 +16,65 @@ const TestimonialCard = ({ content, icon, headline, rotation }) => (
   </div>
 );
 
-const ScrollingColumn = ({ direction, count = 9 }) => (
-  <div className={`${direction} flex flex-col gap-2 items-center`}>
-    {[...Array(count)].map((_, i) => (
-      <img key={`first-${i}`} src="/Page.png" alt="note" className="w-55 h-auto" />
-    ))}
-    {[...Array(count)].map((_, i) => (
-      <img key={`second-${i}`} src="/Page.png" alt="note" className="w-55 h-auto" />
-    ))}
-  </div>
-);
+interface ScrollingColumnProps {
+  direction: "scroll-up" | "scroll-down";
+  speed?: number; // Speed of scrolling
+  count?: number; // Number of images
+  className?: string; // Optional className for styling
+}
+
+const ScrollingColumn: React.FC<ScrollingColumnProps> = ({ direction, speed = 10, count = 9 }) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    let start = 0;
+    const isScrollingUp = direction === "scroll-up";
+
+    const scroll = (timestamp: number) => {
+      if (!start) start = timestamp;
+      const elapsed = timestamp - start;
+
+      // Adjust scroll position based on direction and speed
+      if (container) {
+        container.scrollTop += isScrollingUp ? -speed : speed;
+
+        // Reset scroll position to create an infinite loop
+        if (container.scrollTop >= container.scrollHeight / 2) {
+          container.scrollTop = 0;
+        } else if (container.scrollTop <= 0) {
+          container.scrollTop = container.scrollHeight / 2;
+        }
+      }
+
+      requestAnimationFrame(scroll);
+    };
+
+    // Start the animation
+    const animationId = requestAnimationFrame(scroll);
+
+    return () => cancelAnimationFrame(animationId); // Cleanup on unmount
+  }, [direction, speed]);
+
+  return (
+    <div
+      ref={containerRef}
+      className="overflow-hidden h-[800px] flex flex-col gap-2 items-center"
+      style={{ scrollBehavior: "smooth" }}
+    >
+      {/* Duplicate images for seamless looping */}
+      {[...Array(2)].map((_, idx) => (
+        <div key={idx}>
+          {Array.from({ length: count }).map((_, i) => (
+            <img key={`img-${idx}-${i}`} src="/Page.png" alt="note" className="w-55 h-auto" />
+          ))}
+        </div>
+      ))}
+    </div>
+  );
+};
 
 export default function Home() {
   return (
