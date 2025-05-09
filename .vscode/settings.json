@@ -1,22 +1,11 @@
 {
-          "workbench.colorCustomizations": {
-                    "activityBar.activeBackground": "#6197fd",
-                    "activityBar.background": "#6197fd",
-                    "activityBar.foreground": "#15202b",
-                    "activityBar.inactiveForeground": "#15202b99",
-                    "activityBarBadge.background": "#bd0243",
-                    "activityBarBadge.foreground": "#e7e7e7",
-                    "commandCenter.border": "#e7e7e799",
-                    "sash.hoverBorder": "#6197fd",
-                    "statusBar.background": "#2f76fc",
-                    "statusBar.foreground": "#e7e7e7",
-                    "statusBarItem.hoverBackground": "#6197fd",
-                    "statusBarItem.remoteBackground": "#2f76fc",
-                    "statusBarItem.remoteForeground": "#e7e7e7",
-                    "titleBar.activeBackground": "#2f76fc",
-                    "titleBar.activeForeground": "#e7e7e7",
-                    "titleBar.inactiveBackground": "#2f76fc99",
-                    "titleBar.inactiveForeground": "#e7e7e799"
-          },
-          "peacock.color": "#2f76fc"
+    "files.exclude": {
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/CVS": true,
+        "**/.DS_Store": true,
+        "**/Thumbs.db": true
+    },
+    "hide-files.files": []
 }
