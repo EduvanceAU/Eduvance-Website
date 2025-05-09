@@ -71,15 +71,13 @@ export default function Home() {
           Education that drives progress. Eduvance helps you learn, revise and stay ahead in your academic journey
         </h1>
 
-        
-
         {/* Button Group */}
         <div className="mt-10 flex gap-6">
           <a
             href="https://discord.gg/Eduvance"
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-5"
+            className="mt-2"
           >
             <img
               src="DiscordButton.png"
@@ -87,13 +85,11 @@ export default function Home() {
               className="w-[350px] h-auto transition-transform duration-300 hover:-translate-y-3 hover:-rotate-1 cursor-pointer"
             />
           </a>
-        
-          {/* Text Button */}
-          <button
-            className="px-6 py-[1px] border-5 border-[#1871F2] text-[#1871F2] text-lg font-semibold rounded-full hover:-translate-y-1 transition-transform duration-300"
-          >
-            Learn More
-          </button>
+          <img
+            src="MoreButton.png"
+            alt="More?"
+            className="w-auto h-[63px] transition-transform duration-300 hover:-translate-y-3 hover:-rotate-1 cursor-pointer mt-2"
+          />
         </div>
       </section>
 
