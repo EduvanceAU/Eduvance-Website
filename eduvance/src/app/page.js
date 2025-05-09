@@ -62,48 +62,41 @@ export default function Home() {
       </nav>
 
       {/* Hero Section */}
-      <section className="w-full min-h-screen flex flex-col relative pt-16">
-        {/* Gradient Box in Background */}
-        <div className="absolute w-[95vw] h-[85vh] bg-gradient-to-b from-[#4E8CFF] to-[#0C60FB] rounded-2xl shadow-xl z-0 left-1/2 transform -translate-x-1/2 mb-[-50px]" />
+      <section className="w-full min-h-screen flex flex-col items-center justify-center relative text-center pt-16">
+        <h1 className="font-semibold text-8xl text-black tracking-[-5px]" style={{ fontFamily: 'Poppins, sans-serif' }}>
+          Advancing with
+        </h1>
+        <img src="Headline.png" className="h-auto w-[500px] mt-2" />
+        <h1 className="font-semibold text-2xl text-black tracking-[-1px] mt-4 w-[570px]" style={{ fontFamily: 'Poppins, sans-serif' }}>
+          Education that drives progress. Eduvance helps you learn, revise and stay ahead in your academic journey
+        </h1>
 
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="flex flex-col items-center justify-center text-center gap-8">
+        
 
-            <img src="Headline.png" className="w-[800px] h-auto z-10 mt-30" />
-
-            <h3 className="font-semibold text-white leading-[22px] text-xl max-w-[550px] z-10">
-              Education drives progress. Eduvance helps you learn, revise, and stay ahead in your academic journey
-            </h3>
-
-            {/* Discord Button */}
-            <a
-              href="https://discord.gg/your-invite-code"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="z-10"
-            >
-              <button className="bg-white text-[#428CF9] border-5 border-[#639afe] px-9 py-4 rounded-[16px] text-xl poppins-semibold shadow-lg flex items-center gap-5">
-                <img src="/discordLogo.png" alt="Discord" className="w-9 h-auto" />
-                Join our Discord Server
-              </button>
-            </a>
-          </div>
-
-          <img
-            src="bgCrypto.png"
-            alt="Decorative Crypto"
-            className="absolute left-1/2 transform -translate-x-1/2 -translate-y-140 w-[80%] max-w-[1000px] h-auto z-20"
-          />
-          <img
-            src="DocWidgets.png"
-            alt=" "
-            className="absolute w-[50vw] sm:w-[30vw] md:w-[250px] max-w-[90%] h-auto 
-             transform z-0 
-             -translate-y-20 sm:-translate-y-10 md:-translate-y-40
-             left-[10px] sm:left-[-20px] md:left-[-80px]"
-          />
+        {/* Button Group */}
+        <div className="mt-10 flex gap-6">
+          <a
+            href="https://discord.gg/Eduvance"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-5"
+          >
+            <img
+              src="DiscordButton.png"
+              alt="Join Discord"
+              className="w-[350px] h-auto transition-transform duration-300 hover:-translate-y-3 hover:-rotate-1 cursor-pointer"
+            />
+          </a>
+        
+          {/* Text Button */}
+          <button
+            className="px-6 py-[1px] border-5 border-[#1871F2] text-[#1871F2] text-lg font-semibold rounded-full hover:-translate-y-1 transition-transform duration-300"
+          >
+            Learn More
+          </button>
         </div>
       </section>
+
 
 
       {/* Scrolling Papers Section */}
