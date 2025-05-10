@@ -194,7 +194,7 @@ export default function Home() {
               className="inline-block px-6 py-0.6 border-2 border-[#4B89FD] rounded-full text-black font-semibold tracking-[-0.7px] text-lg mb-8"
               style={{ fontFamily: 'Poppins, sans-serif' }}
             >
-              Trusted by +16,700 Students worldwide
+              Trusted by +17,000 Students worldwide
             </div>
 
             <h1
@@ -262,9 +262,9 @@ export default function Home() {
       {/* Footer Section */}
       <footer className="w-full bg-[#357BFD] pt-24 pb-8">
         <div className="container mx-auto px-4 relative">
-          <img src="EduvanceFooter.png" className="h-auto w-[1700px] mx-auto mb-16" />
+          <img src="EduvanceFooter.png" className="h-auto w-[1900px] mx-auto" />
 
-          <div className="rounded-2xl p-6 max-w-[1550px] mx-auto lg:h-[500px] bg-gradient-to-b from-[#FFFFFF] via-[#FAFCFF] to-[#357BFD] flex flex-col lg:flex-row gap-8 shadow-[0px_-10px_30px_#357BFD40]">
+          <div className="rounded-2xl p-6 max-w-[1850px] mx-auto lg:h-[420px] bg-gradient-to-b from-[#FFFFFF] via-[#FAFCFF] to-[#357BFD] flex flex-col lg:flex-row gap-8 shadow-[0px_-10px_30px_#357BFD40] translate-y-[-40px]">
             {/* Left Column */}
             <div className="w-full lg:w-1/3 flex flex-col items-start mt-[6px]">
               <img src="BiggerLogo.png" className="w-auto h-15 object-contain mb-4" />
@@ -302,11 +302,6 @@ export default function Home() {
                 <a href="#" className="text-[#757575] tracking-[-0.5px] font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>Become a tutor</a>
               </div>
             </div>
-          </div>
-          
-          <div className="flex flex-col lg:flex-row justify-between items-center">
-            <img src="DocsFooter.png" className="h-auto w-[350px] max-w-full mb-[-50px] lg:mb-0" />
-            <img src="CardWidgets.png" className="h-auto w-[425px] max-w-full" />
           </div>
         </div>
       </footer>
