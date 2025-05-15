@@ -1,6 +1,7 @@
 "use client";
 import Image from 'next/image';
 import Link from "next/link";
+import { useState } from 'react';
 import { useEffect, useRef } from 'react';
 
 // Reusable components
@@ -77,17 +78,19 @@ const ScrollingColumn: React.FC<ScrollingColumnProps> = ({ direction, speed = 10
 };
 
 export default function Home() {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   return (
     <main className="min-h-screen bg-white relative overflow-x-hidden">
+      <>
       <nav className="w-full h-[60px] flex justify-between items-center px-4 md:px-6 py-4 z-50 fixed top-0 left-0 bg-white bg-opacity-95">
-        {/* Left Side: Logo and Name */}
+        {/* Left Side */}
         <div className="flex items-center gap-2">
           <Image src="/SmallLogo.png" alt="Eduvance" width={35} height={35} />
           <span className="font-grand-local text-xl sm:text-2xl text-black">Eduvance</span>
         </div>
-        
-        {/* Center: Nav Links - Always visible, responsive font size */}
-        <div className="flex flex-wrap gap-3 sm:gap-4 md:gap-5 justify-center items-center">
+
+        {/* Center Links - Hidden on sm */}
+        <div className="hidden sm:flex flex-wrap gap-3 sm:gap-4 md:gap-5 justify-center items-center">
           <Link href="#" className="text-[#555555] text-sm sm:text-base lg:text-lg poppins-semibold hover:text-black transition">
             About Edexcel
           </Link>
@@ -101,43 +104,93 @@ export default function Home() {
             More
           </Link>
         </div>
-        
-        {/* Right Side: Join Now Button */}
-        <div>
-          <button className="bg-[#1871F2] text-white border-2 border-white px-4 py-1 rounded-[10px] hover:bg-blue-700 transition text-sm sm:text-base poppins-semibold shadow-lg">
-            Join Now
+
+        {/* Right Side - Button hidden on sm */}
+        <div className="hidden sm:block">
+          <a
+              href="https://discord.gg/eduvance"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="z-10"
+            >
+              <button className="bg-[#1871F2] text-white border-2 border-white px-4 py-1 rounded-[10px] hover:bg-blue-700 transition text-sm sm:text-base poppins-semibold shadow-lg">
+                Join Now
+              </button>
+            </a>
+        </div>
+
+        {/* Hamburger Menu on sm */}
+        <div className="block sm:hidden">
+          <button onClick={() => setSidebarOpen(true)}>
+            <svg className="w-6 h-6 text-black" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
           </button>
         </div>
       </nav>
 
-      {/* Hero Section */}
-      <section className="w-full min-h-screen flex flex-col items-center justify-center relative text-center pt-16">
-        <h1 className="font-semibold text-8xl text-black tracking-[-5px]" style={{ fontFamily: 'Poppins, sans-serif' }}>
-          Advancing with
-        </h1>
-        <img src="Headline.png" className="h-auto w-[500px] mt-2" />
-        <h1 className="font-semibold text-2xl text-black tracking-[-1px] mt-4 w-[570px]" style={{ fontFamily: 'Poppins, sans-serif' }}>
-          Education that drives progress. Eduvance helps you learn, revise and stay ahead in your academic journey
-        </h1>
-
-        {/* Button Group */}
-        <div className="mt-10 flex gap-6">
-          <a
-            href="https://discord.gg/Eduvance"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-2"
-          >
-            <img
-              src="DiscordButton.png"
-              alt="Join Discord"
-              className="w-[350px] h-auto transition-transform duration-300 hover:-translate-y-3 hover:-rotate-1 cursor-pointer"
-            />
+      {/* Sidebar - Full screen width on all viewports */}
+      <div className={`fixed top-0 left-0 h-full w-full bg-white shadow-lg z-50 transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 ease-in-out`}>
+        <div className="flex justify-between items-center p-4 border-b">
+          <span className="text-xl font-grand-local">Menu</span>
+          <button onClick={() => setSidebarOpen(false)}>
+            <svg className="w-6 h-6 text-black" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        <div className="flex flex-col gap-4 p-4">
+          <Link href="#" onClick={() => setSidebarOpen(false)}>About Eduvance</Link>
+          <Link href="#" onClick={() => setSidebarOpen(false)}>IAL Edexcel Resources</Link>
+          <Link href="#" onClick={() => setSidebarOpen(false)}>IGCSE Edexcel Resources</Link>
+          <Link href="#" onClick={() => setSidebarOpen(false)}>More</Link>
+          <a href="https://discord.gg/eduvance" target="_blank" rel="noopener noreferrer" className="z-10">
+            <button className="mt-4 bg-[#1871F2] text-white w-[95%] mx-auto py-3 rounded-[10px] hover:bg-blue-700 transition block">
+              Join Now
+            </button>
           </a>
+        </div>
+      </div>
+    </>
+
+      {/* Hero Section */}
+      <section className="w-full min-h-screen flex flex-col relative pt-16">
+        {/* Gradient Box in Background */}
+        <div className="absolute w-[95vw] h-[85vh] bg-gradient-to-b from-[#4E8CFF] to-[#0C60FB] rounded-2xl shadow-xl z-0 left-1/2 transform -translate-x-1/2 mb-[-50px]" />
+
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="flex flex-col items-center justify-center text-center gap-8">
+
+            <img src="Headline.png" className="w-[800px] h-auto z-10 mt-30" />
+
+            <h3 className="font-semibold text-white leading-[22px] text-xl max-w-[550px] z-10">
+              Education drives progress. Eduvance helps you learn, revise, and stay ahead in your academic journey
+            </h3>
+
+            {/* Discord Button */}
+            <a
+              href="https://discord.gg/eduvance"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="z-10"
+            >
+              <button className="bg-white text-[#428CF9] border-5 border-[#639afe] px-9 py-4 rounded-[16px] text-xl poppins-semibold shadow-lg flex items-center gap-5">
+                <img src="/discordLogo.png" alt="Discord" className="w-9 h-auto" />
+                Join our Discord Server
+              </button>
+            </a>
+          </div>
+
+          {/* Decorative Images (Positioned with absolute so they don’t mess layout) */}
           <img
-            src="MoreButton.png"
-            alt="More?"
-            className="w-auto h-[63px] transition-transform duration-300 hover:-translate-y-3 hover:-rotate-1 cursor-pointer mt-2"
+            src="bgCrypto.png"
+            alt="Decorative Crypto"
+            className="absolute left-1/2 transform -translate-x-1/2 -translate-y-140 w-[80%] max-w-[1000px] h-auto z-20"
+          />
+          <img
+            src="DocWidgets.png"
+            alt=" "
+            className="absolute w-[300px] sm:w-[300px] h-auto transform sm:-translate-y-40 translate-y-10 sm:left-[-50px] z-0"
           />
         </div>
       </section>
@@ -161,18 +214,18 @@ export default function Home() {
       <section className="w-full py-24 relative top-[-500px]">
         <div className="relative flex items-center justify-center text-center top-[-200px]">
           {/* Blurred Background */}
-          <div className="w-[700px] h-[500px] rounded-full bg-white blur-2xl opacity-100 absolute" />
+          <div className="w-[350px] h-[250px]  sm:w-[700px] sm:h-[500px] rounded-full bg-white blur-2xl opacity-100 absolute" />
 
           {/* Heading + Button */}
-          <div className="relative z-10 max-w-xl mx-auto">
+          <div className="relative flex flex-col z-10 max-w-xl mx-auto justify-center items-center">
             <h1
-              className="text-4xl lg:text-5xl font-semibold tracking-[-0.05em] text-black"
+              className="text-2xl w-[250px] sm:text-4xl font-semibold tracking-[-0.05em] text-black text-center"
               style={{ fontFamily: 'Poppins, sans-serif' }}
             >
               Study Materials to level up your revision
             </h1>
 
-            <h3 className="mt-4 font-[600] text-[#878787] tracking-[-0.5px] text-xl" style={{ fontFamily: 'Poppins, sans-serif' }}>
+            <h3 className="mt-4 font-[600] text-[#878787] tracking-[-0.5px] text-m sm:text-xl text-center w-[250px] leading-tight sm:w-[550px]" style={{ fontFamily: 'Poppins, sans-serif' }}>
               Find revision resources for your Exam Board and Subject
             </h3>
 
@@ -187,7 +240,7 @@ export default function Home() {
       </section>
 
       {/* Testimonials Section */}
-      <section className="w-full py-24 relative -mt-[600px] z-10">
+      <section className="w-full py-24 relative -mt-[600px]">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <div
@@ -198,7 +251,7 @@ export default function Home() {
             </div>
 
             <h1
-              className="font-semibold text-5xl tracking-[-2px] max-w-[550px] mx-auto"
+              className="font-semibold text-3xl sm:text-5xl sm:tracking-[-2px] sm:max-w-[550px] max-w-[350px] mx-auto z-20"
               style={{ fontFamily: 'Poppins, sans-serif' }}
             >
               Complete Academic Support Ecosystem
@@ -211,8 +264,13 @@ export default function Home() {
               Connect instantly with like-minded learners. Ask questions, share resources, and stay motivated — all in one place
             </h3>
 
+            <img
+              src="QuotationMarks.png"
+              className="w-[1200px] h-auto mx-auto absolute left-1/2 transform -translate-x-1/2 -translate-y-40 z-0"
+            />
+
             <a
-              href="https://discord.gg/your-invite-code"
+              href="https://discord.gg/Eduvance"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-block mt-15"
@@ -228,11 +286,6 @@ export default function Home() {
           </div>
 
           <div className="relative">
-            <img
-              src="QuotationMarks.png"
-              className="w-[1200px] h-auto mx-auto absolute left-1/2 transform -translate-x-1/2 -translate-y-80"
-            />
-
             <div className="flex flex-col lg:flex-row gap-[-100px] items-stretch justify-center mt-24">
               <TestimonialCard
                 content="Partnering with 00Pixel completely transformed our online presence. They didn’t just deliver a beautiful website—they created a high-performance platform that drives real results. Within three months, our conversions increased by 35%, and the site is optimised to keep that momentum going. If you're looking for a team that combines design with strategy, 00Pixel is the way to go!"
@@ -262,9 +315,9 @@ export default function Home() {
       {/* Footer Section */}
       <footer className="w-full bg-[#357BFD] pt-24 pb-8">
         <div className="container mx-auto px-4 relative">
-          <img src="EduvanceFooter.png" className="h-auto w-[1900px] mx-auto" />
+          <img src="EduvanceFooter.png" className="h-auto w-[1900px] mx-auto transform -translate-y-5" />
 
-          <div className="rounded-2xl p-6 max-w-[1850px] mx-auto lg:h-[420px] bg-gradient-to-b from-[#FFFFFF] via-[#FAFCFF] to-[#357BFD] flex flex-col lg:flex-row gap-8 shadow-[0px_-10px_30px_#357BFD40] translate-y-[-40px]">
+          <div className="rounded-2xl p-6 max-w-[1850px] mx-auto h-[920px] sm:h-[920px] lg:h-[520px] bg-gradient-to-b from-[#FFFFFF] via-[#FAFCFF] to-[#357BFD] flex flex-col lg:flex-row gap-8 shadow-[0px_-10px_30px_#357BFD40] translate-y-[-40px]">
             {/* Left Column */}
             <div className="w-full lg:w-1/3 flex flex-col items-start mt-[6px]">
               <img src="BiggerLogo.png" className="w-auto h-15 object-contain mb-4" />
@@ -274,7 +327,7 @@ export default function Home() {
             </div>
 
             {/* Right Column - 3 Inner Columns */}
-            <div className="w-full lg:w-2/3 grid grid-cols-1 sm:grid-cols-3 gap-1 mt-[70px]">
+            <div className="w-full lg:w-2/3 grid grid-cols-1 sm:grid-cols-3 gap-1 mt-[20px]">
               {/* Column 1 */}
               <div className="flex flex-col">
                 <h3 className="text-black tracking-[-0.6px] text-lg font-[550] mb-2" style={{ fontFamily: 'Poppins, sans-serif' }}>Navigation</h3>
