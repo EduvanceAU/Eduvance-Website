@@ -3,6 +3,7 @@ import Image from 'next/image';
 import Link from "next/link";
 import { useState } from 'react';
 import { useEffect, useRef } from 'react';
+import { FaInfoCircle, FaBook, FaChalkboardTeacher, FaPhone, FaLifeRing, FaEllipsisH } from 'react-icons/fa';
 
 // Reusable components
 const TestimonialCard = ({ content, icon, headline, rotation }) => (
@@ -91,16 +92,16 @@ export default function Home() {
 
         {/* Center Links - Hidden on sm */}
         <div className="hidden sm:flex flex-wrap gap-3 sm:gap-4 md:gap-5 justify-center items-center">
-          <Link href="#" className="text-[#555555] text-sm sm:text-base lg:text-lg poppins-semibold hover:text-black transition">
+          <Link href="#" className="text-[#555555] text-sm sm:text-base lg:text-lg font-semibold hover:text-black transition tracking-[-1px]">
             About Edexcel
           </Link>
-          <Link href="#" className="text-[#555555] text-sm sm:text-base lg:text-lg poppins-semibold hover:text-black transition">
+          <Link href="#" className="text-[#555555] text-sm sm:text-base lg:text-lg font-semibold hover:text-black transition tracking-[-1px]">
             IAL Edexcel Resources
           </Link>
-          <Link href="#" className="text-[#555555] text-sm sm:text-base lg:text-lg poppins-semibold hover:text-black transition">
+          <Link href="#" className="text-[#555555] text-sm sm:text-base lg:text-lg font-semibold hover:text-black transition tracking-[-1px]">
             IGCSE Edexcel Resources
           </Link>
-          <Link href="#" className="text-[#555555] text-sm sm:text-base lg:text-lg poppins-semibold hover:text-black transition">
+          <Link href="#" className="text-[#555555] text-sm sm:text-base lg:text-lg font-semibold hover:text-black transition tracking-[-1px]">
             More
           </Link>
         </div>
@@ -132,20 +133,38 @@ export default function Home() {
       {/* Sidebar - Full screen width on all viewports */}
       <div className={`fixed top-0 left-0 h-full w-full bg-white shadow-lg z-50 transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 ease-in-out`}>
         <div className="flex justify-between items-center p-4 border-b">
-          <span className="text-xl font-grand-local">Menu</span>
+          <span className="text-3xl font-grand-local">Menu</span>
           <button onClick={() => setSidebarOpen(false)}>
             <svg className="w-6 h-6 text-black" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
         </div>
-        <div className="flex flex-col gap-4 p-4">
-          <Link href="#" onClick={() => setSidebarOpen(false)}>About Eduvance</Link>
-          <Link href="#" onClick={() => setSidebarOpen(false)}>IAL Edexcel Resources</Link>
-          <Link href="#" onClick={() => setSidebarOpen(false)}>IGCSE Edexcel Resources</Link>
-          <Link href="#" onClick={() => setSidebarOpen(false)}>More</Link>
+
+        <img src="LightmodeLogo.png" className="w-[300px] h-auto mt-5 mx-auto block mb-10" />
+
+        <div className="flex flex-col gap-12 p-6 text-2xl font-[550] tracking-[-0.5px]">
+          <Link href="#" onClick={() => setSidebarOpen(false)} className="flex items-center gap-3">
+            <FaInfoCircle /> About Eduvance
+          </Link>
+          <Link href="#" onClick={() => setSidebarOpen(false)} className="flex items-center gap-3">
+            <FaBook /> IAL Edexcel Resources
+          </Link>
+          <Link href="#" onClick={() => setSidebarOpen(false)} className="flex items-center gap-3">
+            <FaChalkboardTeacher /> IGCSE Edexcel Resources
+          </Link>
+          <Link href="#" onClick={() => setSidebarOpen(false)} className="flex items-center gap-3">
+            <FaPhone /> Contact Us
+          </Link>
+          <Link href="#" onClick={() => setSidebarOpen(false)} className="flex items-center gap-3">
+            <FaLifeRing /> Support
+          </Link>
+          <Link href="#" onClick={() => setSidebarOpen(false)} className="flex items-center gap-3">
+            <FaEllipsisH /> More
+          </Link>
+
           <a href="https://discord.gg/eduvance" target="_blank" rel="noopener noreferrer" className="z-10">
-            <button className="mt-4 bg-[#1871F2] text-white w-[95%] mx-auto py-3 rounded-[10px] hover:bg-blue-700 transition block">
+            <button className="mt-4 bg-[#1871F2] text-white w-[95%] mx-auto py-3 rounded-[10px] hover:bg-blue-700 transition block text-xl">
               Join Now
             </button>
           </a>
@@ -194,8 +213,6 @@ export default function Home() {
           />
         </div>
       </section>
-
-
 
       {/* Scrolling Papers Section */}
       <section className="w-full overflow-hidden py-16 relative top-[-80px]">
@@ -250,6 +267,11 @@ export default function Home() {
               Trusted by +17,000 Students worldwide
             </div>
 
+            <img
+              src="QuotationMarks.png"
+              className="w-[1200px] h-auto mx-auto absolute left-1/2 transform -translate-x-1/2 -translate-y-0 z-0"
+            />
+
             <h1
               className="font-semibold text-3xl sm:text-5xl sm:tracking-[-2px] sm:max-w-[550px] max-w-[350px] mx-auto z-20"
               style={{ fontFamily: 'Poppins, sans-serif' }}
@@ -264,10 +286,6 @@ export default function Home() {
               Connect instantly with like-minded learners. Ask questions, share resources, and stay motivated — all in one place
             </h3>
 
-            <img
-              src="QuotationMarks.png"
-              className="w-[1200px] h-auto mx-auto absolute left-1/2 transform -translate-x-1/2 -translate-y-40 z-0"
-            />
 
             <a
               href="https://discord.gg/Eduvance"
