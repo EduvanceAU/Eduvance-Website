@@ -72,3 +72,27 @@ body {
 .scroll-down {
   animation: scrollDown 25s linear infinite;
 }
+
+.hover-tint {
+  position: relative;
+  overflow: hidden;
+}
+
+.hover-tint::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-color: #BAD1FD;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+  z-index: 1;
+}
+
+.hover-tint:hover::before {
+  opacity: 0.7; /* Tint strength */
+}
+
+.hover-tint .content {
+  position: relative;
+  z-index: 2;
+}
