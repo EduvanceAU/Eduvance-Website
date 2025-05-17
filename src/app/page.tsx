@@ -20,60 +20,35 @@ const TestimonialCard = ({ content, icon, headline, rotation }) => (
 
 interface ScrollingColumnProps {
   direction: "scroll-up" | "scroll-down";
-  speed?: number; // Speed of scrolling
-  count?: number; // Number of images
-  className?: string; // Optional className for styling
+  speed?: number;
+  count?: number;
+  className?: string;
 }
 
-const ScrollingColumn: React.FC<ScrollingColumnProps> = ({ direction, speed = 10, count = 9 }) => {
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-
-    let start = 0;
-    const isScrollingUp = direction === "scroll-up";
-
-    const scroll = (timestamp: number) => {
-      if (!start) start = timestamp;
-      const elapsed = timestamp - start;
-
-      // Adjust scroll position based on direction and speed
-      if (container) {
-        container.scrollTop += isScrollingUp ? -speed : speed;
-
-        // Reset scroll position to create an infinite loop
-        if (container.scrollTop >= container.scrollHeight / 2) {
-          container.scrollTop = 0;
-        } else if (container.scrollTop <= 0) {
-          container.scrollTop = container.scrollHeight / 2;
-        }
-      }
-
-      requestAnimationFrame(scroll);
-    };
-
-    // Start the animation
-    const animationId = requestAnimationFrame(scroll);
-
-    return () => cancelAnimationFrame(animationId); // Cleanup on unmount
-  }, [direction, speed]);
+const ScrollingColumn: React.FC<ScrollingColumnProps> = ({ direction, count = 15, className }) => {
+  const isUp = direction === "scroll-up";
+  const items = new Array(count).fill(0);
 
   return (
-    <div
-      ref={containerRef}
-      className="overflow-hidden h-[800px] flex flex-col gap-2 items-center"
-      style={{ scrollBehavior: "smooth" }}
-    >
-      {/* Duplicate images for seamless looping */}
-      {[...Array(2)].map((_, idx) => (
-        <div key={idx}>
-          {Array.from({ length: count }).map((_, i) => (
-            <img key={`img-${idx}-${i}`} src="/Page.png" alt="note" className="w-55 h-auto" />
-          ))}
-        </div>
-      ))}
+    <div className={`relative h-[800px] w-[150px] overflow-hidden ${className}`}>
+      <div className={`flex flex-col gap-4 ${isUp ? "scroll-up" : "scroll-down"}`}>
+        {items.map((_, i) => (
+          <img
+            key={i}
+            src="/Page.png"
+            className="rounded-2xl w-full object-cover"
+            alt={`scroll-page-${i}`}
+          />
+        ))}
+        {items.map((_, i) => (
+          <img
+            key={`dup-${i}`}
+            src="/Page.png"
+            className="rounded-2xl w-full object-cover"
+            alt={`scroll-page-dup-${i}`}
+          />
+        ))}
+      </div>
     </div>
   );
 };
@@ -217,12 +192,13 @@ export default function Home() {
       {/* Scrolling Papers Section */}
       <section className="w-full overflow-hidden py-16 relative top-[-80px]">
         <div className="overflow-hidden h-[800px] w-full flex justify-center">
-          <div className="flex flex-row gap-x-6 md:gap-x-12">
+          <div className="flex flex-row gap-x-8 md:gap-x-16">
             <ScrollingColumn direction="scroll-up" />
             <ScrollingColumn direction="scroll-down" />
             <ScrollingColumn direction="scroll-up" />
-            <ScrollingColumn direction="scroll-down" className="hidden md:flex" />
-            <ScrollingColumn direction="scroll-up" className="hidden lg:flex" />
+            <ScrollingColumn direction="scroll-down" />
+            <ScrollingColumn direction="scroll-up" />
+            <ScrollingColumn direction="scroll-down" />
           </div>
         </div>
       </section>
@@ -269,11 +245,11 @@ export default function Home() {
 
             <img
               src="QuotationMarks.png"
-              className="w-[1200px] h-auto mx-auto absolute left-1/2 transform -translate-x-1/2 -translate-y-0 z-0"
+              className="hidden sm:block w-[1200px] h-auto mx-auto absolute left-1/2 transform -translate-x-1/2 -translate-y-0 z-0"
             />
 
             <h1
-              className="font-semibold text-3xl sm:text-5xl sm:tracking-[-2px] sm:max-w-[550px] max-w-[350px] mx-auto z-20"
+              className="font-semibold text-3xl tracking-tighter sm:text-5xl sm:tracking-[-3px] sm:max-w-[550px] max-w-[350px] mx-auto z-20"
               style={{ fontFamily: 'Poppins, sans-serif' }}
             >
               Complete Academic Support Ecosystem

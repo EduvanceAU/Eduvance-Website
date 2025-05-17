@@ -9,20 +9,18 @@ export default function Resources() {
       {/* Left Side */}
       <div className="w-full lg:w-1/2 flex flex-col items-start justify-center gap-6 px-10 py-16 relative">
         <div className="relative w-full h-[250px] sm:h-[200px] md:h-[180px] lg:h-[150px]">
+          {/* PagesWidget at 5% from top, 0% from left */}
           <img
             src="PagesWidget.png"
             alt="Pages Widget"
-            className="w-80 h-auto absolute -top-10 left-0 sm:-top-6 md:top-0"
+            className="absolute top-[5%] left-0 w-80 h-auto"
           />
+
+          {/* Underline at 60% from left, 40% from top */}
           <img
             src="Underline.png"
             alt="Underline"
-            className="
-              w-auto h-[15px] 
-              absolute 
-              left-[230px] 
-              top-[50px] sm:top-[300px] md:top-[120px] lg:top-[250px]
-            "
+            className="absolute top-[155%] sm:top-[165%] left-[38%] w-auto h-[15px]"
           />
         </div>
 
@@ -42,7 +40,7 @@ export default function Resources() {
       </div>
 
       {/* Right Side */}
-      <div className="w-full lg:w-1/2 flex flex-col items-start justify-center gap-6 px-10 py-16">
+      <div className="w-full lg:w-1/2 flex flex-col items-center lg:items-start justify-center gap-6 px-10 py-16">
         <h1 className="text-4xl font-semibold leading-[40px] tracking-tighter" style={{ fontFamily: 'Poppins, sans-serif' }}>
           Browse Resources by Subject
         </h1>
