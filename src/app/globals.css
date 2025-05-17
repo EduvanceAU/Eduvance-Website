@@ -47,31 +47,32 @@ body {
   letter-spacing: -2px;
 }
 
-@keyframes scrollUp {
+@keyframes scroll-up {
   0% {
-    transform: translateY(100%);
+    transform: translateY(0%);
   }
   100% {
-    transform: translateY(-100%);
+    transform: translateY(-50%);
+  }
+}
+
+@keyframes scroll-down {
+  0% {
+    transform: translateY(-50%);
+  }
+  100% {
+    transform: translateY(0%);
   }
 }
 
 .scroll-up {
-  animation: scrollUp 25s linear infinite;
-}
-
-@keyframes scrollDown {
-  0% {
-    transform: translateY(-100%);
-  }
-  100% {
-    transform: translateY(100%);
-  }
+  animation: scroll-up 20s linear infinite;
 }
 
 .scroll-down {
-  animation: scrollDown 25s linear infinite;
+  animation: scroll-down 20s linear infinite;
 }
+
 
 .hover-tint {
   position: relative;
