@@ -1,12 +1,11 @@
 "use client";
 
-import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const sessions = [
   { label: "January", value: "January" },
-  { label: "May/June", value: "May%2FJune" },
-  { label: "Oct/Nov", value: "October%2FNovember" },
+  { label: "May/June", value: "June" },
+  { label: "Oct/Nov", value: "November" },
 ];
 
 const years = Array.from({ length: 10 }, (_, i) => 2015 + i);
@@ -28,19 +27,43 @@ const units = [
   { name: "Practical Skills in Physics II", code: "WPH16/01", unit: "Unit 6" },
 ];
 
-const generatePearsonLink = (subject, session, year) => {
-  const subjectFormatted = subject.replace(" ", "%20");
-  return `https://qualifications.pearson.com/en/support/support-topics/exams/past-papers.html?Qualification-Family=International-Advanced-Level&Qualification-Subject=${subjectFormatted}&Status=Pearson-UK:Status%2FLive&Specification-Code=Pearson-UK:Specification-Code%2Fial18-${subject.toLowerCase()}&Exam-Series=${session}-${year}`;
-};
-
 export default function PastPapersPage() {
-  const subject = "Physics";
   const [selectedUnits, setSelectedUnits] = useState([]);
+  const [papers, setPapers] = useState({});
+  const [loading, setLoading] = useState({});
 
   const toggleUnit = (unit) => {
     setSelectedUnits((prev) =>
       prev.includes(unit) ? prev.filter((u) => u !== unit) : [...prev, unit]
     );
+  };
+
+  const fetchPapers = async (year, session) => {
+    const key = `${year}-${session.value}`;
+    if (loading[key] || papers[key]) return;
+
+    setLoading(prev => ({ ...prev, [key]: true }));
+    try {
+      const response = await fetch(`/api/past-papers?year=${year}&session=${session.value}`);
+      const data = await response.json();
+      if (data.papers) {
+        setPapers(prev => ({ ...prev, [key]: data.papers }));
+      }
+    } catch (error) {
+      console.error('Error fetching papers:', error);
+    } finally {
+      setLoading(prev => ({ ...prev, [key]: false }));
+    }
+  };
+
+  const getPaperUrl = (year, session, unit, type) => {
+    const key = `${year}-${session.value}`;
+    const sessionPapers = papers[key] || [];
+    return sessionPapers.find(
+      paper => 
+        paper.unitCode === unit.code && 
+        paper.paperType === type
+    )?.paperUrl || '#';
   };
 
   const filteredUnits =
@@ -115,23 +138,43 @@ export default function PastPapersPage() {
                       key={`${year}-${session.label}-${unit.unit}`}
                       className="contents"
                     >
-                      <Link
-                        href={generatePearsonLink(subject, session.value, year)}
+                      <button
+                        onClick={() => fetchPapers(year, session)}
                         className="text-blue-600 font-medium hover:underline text-left max-w-[250px]"
-                        target="_blank"
                         style={{ fontFamily: "Poppins, sans-serif" }}
                       >
-                        {`${session.label} ${year} ${unit.unit}: ${unit.name} ${unit.code} (QP)`}
-                      </Link>
+                        {loading[`${year}-${session.value}`] ? (
+                          "Loading..."
+                        ) : (
+                          <a
+                            href={getPaperUrl(year, session, unit, 'QP')}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 font-medium hover:underline"
+                          >
+                            {`${session.label} ${year} ${unit.unit}: ${unit.name} ${unit.code} (QP)`}
+                          </a>
+                        )}
+                      </button>
 
-                      <Link
-                        href={generatePearsonLink(subject, session.value, year)}
+                      <button
+                        onClick={() => fetchPapers(year, session)}
                         className="text-blue-600 font-medium hover:underline text-left max-w-[250px]"
-                        target="_blank"
                         style={{ fontFamily: "Poppins, sans-serif" }}
                       >
-                        {`${session.label} ${year} ${unit.unit}: ${unit.name} ${unit.code} (MS)`}
-                      </Link>
+                        {loading[`${year}-${session.value}`] ? (
+                          "Loading..."
+                        ) : (
+                          <a
+                            href={getPaperUrl(year, session, unit, 'MS')}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 font-medium hover:underline"
+                          >
+                            {`${session.label} ${year} ${unit.unit}: ${unit.name} ${unit.code} (MS)`}
+                          </a>
+                        )}
+                      </button>
                     </div>
                   ))}
                 </div>
