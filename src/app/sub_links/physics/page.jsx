@@ -9,16 +9,22 @@ export default function Physics() {
   return (
     <main className="flex flex-col w-full min-h-screen relative">
       {/* Banner Image - Responsive width */}
-      <div className="w-full h-[210px] md:h-[210px] relative">
-        <img 
+      <div className="hidden md:block lg:block xl:block w-full h-[210px] relative">
+        <Image 
           src="/Physics_Banner.png" 
           alt="Physics" 
-          className="w-full h-full object-cover"
+          fill
+          priority
+          className="object-cover"
         />
       </div>
 
-      {/* Content Container - Centered with responsive padding */}
       <div className="flex flex-col items-center w-full px-4 sm:px-6 md:px-8 lg:px-16 xl:px-24 pt-16 md:pt-20 relative">
+
+        <h1 className="block md:hidden text-4xl font-semibold tracking-tighter text-[#153064] mb-4 mt-[-20px]" style={{ fontFamily: 'Poppins, sans-serif' }}>
+          Physics
+        </h1>
+
         <h3 className="font-semibold text-xl md:text-2xl text-[#153064] tracking-[-1px] mb-6" style={{ fontFamily: 'Poppins, sans-serif' }}>
           Choose your exam board
         </h3>
