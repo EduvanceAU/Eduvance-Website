@@ -1,4 +1,6 @@
 const { PrismaClient } = require('@prisma/client');
+const fs = require('fs');
+const path = require('path');
 const prisma = new PrismaClient();
 
 const units = [
@@ -10,54 +12,37 @@ const units = [
   { name: "Practical Skills in Physics II", code: "WPH16/01", unit: "Unit 6" },
 ];
 
-const sessions = ["January", "June", "November"];
-const years = Array.from({ length: 10 }, (_, i) => 2015 + i);
-
-// Base Google Drive folder URL
-const BASE_DRIVE_URL = "https://drive.google.com/drive/folders/1d5lhDZWaWH1tsLz0v98fkgiSlrYKLgGz";
-
-function getSessionFolder(year, session) {
-  // Handle special cases for recent years
-  if (year >= 2024) {
-    if (session === "June") return "May June";
-    if (session === "November") return "Oct Nov";
+function parseFileContent(content, year, session) {
+  const papers = [];
+  const lines = content.split('\n').filter(line => line.trim());
+  
+  for (const line of lines) {
+    if (!line.includes('Question paper') && !line.includes('Mark scheme')) continue;
+    
+    const [title, url] = line.split(': ');
+    const isQuestionPaper = title.includes('Question paper');
+    const unitMatch = title.match(/Unit (\d+) \(WPH(\d+)\)/);
+    
+    if (!unitMatch) continue;
+    
+    const unitNumber = unitMatch[1];
+    const unitCode = `WPH${unitMatch[2]}/01`;
+    const unit = units.find(u => u.code === unitCode);
+    
+    if (!unit) continue;
+    
+    papers.push({
+      year,
+      session,
+      unitCode: unit.code,
+      unitName: unit.name,
+      unitNumber: unit.unit,
+      paperType: isQuestionPaper ? 'QP' : 'MS',
+      paperUrl: url.trim()
+    });
   }
   
-  // Handle early years (2009-2015)
-  if (year <= 2015) {
-    return session.toLowerCase();
-  }
-  
-  // Handle middle years (2016-2023)
-  if (year >= 2016 && year <= 2023) {
-    return session === "January" ? "Jan" :
-           session === "June" ? "June" : "Oct";
-  }
-  
-  // Default case
-  return session === "January" ? "Jan" :
-         session === "June" ? "June" : "Nov";
-}
-
-function generateDriveUrl(year, session, paperType, unitCode) {
-  // Get the correct session folder name
-  const sessionFolder = getSessionFolder(year, session);
-  
-  // Convert paper type to folder name format
-  const paperTypeFolder = paperType === 'QP' ? "Question-paper" : "Marking-scheme";
-  
-  // Convert unit code to match file naming pattern (WPH11/01 -> wph11-01)
-  const unitCodeFormatted = unitCode.toLowerCase().replace('/', '-');
-  
-  // Get month number for the date
-  const monthNumber = session === "January" ? "01" : 
-                     session === "June" ? "06" : "11";
-  
-  // Construct the filename
-  const fileName = `${unitCodeFormatted}-${paperType === 'QP' ? 'que' : 'ms'}-${year}${monthNumber}12.pdf`;
-  
-  // Construct the full path
-  return `${BASE_DRIVE_URL}/${year} ${sessionFolder}/${paperTypeFolder}/${fileName}`;
+  return papers;
 }
 
 async function main() {
@@ -72,40 +57,59 @@ async function main() {
     await prisma.pastPaper.deleteMany({});
     console.log('Cleared existing data');
 
-    // Create papers
-    for (const year of years) {
-      for (const session of sessions) {
-        for (const unit of units) {
-          // Create Question Paper
-          await prisma.pastPaper.create({
-            data: {
-              year,
-              session,
-              unitCode: unit.code,
-              unitName: unit.name,
-              unitNumber: unit.unit,
-              paperType: 'QP',
-              paperUrl: generateDriveUrl(year, session, 'QP', unit.code),
-            },
-          });
+    // Read all files from the Physics (2018) directory
+    const physicsDir = path.join(__dirname, 'Physics (2018)');
+    const files = fs.readdirSync(physicsDir);
 
-          // Create Marking Scheme
-          await prisma.pastPaper.create({
-            data: {
-              year,
-              session,
-              unitCode: unit.code,
-              unitName: unit.name,
-              unitNumber: unit.unit,
-              paperType: 'MS',
-              paperUrl: generateDriveUrl(year, session, 'MS', unit.code),
+    let totalProcessed = 0;
+    let totalSkipped = 0;
+
+    for (const file of files) {
+      if (!file.endsWith('.txt')) continue;
+
+      // Parse year and session from filename
+      const match = file.match(/([A-Za-z]+)-(\d{4})\.txt/);
+      if (!match) continue;
+
+      const [_, session, year] = match;
+      const filePath = path.join(physicsDir, file);
+      const content = fs.readFileSync(filePath, 'utf8');
+      
+      const papers = parseFileContent(content, parseInt(year), session);
+      
+      // Create papers in database
+      for (const paper of papers) {
+        try {
+          await prisma.pastPaper.upsert({
+            where: {
+              year_session_unitCode_paperType: {
+                year: paper.year,
+                session: paper.session,
+                unitCode: paper.unitCode,
+                paperType: paper.paperType
+              }
             },
+            update: {
+              paperUrl: paper.paperUrl
+            },
+            create: paper
           });
+          totalProcessed++;
+        } catch (error) {
+          if (error.code === 'P2002') {
+            totalSkipped++;
+            continue;
+          }
+          throw error;
         }
       }
+      
+      console.log(`Processed ${file}: ${papers.length} papers`);
     }
 
-    console.log('Successfully seeded the database');
+    console.log('\nSeeding Summary:');
+    console.log(`Total papers processed: ${totalProcessed}`);
+    console.log(`Total papers skipped: ${totalSkipped}`);
     
     // Verify the data
     const count = await prisma.pastPaper.count();
@@ -124,6 +128,7 @@ async function main() {
 
   } catch (error) {
     console.error('Error seeding database:', error);
+    process.exit(1);
   } finally {
     await prisma.$disconnect();
   }

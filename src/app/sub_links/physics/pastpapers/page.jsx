@@ -31,6 +31,7 @@ export default function PastPapersPage() {
   const [selectedUnits, setSelectedUnits] = useState([]);
   const [papers, setPapers] = useState({});
   const [loading, setLoading] = useState({});
+  const [error, setError] = useState({});
 
   const toggleUnit = (unit) => {
     setSelectedUnits((prev) =>
@@ -43,14 +44,26 @@ export default function PastPapersPage() {
     if (loading[key] || papers[key]) return;
 
     setLoading(prev => ({ ...prev, [key]: true }));
+    setError(prev => ({ ...prev, [key]: null }));
+    
     try {
+      console.log('Fetching papers for:', { year, session: session.value });
       const response = await fetch(`/api/past-papers?year=${year}&session=${session.value}`);
       const data = await response.json();
+      
+      console.log('API Response:', data);
+      
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to fetch papers');
+      }
+      
       if (data.papers) {
+        console.log('Setting papers for key:', key, data.papers);
         setPapers(prev => ({ ...prev, [key]: data.papers }));
       }
     } catch (error) {
       console.error('Error fetching papers:', error);
+      setError(prev => ({ ...prev, [key]: error.message }));
     } finally {
       setLoading(prev => ({ ...prev, [key]: false }));
     }
@@ -59,11 +72,14 @@ export default function PastPapersPage() {
   const getPaperUrl = (year, session, unit, type) => {
     const key = `${year}-${session.value}`;
     const sessionPapers = papers[key] || [];
-    return sessionPapers.find(
+    console.log('Getting paper URL for:', { key, unit: unit.code, type, availablePapers: sessionPapers });
+    const paper = sessionPapers.find(
       paper => 
         paper.unitCode === unit.code && 
         paper.paperType === type
-    )?.paperUrl || '#';
+    );
+    console.log('Found paper:', paper);
+    return paper?.paperUrl || null;
   };
 
   const filteredUnits =
@@ -138,43 +154,51 @@ export default function PastPapersPage() {
                       key={`${year}-${session.label}-${unit.unit}`}
                       className="contents"
                     >
-                      <button
-                        onClick={() => fetchPapers(year, session)}
-                        className="text-blue-600 font-medium hover:underline text-left max-w-[250px]"
-                        style={{ fontFamily: "Poppins, sans-serif" }}
-                      >
+                      <div className="text-left max-w-[250px]">
                         {loading[`${year}-${session.value}`] ? (
-                          "Loading..."
+                          <span className="text-gray-500">Loading...</span>
+                        ) : error[`${year}-${session.value}`] ? (
+                          <span className="text-red-500">{error[`${year}-${session.value}`]}</span>
                         ) : (
                           <a
-                            href={getPaperUrl(year, session, unit, 'QP')}
+                            href={getPaperUrl(year, session, unit, 'QP') || '#'}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-blue-600 font-medium hover:underline"
+                            onClick={(e) => {
+                              if (!papers[`${year}-${session.value}`]) {
+                                e.preventDefault();
+                                fetchPapers(year, session);
+                              }
+                            }}
                           >
                             {`${session.label} ${year} ${unit.unit}: ${unit.name} ${unit.code} (QP)`}
                           </a>
                         )}
-                      </button>
+                      </div>
 
-                      <button
-                        onClick={() => fetchPapers(year, session)}
-                        className="text-blue-600 font-medium hover:underline text-left max-w-[250px]"
-                        style={{ fontFamily: "Poppins, sans-serif" }}
-                      >
+                      <div className="text-left max-w-[250px]">
                         {loading[`${year}-${session.value}`] ? (
-                          "Loading..."
+                          <span className="text-gray-500">Loading...</span>
+                        ) : error[`${year}-${session.value}`] ? (
+                          <span className="text-red-500">{error[`${year}-${session.value}`]}</span>
                         ) : (
                           <a
-                            href={getPaperUrl(year, session, unit, 'MS')}
+                            href={getPaperUrl(year, session, unit, 'MS') || '#'}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-blue-600 font-medium hover:underline"
+                            onClick={(e) => {
+                              if (!papers[`${year}-${session.value}`]) {
+                                e.preventDefault();
+                                fetchPapers(year, session);
+                              }
+                            }}
                           >
                             {`${session.label} ${year} ${unit.unit}: ${unit.name} ${unit.code} (MS)`}
                           </a>
                         )}
-                      </button>
+                      </div>
                     </div>
                   ))}
                 </div>
