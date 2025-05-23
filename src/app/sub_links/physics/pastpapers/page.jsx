@@ -1,12 +1,11 @@
 "use client";
 
-import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const sessions = [
   { label: "January", value: "January" },
-  { label: "May/June", value: "May%2FJune" },
-  { label: "Oct/Nov", value: "October%2FNovember" },
+  { label: "May/June", value: "June" },
+  { label: "Oct/Nov", value: "November" },
 ];
 
 const years = Array.from({ length: 10 }, (_, i) => 2015 + i);
@@ -28,19 +27,59 @@ const units = [
   { name: "Practical Skills in Physics II", code: "WPH16/01", unit: "Unit 6" },
 ];
 
-const generatePearsonLink = (subject, session, year) => {
-  const subjectFormatted = subject.replace(" ", "%20");
-  return `https://qualifications.pearson.com/en/support/support-topics/exams/past-papers.html?Qualification-Family=International-Advanced-Level&Qualification-Subject=${subjectFormatted}&Status=Pearson-UK:Status%2FLive&Specification-Code=Pearson-UK:Specification-Code%2Fial18-${subject.toLowerCase()}&Exam-Series=${session}-${year}`;
-};
-
 export default function PastPapersPage() {
-  const subject = "Physics";
   const [selectedUnits, setSelectedUnits] = useState([]);
+  const [papers, setPapers] = useState({});
+  const [loading, setLoading] = useState({});
+  const [error, setError] = useState({});
 
   const toggleUnit = (unit) => {
     setSelectedUnits((prev) =>
       prev.includes(unit) ? prev.filter((u) => u !== unit) : [...prev, unit]
     );
+  };
+
+  const fetchPapers = async (year, session) => {
+    const key = `${year}-${session.value}`;
+    if (loading[key] || papers[key]) return;
+
+    setLoading(prev => ({ ...prev, [key]: true }));
+    setError(prev => ({ ...prev, [key]: null }));
+    
+    try {
+      console.log('Fetching papers for:', { year, session: session.value });
+      const response = await fetch(`/api/past-papers?year=${year}&session=${session.value}`);
+      const data = await response.json();
+      
+      console.log('API Response:', data);
+      
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to fetch papers');
+      }
+      
+      if (data.papers) {
+        console.log('Setting papers for key:', key, data.papers);
+        setPapers(prev => ({ ...prev, [key]: data.papers }));
+      }
+    } catch (error) {
+      console.error('Error fetching papers:', error);
+      setError(prev => ({ ...prev, [key]: error.message }));
+    } finally {
+      setLoading(prev => ({ ...prev, [key]: false }));
+    }
+  };
+
+  const getPaperUrl = (year, session, unit, type) => {
+    const key = `${year}-${session.value}`;
+    const sessionPapers = papers[key] || [];
+    console.log('Getting paper URL for:', { key, unit: unit.code, type, availablePapers: sessionPapers });
+    const paper = sessionPapers.find(
+      paper => 
+        paper.unitCode === unit.code && 
+        paper.paperType === type
+    );
+    console.log('Found paper:', paper);
+    return paper?.paperUrl || null;
   };
 
   const filteredUnits =
@@ -115,23 +154,51 @@ export default function PastPapersPage() {
                       key={`${year}-${session.label}-${unit.unit}`}
                       className="contents"
                     >
-                      <Link
-                        href={generatePearsonLink(subject, session.value, year)}
-                        className="text-blue-600 font-medium hover:underline text-left max-w-[250px]"
-                        target="_blank"
-                        style={{ fontFamily: "Poppins, sans-serif" }}
-                      >
-                        {`${session.label} ${year} ${unit.unit}: ${unit.name} ${unit.code} (QP)`}
-                      </Link>
+                      <div className="text-left max-w-[250px]">
+                        {loading[`${year}-${session.value}`] ? (
+                          <span className="text-gray-500">Loading...</span>
+                        ) : error[`${year}-${session.value}`] ? (
+                          <span className="text-red-500">{error[`${year}-${session.value}`]}</span>
+                        ) : (
+                          <a
+                            href={getPaperUrl(year, session, unit, 'QP') || '#'}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 font-medium hover:underline"
+                            onClick={(e) => {
+                              if (!papers[`${year}-${session.value}`]) {
+                                e.preventDefault();
+                                fetchPapers(year, session);
+                              }
+                            }}
+                          >
+                            {`${session.label} ${year} ${unit.unit}: ${unit.name} ${unit.code} (QP)`}
+                          </a>
+                        )}
+                      </div>
 
-                      <Link
-                        href={generatePearsonLink(subject, session.value, year)}
-                        className="text-blue-600 font-medium hover:underline text-left max-w-[250px]"
-                        target="_blank"
-                        style={{ fontFamily: "Poppins, sans-serif" }}
-                      >
-                        {`${session.label} ${year} ${unit.unit}: ${unit.name} ${unit.code} (MS)`}
-                      </Link>
+                      <div className="text-left max-w-[250px]">
+                        {loading[`${year}-${session.value}`] ? (
+                          <span className="text-gray-500">Loading...</span>
+                        ) : error[`${year}-${session.value}`] ? (
+                          <span className="text-red-500">{error[`${year}-${session.value}`]}</span>
+                        ) : (
+                          <a
+                            href={getPaperUrl(year, session, unit, 'MS') || '#'}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 font-medium hover:underline"
+                            onClick={(e) => {
+                              if (!papers[`${year}-${session.value}`]) {
+                                e.preventDefault();
+                                fetchPapers(year, session);
+                              }
+                            }}
+                          >
+                            {`${session.label} ${year} ${unit.unit}: ${unit.name} ${unit.code} (MS)`}
+                          </a>
+                        )}
+                      </div>
                     </div>
                   ))}
                 </div>
