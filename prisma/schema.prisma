@@ -1,0 +1,25 @@
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model PastPaper {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  year        Int
+  session     String   // "January", "June", "November"
+  unitCode    String   // e.g., "WPH11/01"
+  unitName    String   // e.g., "Mechanics and Materials"
+  unitNumber  String   // e.g., "Unit 1"
+  paperType   String   // "QP" or "MS"
+  paperUrl    String   // URL to the PDF
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([year, session, unitCode, paperType])
+  @@index([year, session])
+  @@index([unitCode])
+} 
