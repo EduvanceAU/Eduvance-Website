@@ -1,41 +1,75 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { supabase } from "../lib/supabaseClient";
 
 const sessions = [
   { label: "January", value: "January" },
-  { label: "May/June", value: "May%2FJune" },
-  { label: "Oct/Nov", value: "October%2FNovember" },
+  { label: "May/June", value: "June" },
+  { label: "Oct/Nov", value: "October" }, 
 ];
 
-const years = Array.from({ length: 10 }, (_, i) => 2015 + i);
+const currentYear = new Date().getFullYear();
+const years = Array.from({ length: currentYear + 1 - 2015 + 1 }, (_, i) => 2015 + i);
 
 const units = [
-  { name: "Mechanics and Materials", code: "WPH11/01", unit: "Unit 1" },
-  { name: "Waves and Electricity", code: "WPH12/01", unit: "Unit 2" },
-  { name: "Practical Skills in Physics I", code: "WPH13/01", unit: "Unit 3" },
-  {
-    name: "Further Mechanics, Fields and Particles",
-    code: "WPH14/01",
-    unit: "Unit 4",
-  },
-  {
-    name: "Thermodynamics, Radiation, Oscillations and Cosmology",
-    code: "WPH15/01",
-    unit: "Unit 5",
-  },
-  { name: "Practical Skills in Physics II", code: "WPH16/01", unit: "Unit 6" },
+  { name: "Mechanics and Materials", code: "WPH11", unit: "Unit 1" },
+  { name: "Waves and Electricity", code: "WPH12", unit: "Unit 2" },
+  { name: "Practical Skills in Physics I", code: "WPH13", unit: "Unit 3" },
+  { name: "Further Mechanics, Fields and Particles", code: "WPH14", unit: "Unit 4" },
+  { name: "Thermodynamics, Radiation, Oscillations and Cosmology", code: "WPH15", unit: "Unit 5" },
+  { name: "Practical Skills in Physics II", code: "WPH16", unit: "Unit 6" },
 ];
 
-const generatePearsonLink = (subject, session, year) => {
-  const subjectFormatted = subject.replace(" ", "%20");
-  return `https://qualifications.pearson.com/en/support/support-topics/exams/past-papers.html?Qualification-Family=International-Advanced-Level&Qualification-Subject=${subjectFormatted}&Status=Pearson-UK:Status%2FLive&Specification-Code=Pearson-UK:Specification-Code%2Fial18-${subject.toLowerCase()}&Exam-Series=${session}-${year}`;
-};
-
 export default function PastPapersPage() {
-  const subject = "Physics";
+  const subjectName = "Physics";
   const [selectedUnits, setSelectedUnits] = useState([]);
+  const [papers, setPapers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    async function fetchPapers() {
+      setLoading(true);
+      const { data: subjectData, error: subjectError } = await supabase
+        .from('subjects')
+        .select('id')
+        .eq('name', subjectName)
+        .single();
+
+      if (subjectError || !subjectData) {
+        setError(subjectError || new Error(`Subject "${subjectName}" not found.`));
+        setLoading(false);
+        return;
+      }
+
+      const subjectId = subjectData.id;
+
+      const { data, error } = await supabase
+        .from('papers')
+        .select(`
+          id,
+          unit_code,
+          question_paper_link,
+          mark_scheme_link,
+          examiner_report_link,
+          exam_sessions ( session, year )
+        `)
+        .eq('subject_id', subjectId)
+        .order('unit_code', { ascending: true });
+
+      if (error) {
+        setError(error);
+        console.error('Error fetching papers:', error.message);
+      } else {
+        setPapers(data);
+      }
+      setLoading(false);
+    }
+
+    fetchPapers();
+  }, [subjectName]); // Re-fetch if subjectName changes (though it's constant here)
 
   const toggleUnit = (unit) => {
     setSelectedUnits((prev) =>
@@ -43,10 +77,36 @@ export default function PastPapersPage() {
     );
   };
 
-  const filteredUnits =
-    selectedUnits.length === 0
-      ? units
-      : units.filter((unit) => selectedUnits.includes(unit.unit));
+  if (loading) {
+    return (
+      <main className="min-h-screen bg-white flex items-center justify-center">
+        <p className="text-xl text-[#153064]">Loading past papers...</p>
+      </main>
+    );
+  }
+
+  if (error) {
+    return (
+      <main className="min-h-screen bg-white flex items-center justify-center">
+        <p className="text-xl text-red-600">Error loading past papers: {error.message}</p>
+      </main>
+    );
+  }
+
+  // Group papers by year and session for easier rendering
+  const groupedPapers = papers.reduce((acc, paper) => {
+    const year = paper.exam_sessions?.year;
+    const session = paper.exam_sessions?.session;
+    const unitCode = paper.unit_code; // WPH11, WPH12, etc.
+
+    if (!year || !session) return acc; // Skip if session/year info is missing
+
+    if (!acc[year]) acc[year] = {};
+    if (!acc[year][session]) acc[year][session] = {};
+    acc[year][session][unitCode] = paper;
+    return acc;
+  }, {});
+
 
   return (
     <main className="min-h-screen bg-white flex flex-col items-start justify-start py-10 px-4 sm:px-6 md:px-12 lg:px-20">
@@ -110,30 +170,47 @@ export default function PastPapersPage() {
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 sm:gap-x-10 gap-y-2">
-                  {filteredUnits.map((unit) => (
-                    <div
-                      key={`${year}-${session.label}-${unit.unit}`}
-                      className="contents"
-                    >
-                      <Link
-                        href={generatePearsonLink(subject, session.value, year)}
-                        className="text-blue-600 font-medium hover:underline text-left max-w-[250px]"
-                        target="_blank"
-                        style={{ fontFamily: "Poppins, sans-serif" }}
-                      >
-                        {`${session.label} ${year} ${unit.unit}: ${unit.name} ${unit.code} (QP)`}
-                      </Link>
+                  {/* Iterate over the units that are *actually* found for this year and session */}
+                  {units
+                    .filter(unit => selectedUnits.length === 0 || selectedUnits.includes(unit.unit))
+                    .map((unit) => {
+                      const paperData = groupedPapers?.[year]?.[session.value]?.[unit.code];
 
-                      <Link
-                        href={generatePearsonLink(subject, session.value, year)}
-                        className="text-blue-600 font-medium hover:underline text-left max-w-[250px]"
-                        target="_blank"
-                        style={{ fontFamily: "Poppins, sans-serif" }}
-                      >
-                        {`${session.label} ${year} ${unit.unit}: ${unit.name} ${unit.code} (MS)`}
-                      </Link>
-                    </div>
-                  ))}
+                      // Only render if paper data exists and matches filter
+                      if (paperData) {
+                        return (
+                          <div
+                            key={`${year}-${session.label}-${unit.unit}`}
+                            className="contents"
+                          >
+                            <Link
+                              href={paperData.question_paper_link || "#"}
+                              className={`text-blue-600 font-medium hover:underline text-left max-w-[250px]
+                                ${!paperData.question_paper_link ? 'text-gray-500 cursor-not-allowed opacity-75' : ''}`}
+                              target="_blank"
+                              style={{ fontFamily: "Poppins, sans-serif" }}
+                              aria-disabled={!paperData.question_paper_link}
+                              onClick={(e) => !paperData.question_paper_link && e.preventDefault()}
+                            >
+                              {`${session.label} ${year} ${unit.unit}: ${unit.name} (QP)`}
+                            </Link>
+
+                            <Link
+                              href={paperData.mark_scheme_link || "#"}
+                              className={`text-blue-600 font-medium hover:underline text-left max-w-[250px]
+                                ${!paperData.mark_scheme_link ? 'text-gray-500 cursor-not-allowed opacity-75' : ''}`}
+                              target="_blank"
+                              style={{ fontFamily: "Poppins, sans-serif" }}
+                              aria-disabled={!paperData.mark_scheme_link}
+                              onClick={(e) => !paperData.mark_scheme_link && e.preventDefault()}
+                            >
+                              {`${session.label} ${year} ${unit.unit}: ${unit.name} (MS)`}
+                            </Link>
+                          </div>
+                        );
+                      }
+                      return null; // Don't render if no data for this specific paper
+                    })}
                 </div>
               </div>
             ))}
