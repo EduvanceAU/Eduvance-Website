@@ -15,12 +15,11 @@ const DISPLAY_END_YEAR = 2024;
 const years = Array.from({ length: DISPLAY_END_YEAR - DISPLAY_START_YEAR + 1 }, (_, i) => DISPLAY_START_YEAR + i);
 
 const units = [
-  { name: "Mechanics and Materials", code: "WPH11", unit: "Unit 1" },
-  { name: "Waves and Electricity", code: "WPH12", unit: "Unit 2" },
-  { name: "Practical Skills in Physics I", code: "WPH13", unit: "Unit 3" },
-  { name: "Further Mechanics, Fields and Particles", code: "WPH14", unit: "Unit 4" },
-  { name: "Thermodynamics, Radiation, Oscillations and Cosmology", code: "WPH15", unit: "Unit 5" },
-  { name: "Practical Skills in Physics II", code: "WPH16", unit: "Unit 6" },
+  { name: "Organic Chemistry", code: "WCH11", unit: "Unit 1" },
+  { name: "Inorganic Chemistry", code: "WCH12", unit: "Unit 2" },
+  { name: "Physical Chemistry", code: "WCH13", unit: "Unit 3" },
+  { name: "Practical Skills in Chemistry I", code: "WCH14", unit: "Unit 4" },
+  { name: "Practical Skills in Chemistry II", code: "WCH15", unit: "Unit 5" },
 ];
 
 // Define a simple color palette for the dropdown items
@@ -41,7 +40,7 @@ const getColorClass = (index) => {
 };
 
 export default function PastPapersPage() {
-  const subjectName = "Physics";
+  const subjectName = "Chemistry";
   const [selectedUnits, setSelectedUnits] = useState([]);
   const [papers, setPapers] = useState([]);
   const [selectedYears, setSelectedYears] = useState([]);
@@ -173,7 +172,7 @@ export default function PastPapersPage() {
         className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#153064] mb-8 w-full max-w-6xl text-left tracking-[-0.035em]"
         style={{ fontFamily: "Poppins, sans-serif" }}
       >
-        IAL Physics Past Papers
+        IAL Chemistry Past Papers
       </h1>
 
       <div className="w-full max-w-6xl mb-8">
