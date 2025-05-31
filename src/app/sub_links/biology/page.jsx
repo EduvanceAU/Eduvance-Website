@@ -9,7 +9,7 @@ export default function Biology() {
 
   return (
     <main className="flex w-full h-screen">
-      <img src="/Bio_Banner.png" alt="Chemistry" className="w-full h-[210px]"/>
+      <img src="/Bio_Banner.png" alt="Biology" className="w-full h-[210px]"/>
 
       <div className="absolute top-[300px] left-[100px] flex flex-col items-center gap-8">
         <h3 className="font-semibold text-2xl text-[#153064] tracking-[-1px] absolute top-[-50px] left-[1px]" style={{ fontFamily: 'Poppins, sans-serif' }}>
@@ -52,7 +52,7 @@ export default function Biology() {
                   Exam Questions
                 </Link>
           
-                <Link href="/page3" className="w-95 h-40 bg-[#F2F6FF] rounded-xl border-[1.5px] border-[#153064] flex items-end justify-start pl-4 pb-4 text-[#153064] hover:bg-[#BAD1FD] transition-all duration-300 cursor-pointer">
+                <Link href="/sub_links/biology/pastpapers" className="w-95 h-40 bg-[#F2F6FF] rounded-xl border-[1.5px] border-[#153064] flex items-end justify-start pl-4 pb-4 text-[#153064] hover:bg-[#BAD1FD] transition-all duration-300 cursor-pointer">
                   Past Papers
                 </Link>
               </div>
