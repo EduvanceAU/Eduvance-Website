@@ -194,7 +194,7 @@ async function seedDatabase() {
 
     // Insert Subjects
     console.log('\n⏳ Inserting subjects...');
-    const { error: subjectsError } = await supabase.from('subjects').insert(Array.from(subjectsMap.values()), { onConflict: 'name' });
+    const { error: subjectsError } = await supabase.from('subjects').upsert(Array.from(subjectsMap.values()), { onConflict: 'name' });
     if (subjectsError) {
         if (subjectsError.code === '23505') { // 23505 is unique violation error code
             console.warn('  Subjects already exist, skipping insertion (onConflict handled).');
@@ -208,7 +208,7 @@ async function seedDatabase() {
 
     // Insert Exam Sessions
     console.log('\n⏳ Inserting exam sessions...');
-    const { error: examsError } = await supabase.from('exam_sessions').insert(Array.from(examSessionsMap.values()), { onConflict: 'session,year' });
+    const { error: examsError } = await supabase.from('exam_sessions').upsert(Array.from(examSessionsMap.values()), { onConflict: 'session,year' });
     if (examsError) {
         if (examsError.code === '23505') {
             console.warn('  Exam sessions already exist, skipping insertion (onConflict handled).');
@@ -229,7 +229,7 @@ async function seedDatabase() {
         for (let i = 0; i < papersArray.length; i += BATCH_SIZE) {
           const batch = papersArray.slice(i, i + BATCH_SIZE);
           console.log(`  Inserting batch ${Math.floor(i / BATCH_SIZE) + 1}/${Math.ceil(papersArray.length / BATCH_SIZE)} (${batch.length} records)...`);
-          const { error: papersError } = await supabase.from('papers').insert(batch, { onConflict: 'subject_id,exam_session_id,unit_code' });
+          const { error: papersError } = await supabase.from('papers').upsert(batch, { onConflict: 'subject_id,exam_session_id,unit_code' });
           if (papersError) {
               if (papersError.code === '23505') {
                   console.warn(`    ⚠️ Batch ${Math.floor(i / BATCH_SIZE) + 1} contains existing papers, skipping conflicts.`);

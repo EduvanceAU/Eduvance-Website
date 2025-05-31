@@ -52,7 +52,7 @@ export default function Chemistry() {
                   Exam Questions
                 </Link>
           
-                <Link href="/sub_links/chemistry/pastpapers" className="w-95 h-40 bg-[#F2F6FF] rounded-xl border-[1.5px] border-[#153064] flex items-end justify-start pl-4 pb-4 text-[#153064] hover:bg-[#BAD1FD] transition-all duration-300 cursor-pointer">
+                <Link href="/page3" className="w-95 h-40 bg-[#F2F6FF] rounded-xl border-[1.5px] border-[#153064] flex items-end justify-start pl-4 pb-4 text-[#153064] hover:bg-[#BAD1FD] transition-all duration-300 cursor-pointer">
                   Past Papers
                 </Link>
               </div>
