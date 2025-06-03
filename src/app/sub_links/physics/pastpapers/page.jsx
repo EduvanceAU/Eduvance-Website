@@ -23,6 +23,27 @@ const units = [
   { name: "Practical Skills in Physics II", code: "WPH16", unit: "Unit 6" },
 ];
 
+const subjects = [
+  { name: "Physics", link: "/sub_links/physics/pastpapers" },
+  { name: "Chemistry", link: "/sub_links/chemistry/pastpapers" },
+  { name: "Biology", link: "/sub_links/biology/pastpapers" },
+  { name: "Maths", link: "/sub_links/maths/pastpapers" },
+];
+
+const SubjectButtons = () => {
+  return (
+    <div className="flex flex-wrap gap-2 mb-6">
+      {subjects.map((subject, index) => (
+        <Link key={index} href={subject.link}>
+          <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition">
+            {subject.name}
+          </button>
+        </Link>
+      ))}
+    </div>
+  );
+};
+
 // Define a simple color palette for the dropdown items
 const colorPalette = [
   "bg-blue-100 text-blue-700",
@@ -278,9 +299,10 @@ export default function PastPapersPage() {
       </h1>
 
       <div className="w-full max-w-6xl mb-8">
-        <h2 className="text-xl font-semibold text-[#153064] mb-4">
-          Filters
+        <h2 className="text-xl font-semibold tracking-tight text-[#153064] mb-4">
+          Filters & Subjects
         </h2>
+        <SubjectButtons />
         <div className="flex flex-wrap gap-2">
 
           {/* Years Filter Button & Dropdown */}
