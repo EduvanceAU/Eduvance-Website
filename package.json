@@ -9,13 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
-<<<<<<< HEAD
     "@supabase/supabase-js": "^2.49.8",
     "dotenv": "^16.5.0",
-=======
-    "@prisma/client": "^6.8.2",
-    "mongodb": "^6.16.0",
->>>>>>> main
     "next": "15.3.1",
     "prisma": "^6.8.2",
     "puppeteer": "^24.9.0",
