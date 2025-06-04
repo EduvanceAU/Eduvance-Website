@@ -1,21 +1,13 @@
 "use client";
 
-<<<<<<< HEAD
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
 import { supabase } from "../lib/supabaseClient";
-=======
-import { useState, useEffect } from "react";
->>>>>>> main
 
 const sessions = [
   { label: "January", value: "January" },
   { label: "May/June", value: "June" },
-<<<<<<< HEAD
   { label: "Oct/Nov", value: "October" }, 
-=======
-  { label: "Oct/Nov", value: "November" },
->>>>>>> main
 ];
 
 const DISPLAY_START_YEAR = 2020;
@@ -23,35 +15,13 @@ const DISPLAY_END_YEAR = 2024;
 const years = Array.from({ length: DISPLAY_END_YEAR - DISPLAY_START_YEAR + 1 }, (_, i) => DISPLAY_START_YEAR + i);
 
 const units = [
-  { name: "Mechanics and Materials", code: "WPH11", unit: "Unit 1" },
-  { name: "Waves and Electricity", code: "WPH12", unit: "Unit 2" },
-  { name: "Practical Skills in Physics I", code: "WPH13", unit: "Unit 3" },
-  { name: "Further Mechanics, Fields and Particles", code: "WPH14", unit: "Unit 4" },
-  { name: "Thermodynamics, Radiation, Oscillations and Cosmology", code: "WPH15", unit: "Unit 5" },
-  { name: "Practical Skills in Physics II", code: "WPH16", unit: "Unit 6" },
+  { name: "Molecules, Diet, Transport & Health", code: "WBI11", unit: "Unit 1" },
+  { name: "Cells, Development, Biodiversity & Conservation", code: "WBI12", unit: "Unit 2" },
+  { name: "Practical Skills in Biology I", code: "WBI13", unit: "Unit 3" },
+  { name: "Genetics, Evolution & Ecology", code: "WBI14", unit: "Unit 4" },
+  { name: "Respiration, Internal Environment, Coordination & Gene Technology", code: "WBI15", unit: "Unit 5" },
+  { name: "Practical Biology & Investigation Skills", code: "WBI16", unit: "Unit 6" },
 ];
-
-<<<<<<< HEAD
-const subjects = [
-  { name: "Physics", link: "/sub_links/physics/pastpapers" },
-  { name: "Chemistry", link: "/sub_links/chemistry/pastpapers" },
-  { name: "Biology", link: "/sub_links/biology/pastpapers" },
-  { name: "Maths", link: "/sub_links/maths/pastpapers" },
-];
-
-const SubjectButtons = () => {
-  return (
-    <div className="flex flex-wrap gap-2 mb-6">
-      {subjects.map((subject, index) => (
-        <Link key={index} href={subject.link}>
-          <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition">
-            {subject.name}
-          </button>
-        </Link>
-      ))}
-    </div>
-  );
-};
 
 // Define a simple color palette for the dropdown items
 const colorPalette = [
@@ -81,7 +51,7 @@ const specs = [
 ];
 
 export default function PastPapersPage() {
-  const subjectName = "Physics";
+  const subjectName = "Biology";
   const [selectedUnits, setSelectedUnits] = useState([]);
   const [papers, setPapers] = useState([]);
   const [selectedYears, setSelectedYears] = useState([]);
@@ -145,13 +115,6 @@ export default function PastPapersPage() {
   const toggleSpec = (specValue) => {
     setSelectedSpec(prev => (prev === specValue ? null : specValue)); // Toggle selection
   };
-=======
-export default function PastPapersPage() {
-  const [selectedUnits, setSelectedUnits] = useState([]);
-  const [papers, setPapers] = useState({});
-  const [loading, setLoading] = useState({});
-  const [error, setError] = useState({});
->>>>>>> main
 
   const toggleUnit = (unit) => {
     setSelectedUnits((prev) =>
@@ -159,7 +122,6 @@ export default function PastPapersPage() {
     );
   };
 
-<<<<<<< HEAD
   const toggleYear = (year) => {
     setSelectedYears((prev) =>
       prev.includes(year) ? prev.filter((y) => y !== year) : [...prev, year]
@@ -305,55 +267,6 @@ export default function PastPapersPage() {
     return acc;
   }, {});
 
-=======
-  const fetchPapers = async (year, session) => {
-    const key = `${year}-${session.value}`;
-    if (loading[key] || papers[key]) return;
-
-    setLoading(prev => ({ ...prev, [key]: true }));
-    setError(prev => ({ ...prev, [key]: null }));
-    
-    try {
-      console.log('Fetching papers for:', { year, session: session.value });
-      const response = await fetch(`/api/past-papers?year=${year}&session=${session.value}`);
-      const data = await response.json();
-      
-      console.log('API Response:', data);
-      
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to fetch papers');
-      }
-      
-      if (data.papers) {
-        console.log('Setting papers for key:', key, data.papers);
-        setPapers(prev => ({ ...prev, [key]: data.papers }));
-      }
-    } catch (error) {
-      console.error('Error fetching papers:', error);
-      setError(prev => ({ ...prev, [key]: error.message }));
-    } finally {
-      setLoading(prev => ({ ...prev, [key]: false }));
-    }
-  };
-
-  const getPaperUrl = (year, session, unit, type) => {
-    const key = `${year}-${session.value}`;
-    const sessionPapers = papers[key] || [];
-    console.log('Getting paper URL for:', { key, unit: unit.code, type, availablePapers: sessionPapers });
-    const paper = sessionPapers.find(
-      paper => 
-        paper.unitCode === unit.code && 
-        paper.paperType === type
-    );
-    console.log('Found paper:', paper);
-    return paper?.paperUrl || null;
-  };
-
-  const filteredUnits =
-    selectedUnits.length === 0
-      ? units
-      : units.filter((unit) => selectedUnits.includes(unit.unit));
->>>>>>> main
 
   return (
     <main className="min-h-screen bg-white flex flex-col items-start justify-start py-10 px-4 sm:px-6 md:px-12 lg:px-20">
@@ -361,14 +274,13 @@ export default function PastPapersPage() {
         className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#153064] mb-8 w-full max-w-6xl text-left tracking-[-0.035em]"
         style={{ fontFamily: "Poppins, sans-serif" }}
       >
-        IAL Physics Past Papers
+        IAL Biology Past Papers
       </h1>
 
       <div className="w-full max-w-6xl mb-8">
-        <h2 className="text-xl font-semibold tracking-tight text-[#153064] mb-4">
-          Filters & Subjects
+        <h2 className="text-xl font-semibold text-[#153064] mb-4">
+          Filters
         </h2>
-        <SubjectButtons />
         <div className="flex flex-wrap gap-2">
 
           {/* Years Filter Button & Dropdown */}
@@ -520,7 +432,6 @@ export default function PastPapersPage() {
                       className="text-lg tracking-tighter font-medium text-[#153064] mb-2 text-left"
                       style={{ fontFamily: "Poppins, sans-serif" }}
                     >
-<<<<<<< HEAD
                       {session.label} Session
                     </h3>
 
@@ -532,53 +443,6 @@ export default function PastPapersPage() {
                       <span className="font-semibold text-sm text-left">
                         Marking Scheme
                       </span>
-=======
-                      <div className="text-left max-w-[250px]">
-                        {loading[`${year}-${session.value}`] ? (
-                          <span className="text-gray-500">Loading...</span>
-                        ) : error[`${year}-${session.value}`] ? (
-                          <span className="text-red-500">{error[`${year}-${session.value}`]}</span>
-                        ) : (
-                          <a
-                            href={getPaperUrl(year, session, unit, 'QP') || '#'}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-blue-600 font-medium hover:underline"
-                            onClick={(e) => {
-                              if (!papers[`${year}-${session.value}`]) {
-                                e.preventDefault();
-                                fetchPapers(year, session);
-                              }
-                            }}
-                          >
-                            {`${session.label} ${year} ${unit.unit}: ${unit.name} ${unit.code} (QP)`}
-                          </a>
-                        )}
-                      </div>
-
-                      <div className="text-left max-w-[250px]">
-                        {loading[`${year}-${session.value}`] ? (
-                          <span className="text-gray-500">Loading...</span>
-                        ) : error[`${year}-${session.value}`] ? (
-                          <span className="text-red-500">{error[`${year}-${session.value}`]}</span>
-                        ) : (
-                          <a
-                            href={getPaperUrl(year, session, unit, 'MS') || '#'}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-blue-600 font-medium hover:underline"
-                            onClick={(e) => {
-                              if (!papers[`${year}-${session.value}`]) {
-                                e.preventDefault();
-                                fetchPapers(year, session);
-                              }
-                            }}
-                          >
-                            {`${session.label} ${year} ${unit.unit}: ${unit.name} ${unit.code} (MS)`}
-                          </a>
-                        )}
-                      </div>
->>>>>>> main
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 sm:gap-x-10 gap-y-2">
