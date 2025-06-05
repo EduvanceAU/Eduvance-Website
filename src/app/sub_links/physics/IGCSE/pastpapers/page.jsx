@@ -6,22 +6,24 @@ import { supabase } from "../lib/supabaseClient";
 
 const sessions = [
   { label: "January", value: "January" },
-  { label: "May/June", value: "June" },
-  { label: "Oct/Nov", value: "October" }, 
+  { label: "May/June", value: "May/June" },
+  { label: "Oct/Nov", value: "Oct/Nov" },
 ];
+
+const examCode = '4PH1' // Updated for IGCSE Physics
 
 const DISPLAY_START_YEAR = 2020;
 const DISPLAY_END_YEAR = 2024;
 const years = Array.from({ length: DISPLAY_END_YEAR - DISPLAY_START_YEAR + 1 }, (_, i) => DISPLAY_START_YEAR + i);
 
+
 const units = [
-  { name: "Mechanics and Materials", code: "WPH11", unit: "Unit 1" },
-  { name: "Waves and Electricity", code: "WPH12", unit: "Unit 2" },
-  { name: "Practical Skills in Physics I", code: "WPH13", unit: "Unit 3" },
-  { name: "Further Mechanics, Fields and Particles", code: "WPH14", unit: "Unit 4" },
-  { name: "Thermodynamics, Radiation, Oscillations and Cosmology", code: "WPH15", unit: "Unit 5" },
-  { name: "Practical Skills in Physics II", code: "WPH16", unit: "Unit 6" },
+  { name: "Paper 1P (Physics)", code: "1P", unit: "1P" }, // `code` and `unit` now directly match "1P"
+  { name: "Paper 1PR (Physics - Practicals)", code: "1PR", unit: "1PR" },
+  { name: "Paper 2P (Physics)", code: "2P", unit: "2P" },
+  { name: "Paper 2PR (Physics - Practicals)", code: "2PR", unit: "2PR" }, // Assuming "Paper PR" in JSON refers to "2PR"
 ];
+
 
 const subjects = [
   { name: "Physics", link: "/sub_links/physics/pastpapers" },
@@ -35,7 +37,7 @@ const SubjectButtons = () => {
     <div className="flex flex-wrap gap-2 mb-6">
       {subjects.map((subject, index) => (
         <Link key={index} href={subject.link}>
-          <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition">
+          <button className="px-4 py-2 cursor-pointer bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition">
             {subject.name}
           </button>
         </Link>
@@ -71,8 +73,10 @@ const specs = [
   { label: 'Old Spec', value: 'old' },
 ];
 
-export default function PastPapersPage() {
+export default function IGCSEPastPapersPage() {
   const subjectName = "Physics";
+  const syllabusType = "IGCSE"; // This page is specifically for IGCSE papers
+
   const [selectedUnits, setSelectedUnits] = useState([]);
   const [papers, setPapers] = useState([]);
   const [selectedYears, setSelectedYears] = useState([]);
@@ -159,10 +163,11 @@ export default function PastPapersPage() {
         .from('subjects')
         .select('id')
         .eq('name', subjectName)
+        .eq('syllabus_type', syllabusType)
         .single();
 
       if (subjectError || !subjectData) {
-        setError(subjectError || new Error(`Subject "${subjectName}" not found.`));
+        setError(subjectError || new Error(`Subject "${subjectName}" for syllabus type "${syllabusType}" not found.`));
         setLoading(false);
         return;
       }
@@ -183,7 +188,7 @@ export default function PastPapersPage() {
 
       // --- Filter by selected Units (moved from client-side render filtering) ---
       if (selectedUnits.length > 0) {
-        // Convert unit names (e.g., "Unit 1") to their codes (e.g., "WPH11") for the query
+        // Convert unit labels (e.g., "1P") to their codes (e.g., "1P") for the query
         const selectedUnitCodes = selectedUnits.map(unitLabel => units.find(u => u.unit === unitLabel)?.code).filter(Boolean);
         if (selectedUnitCodes.length > 0) {
           query = query.in('unit_code', selectedUnitCodes);
@@ -254,7 +259,7 @@ export default function PastPapersPage() {
     }
 
     fetchPapers();
-  }, [subjectName, selectedUnits, selectedYears, selectedSpec]); // IMPORTANT: All filter dependencies are here
+  }, [subjectName, syllabusType, selectedUnits, selectedYears, selectedSpec]);
 
 
   if (loading) {
@@ -278,7 +283,7 @@ export default function PastPapersPage() {
   const groupedPapers = papers.reduce((acc, paper) => {
     const year = paper.exam_sessions?.year;
     const session = paper.exam_sessions?.session;
-    const unitCode = paper.unit_code; // WPH11, WPH12, etc.
+    const unitCode = paper.unit_code; // 1P, 1PR, etc.
 
     if (!year || !session) return acc; // Skip if session/year info is missing
 
@@ -296,14 +301,26 @@ export default function PastPapersPage() {
           className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#000000] mb-8 text-left tracking-[-0.035em]"
           style={{ fontFamily: "Poppins, sans-serif" }}
         >
-          IAL <span className="bg-[#1A69FA] px-2 py-1 -rotate-1 inline-block"><span className="text-[#FFFFFF]">Physics</span></span> Past Papers
+          IGCSE <span className="bg-[#1A69FA] px-2 py-1 -rotate-1 inline-block"><span className="text-[#FFFFFF]">Physics</span></span> Past Papers
         </h1>
+
+        <div
+          className="inline-flex items-center justify-center px-4 py-2 mb-8 rounded-md shadow-xl"
+          style={{
+            border: "1.5px solid #DBDBDB",
+            fontFamily: "Poppins, sans-serif",
+          }}
+        >
+          <span className="text-md font-medium text-black tracking-tight">
+            <span className="font-[501]">Exam code:</span> {examCode}
+          </span>
+        </div>
 
         <h3
           className="text-sm sm:text-md lg:text-lg font-[500] leading-6 text-[#707070] mb-8 text-left tracking-[-0.015em]"
           style={{ fontFamily: "Poppins, sans-serif" }}
         >
-          Explore our collection of Edexcel A Level Physics Past Papers and Mark Schemes below. Practicing with A Level Physics past papers is one of the most effective ways to pinpoint the topics that need more focus—helping you revise smarter and prepare confidently for your upcoming exam
+          Explore our collection of Edexcel IGCSE Level Physics Past Papers and Mark Schemes below. Practicing with IGCSE Physics past papers is one of the most effective ways to pinpoint the topics that need more focus—helping you revise smarter and prepare confidently for your upcoming exam
         </h3>
 
         <div className="w-full mb-8">
@@ -317,7 +334,7 @@ export default function PastPapersPage() {
             <div className="relative" ref={yearDropdownRef}>
               <button
                 onClick={handleToggleYearDropdown}
-                className="px-4 py-2 rounded-lg border border-gray-400 text-sm font-[501] text-[#153064] hover:bg-gray-50 transition-colors flex items-center"
+                className="px-4 py-2 rounded-lg border cursor-pointer border-gray-400 text-sm font-[501] text-[#153064] hover:bg-gray-50 transition-colors flex items-center"
                 style={{ fontFamily: "Poppins, sans-serif" }}
               >
                 Years
@@ -358,7 +375,7 @@ export default function PastPapersPage() {
             <div className="relative" ref={unitDropdownRef}>
               <button
                 onClick={handleToggleUnitDropdown}
-                className="px-4 py-2 rounded-lg border border-gray-400 text-sm font-[501] text-[#153064] hover:bg-gray-50 transition-colors flex items-center"
+                className="px-4 py-2 rounded-lg border cursor-pointer border-gray-400 text-sm font-[501] text-[#153064] hover:bg-gray-50 transition-colors flex items-center"
                 style={{ fontFamily: "Poppins, sans-serif" }}
               >
                 Units
@@ -400,7 +417,7 @@ export default function PastPapersPage() {
             <div className="relative" ref={specDropdownRef}>
               <button
                 onClick={handleToggleSpecDropdown}
-                className="px-4 py-2 rounded-lg border border-gray-400 text-sm font-[501] text-[#000000] hover:bg-gray-50 transition-colors flex items-center"
+                className="px-4 py-2 rounded-lg cursor-pointer border border-gray-400 text-sm font-[501] text-[#000000] hover:bg-gray-50 transition-colors flex items-center"
                 style={{ fontFamily: "Poppins, sans-serif" }}
               >
                 Spec
@@ -441,7 +458,7 @@ export default function PastPapersPage() {
         <div className="w-full space-y-10">
           {/*
               The rendering logic for years now iterates over the keys of groupedPapers (which are filtered years).
-              It also sorts them in descending order for display.
+              It also sorts them in descending order for for display.
           */}
           {Object.keys(groupedPapers)
             .sort((a, b) => b - a) // Sort years descending for display
