@@ -35,7 +35,7 @@ const SubjectButtons = () => {
     <div className="flex flex-wrap gap-2 mb-6">
       {subjects.map((subject, index) => (
         <Link key={index} href={subject.link}>
-          <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition">
+          <button className="px-4 py-2 bg-blue-600 cursor-pointer text-white rounded-lg hover:bg-blue-500 transition">
             {subject.name}
           </button>
         </Link>
@@ -303,7 +303,7 @@ export default function PastPapersPage() {
           className="text-sm sm:text-md lg:text-lg font-[500] leading-6 text-[#707070] mb-8 text-left tracking-[-0.015em]"
           style={{ fontFamily: "Poppins, sans-serif" }}
         >
-          Explore our collection of Edexcel A Level Mathematics Past Papers and Mark Schemes below. Practicing with A Level Mathematics past papers is one of the most effective ways to pinpoint the topics that need more focus—helping you revise smarter and prepare confidently for your upcoming exam
+          Explore our collection of Edexcel IAL Level Mathematics Past Papers and Mark Schemes below. Practicing with A Level Mathematics past papers is one of the most effective ways to pinpoint the topics that need more focus—helping you revise smarter and prepare confidently for your upcoming exam
         </h3>
 
         <div className="w-full mb-8">
@@ -317,7 +317,7 @@ export default function PastPapersPage() {
             <div className="relative" ref={yearDropdownRef}>
               <button
                 onClick={handleToggleYearDropdown}
-                className="px-4 py-2 rounded-lg border border-gray-400 text-sm font-[501] text-[#153064] hover:bg-gray-50 transition-colors flex items-center"
+                className="px-4 py-2 rounded-lg border cursor-pointer border-gray-400 text-sm font-[501] text-[#153064] hover:bg-gray-50 transition-colors flex items-center"
                 style={{ fontFamily: "Poppins, sans-serif" }}
               >
                 Years
@@ -358,7 +358,7 @@ export default function PastPapersPage() {
             <div className="relative" ref={unitDropdownRef}>
               <button
                 onClick={handleToggleUnitDropdown}
-                className="px-4 py-2 rounded-lg border border-gray-400 text-sm font-[501] text-[#153064] hover:bg-gray-50 transition-colors flex items-center"
+                className="px-4 py-2 rounded-lg border cursor-pointer border-gray-400 text-sm font-[501] text-[#153064] hover:bg-gray-50 transition-colors flex items-center"
                 style={{ fontFamily: "Poppins, sans-serif" }}
               >
                 Units
@@ -400,7 +400,7 @@ export default function PastPapersPage() {
             <div className="relative" ref={specDropdownRef}>
               <button
                 onClick={handleToggleSpecDropdown}
-                className="px-4 py-2 rounded-lg border border-gray-400 text-sm font-[501] text-[#000000] hover:bg-gray-50 transition-colors flex items-center"
+                className="px-4 py-2 rounded-lg border cursor-pointer border-gray-400 text-sm font-[501] text-[#000000] hover:bg-gray-50 transition-colors flex items-center"
                 style={{ fontFamily: "Poppins, sans-serif" }}
               >
                 Spec

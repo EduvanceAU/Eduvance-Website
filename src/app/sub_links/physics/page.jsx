@@ -66,19 +66,19 @@ export default function Physics() {
                   className="hover-tint w-full sm:w-[calc(50%-8px)] md:w-[calc(33.33%-16px)] h-40 rounded-xl font-[550] tracking-[-0.5px] border-[1.5px] border-[#153064] flex items-end justify-start pl-4 pb-4 text-[#153064] hover:bg-[#BAD1FD] transition-all duration-300 cursor-pointer"
                   style={{ backgroundImage: "url('/Notes Background.png')", backgroundSize: 'cover', backgroundPosition: 'center' }}
                 >
-                  Revision Notes
+                  Community Notes
                 </Link>
 
                 <Link
-                  href="/page2"
+                  href="/sub_links/physics/IAL/resources"
                   className="hover-tint w-full sm:w-[calc(50%-8px)] md:w-[calc(33.33%-16px)] h-40 rounded-xl font-[550] tracking-[-0.5px] border-[1.5px] border-[#153064] flex items-end justify-start pl-4 pb-4 text-[#153064] hover:bg-[#BAD1FD] transition-all duration-300 cursor-pointer"
                   style={{ backgroundImage: "url('/PPQ Background.png')", backgroundSize: 'cover', backgroundPosition: 'center' }}
                 >
-                  Exam Questions
+                  Eduvance Resources
                 </Link>
 
                 <Link
-                  href="/sub_links/physics/pastpapers"
+                  href="/sub_links/physics/IAL/pastpapers"
                   className="hover-tint w-full sm:w-[calc(50%-8px)] md:w-[calc(33.33%-16px)] h-40 rounded-xl font-[550] tracking-[-0.5px] border-[1.5px] border-[#153064] flex items-end justify-start pl-4 pb-4 text-[#153064] hover:bg-[#BAD1FD] transition-all duration-300 cursor-pointer"
                   style={{ backgroundImage: "url('/Papers Background.png')", backgroundSize: 'cover', backgroundPosition: 'center' }}
                 >
@@ -118,7 +118,7 @@ export default function Physics() {
                   className="hover-tint w-full sm:w-[calc(50%-8px)] md:w-[calc(33.33%-16px)] h-40 rounded-xl font-[550] tracking-[-0.5px] border-[1.5px] border-[#153064] flex items-end justify-start pl-4 pb-4 text-[#153064] hover:bg-[#BAD1FD] transition-all duration-300 cursor-pointer"
                   style={{ backgroundImage: "url('/Notes Background.png')", backgroundSize: 'cover', backgroundPosition: 'center' }}
                 >
-                  Revision Notes
+                  Community Notes
                 </Link>
 
                 <Link
@@ -126,11 +126,11 @@ export default function Physics() {
                   className="hover-tint w-full sm:w-[calc(50%-8px)] md:w-[calc(33.33%-16px)] h-40 rounded-xl font-[550] tracking-[-0.5px] border-[1.5px] border-[#153064] flex items-end justify-start pl-4 pb-4 text-[#153064] hover:bg-[#BAD1FD] transition-all duration-300 cursor-pointer"
                   style={{ backgroundImage: "url('/PPQ Background.png')", backgroundSize: 'cover', backgroundPosition: 'center' }}
                 >
-                  Exam Questions
+                  Eduvance Resources
                 </Link>
 
                 <Link
-                  href="/page3"
+                  href="/sub_links/physics/IGCSE/pastpapers"
                   className="hover-tint w-full sm:w-[calc(50%-8px)] md:w-[calc(33.33%-16px)] h-40 rounded-xl font-[550] tracking-[-0.5px] border-[1.5px] border-[#153064] flex items-end justify-start pl-4 pb-4 text-[#153064] hover:bg-[#BAD1FD] transition-all duration-300 cursor-pointer"
                   style={{ backgroundImage: "url('/Papers Background.png')", backgroundSize: 'cover', backgroundPosition: 'center' }}
                 >

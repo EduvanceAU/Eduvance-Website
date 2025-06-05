@@ -10,20 +10,20 @@ const sessions = [
   { label: "Oct/Nov", value: "October" }, 
 ];
 
+const examCode = '8PH0'
+
 const DISPLAY_START_YEAR = 2020;
 const DISPLAY_END_YEAR = 2024;
 const years = Array.from({ length: DISPLAY_END_YEAR - DISPLAY_START_YEAR + 1 }, (_, i) => DISPLAY_START_YEAR + i);
 
 const units = [
-  { name: "Molecules, Diet, Transport & Health", code: "WBI11", unit: "Unit 1" },
-  { name: "Cells, Development, Biodiversity & Conservation", code: "WBI12", unit: "Unit 2" },
-  { name: "Practical Skills in Biology I", code: "WBI13", unit: "Unit 3" },
-  { name: "Genetics, Evolution & Ecology", code: "WBI14", unit: "Unit 4" },
-  { name: "Respiration, Internal Environment, Coordination & Gene Technology", code: "WBI15", unit: "Unit 5" },
-  { name: "Practical Biology & Investigation Skills", code: "WBI16", unit: "Unit 6" },
+  { name: "Mechanics and Materials", code: "WPH11", unit: "Unit 1" },
+  { name: "Waves and Electricity", code: "WPH12", unit: "Unit 2" },
+  { name: "Practical Skills in Physics I", code: "WPH13", unit: "Unit 3" },
+  { name: "Further Mechanics, Fields and Particles", code: "WPH14", unit: "Unit 4" },
+  { name: "Thermodynamics, Radiation, Oscillations and Cosmology", code: "WPH15", unit: "Unit 5" },
+  { name: "Practical Skills in Physics II", code: "WPH16", unit: "Unit 6" },
 ];
-
-const examCode = 'YBI11'
 
 const subjects = [
   { name: "Physics", link: "/sub_links/physics/pastpapers" },
@@ -73,8 +73,9 @@ const specs = [
   { label: 'Old Spec', value: 'old' },
 ];
 
-export default function PastPapersPage() {
-  const subjectName = "Biology";
+export default function IALPastPapersPage() {
+  const subjectName = "Physics";
+  const syllabusType = "IAL"; // This page is specifically for IAL papers
   const [selectedUnits, setSelectedUnits] = useState([]);
   const [papers, setPapers] = useState([]);
   const [selectedYears, setSelectedYears] = useState([]);
@@ -161,6 +162,7 @@ export default function PastPapersPage() {
         .from('subjects')
         .select('id')
         .eq('name', subjectName)
+        .eq('syllabus_type', syllabusType) // <-- THIS IS THE KEY CHANGE
         .single();
 
       if (subjectError || !subjectData) {
@@ -298,11 +300,11 @@ export default function PastPapersPage() {
           className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#000000] mb-8 text-left tracking-[-0.035em]"
           style={{ fontFamily: "Poppins, sans-serif" }}
         >
-          IAL <span className="bg-[#1A69FA] px-2 py-1 -rotate-1 inline-block"><span className="text-[#FFFFFF]">Biology</span></span> Past Papers
+          IAL <span className="bg-[#1A69FA] px-2 py-1 -rotate-1 inline-block"><span className="text-[#FFFFFF]">Physics</span></span> Past Papers
         </h1>
 
         <div
-          className="inline-flex items-center justify-center px-4 py-2 mb-8 rounded-md shadow-sm"
+          className="inline-flex items-center justify-center px-4 py-2 mb-8 rounded-md shadow-xl"
           style={{
             border: "1.5px solid #DBDBDB",
             fontFamily: "Poppins, sans-serif",
@@ -317,7 +319,7 @@ export default function PastPapersPage() {
           className="text-sm sm:text-md lg:text-lg font-[500] leading-6 text-[#707070] mb-8 text-left tracking-[-0.015em]"
           style={{ fontFamily: "Poppins, sans-serif" }}
         >
-          Explore our collection of Edexcel IAL Level Biology Past Papers and Mark Schemes below. Practicing with A Level Biology past papers is one of the most effective ways to pinpoint the topics that need more focus—helping you revise smarter and prepare confidently for your upcoming exam
+          Explore our collection of Edexcel IAL Level Physics Past Papers and Mark Schemes below. Practicing with A Level Physics past papers is one of the most effective ways to pinpoint the topics that need more focus—helping you revise smarter and prepare confidently for your upcoming exam
         </h3>
 
         <div className="w-full mb-8">
@@ -414,7 +416,7 @@ export default function PastPapersPage() {
             <div className="relative" ref={specDropdownRef}>
               <button
                 onClick={handleToggleSpecDropdown}
-                className="px-4 py-2 rounded-lg border cursor-pointer border-gray-400 text-sm font-[501] text-[#000000] hover:bg-gray-50 transition-colors flex items-center"
+                className="px-4 py-2 rounded-lg cursor-pointer border border-gray-400 text-sm font-[501] text-[#000000] hover:bg-gray-50 transition-colors flex items-center"
                 style={{ fontFamily: "Poppins, sans-serif" }}
               >
                 Spec

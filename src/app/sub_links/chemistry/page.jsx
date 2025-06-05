@@ -45,11 +45,11 @@ export default function Chemistry() {
           
               <div className="absolute top-[-20px] flex justify-center items-center space-x-8 mt-40">
                 <Link href="/page1" className="w-95 h-40 bg-[#F2F6FF] rounded-xl border-[1.5px] border-[#153064] flex items-end justify-start pl-4 pb-4 text-[#153064] hover:bg-[#BAD1FD] transition-all duration-300 cursor-pointer">
-                  Revision Notes
+                  Community Notes
                 </Link>
           
                 <Link href="/page2" className="w-95 h-40 bg-[#F2F6FF] rounded-xl border-[1.5px] border-[#153064] flex items-end justify-start pl-4 pb-4 text-[#153064] hover:bg-[#BAD1FD] transition-all duration-300 cursor-pointer">
-                  Exam Questions
+                  Eduvance Resources
                 </Link>
           
                 <Link href="/sub_links/chemistry/pastpapers" className="w-95 h-40 bg-[#F2F6FF] rounded-xl border-[1.5px] border-[#153064] flex items-end justify-start pl-4 pb-4 text-[#153064] hover:bg-[#BAD1FD] transition-all duration-300 cursor-pointer">
@@ -81,11 +81,11 @@ export default function Chemistry() {
           
               <div className="absolute top-[-20px] flex justify-center items-center space-x-8 mt-40">
                 <Link href="/page1" className="w-95 h-40 bg-[#F2F6FF] rounded-xl border-[1.5px] border-[#153064] flex items-end justify-start pl-4 pb-4 text-[#153064] hover:bg-[#BAD1FD] transition-all duration-300 cursor-pointer">
-                  Revision Notes
+                  Community Notes
                 </Link>
           
                 <Link href="/page2" className="w-95 h-40 bg-[#F2F6FF] rounded-xl border-[1.5px] border-[#153064] flex items-end justify-start pl-4 pb-4 text-[#153064] hover:bg-[#BAD1FD] transition-all duration-300 cursor-pointer">
-                  Exam Questions
+                  Eduvance Resources
                 </Link>
           
                 <Link href="/page3" className="w-95 h-40 bg-[#F2F6FF] rounded-xl border-[1.5px] border-[#153064] flex items-end justify-start pl-4 pb-4 text-[#153064] hover:bg-[#BAD1FD] transition-all duration-300 cursor-pointer">
