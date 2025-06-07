@@ -6,8 +6,8 @@ import { supabase } from "../lib/supabaseClient";
 
 const sessions = [
   { label: "January", value: "January" },
-  { label: "May/June", value: "June" },
-  { label: "Oct/Nov", value: "October" }, 
+  { label: "May/June", value: "May/June" },
+  { label: "Oct/Nov", value: "Oct/Nov" }, 
 ];
 
 const examCode = '8PH0'

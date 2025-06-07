@@ -31,7 +31,6 @@ async function seedDatabase() {
 
   try {
     // --- Data Storage for De-duplication and ID Management ---
-    // subjectsMap now stores only a placeholder/intermediate value to derive unique_key later
     const tempSubjectsMap = new Map();     // Map: 'subject_name-syllabus_type' -> { name, code, syllabus_type }
     const examSessionsMap = new Map(); // Map: 'session-year' -> { id, session, year }
     const papersToInsert = new Map();  // Map: 'subject_unique_key-exam_session_id-unit_code' -> { ...paper_data, subject_unique_key }
@@ -54,7 +53,11 @@ async function seedDatabase() {
 
     for (const syllabusType of syllabusTypeDirs) {
         const syllabusTypePath = path.join(DATA_IMPORT_DIR, syllabusType);
-        console.log(`\nProcessing syllabus type: ${syllabusType}`);
+        console.log(`\nProcessing syllabus type directory: ${syllabusType}`); // Confirms syllabusType
+        // Add specific log for IGCSE directory detection
+        if (syllabusType === 'IGCSE') {
+            console.log(`----> CONFIRMED: Entering IGCSE syllabus type block.`);
+        }
 
         const subjectDirs = fs.readdirSync(syllabusTypePath, { withFileTypes: true })
                               .filter(dirent => dirent.isDirectory())
@@ -66,13 +69,11 @@ async function seedDatabase() {
         }
 
         for (const subjectDir of subjectDirs) {
-          // Extract subject name (e.g., 'Physics') and code (e.g., 'PHY') from directory name
-          // The regex now tries to capture the subject name before any year or parenthesis.
           const subjectNameMatch = subjectDir.match(/^([A-Za-z]+)\s*(?:\(\d{4}\))?/);
           const subjectName = subjectNameMatch ? subjectNameMatch[1] : subjectDir;
           const subjectCode = subjectNameMatch ? subjectNameMatch[1].substring(0,3).toUpperCase() : null;
 
-          const subjectUniqueKey = `${subjectName}-${syllabusType}`; // This will be the key for lookup later
+          const subjectUniqueKey = `${subjectName}-${syllabusType}`;
           if (!tempSubjectsMap.has(subjectUniqueKey)) {
             tempSubjectsMap.set(subjectUniqueKey, { name: subjectName, code: subjectCode, syllabus_type: syllabusType });
             console.log(`  Found new subject: ${subjectName} (Code: ${subjectCode || 'N/A'}, Type: ${syllabusType})`);
@@ -88,7 +89,7 @@ async function seedDatabase() {
 
           for (const file of jsonFiles) {
             const filePath = path.join(subjectDirPath, file);
-            console.log(`    Processing file: ${file}`);
+            console.log(`    Attempting to process file: ${filePath}`);
 
             let fileContent;
             try {
@@ -107,14 +108,17 @@ async function seedDatabase() {
             }
 
             const filenameWithoutExt = file.replace('.json', '');
+            console.log(`      Filename without extension for '${file}': '${filenameWithoutExt}'`);
+
             let session = '';
             let year = 0;
 
             const sessionYearMatch = filenameWithoutExt.match(/^([A-Za-z]+)(?:[/\-]([A-Za-z]+))?[-/](\d{4})$/);
+            console.log(`      Regex match result for '${filenameWithoutExt}':`, sessionYearMatch);
 
             if (sessionYearMatch) {
                 const part1 = sessionYearMatch[1];
-                const part2 = sessionYearMatch[2]; // This will be undefined for "January-2020"
+                const part2 = sessionYearMatch[2];
 
                 year = parseInt(sessionYearMatch[3]);
 
@@ -129,19 +133,21 @@ async function seedDatabase() {
                 else if (session.toLowerCase().includes('june') || session.toLowerCase().includes('may')) session = 'May/June';
                 else if (session.toLowerCase().includes('oct') || session.toLowerCase().includes('nov')) session = 'Oct/Nov';
 
+                console.log(`      Extracted Session: '${session}', Year: ${year} for file: '${file}'`);
+
             } else {
                 console.warn(`      ⚠️ Malformed filename format: '${file}'. Expected 'Month-Year.json' or 'Month-Month-Year.json'. Skipping.`);
                 continue;
             }
 
             if (!session || isNaN(year)) {
-                console.warn(`      ⚠️ Could not extract valid session or year from filename: '${file}'. Skipping.`);
+                console.warn(`      ⚠️ Could not extract valid session or year from filename: '${file}'. Session: '${session}', Year: ${year}. Skipping.`);
                 continue;
             }
 
             const examSessionKey = `${session}-${year}`;
             if (!examSessionsMap.has(examSessionKey)) {
-              examSessionsMap.set(examSessionKey, { id: uuidv4(), session, year }); // Still use UUID for temp key in map
+              examSessionsMap.set(examSessionKey, { id: uuidv4(), session, year });
               console.log(`      Found new exam session: ${session} ${year}`);
             }
             const currentExamSessionTempId = examSessionsMap.get(examSessionKey).id;
@@ -150,54 +156,80 @@ async function seedDatabase() {
             for (const item of fileContent) {
               const { Name, Link } = item;
               if (!Name || !Link) {
-                  console.warn(`        ⚠️ Skipping entry due to missing 'Name' or 'Link' in JSON: ${JSON.stringify(item)}`);
+                  console.warn(`        ⚠️ Skipping entry due to missing 'Name' or 'Link' in JSON: ${JSON.stringify(item)} from file '${file}'`);
                   continue;
               }
 
               let materialType = null;
-              const lowerCaseName = Name.toLowerCase(); // Convert to lowercase for robust matching
+              const lowerCaseName = Name.toLowerCase();
+
+              // Skip "Unused" entries
+              if (lowerCaseName.includes('unused')) {
+                  console.log(`        Skipping 'Unused' entry: '${Name}' from file '${file}'.`);
+                  continue;
+              }
 
               if (lowerCaseName.includes('question paper') || lowerCaseName.includes('qp')) materialType = 'question_paper_link';
               else if (lowerCaseName.includes('mark scheme') || lowerCaseName.includes('ms')) materialType = 'mark_scheme_link';
               else if (lowerCaseName.includes('examiner report') || lowerCaseName.includes('er')) materialType = 'examiner_report_link';
-              else if (lowerCaseName.includes('provisional mark scheme')) materialType = 'mark_scheme_link'; // Also treat provisional as mark scheme
+              else if (lowerCaseName.includes('provisional mark scheme')) materialType = 'mark_scheme_link';
               else {
-                console.warn(`        ⚠️ Unknown material type in name: '${Name}'. Skipping entry.`);
+                console.warn(`        ⚠️ Unknown material type in name: '${Name}' from file '${file}'. Skipping entry.`);
                 continue;
               }
 
-              // ADJUSTED: Unit code extraction for IGCSE papers (e.g., "1P", "1PR", "2P", "2PR")
-              const unitCodeMatch = Name.match(/Paper\s(1P|1PR|2P|2PR|PR)/i); // Case-insensitive match for "Paper X"
               let unitCode = null;
-              if (unitCodeMatch && unitCodeMatch[1]) {
-                  unitCode = unitCodeMatch[1].toUpperCase();
-                  // Special handling for 'PR' if it consistently maps to '2PR' in the links for IGCSE
-                  if (unitCode === 'PR' && syllabusType === 'IGCSE') {
-                      unitCode = '2PR';
+
+              // --- Detailed Unit Code Extraction Logic with Logs ---
+              console.log(`        Processing item: '${Name}' for unit code extraction.`);
+              console.log(`        Current syllabusType: '${syllabusType}'`);
+
+
+              // Attempt IAL-style codes first if syllabusType is IAL
+              if (syllabusType === 'IAL') {
+                  const ialUnitCodeMatch = Name.match(/\((W[A-Z0-9]+)(?:\/[0-9]+)?\)/);
+                  console.log(`        IAL regex match result:`, ialUnitCodeMatch);
+                  if (ialUnitCodeMatch && ialUnitCodeMatch[1]) {
+                      unitCode = ialUnitCodeMatch[1];
+                      console.log(`        IAL unit code found: '${unitCode}'`);
+                  }
+              }
+
+              // Attempt IGCSE-style codes if unitCode not found yet AND syllabusType is IGCSE
+              if (!unitCode && syllabusType === 'IGCSE') {
+                  console.log(`        Attempting IGCSE unit code match for '${Name}' (lowerCaseName: '${lowerCaseName}')`);
+                  // Using word boundaries (\b) to ensure exact matches for '1P', '1PR', etc.
+                  const igcseUnitCodeMatch = lowerCaseName.match(/paper\s*(\b(?:1p|1pr|2p|2pr|pr|1c|1cr|2c|2cr|1b|1br|2b|2br)\b)/);
+                  console.log(`        IGCSE regex match result:`, igcseUnitCodeMatch);
+
+                  if (igcseUnitCodeMatch && igcseUnitCodeMatch[1]) {
+                      unitCode = igcseUnitCodeMatch[1].toUpperCase();
+                      console.log(`        IGCSE raw unit code matched: '${igcseUnitCodeMatch[1]}'`);
+
+                      // Special handling for 'PR' to consistently map to '2PR' for IGCSE
+                      if (unitCode === 'PR') {
+                          unitCode = '2PR';
+                          console.log(`        Normalized 'PR' to '2PR'. Final unit code: '${unitCode}'`);
+                      } else {
+                          console.log(`        Final IGCSE unit code: '${unitCode}'`);
+                      }
                   }
               }
 
               if (!unitCode) {
-                // FALLBACK for cases where the specific "Paper X" format isn't found
-                // If it's an IAL-style code like (WPH01), try that too.
-                const ialUnitCodeMatch = Name.match(/\((W[A-Z0-9]+)(?:\/[0-9]+)?\)/);
-                if (ialUnitCodeMatch && ialUnitCodeMatch[1]) {
-                    unitCode = ialUnitCodeMatch[1];
-                } else {
-                    console.warn(`        ⚠️ Could not find a recognized unit code (e.g., 'Paper 1P' or '(WPH01)') in name: '${Name}'. Skipping entry.`);
-                    continue;
-                }
+                console.warn(`        ⚠️ Could not find a recognized unit code in name: '${Name}' from file '${file}'. Skipping entry.`);
+                continue; // Skip if no unit code is found
               }
+              // --- End Detailed Unit Code Extraction Logic with Logs ---
 
-              // Key for papersToInsert now uses the subject's unique key derived from name/syllabus_type
-              // and the temp exam session ID. The final subject_id will be resolved later.
+
               const paperKey = `${subjectUniqueKey}-${currentExamSessionTempId}-${unitCode}`;
 
               if (!papersToInsert.has(paperKey)) {
                 papersToInsert.set(paperKey, {
-                  id: uuidv4(), // Generate a UUID for the paper itself
-                  subject_unique_key: subjectUniqueKey, // Store this to lookup the final subject_id later
-                  exam_session_temp_id: currentExamSessionTempId, // Store this to lookup the final exam_session_id later
+                  id: uuidv4(),
+                  subject_unique_key: subjectUniqueKey,
+                  exam_session_temp_id: currentExamSessionTempId,
                   unit_code: unitCode,
                   question_paper_link: null,
                   mark_scheme_link: null,
@@ -207,8 +239,6 @@ async function seedDatabase() {
 
               const paperEntry = papersToInsert.get(paperKey);
               if (paperEntry[materialType] && paperEntry[materialType] !== Link) {
-                  // This is a warning, not an error, as sometimes there might be slight variations
-                  // or provisional vs final versions. The script will simply overwrite.
                   console.warn(`        ⚠️ Duplicate link type found for ${unitCode} - ${materialType} in ${file}. Overwriting old link.`);
               }
               paperEntry[materialType] = Link;
@@ -229,18 +259,16 @@ async function seedDatabase() {
     // Insert Subjects
     console.log('\n⏳ Inserting/Upserting subjects...');
     const subjectsToUpsert = Array.from(tempSubjectsMap.values());
-    // Use select: 'id,name,syllabus_type' to get back the actual IDs from the DB
     const { data: upsertedSubjects, error: subjectsError } = await supabase
         .from('subjects')
         .upsert(subjectsToUpsert, { onConflict: 'name,syllabus_type' })
-        .select('id, name, syllabus_type'); // Crucial: Select the ID and identifying columns
+        .select('id, name, syllabus_type');
 
     if (subjectsError) {
         console.error('  ❌ Error inserting subjects:', subjectsError.message);
         throw subjectsError;
     }
 
-    // Populate finalSubjectsMap with actual DB IDs
     upsertedSubjects.forEach(subject => {
         finalSubjectsMap.set(`${subject.name}-${subject.syllabus_type}`, subject.id);
     });
@@ -252,28 +280,25 @@ async function seedDatabase() {
     const { data: upsertedExamSessions, error: examsError } = await supabase
         .from('exam_sessions')
         .upsert(examSessionsToUpsert, { onConflict: 'session,year' })
-        .select('id, session, year'); // Crucial: Select the ID and identifying columns
+        .select('id, session, year');
 
     if (examsError) {
         console.error('  ❌ Error inserting exam sessions:', examsError.message);
         throw examsError;
     }
 
-    // Populate finalExamSessionsMap with actual DB IDs
     upsertedExamSessions.forEach(session => {
         finalExamSessionsMap.set(`${session.session}-${session.year}`, session.id);
     });
     console.log('  ✅ Exam sessions insertion/upsertion complete. Fetched actual IDs.');
-
 
     // Prepare Papers for Insertion using actual DB IDs
     console.log(`\n⏳ Preparing ${papersToInsert.size} papers with actual subject and session IDs...`);
     const finalPapersToInsert = [];
     for (const [paperKey, paperData] of papersToInsert.entries()) {
         const actualSubjectId = finalSubjectsMap.get(paperData.subject_unique_key);
-        // Find the actual session ID based on the original session and year data
         const originalSessionData = Array.from(examSessionsMap.values())
-            .find(es => es.id === paperData.exam_session_temp_id); // Find by temp ID
+            .find(es => es.id === paperData.exam_session_temp_id);
         const actualExamSessionId = originalSessionData
             ? finalExamSessionsMap.get(`${originalSessionData.session}-${originalSessionData.year}`)
             : null;
@@ -288,7 +313,7 @@ async function seedDatabase() {
         }
 
         finalPapersToInsert.push({
-            id: paperData.id, // Keep the original UUID for the paper record itself
+            id: paperData.id,
             subject_id: actualSubjectId,
             exam_session_id: actualExamSessionId,
             unit_code: paperData.unit_code,

@@ -73,6 +73,7 @@ const specs = [
 
 export default function PastPapersPage() {
   const subjectName = "Mathematics";
+  const syllabusType = "IAL"; // This page is specifically for IAL papers
   const [selectedUnits, setSelectedUnits] = useState([]);
   const [papers, setPapers] = useState([]);
   const [selectedYears, setSelectedYears] = useState([]);
@@ -159,6 +160,7 @@ export default function PastPapersPage() {
         .from('subjects')
         .select('id')
         .eq('name', subjectName)
+        .eq('syllabus_type', syllabusType) // <-- THIS IS THE KEY CHANGE
         .single();
 
       if (subjectError || !subjectData) {

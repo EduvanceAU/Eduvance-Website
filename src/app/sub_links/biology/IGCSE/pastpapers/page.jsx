@@ -7,23 +7,21 @@ import { supabase } from "../lib/supabaseClient";
 const sessions = [
   { label: "January", value: "January" },
   { label: "May/June", value: "May/June" },
-  { label: "Oct/Nov", value: "Oct/Nov" },
+  { label: "Oct/Nov", value: "Oct/Nov" }, 
 ];
-
-const examCode = '4PH1' // Updated for IGCSE Physics
 
 const DISPLAY_START_YEAR = 2020;
 const DISPLAY_END_YEAR = 2024;
 const years = Array.from({ length: DISPLAY_END_YEAR - DISPLAY_START_YEAR + 1 }, (_, i) => DISPLAY_START_YEAR + i);
 
-
 const units = [
-  { name: "Paper 1P (Physics)", code: "1P", unit: "1P" }, // `code` and `unit` now directly match "1P"
-  { name: "Paper 1PR (Physics - Practicals)", code: "1PR", unit: "1PR" },
-  { name: "Paper 2P (Physics)", code: "2P", unit: "2P" },
-  { name: "Paper 2PR (Physics - Practicals)", code: "2PR", unit: "2PR" }, // Assuming "Paper PR" in JSON refers to "2PR"
+  { name: "Paper 1B (Biology)", code: "1B", unit: "1B" },
+  { name: "Paper 1BR (Biology - Practicals)", code: "1BR", unit: "1BR" },
+  { name: "Paper 2B (Biology)", code: "2B", unit: "2B" },
+  { name: "Paper 2BR (Biology - Practicals)", code: "2BR", unit: "2BR" },
 ];
 
+const examCode = '4BH1'
 
 const subjects = [
   { name: "Physics", link: "/sub_links/physics/IGCSE/pastpapers" },
@@ -74,9 +72,8 @@ const specs = [
 ];
 
 export default function IGCSEPastPapersPage() {
-  const subjectName = "Physics";
-  const syllabusType = "IGCSE"; // This page is specifically for IGCSE papers
-
+  const subjectName = "Biology";
+  const syllabusType = "IGCSE"; // This page is specifically for IAL papers
   const [selectedUnits, setSelectedUnits] = useState([]);
   const [papers, setPapers] = useState([]);
   const [selectedYears, setSelectedYears] = useState([]);
@@ -163,11 +160,11 @@ export default function IGCSEPastPapersPage() {
         .from('subjects')
         .select('id')
         .eq('name', subjectName)
-        .eq('syllabus_type', syllabusType)
+        .eq('syllabus_type', syllabusType) // <-- THIS IS THE KEY CHANGE
         .single();
 
       if (subjectError || !subjectData) {
-        setError(subjectError || new Error(`Subject "${subjectName}" for syllabus type "${syllabusType}" not found.`));
+        setError(subjectError || new Error(`Subject "${subjectName}" not found.`));
         setLoading(false);
         return;
       }
@@ -188,7 +185,7 @@ export default function IGCSEPastPapersPage() {
 
       // --- Filter by selected Units (moved from client-side render filtering) ---
       if (selectedUnits.length > 0) {
-        // Convert unit labels (e.g., "1P") to their codes (e.g., "1P") for the query
+        // Convert unit names (e.g., "Unit 1") to their codes (e.g., "WPH11") for the query
         const selectedUnitCodes = selectedUnits.map(unitLabel => units.find(u => u.unit === unitLabel)?.code).filter(Boolean);
         if (selectedUnitCodes.length > 0) {
           query = query.in('unit_code', selectedUnitCodes);
@@ -259,7 +256,7 @@ export default function IGCSEPastPapersPage() {
     }
 
     fetchPapers();
-  }, [subjectName, syllabusType, selectedUnits, selectedYears, selectedSpec]);
+  }, [subjectName, selectedUnits, selectedYears, selectedSpec]); // IMPORTANT: All filter dependencies are here
 
 
   if (loading) {
@@ -283,7 +280,7 @@ export default function IGCSEPastPapersPage() {
   const groupedPapers = papers.reduce((acc, paper) => {
     const year = paper.exam_sessions?.year;
     const session = paper.exam_sessions?.session;
-    const unitCode = paper.unit_code; // 1P, 1PR, etc.
+    const unitCode = paper.unit_code; // WPH11, WPH12, etc.
 
     if (!year || !session) return acc; // Skip if session/year info is missing
 
@@ -301,11 +298,11 @@ export default function IGCSEPastPapersPage() {
           className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#000000] mb-8 text-left tracking-[-0.035em]"
           style={{ fontFamily: "Poppins, sans-serif" }}
         >
-          IGCSE <span className="bg-[#1A69FA] px-2 py-1 -rotate-1 inline-block"><span className="text-[#FFFFFF]">Physics</span></span> Past Papers
+          IAL <span className="bg-[#1A69FA] px-2 py-1 -rotate-1 inline-block"><span className="text-[#FFFFFF]">Biology</span></span> Past Papers
         </h1>
 
         <div
-          className="inline-flex items-center justify-center px-4 py-2 mb-8 rounded-md shadow-xl"
+          className="inline-flex items-center justify-center px-4 py-2 mb-8 rounded-md shadow-sm"
           style={{
             border: "1.5px solid #DBDBDB",
             fontFamily: "Poppins, sans-serif",
@@ -320,7 +317,7 @@ export default function IGCSEPastPapersPage() {
           className="text-sm sm:text-md lg:text-lg font-[500] leading-6 text-[#707070] mb-8 text-left tracking-[-0.015em]"
           style={{ fontFamily: "Poppins, sans-serif" }}
         >
-          Explore our collection of Edexcel IGCSE Level Physics Past Papers and Mark Schemes below. Practicing with IGCSE Physics past papers is one of the most effective ways to pinpoint the topics that need more focus—helping you revise smarter and prepare confidently for your upcoming exam
+          Explore our collection of Edexcel IAL Level Biology Past Papers and Mark Schemes below. Practicing with A Level Biology past papers is one of the most effective ways to pinpoint the topics that need more focus—helping you revise smarter and prepare confidently for your upcoming exam
         </h3>
 
         <div className="w-full mb-8">
@@ -417,7 +414,7 @@ export default function IGCSEPastPapersPage() {
             <div className="relative" ref={specDropdownRef}>
               <button
                 onClick={handleToggleSpecDropdown}
-                className="px-4 py-2 rounded-lg cursor-pointer border border-gray-400 text-sm font-[501] text-[#000000] hover:bg-gray-50 transition-colors flex items-center"
+                className="px-4 py-2 rounded-lg border cursor-pointer border-gray-400 text-sm font-[501] text-[#000000] hover:bg-gray-50 transition-colors flex items-center"
                 style={{ fontFamily: "Poppins, sans-serif" }}
               >
                 Spec
@@ -458,7 +455,7 @@ export default function IGCSEPastPapersPage() {
         <div className="w-full space-y-10">
           {/*
               The rendering logic for years now iterates over the keys of groupedPapers (which are filtered years).
-              It also sorts them in descending order for for display.
+              It also sorts them in descending order for display.
           */}
           {Object.keys(groupedPapers)
             .sort((a, b) => b - a) // Sort years descending for display
