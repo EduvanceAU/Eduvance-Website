@@ -6,8 +6,8 @@ import { supabase } from "../lib/supabaseClient";
 
 const sessions = [
   { label: "January", value: "January" },
-  { label: "May/June", value: "June" },
-  { label: "Oct/Nov", value: "October" }, 
+  { label: "May/June", value: "May/June" },
+  { label: "Oct/Nov", value: "Oct/Nov" }, 
 ];
 
 const DISPLAY_START_YEAR = 2020;
@@ -75,6 +75,7 @@ const specs = [
 
 export default function PastPapersPage() {
   const subjectName = "Chemistry";
+  const syllabusType = "IAL"; // This page is specifically for IAL papers
   const [selectedUnits, setSelectedUnits] = useState([]);
   const [papers, setPapers] = useState([]);
   const [selectedYears, setSelectedYears] = useState([]);
@@ -161,6 +162,7 @@ export default function PastPapersPage() {
         .from('subjects')
         .select('id')
         .eq('name', subjectName)
+        .eq('syllabus_type', syllabusType) // <-- THIS IS THE KEY CHANGE
         .single();
 
       if (subjectError || !subjectData) {
