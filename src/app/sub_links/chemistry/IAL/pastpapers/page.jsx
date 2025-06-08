@@ -26,10 +26,10 @@ const units = [
 const examCode = '8CH0'
 
 const subjects = [
-  { name: "Physics", link: "/sub_links/physics/pastpapers" },
-  { name: "Chemistry", link: "/sub_links/chemistry/pastpapers" },
-  { name: "Biology", link: "/sub_links/biology/pastpapers" },
-  { name: "Maths", link: "/sub_links/maths/pastpapers" },
+  { name: "Physics", link: "/sub_links/physics/IAL/pastpapers" },
+  { name: "Chemistry", link: "/sub_links/chemistry/IAL/pastpapers" },
+  { name: "Biology", link: "/sub_links/biology/IAL/pastpapers" },
+  { name: "Maths", link: "/sub_links/maths/IAL/pastpapers" },
 ];
 
 const SubjectButtons = () => {

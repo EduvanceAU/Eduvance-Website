@@ -46,11 +46,18 @@ export default function Resources() {
         </h1>
 
         <div className="flex flex-col items-start gap-y-3">
-          {["physics", "chemistry", "biology", "maths", "psychology"].map(subject => (
-            <Link key={subject} href={`/sub_links/${subject}`}>
+          {[
+            { name: "Physics", path: "/sub_links/physics" },
+            { name: "Chemistry", path: "/sub_links/chemistry" },
+            { name: "Biology", path: "/sub_links/biology" },
+            { name: "Maths", path: "/sub_links/maths" },
+            { name: "Further Maths", path: "/sub_links/fmaths" }, // Here you specify the exact folder name
+            { name: "Psychology", path: "/sub_links/psychology" }
+          ].map(subjectData => ( // Renamed 'subject' to 'subjectData' for clarity
+            <Link key={subjectData.name} href={subjectData.path}>
               <button className="flex items-center justify-between w-[90vw] max-w-[550px] px-6 py-4 bg-[#BAD1FD] rounded-[12px] group hover:bg-[#A8C6FF] transition-all duration-200 border-[#153064] border-1">
                 <p className="text-xl font-[550] text-[#153064]" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                  {subject.charAt(0).toUpperCase() + subject.slice(1)} Revision Resources
+                  {subjectData.name} Revision Resources {/* Use subjectData.name for display */}
                 </p>
                 <img src="/BArrowR.png" alt="Arrow Right" className="w-6 h-auto group-hover:translate-x-1 transition-transform duration-200" />
               </button>
