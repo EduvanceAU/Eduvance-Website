@@ -71,7 +71,7 @@ const specs = [
 
 export default function PastPapersPage() {
   const subjectName = "Mathematics";
-  const syllabusType = "IGCSE"; // This page is specifically for IAL papers
+  const syllabusType = "IGCSE"; // This page is specifically for IGCSE papers
   const [selectedUnits, setSelectedUnits] = useState([]);
   const [papers, setPapers] = useState([]);
   const [selectedYears, setSelectedYears] = useState([]);
@@ -296,14 +296,14 @@ export default function PastPapersPage() {
           className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#000000] mb-8 text-left tracking-[-0.035em]"
           style={{ fontFamily: "Poppins, sans-serif" }}
         >
-          IAL <span className="bg-[#1A69FA] px-2 py-1 -rotate-1 inline-block"><span className="text-[#FFFFFF]">Mathematics</span></span> Past Papers
+          IGCSE <span className="bg-[#1A69FA] px-2 py-1 -rotate-1 inline-block"><span className="text-[#FFFFFF]">Mathematics</span></span> Past Papers
         </h1>
 
         <h3
           className="text-sm sm:text-md lg:text-lg font-[500] leading-6 text-[#707070] mb-8 text-left tracking-[-0.015em]"
           style={{ fontFamily: "Poppins, sans-serif" }}
         >
-          Explore our collection of Edexcel IAL Level Mathematics Past Papers and Mark Schemes below. Practicing with A Level Mathematics past papers is one of the most effective ways to pinpoint the topics that need more focus—helping you revise smarter and prepare confidently for your upcoming exam
+          Explore our collection of Edexcel IGCSE Mathematics Past Papers and Mark Schemes below. Practicing with IGCSE Mathematics past papers is one of the most effective ways to pinpoint the topics that need more focus—helping you revise smarter and prepare confidently for your upcoming exam
         </h3>
 
         <div className="w-full mb-8">
