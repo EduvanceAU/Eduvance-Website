@@ -3,7 +3,7 @@ import Image from 'next/image';
 import Link from "next/link";
 import { useState, useEffect } from 'react';
 
-export default function Mathematics() {
+export default function FurtherMathematics() {
   const [selected, setSelected] = useState('option1');
 
   return (
