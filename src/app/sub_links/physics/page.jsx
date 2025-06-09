@@ -62,7 +62,7 @@ export default function Physics() {
               {/* Resource Cards - Flex wrap for responsive layout */}
               <div className="flex flex-wrap justify-center md:justify-between gap-4 md:gap-6 mb-8">
                 <Link
-                  href="/page1"
+                  href="/sub_links/physics/IAL/communityNotes"
                   className="hover-tint w-full sm:w-[calc(50%-8px)] md:w-[calc(33.33%-16px)] h-40 rounded-xl font-[550] tracking-[-0.5px] border-[1.5px] border-[#153064] flex items-end justify-start pl-4 pb-4 text-[#153064] hover:bg-[#BAD1FD] transition-all duration-300 cursor-pointer"
                   style={{ backgroundImage: "url('/Notes Background.png')", backgroundSize: 'cover', backgroundPosition: 'center' }}
                 >
