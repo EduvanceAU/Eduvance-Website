@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 
 const units = [
+  { name: "IAL Physics", code: "8PH0", unit: "IAL" },
   { name: "Mechanics and Materials", code: "WPH11", unit: "Unit 1" },
   { name: "Waves and Electricity", code: "WPH12", unit: "Unit 2" },
   { name: "Practical Skills in Physics I", code: "WPH13", unit: "Unit 3" },
@@ -13,10 +14,10 @@ const units = [
 ];
 
 const subjects = [
-  { name: "Physics", link: "/sub_links/physics/IAL/pastpapers" },
-  { name: "Chemistry", link: "/sub_links/chemistry/IAL/pastpapers" },
-  { name: "Biology", link: "/sub_links/biology/IAL/pastpapers" },
-  { name: "Maths", link: "/sub_links/maths/IAL/pastpapers" },
+  { name: "Physics", link: "/sub_links/physics/IAL/communityNotes" },
+  { name: "Chemistry", link: "/sub_links/chemistry/IAL/communityNotes" },
+  { name: "Biology", link: "/sub_links/biology/IAL/communityNotes" },
+  { name: "Maths", link: "/sub_links/maths/IAL/communityNotes" },
 ];
 
 const SubjectButtons = () => {
@@ -63,7 +64,7 @@ export default function IALCommunityNotesPage() {
         >
           Explore our collection of Edexcel A Level Physics community-contributed resources, including detailed notes, explanations, and revision tips. These resources are perfect for deepening your understanding, clarifying tricky concepts, and supporting your study alongside past papers.
         </h3>
-        
+
         <div
           className="inline-flex items-center justify-center px-4 py-2 mb-8 rounded-md shadow-xl"
           style={{

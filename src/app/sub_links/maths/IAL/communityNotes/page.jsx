@@ -4,13 +4,13 @@ import Link from "next/link";
 import { useState } from "react";
 
 const units = [
-  { name: "IAL Chemistry", code: "8PH0", unit: "IAL" },
-  { name: "Structure, Bonding & Introduction toOrganic Chemistry", code: "WCH11", unit: "Unit 1" },
-  { name: "Energetics, Group Chemistry, Halogenoalkanes & Alcohols", code: "WCH12", unit: "Unit 2" },
-  { name: "Practical Skills in Chemistry I", code: "WCH13", unit: "Unit 3" },
-  { name: "Rates, Equilibria & Further Organic Chemistry", code: "WCH14", unit: "Unit 4" },
-  { name: "Transition Metals & Organic Nitrogen Chemistry", code: "WCH15", unit: "Unit 5" },
-  { name: "Practical Skills in Chemistry II", code: "WCH16", unit: "Unit 6" },
+  { name: "IAL Mathematics", code: "8PH0", unit: "IAL" },
+  { name: "Pure Mathematics 1", code: "WMA11", unit: "Unit 1" },
+  { name: "Pure Mathematics 2", code: "WMA12", unit: "Unit 2" },
+  { name: "Pure Mathematics 3", code: "WMA13", unit: "Unit 3" },
+  { name: "Pure Mathematics 4", code: "WMA14", unit: "Unit 4" },
+  { name: "Pure Mathematics 5", code: "WMA15", unit: "Unit 5" },
+  { name: "Statistics I", code: "WST01", unit: "Statistics 1" },
 ];
 
 const subjects = [
@@ -54,14 +54,14 @@ export default function IALCommunityNotesPage() {
           className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#000000] mb-8 text-left tracking-[-0.035em]"
           style={{ fontFamily: "Poppins, sans-serif" }}
         >
-          IAL <span className="bg-[#1A69FA] px-2 py-1 -rotate-1 inline-block"><span className="text-[#FFFFFF]">Chemistry</span></span> Community Notes
+          IAL <span className="bg-[#1A69FA] px-2 py-1 -rotate-1 inline-block"><span className="text-[#FFFFFF]">Mathematics</span></span> Community Notes
         </h1>
 
         <h3
           className="text-sm sm:text-md lg:text-lg font-[500] leading-6 text-[#707070] mb-8 text-left tracking-[-0.015em]"
           style={{ fontFamily: "Poppins, sans-serif" }}
         >
-          Explore our collection of Edexcel A Level Chemistry community-contributed resources, including detailed notes, explanations, and revision tips. These resources are perfect for deepening your understanding, clarifying tricky concepts, and supporting your study alongside past papers.
+          Explore our collection of Edexcel A Level Mathematics community-contributed resources, including detailed notes, explanations, and revision tips. These resources are perfect for deepening your understanding, clarifying tricky concepts, and supporting your study alongside past papers.
         </h3>
 
         <div

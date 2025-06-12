@@ -329,6 +329,7 @@ export default function Home() {
                 <a href="#" className="text-[#757575] tracking-[-0.5px] font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>Resources</a>
                 <a href="#" className="text-[#757575] tracking-[-0.5px] font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>Past Papers</a>
                 <a href="#" className="text-[#757575] tracking-[-0.5px] font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>Match with a Tutor</a>
+                <Link href='/staffAccess' className="text-[#757575] tracking-[-0.5px] font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}> Staff Page</Link>
                 <a href="#" className="text-[#757575] tracking-[-0.5px] font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>About</a>
                 <a href="#" className="text-[#757575] tracking-[-0.5px] font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>Community</a>
               </div>
