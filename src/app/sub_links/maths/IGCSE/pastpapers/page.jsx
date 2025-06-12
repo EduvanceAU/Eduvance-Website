@@ -15,21 +15,17 @@ const DISPLAY_END_YEAR = 2024;
 const years = Array.from({ length: DISPLAY_END_YEAR - DISPLAY_START_YEAR + 1 }, (_, i) => DISPLAY_START_YEAR + i);
 
 const units = [
-  { name: "Molecules, Diet, Transport & Health", code: "WBI11", unit: "Unit 1" },
-  { name: "Cells, Development, Biodiversity & Conservation", code: "WBI12", unit: "Unit 2" },
-  { name: "Practical Skills in Biology I", code: "WBI13", unit: "Unit 3" },
-  { name: "Genetics, Evolution & Ecology", code: "WBI14", unit: "Unit 4" },
-  { name: "Respiration, Internal Environment, Coordination & Gene Technology", code: "WBI15", unit: "Unit 5" },
-  { name: "Practical Biology & Investigation Skills", code: "WBI16", unit: "Unit 6" },
+  { name: "Paper 1", code: "1", unit: "1" },
+  { name: "Paper 1R", code: "1R", unit: "1R" },
+  { name: "Paper 2", code: "2", unit: "2" },
+  { name: "Paper 2R", code: "2R", unit: "2R" },
 ];
 
-const examCode = 'YBI11'
-
 const subjects = [
-  { name: "Physics", link: "/sub_links/physics/IAL/pastpapers" },
-  { name: "Chemistry", link: "/sub_links/chemistry/IAL/pastpapers" },
-  { name: "Biology", link: "/sub_links/biology/IAL/pastpapers" },
-  { name: "Maths", link: "/sub_links/maths/IAL/pastpapers" },
+  { name: "Physics", link: "/sub_links/physics/IGCSE/pastpapers" },
+  { name: "Chemistry", link: "/sub_links/chemistry/IGCSE/pastpapers" },
+  { name: "Biology", link: "/sub_links/biology/IGCSE/pastpapers" },
+  { name: "Maths", link: "/sub_links/maths/IGCSE/pastpapers" },
 ];
 
 const SubjectButtons = () => {
@@ -37,7 +33,7 @@ const SubjectButtons = () => {
     <div className="flex flex-wrap gap-2 mb-6">
       {subjects.map((subject, index) => (
         <Link key={index} href={subject.link}>
-          <button className="px-4 py-2 cursor-pointer bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition">
+          <button className="px-4 py-2 bg-blue-600 cursor-pointer text-white rounded-lg hover:bg-blue-500 transition">
             {subject.name}
           </button>
         </Link>
@@ -74,8 +70,8 @@ const specs = [
 ];
 
 export default function PastPapersPage() {
-  const subjectName = "Biology";
-  const syllabusType = "IAL"; // This page is specifically for IAL papers
+  const subjectName = "Mathematics";
+  const syllabusType = "IGCSE"; // This page is specifically for IGCSE papers
   const [selectedUnits, setSelectedUnits] = useState([]);
   const [papers, setPapers] = useState([]);
   const [selectedYears, setSelectedYears] = useState([]);
@@ -300,26 +296,14 @@ export default function PastPapersPage() {
           className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#000000] mb-8 text-left tracking-[-0.035em]"
           style={{ fontFamily: "Poppins, sans-serif" }}
         >
-          IAL <span className="bg-[#1A69FA] px-2 py-1 -rotate-1 inline-block"><span className="text-[#FFFFFF]">Biology</span></span> Past Papers
+          IGCSE <span className="bg-[#1A69FA] px-2 py-1 -rotate-1 inline-block"><span className="text-[#FFFFFF]">Mathematics</span></span> Past Papers
         </h1>
-
-        <div
-          className="inline-flex items-center justify-center px-4 py-2 mb-8 rounded-md shadow-sm"
-          style={{
-            border: "1.5px solid #DBDBDB",
-            fontFamily: "Poppins, sans-serif",
-          }}
-        >
-          <span className="text-md font-medium text-black tracking-tight">
-            <span className="font-[501]">Exam code:</span> {examCode}
-          </span>
-        </div>
 
         <h3
           className="text-sm sm:text-md lg:text-lg font-[500] leading-6 text-[#707070] mb-8 text-left tracking-[-0.015em]"
           style={{ fontFamily: "Poppins, sans-serif" }}
         >
-          Explore our collection of Edexcel IAL Level Biology Past Papers and Mark Schemes below. Practicing with A Level Biology past papers is one of the most effective ways to pinpoint the topics that need more focus—helping you revise smarter and prepare confidently for your upcoming exam
+          Explore our collection of Edexcel IGCSE Mathematics Past Papers and Mark Schemes below. Practicing with IGCSE Mathematics past papers is one of the most effective ways to pinpoint the topics that need more focus—helping you revise smarter and prepare confidently for your upcoming exam
         </h3>
 
         <div className="w-full mb-8">
