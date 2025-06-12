@@ -3,7 +3,7 @@ import Image from 'next/image';
 import Link from "next/link";
 import { useState, useEffect } from 'react';
 
-export default function Physics() {
+export default function FurtherMathematics() {
   const [selected, setSelected] = useState('option1');
 
   return (
@@ -11,8 +11,8 @@ export default function Physics() {
       {/* Banner Image - Responsive width */}
       <div className="hidden md:block lg:block xl:block w-full h-[210px] relative">
         <Image 
-          src="/Physics_Banner.png" 
-          alt="Physics" 
+          src="/Math_Banner.png" 
+          alt="Mathematics" 
           fill
           priority
           className="object-cover"
@@ -22,7 +22,7 @@ export default function Physics() {
       <div className="flex flex-col items-center w-full px-4 sm:px-6 md:px-8 lg:px-16 xl:px-24 pt-16 md:pt-20 relative">
 
         <h1 className="block md:hidden text-4xl font-semibold tracking-tighter text-[#153064] mb-4 mt-[-20px]" style={{ fontFamily: 'Poppins, sans-serif' }}>
-          Physics
+          Mathematics
         </h1>
 
         <h3 className="font-semibold text-xl md:text-2xl text-[#153064] tracking-[-1px] mb-6" style={{ fontFamily: 'Poppins, sans-serif' }}>
@@ -56,13 +56,13 @@ export default function Physics() {
           {selected === "option1" ? (
             <>
               <h3 className="font-semibold text-xl md:text-2xl text-[#153064] tracking-[-1px] mb-6" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                IAL Physics Resources
+                IAL Mathematics Resources
               </h3>
           
               {/* Resource Cards - Flex wrap for responsive layout */}
               <div className="flex flex-wrap justify-center md:justify-between gap-4 md:gap-6 mb-8">
                 <Link
-                  href="/sub_links/physics/IAL/communityNotes"
+                  href="/page1"
                   className="hover-tint w-full sm:w-[calc(50%-8px)] md:w-[calc(33.33%-16px)] h-40 rounded-xl font-[550] tracking-[-0.5px] border-[1.5px] border-[#153064] flex items-end justify-start pl-4 pb-4 text-[#153064] hover:bg-[#BAD1FD] transition-all duration-300 cursor-pointer"
                   style={{ backgroundImage: "url('/Notes Background.png')", backgroundSize: 'cover', backgroundPosition: 'center' }}
                 >
@@ -70,7 +70,7 @@ export default function Physics() {
                 </Link>
 
                 <Link
-                  href="/sub_links/physics/IAL/resources"
+                  href="/sub_links/maths/IAL/resources"
                   className="hover-tint w-full sm:w-[calc(50%-8px)] md:w-[calc(33.33%-16px)] h-40 rounded-xl font-[550] tracking-[-0.5px] border-[1.5px] border-[#153064] flex items-end justify-start pl-4 pb-4 text-[#153064] hover:bg-[#BAD1FD] transition-all duration-300 cursor-pointer"
                   style={{ backgroundImage: "url('/PPQ Background.png')", backgroundSize: 'cover', backgroundPosition: 'center' }}
                 >
@@ -78,7 +78,7 @@ export default function Physics() {
                 </Link>
 
                 <Link
-                  href="/sub_links/physics/IAL/pastpapers"
+                  href="/sub_links/maths/IAL/pastpapers"
                   className="hover-tint w-full sm:w-[calc(50%-8px)] md:w-[calc(33.33%-16px)] h-40 rounded-xl font-[550] tracking-[-0.5px] border-[1.5px] border-[#153064] flex items-end justify-start pl-4 pb-4 text-[#153064] hover:bg-[#BAD1FD] transition-all duration-300 cursor-pointer"
                   style={{ backgroundImage: "url('/Papers Background.png')", backgroundSize: 'cover', backgroundPosition: 'center' }}
                 >
@@ -91,7 +91,7 @@ export default function Physics() {
                 <Link href="/sub_links/psychology">
                   <button className="flex items-center justify-between w-full px-4 sm:px-6 py-4 bg-[#BAD1FD] rounded-[12px] group hover:bg-[#A8C6FF] transition-all duration-200 border-[#153064] border-1">
                     <p className="text-base md:text-lg lg:text-xl font-[550] text-[#153064] leading-tight tracking-tight text-left" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                      International A Level Physics Course Overview
+                      International A Level Mathematics Course Overview
                     </p>
                   </button>
                 </Link>
@@ -99,7 +99,7 @@ export default function Physics() {
                 <Link href="/sub_links/psychology">
                   <button className="flex items-center justify-between w-full px-4 sm:px-6 py-4 bg-[#BAD1FD] rounded-[12px] group hover:bg-[#A8C6FF] transition-all duration-200 border-[#153064] border-1">
                     <p className="text-base md:text-lg lg:text-xl font-[550] text-[#153064] leading-tight tracking-tight text-left" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                      International A Level Physics Course Specifications
+                      International A Level Mathematics Course Specifications
                     </p>
                   </button>
                 </Link>
@@ -108,7 +108,7 @@ export default function Physics() {
           ) : (
             <>
               <h3 className="font-semibold text-xl md:text-2xl text-[#153064] tracking-[-1px] mb-6" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                IGCSE Physics Resources
+                IGCSE Mathematics Resources
               </h3>
           
               {/* Resource Cards - Flex wrap for responsive layout */}
@@ -130,7 +130,7 @@ export default function Physics() {
                 </Link>
 
                 <Link
-                  href="/sub_links/physics/IGCSE/pastpapers"
+                  href="/sub_links/maths/IGCSE/pastpapers"
                   className="hover-tint w-full sm:w-[calc(50%-8px)] md:w-[calc(33.33%-16px)] h-40 rounded-xl font-[550] tracking-[-0.5px] border-[1.5px] border-[#153064] flex items-end justify-start pl-4 pb-4 text-[#153064] hover:bg-[#BAD1FD] transition-all duration-300 cursor-pointer"
                   style={{ backgroundImage: "url('/Papers Background.png')", backgroundSize: 'cover', backgroundPosition: 'center' }}
                 >
@@ -143,7 +143,7 @@ export default function Physics() {
                 <Link href="/sub_links/psychology">
                   <button className="flex items-center justify-between w-full px-4 sm:px-6 py-4 bg-[#BAD1FD] rounded-[12px] group hover:bg-[#A8C6FF] transition-all duration-200 border-[#153064] border-1">
                     <p className="text-base md:text-lg lg:text-xl font-[550] text-[#153064] leading-tight tracking-tight text-left" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                      International GCSE Physics Course Overview
+                      International GCSE Mathematics Course Overview
                     </p>
                   </button>
                 </Link>
@@ -151,7 +151,7 @@ export default function Physics() {
                 <Link href="/sub_links/psychology">
                   <button className="flex items-center justify-between w-full px-4 sm:px-6 py-4 bg-[#BAD1FD] rounded-[12px] group hover:bg-[#A8C6FF] transition-all duration-200 border-[#153064] border-1">
                     <p className="text-base md:text-lg lg:text-xl font-[550] text-[#153064] leading-tight tracking-tight text-left" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                      International GCSE Physics Course Specifications
+                      International GCSE Mathematics Course Specifications
                     </p>
                   </button>
                 </Link>

@@ -199,7 +199,7 @@ async function seedDatabase() {
               if (!unitCode && syllabusType === 'IGCSE') {
                   console.log(`        Attempting IGCSE unit code match for '${Name}' (lowerCaseName: '${lowerCaseName}')`);
                   // Using word boundaries (\b) to ensure exact matches for '1P', '1PR', etc.
-                  const igcseUnitCodeMatch = lowerCaseName.match(/paper\s*(\b(?:1p|1pr|2p|2pr|pr|1c|1cr|2c|2cr|1b|1br|2b|2br)\b)/);
+                  const igcseUnitCodeMatch = lowerCaseName.match(/paper\s*(\b(?:1p|1pr|2p|2pr|pr|1c|1cr|2c|2cr|1b|1br|2b|2br|1|1r|2|2r)\b)/);
                   console.log(`        IGCSE regex match result:`, igcseUnitCodeMatch);
 
                   if (igcseUnitCodeMatch && igcseUnitCodeMatch[1]) {
