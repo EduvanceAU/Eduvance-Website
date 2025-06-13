@@ -14,6 +14,7 @@ export default function UploadResource() {
   const [messageType, setMessageType] = useState(null);
 
   const [title, setTitle] = useState('');
+  const [unitChapter, setUnitChapter] = useState('');
   const [link, setLink] = useState('');
   const [description, setDescription] = useState('');
   const [resourceType, setResourceType] = useState('note');
@@ -88,9 +89,12 @@ export default function UploadResource() {
       setMessageType('error');
       return;
     }
+
+    const unitValue = unitChapter.trim() === '' ? 'General' : unitChapter.trim();
+
     const { error } = await supabaseClient
       .from('resources')
-      .insert({ title, link, description, resource_type: resourceType, subject_id: selectedSubjectId });
+      .insert({ title, link, description, resource_type: resourceType, subject_id: selectedSubjectId, unit_chapter_name: unitChapter,});
     if (error) {
       setMessage(`Submission failed: ${error.message}`);
       setMessageType('error');
@@ -134,6 +138,22 @@ export default function UploadResource() {
               required
               disabled={!supabaseClient || !isAuthReady}
             />
+          </div>
+
+          <div>
+            <label htmlFor="unitChapter" className="block text-sm font-medium text-gray-700">
+              Unit/Chapter Name (Optional)
+            </label>
+            <input
+              type="text"
+              id="unitChapter"
+              value={unitChapter}
+              onChange={(e) => setUnitChapter(e.target.value)}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              placeholder="e.g., Unit 1: Kinematics"
+              disabled={!supabaseClient || !isAuthReady}
+            />
+            <p className="text-xs text-gray-500 mt-1">Leave blank if it applies to the whole subject (will be marked as "General")</p>
           </div>
 
           <div>
