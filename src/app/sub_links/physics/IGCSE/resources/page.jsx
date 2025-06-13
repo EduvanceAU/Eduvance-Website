@@ -14,7 +14,7 @@ const units = [
   { name: "Practical Skills in Physics II", code: "WPH16", unit: "Unit 6" },
 ];
 
-export default function IALResources() {
+export default function IGCSEResources() {
   // This state will hold your links data, structured by unit
   const [unitResources, setUnitResources] = useState({
     "Unit 1": [
@@ -53,7 +53,7 @@ export default function IALResources() {
           className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#000000] mb-8 text-left tracking-[-0.035em]"
           style={{ fontFamily: "Poppins, sans-serif" }}
         >
-          IAL <span className="bg-[#1A69FA] px-2 py-1 -rotate-1 inline-block"><span className="text-[#FFFFFF]">Physics</span></span> Resources
+          IGCSE <span className="bg-[#1A69FA] px-2 py-1 -rotate-1 inline-block"><span className="text-[#FFFFFF]">Physics</span></span> Resources
         </h1>
 
         <div
@@ -72,7 +72,7 @@ export default function IALResources() {
           className="text-sm sm:text-md lg:text-lg font-[500] leading-6 text-[#707070] mb-8 text-left max-w-4xl tracking-[-0.015em]"
           style={{ fontFamily: "Poppins, sans-serif" }}
         >
-          Access a wide range of Edexcel IAL Level Physics resources—all in one place. Whether you’re brushing up on concepts or aiming to master exam strategies, these materials are designed to support your revision and boost your performance
+          Access a wide range of Edexcel IGCSE Physics resources—all in one place. Whether you’re brushing up on concepts or aiming to master exam strategies, these materials are designed to support your revision and boost your performance
         </h3>
 
         {/* Unit Dividers and Resources */}
