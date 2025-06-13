@@ -1,8 +1,7 @@
 "use client";
 import Image from 'next/image';
 import Link from "next/link";
-import { useState } from 'react';
-import { useEffect, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { FaInfoCircle, FaBook, FaChalkboardTeacher, FaPhone, FaLifeRing, FaEllipsisH } from 'react-icons/fa';
 
 // Reusable components
@@ -53,6 +52,60 @@ const ScrollingColumn: React.FC<ScrollingColumnProps> = ({ direction, count = 15
   );
 };
 
+// Dropdown component
+const NavDropdown = ({ label, items }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  return (
+    <div className="relative" ref={dropdownRef}>
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="text-[#555555] text-sm sm:text-base lg:text-lg font-semibold hover:text-black transition tracking-[-1px] flex items-center gap-1"
+      >
+        {label}
+        <svg
+          className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+      
+      {isOpen && (
+        <div className="absolute z-50 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
+          <div className="py-1" role="menu" aria-orientation="vertical">
+            {items.map((item, index) => (
+              <Link
+                key={index}
+                href={item.href}
+                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                role="menuitem"
+                onClick={() => setIsOpen(false)}
+              >
+                {item.label}
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
 export default function Home() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   return (
@@ -67,18 +120,41 @@ export default function Home() {
 
         {/* Center Links - Hidden on sm */}
         <div className="hidden sm:flex flex-wrap gap-3 sm:gap-4 md:gap-5 justify-center items-center">
-          <Link href="#" className="text-[#555555] text-sm sm:text-base lg:text-lg font-semibold hover:text-black transition tracking-[-1px]">
-            About Edexcel
-          </Link>
-          <Link href="#" className="text-[#555555] text-sm sm:text-base lg:text-lg font-semibold hover:text-black transition tracking-[-1px]">
-            IAL Edexcel Resources
-          </Link>
-          <Link href="#" className="text-[#555555] text-sm sm:text-base lg:text-lg font-semibold hover:text-black transition tracking-[-1px]">
-            IGCSE Edexcel Resources
-          </Link>
-          <Link href="#" className="text-[#555555] text-sm sm:text-base lg:text-lg font-semibold hover:text-black transition tracking-[-1px]">
-            More
-          </Link>
+          <NavDropdown
+            label="About Edexcel"
+            items={[
+              { label: "About Edexcel", href: "/about/edexcel" },
+              { label: "Exam Structure", href: "/about/exam-structure" },
+              { label: "Grading System", href: "/about/grading" },
+            ]}
+          />
+          <NavDropdown
+            label="IAL Edexcel Resources"
+            items={[
+              { label: "Physics", href: "/sub_links/physics/IAL/resources" },
+              { label: "Chemistry", href: "/sub_links/chemistry/IAL/resources" },
+              { label: "Biology", href: "/sub_links/biology/IAL/resources" },
+              { label: "Mathematics", href: "/sub_links/maths/IAL/resources" },
+            ]}
+          />
+          <NavDropdown
+            label="IGCSE Edexcel Resources"
+            items={[
+              { label: "Physics", href: "/sub_links/physics/IGCSE/resources" },
+              { label: "Chemistry", href: "/sub_links/chemistry/IGCSE/resources" },
+              { label: "Biology", href: "/sub_links/biology/IGCSE/resources" },
+              { label: "Mathematics", href: "/sub_links/maths/IGCSE/resources" },
+            ]}
+          />
+          <NavDropdown
+            label="More"
+            items={[
+              { label: "Contact Us", href: "/contact" },
+              { label: "FAQ", href: "/faq" },
+              { label: "Privacy Policy", href: "/privacy" },
+              { label: "Terms of Service", href: "/terms" },
+            ]}
+          />
         </div>
 
         {/* Right Side - Button hidden on sm */}
@@ -175,7 +251,7 @@ export default function Home() {
             </a>
           </div>
 
-          {/* Decorative Images (Positioned with absolute so they don’t mess layout) */}
+          {/* Decorative Images (Positioned with absolute so they don't mess layout) */}
           <img
             src="bgCrypto.png"
             alt="Decorative Crypto"
@@ -191,7 +267,10 @@ export default function Home() {
 
       {/* Scrolling Papers Section */}
       <section className="w-full overflow-hidden py-16 relative top-[-80px]">
-        <div className="overflow-hidden h-[800px] w-full flex justify-center">
+        <div className="overflow-hidden h-[800px] w-full flex justify-center relative"> {/* Added 'relative' here */}
+          {/* Top Blur Overlay */}
+          <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-white to-transparent z-10"></div> {/* Adjust 'from-white' to your background color if needed */}
+
           <div className="flex flex-row gap-x-8 md:gap-x-16">
             <ScrollingColumn direction="scroll-up" />
             <ScrollingColumn direction="scroll-down" />
@@ -200,6 +279,9 @@ export default function Home() {
             <ScrollingColumn direction="scroll-up" />
             <ScrollingColumn direction="scroll-down" />
           </div>
+
+          {/* Bottom Blur Overlay */}
+          <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-white to-transparent z-10"></div> {/* Adjust 'from-white' to your background color if needed */}
         </div>
       </section>
 
@@ -282,21 +364,21 @@ export default function Home() {
           <div className="relative">
             <div className="flex flex-col lg:flex-row gap-[-100px] items-stretch justify-center mt-24">
               <TestimonialCard
-                content="Partnering with 00Pixel completely transformed our online presence. They didn’t just deliver a beautiful website—they created a high-performance platform that drives real results. Within three months, our conversions increased by 35%, and the site is optimised to keep that momentum going. If you're looking for a team that combines design with strategy, 00Pixel is the way to go!"
+                content="Partnering with 00Pixel completely transformed our online presence. They didn't just deliver a beautiful website—they created a high-performance platform that drives real results. Within three months, our conversions increased by 35%, and the site is optimised to keep that momentum going. If you're looking for a team that combines design with strategy, 00Pixel is the way to go!"
                 icon="/icon1.png"
                 headline="Headline 1"
                 rotation="rotate-[-2deg]"
               />
 
               <TestimonialCard
-                content="We were struggling to find a web partner who understood our vision—until we found 00Pixel. They built a website that not only looks amazing but is also designed to attract and convert. Since launching, our client inquiries have doubled, and we’re seeing a clear return on investment. Their ability to balance creativity with business goals is rare and invaluable!"
+                content="We were struggling to find a web partner who understood our vision—until we found 00Pixel. They built a website that not only looks amazing but is also designed to attract and convert. Since launching, our client inquiries have doubled, and we're seeing a clear return on investment. Their ability to balance creativity with business goals is rare and invaluable!"
                 icon="/icon2.png"
                 headline="Headline 2"
                 rotation="rotate-[1deg]"
               />
 
               <TestimonialCard
-                content="Our website was outdated and failing to generate leads—00Pixel changed everything. From the start, they focused on creating a user-friendly experience while ensuring the backend was optimised for growth. We’ve seen a 40% increase in lead generation and a more seamless process for our customers. If you want a team that’s as invested in your success as you are, 00Pixel is it!"
+                content="Our website was outdated and failing to generate leads—00Pixel changed everything. From the start, they focused on creating a user-friendly experience while ensuring the backend was optimised for growth. We've seen a 40% increase in lead generation and a more seamless process for our customers. If you want a team that's as invested in your success as you are, 00Pixel is it!"
                 icon="/icon3.png"
                 headline="Headline 3"
                 rotation="rotate-[-1.5deg]"
@@ -325,29 +407,29 @@ export default function Home() {
               {/* Column 1 */}
               <div className="flex flex-col">
                 <h3 className="text-black tracking-[-0.6px] text-lg font-[550] mb-2" style={{ fontFamily: 'Poppins, sans-serif' }}>Navigation</h3>
-                <a href="#" className="text-[#757575] tracking-[-0.5px] font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>Home</a>
-                <a href="#" className="text-[#757575] tracking-[-0.5px] font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>Resources</a>
-                <a href="#" className="text-[#757575] tracking-[-0.5px] font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>Past Papers</a>
-                <a href="#" className="text-[#757575] tracking-[-0.5px] font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>Match with a Tutor</a>
-                <Link href='/staffAccess' className="text-[#757575] tracking-[-0.5px] font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}> Staff Page</Link>
-                <a href="#" className="text-[#757575] tracking-[-0.5px] font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>About</a>
-                <a href="#" className="text-[#757575] tracking-[-0.5px] font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>Community</a>
+                <a href="#" className="text-[#757575] tracking-[-0.5px] font-medium hover:text-slate-950" style={{ fontFamily: 'Poppins, sans-serif' }}>Home</a>
+                <a href="#" className="text-[#757575] tracking-[-0.5px] font-medium hover:text-slate-950" style={{ fontFamily: 'Poppins, sans-serif' }}>Resources</a>
+                <a href="#" className="text-[#757575] tracking-[-0.5px] font-medium hover:text-slate-950" style={{ fontFamily: 'Poppins, sans-serif' }}>Past Papers</a>
+                <a href="#" className="text-[#757575] tracking-[-0.5px] font-medium hover:text-slate-950" style={{ fontFamily: 'Poppins, sans-serif' }}>Match with a Tutor</a>
+                <Link href='/staffAccess' className="text-[#757575] tracking-[-0.5px] font-medium hover:text-slate-950" style={{ fontFamily: 'Poppins, sans-serif' }}> Staff Page</Link>
+                <a href="#" className="text-[#757575] tracking-[-0.5px] font-medium hover:text-slate-950" style={{ fontFamily: 'Poppins, sans-serif' }}>About</a>
+                <a href="#" className="text-[#757575] tracking-[-0.5px] font-medium hover:text-slate-950" style={{ fontFamily: 'Poppins, sans-serif' }}>Community</a>
               </div>
 
               {/* Column 2 */}
               <div className="flex flex-col">
                 <h3 className="text-black tracking-[-0.6px] text-lg font-[550] mb-2" style={{ fontFamily: 'Poppins, sans-serif' }}>Legal Info</h3>
-                <a href="#" className="text-[#757575] tracking-[-0.5px] font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>Community Guidelines</a>
-                <a href="#" className="text-[#757575] tracking-[-0.5px] font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>Terms of Services</a>
-                <a href="#" className="text-[#757575] tracking-[-0.5px] font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>Privacy Policy</a>
+                <a href="#" className="text-[#757575] tracking-[-0.5px] font-medium hover:text-slate-950" style={{ fontFamily: 'Poppins, sans-serif' }}>Community Guidelines</a>
+                <a href="#" className="text-[#757575] tracking-[-0.5px] font-medium hover:text-slate-950" style={{ fontFamily: 'Poppins, sans-serif' }}>Terms of Services</a>
+                <a href="#" className="text-[#757575] tracking-[-0.5px] font-medium hover:text-slate-950" style={{ fontFamily: 'Poppins, sans-serif' }}>Privacy Policy</a>
               </div>
 
               {/* Column 3 */}
               <div className="flex flex-col">
                 <h3 className="text-black tracking-[-0.6px] text-lg font-[550] mb-2" style={{ fontFamily: 'Poppins, sans-serif' }}>Join the Community</h3>
-                <a href="" className="text-[#757575] tracking-[-0.5px] font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>Join the Discord Server</a>
-                <a href="#" className="text-[#757575] tracking-[-0.5px] font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>Become a community contributor</a>
-                <a href="#" className="text-[#757575] tracking-[-0.5px] font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>Become a tutor</a>
+                <a href="" className="text-[#757575] tracking-[-0.5px] font-medium hover:text-slate-950" style={{ fontFamily: 'Poppins, sans-serif' }}>Join the Discord Server</a>
+                <a href="#" className="text-[#757575] tracking-[-0.5px] font-medium hover:text-slate-950" style={{ fontFamily: 'Poppins, sans-serif' }}>Become a community contributor</a>
+                <a href="#" className="text-[#757575] tracking-[-0.5px] font-medium hover:text-slate-950" style={{ fontFamily: 'Poppins, sans-serif' }}>Become a tutor</a>
               </div>
             </div>
           </div>
