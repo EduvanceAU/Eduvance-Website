@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation';
 // Import Supabase client library directly
 import { createClient } from '@supabase/supabase-js';
 // Import Lucide React icons directly
-import { User, LogIn, UserPlus, LogOut, Loader2 } from 'lucide-react';
+import { User, LogIn, Loader2 } from 'lucide-react';
 
 // --- Supabase Configuration ---
 // For a production Next.js application, these should be securely stored as
@@ -38,8 +38,8 @@ try {
 
 /**
  * Staff Authentication Page Component.
- * This component provides forms for staff sign-up and sign-in using Supabase's built-in authentication.
- * It also demonstrates how to access user session information and link to a custom staff_profiles table.
+ * This component provides a form for staff sign-in using Supabase's built-in authentication.
+ * It handles redirection upon successful login and displays messages.
  */
 export default function StaffAuthPage() {
   const router = useRouter(); // Initialize the router for navigation
@@ -50,13 +50,11 @@ export default function StaffAuthPage() {
   const [password, setPassword] = useState(''); // Input for password
   const [message, setMessage] = useState('');   // Messages to display to the user (success/error)
   const [loading, setLoading] = useState(false); // Loading indicator for async operations
-  // The currentPage state is now less critical for routing but can be used for UI states
-  const [currentPage, setCurrentPage] = useState('auth'); // Controls which view is shown ('auth' or 'dashboard')
 
   // --- Supabase Auth State Listener and Redirection ---
   // This useEffect hook runs once on component mount to establish the Supabase auth listener.
   // It checks for an existing session and updates the component's state accordingly.
-  // It also handles redirection if a session is found.
+  // It also handles redirection if a session is found, keeping the login page exclusively for logging in.
   useEffect(() => {
     const authHandler = async () => {
       // If Supabase client failed to initialize, display a message and return.
@@ -79,7 +77,7 @@ export default function StaffAuthPage() {
       const { data: authListener } = supabase.auth.onAuthStateChange(
         (_event, newSession) => {
           setSession(newSession);
-          // If a new session is established (user logs in or confirms email), redirect to dashboard
+          // If a new session is established (user logs in), redirect to dashboard
           if (newSession) {
             router.replace('/dashboard');
           }
@@ -98,49 +96,6 @@ export default function StaffAuthPage() {
 
     authHandler();
   }, [router]); // Add router to dependencies to ensure effect re-runs if router object changes (though unlikely)
-
-  // --- Authentication Handlers ---
-
-  /**
-   * Handles the staff sign-up process.
-   * Uses Supabase's `signUp` method to create a new user account.
-   * Supabase will send a confirmation email with a link that respects your
-   * "Redirect URL(s)" setting in the Supabase dashboard.
-   * @param {Event} e The submit event from the form.
-   */
-  const handleSignUp = async (e) => {
-    e.preventDefault(); // Prevent default form submission
-    setLoading(true);   // Set loading state to true
-    setMessage('');     // Clear previous messages
-
-    // Ensure Supabase client is initialized before proceeding
-    if (!supabase) {
-        setMessage("Supabase client not initialized.");
-        setLoading(false);
-        return;
-    }
-
-    try {
-      // Call Supabase's signUp method with email and password.
-      // Supabase handles password hashing and storage securely.
-      // For email confirmation, the redirection is primarily configured in Supabase dashboard.
-      const { data, error } = await supabase.auth.signUp({ email, password });
-
-      if (error) {
-          throw error; // Propagate any Supabase errors
-      }
-
-      if (data.user) {
-        setMessage('Sign-up successful! Check your email for a confirmation link.');
-        setEmail('');    // Clear email input
-        setPassword(''); // Clear password input
-      }
-    } catch (error) {
-      setMessage(`Sign-up error: ${error.message}`); // Display error message
-    } finally {
-      setLoading(false); // Set loading state back to false
-    }
-  };
 
   /**
    * Handles the staff sign-in process.
@@ -184,80 +139,11 @@ export default function StaffAuthPage() {
     }
   };
 
-  /**
-   * Handles the staff sign-out process.
-   * Uses Supabase's `signOut` method to log out the current user.
-   * On successful sign-out, the user will be redirected to the login page.
-   */
-  const handleSignOut = async () => {
-    setLoading(true);
-    setMessage('');
+  // the authenticated experience on the dashboard page, not the login page.
+  // Their functionality would be on the /dashboard page.
 
-    if (!supabase) {
-        setMessage("Supabase client not initialized.");
-        setLoading(false);
-        return;
-    }
-
-    try {
-      const { error } = await supabase.auth.signOut();
-      if (error) {
-          throw error;
-      }
-      setMessage('You have been signed out. Redirecting to login...');
-      // After sign-out, redirect back to the authentication page (current page '/')
-      router.replace('/');
-    } catch (error) {
-      setMessage(`Sign-out error: ${error.message}`);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // --- Staff Profile Management (Example) ---
-  /**
-   * Illustrative function to add a staff profile to a custom `staff_profiles` table.
-   * In a real application, you would call this after a user signs up or if additional
-   * staff-specific details are needed.
-   * @param {string} userId The UUID of the Supabase user (from `session.user.id`).
-   * @param {string} role The staff member's role.
-   * @param {string} department The staff member's department.
-   */
-  const addStaffProfile = async (userId, role, department) => {
-    if (!supabase) {
-        setMessage("Supabase client not initialized. Cannot add staff profile.");
-        return;
-    }
-    try {
-      // Insert a new row into your 'staff_profiles' table.
-      // The `user_id` links this custom profile to the Supabase authentication user.
-      const { data, error } = await supabase
-        .from('staff_profiles') // Replace with your actual table name if different
-        .insert([{ user_id: userId, role, department }]);
-
-      if (error) throw error;
-      console.log('Staff profile added:', data);
-      setMessage('Staff profile added successfully!');
-    } catch (error) {
-      console.error('Error adding staff profile:', error.message);
-      setMessage(`Error adding staff profile: ${error.message}`);
-    }
-  };
-
-  // Example useEffect hook: This demonstrates how you might conditionally add a staff profile
-  // after a new user signs up or signs in, based on some criteria (e.g., a specific email).
-  // In a production app, this logic would likely be more sophisticated (e.g., a dedicated form).
-  useEffect(() => {
-    // Only run if there's an active session and a specific condition is met (e.g., a new staff email).
-    // Uncomment and modify this section if you need to automatically add profiles.
-    // if (session?.user && session.user.email === 'newstaff@example.com') {
-    //   addStaffProfile(session.user.id, 'Manager', 'Sales');
-    // }
-  }, [session]); // Rerun when the session object changes
-
-  // --- Render Logic ---
-  // If a session exists, this component will trigger a redirect.
-  // Otherwise, it will render the authentication forms.
+  // If a session exists, this component will trigger a redirect to /dashboard.
+  // Otherwise, it will render only the sign-in form.
   return (
     // Main container for the authentication interface, styled with Tailwind CSS
     <div className="min-h-screen bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center p-4 font-[Inter]">
@@ -275,46 +161,8 @@ export default function StaffAuthPage() {
               {User && <User className="mr-2 text-blue-500" size={24} />} Welcome, {session.user.email}!
             </h2>
             <p className="text-gray-600 mb-6" style={{ fontFamily: 'Poppins, sans-serif' }}>
-              Your Supabase User ID: <span className="font-mono bg-gray-100 p-1 rounded text-sm break-all">{session.user.id}</span>
+              You are already logged in. Redirecting to your dashboard...
             </p>
-            <p className="text-gray-600 mb-6" style={{ fontFamily: 'Poppins, sans-serif' }}>
-              This ID can be used to link to your custom `staff_profiles` table.
-            </p>
-
-            {currentPage === 'dashboard' && (
-              <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-                <h3 className="text-lg font-medium text-blue-700 mb-2" style={{ fontFamily: 'Poppins, sans-serif' }}>Staff Dashboard</h3>
-                <p className="text-gray-600" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                  This is where you would display staff-specific content,
-                  fetched from your `staff_profiles` table based on the `user_id`.
-                </p>
-                <button
-                  onClick={handleSignOut}
-                  className="mt-6 w-full flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-lg shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all duration-200"
-                  disabled={loading}
-                  style={{ fontFamily: 'Poppins, sans-serif' }}
-                >
-                  {loading ? (
-                    <Loader2 className="animate-spin mr-2" size={20} />
-                  ) : (
-                    LogIn && <LogOut className="mr-2" size={20} /> // Use LogOut icon for sign out
-                  )}
-                  Sign Out
-                </button>
-              </div>
-            )}
-
-            {/* Button to switch back to dashboard if currently on auth view while logged in */}
-            {currentPage === 'auth' && (
-              <button
-                onClick={() => setCurrentPage('dashboard')}
-                className="mt-6 w-full flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-lg shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200"
-                style={{ fontFamily: 'Poppins, sans-serif' }}
-              >
-                Go to Dashboard
-              </button>
-            )}
-
             {/* Display messages - SUCCESS/INFO message (green) */}
             {message && !message.includes('error') && !message.includes('failed') && (
               <p className="mt-4 text-sm text-green-600 bg-green-50 p-3 rounded-lg border border-green-200" style={{ fontFamily: 'Poppins, sans-serif' }}>{message}</p>
@@ -373,25 +221,6 @@ export default function StaffAuthPage() {
                 Sign In
               </button>
             </form>
-
-            <div className="text-center text-gray-500 mb-4">
-              Or
-            </div>
-
-            {/* Sign-Up Button */}
-            <button
-              onClick={handleSignUp}
-              className="w-full flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-lg shadow-sm text-blue-700 bg-blue-100 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200"
-              style={{ fontFamily: 'Poppins, sans-serif' }}
-              disabled={loading}
-            >
-              {loading ? (
-                <Loader2 className="animate-spin mr-2" size={20} />
-              ) : (
-                UserPlus && <UserPlus className="mr-2" size={20} /> // Use UserPlus icon for sign up
-              )}
-              Sign Up
-            </button>
 
             {/* Display messages - SUCCESS/INFO message (green) */}
             {message && !message.includes('error') && !message.includes('failed') && (
