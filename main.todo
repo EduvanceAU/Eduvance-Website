@@ -1,0 +1,8 @@
+Resource Upload and Staff Dashboard Development:
+   ✔ Staff Auth and Supabase Auth DB Setup
+   ✔ Resources DB table + Unit recongnition
+   ✔ Resources DB link to all subjects
+   ✔ Resources Upload Mechanism + Staff Dashboard Base Code
+   ☐ Admin Dashboard Addition + Admin Auth Setup
+   ☐ Admin Permissions + Resource Authorization Status DB update
+
