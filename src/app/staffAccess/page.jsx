@@ -77,7 +77,7 @@ export default function StaffAuthPage() {
         setLoading(false);
         if (!staffError && staffData) {
           if (staffData.role === 'admin') {
-            router.replace('/admin-dashboard');
+            router.replace('/dashboard/admin');
           } else {
             router.replace('/dashboard/staff');
           }
@@ -101,7 +101,7 @@ export default function StaffAuthPage() {
             setLoading(false);
             if (!staffError && staffData) {
               if (staffData.role === 'admin') {
-                router.replace('/admin-dashboard');
+                router.replace('/dashboard/admin');
               } else {
                 router.replace('/dashboard/staff');
               }

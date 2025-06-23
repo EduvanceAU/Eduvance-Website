@@ -3,9 +3,10 @@ Resource Upload and Staff Dashboard Development:
    ✔ Resources DB table + Unit recongnition
    ✔ Resources DB link to all subjects
    ✔ Resources Upload Mechanism + Staff Dashboard Base Code
-   ☐ Admin Dashboard Addition + Admin Auth Setup
-   ☐ Admin Permissions + Resource Authorization Status DB update
+   ✔ Admin Dashboard Addition + Admin Auth Setup
+   ✔ Admin Permissions + Resource Authorization Status DB update
+   ☐ Admin Subject Moderation Feature + Modular Subjects Update
 
-   ☐ Add Staff_ID data entry for the resource upload system
+   ✔ Add Staff_ID data entry for the resource upload system
    ☐ Unit Selection dropdown and selection form update
    ☐ Update resource type selection form update
