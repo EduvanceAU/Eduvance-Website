@@ -10,3 +10,18 @@ Resource Upload and Staff Dashboard Development:
    ✔ Add Staff_ID data entry for the resource upload system
    ☐ Unit Selection dropdown and selection form update
    ☐ Update resource type selection form update
+
+Modular Subject Update:
+   ☐ Add Admin Subject Adding Feature with necessary inputs
+   ☐ Update Main Subject selection page for resources to fetch subjects from database
+   ☐ Add a system to generate files and pages for the created subject
+
+Other TODO:
+   ☐ Update Past Papers for Further Mathematics
+   ☐ Update Community Notes pages for all subjects and update logic for DB
+   ☐ Add user authentication for eduvance and collection of users logged email list (for marketing purposes)
+   ☐ Plan site pages and plans for : 
+      - Becoming a community contributor : People may sign up straight from the website to become contributors
+      - Become a tutor/Match with a tutor : People could sign up to teach/study with tutors
+   ☐ Other miscellaneous pages for the website (About Eduvance, IGCSE/A Levels, Grading System Explained, FAQs and more)
+   ☐ Collect testimonials from community members for the website
