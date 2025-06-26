@@ -1,9 +1,42 @@
 "use client";
-import Image from 'next/image';
+
 import Link from "next/link";
 import { useState, useEffect } from 'react';
 
 export default function Resources() {
+  const [subjects, setSubjects] = useState([]);
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  useEffect(() => {
+    const fetchSubjects = async () => {
+      const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+      const { data, error } = await supabase
+        .from("subjects")
+        .select("name, syllabus_type");
+
+      if (error) {
+        console.error("Error fetching subjects:", error.message);
+        return;
+      }
+
+      // 🧼 Deduplicate by subject name
+      const unique = {};
+      data.forEach((subj) => {
+        if (!unique[subj.name]) unique[subj.name] = subj;
+      });
+
+      setSubjects(Object.values(unique));
+    };
+
+    fetchSubjects();
+  }, []);
+
+  // 🔤 Convert subject name to kebab-case URL slug
+  const generatePath = (subjectName) => {
+    return `/sub_links/${subjectName.toLowerCase().replace(/\s+/g, "-")}`;
+  };
+
   return (
     <main className="flex flex-col lg:flex-row w-full min-h-screen">
       {/* Left Side */}
@@ -46,20 +79,20 @@ export default function Resources() {
         </h1>
 
         <div className="flex flex-col items-start gap-y-3">
-          {[
-            { name: "Physics", path: "/sub_links/physics" },
-            { name: "Chemistry", path: "/sub_links/chemistry" },
-            { name: "Biology", path: "/sub_links/biology" },
-            { name: "Maths", path: "/sub_links/maths" },
-            { name: "Further Maths", path: "/sub_links/fmaths" }, // Here you specify the exact folder name
-            { name: "Psychology", path: "/sub_links/psychology" }
-          ].map(subjectData => ( // Renamed 'subject' to 'subjectData' for clarity
-            <Link key={subjectData.name} href={subjectData.path}>
+          {subjects.map((subject) => (
+            <Link key={subject.name} href={generatePath(subject.name)}>
               <button className="flex items-center justify-between w-[90vw] max-w-[550px] px-6 py-4 bg-[#BAD1FD] rounded-[12px] group hover:bg-[#A8C6FF] transition-all duration-200 border-[#153064] border-1">
-                <p className="text-xl font-[550] text-[#153064]" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                  {subjectData.name} Revision Resources {/* Use subjectData.name for display */}
+                <p
+                  className="text-xl font-[550] text-[#153064]"
+                  style={{ fontFamily: "Poppins, sans-serif" }}
+                >
+                  {subject.name} Revision Resources
                 </p>
-                <img src="/BArrowR.png" alt="Arrow Right" className="w-6 h-auto group-hover:translate-x-1 transition-transform duration-200" />
+                <img
+                  src="/BArrowR.png"
+                  alt="Arrow Right"
+                  className="w-6 h-auto group-hover:translate-x-1 transition-transform duration-200"
+                />
               </button>
             </Link>
           ))}
