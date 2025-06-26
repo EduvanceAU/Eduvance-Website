@@ -3,25 +3,27 @@ Resource Upload and Staff Dashboard Development:
    ✔ Resources DB table + Unit recongnition
    ✔ Resources DB link to all subjects
    ✔ Resources Upload Mechanism + Staff Dashboard Base Code
+   ☐ Staff Console Update for contributor's approval
    ✔ Admin Dashboard Addition + Admin Auth Setup
    ✔ Admin Permissions + Resource Authorization Status DB update
-   ☐ Admin Subject Moderation Feature + Modular Subjects Update
+   ✔ Admin Subject Moderation Feature + Modular Subjects Update @done(25-06-26 19:45)
 
    ✔ Add Staff_ID data entry for the resource upload system
    ☐ Unit Selection dropdown and selection form update
    ☐ Update resource type selection form update
 
 Modular Subject Update:
-   ☐ Add Admin Subject Adding Feature with necessary inputs
-   ☐ Update Main Subject selection page for resources to fetch subjects from database
-   ☐ Add a system to generate files and pages for the created subject
+   ✔ Add Admin Subject Adding Feature with necessary inputs @done(25-06-26 19:00)
+   ✔ Update Main Subject selection page for resources to fetch subjects from database @done(25-06-26 18:21)
+   ✔ Add a system to generate files and pages for the created subject @done(25-06-26 19:45)
+   ☐ Update the system for generating files for new subjects
 
 Other TODO:
    ☐ Update Past Papers for Further Mathematics
    ☐ Update Community Notes pages for all subjects and update logic for DB
    ☐ Add user authentication for eduvance and collection of users logged email list (for marketing purposes)
    ☐ Plan site pages and plans for : 
-      - Becoming a community contributor : People may sign up straight from the website to become contributors
+   ☐ Becoming a community contributor : Request to upload resources -> Linked to staff console for approval
       - Become a tutor/Match with a tutor : People could sign up to teach/study with tutors
    ☐ Other miscellaneous pages for the website (About Eduvance, IGCSE/A Levels, Grading System Explained, FAQs and more)
    ☐ Collect testimonials from community members for the website
