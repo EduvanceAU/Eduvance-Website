@@ -57,7 +57,6 @@ export default function StaffAuthPage() {
   // It also handles redirection if a session is found, keeping the login page exclusively for logging in.
   useEffect(() => {
     const authHandler = async () => {
-      // If Supabase client failed to initialize, display a message and return.
       if (!supabase) {
         setMessage("Supabase client not initialized. Please check your URL and API key.");
         return;
@@ -67,26 +66,53 @@ export default function StaffAuthPage() {
       const { data: { session } } = await supabase.auth.getSession();
       setSession(session);
 
-      // If a session exists, redirect the user away from the login page to the dashboard.
+      // If a session exists, fetch the user's role and redirect accordingly
       if (session) {
-        router.replace('/dashboard'); // Use replace to prevent going back to login via browser history
+        setLoading(true);
+        const { data: staffData, error: staffError } = await supabase
+          .from('staff_users')
+          .select('role')
+          .eq('id', session.user.id)
+          .single();
+        setLoading(false);
+        if (!staffError && staffData) {
+          if (staffData.role === 'admin') {
+            router.replace('/dashboard/admin');
+          } else {
+            router.replace('/dashboard/staff');
+          }
+        } else {
+          // fallback if role can't be determined
+          router.replace('/dashboard/staff');
+        }
       }
 
       // Set up a listener for real-time authentication state changes.
-      // This will automatically update `session` state when a user signs in, signs out, etc.
       const { data: authListener } = supabase.auth.onAuthStateChange(
-        (_event, newSession) => {
+        async (_event, newSession) => {
           setSession(newSession);
-          // If a new session is established (user logs in), redirect to dashboard
           if (newSession) {
-            router.replace('/dashboard');
+            setLoading(true);
+            const { data: staffData, error: staffError } = await supabase
+              .from('staff_users')
+              .select('role')
+              .eq('id', newSession.user.id)
+              .single();
+            setLoading(false);
+            if (!staffError && staffData) {
+              if (staffData.role === 'admin') {
+                router.replace('/dashboard/admin');
+              } else {
+                router.replace('/dashboard/staff');
+              }
+            } else {
+              router.replace('/dashboard/staff');
+            }
           }
-          // If session becomes null (user logs out), this component (if still rendered)
-          // will naturally show the login forms.
         }
       );
 
-      // Cleanup function: Unsubscribe from the auth listener when the component unmounts
+      // Cleanup function
       return () => {
         if (authListener && authListener.subscription) {
             authListener.subscription.unsubscribe();
@@ -95,7 +121,7 @@ export default function StaffAuthPage() {
     };
 
     authHandler();
-  }, [router]); // Add router to dependencies to ensure effect re-runs if router object changes (though unlikely)
+  }, [router]);
 
   /**
    * Handles the staff sign-in process.
@@ -115,8 +141,6 @@ export default function StaffAuthPage() {
     }
 
     try {
-      // Call Supabase's signInWithPassword method.
-      // Supabase verifies the password securely against its stored hash.
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
       if (error) {
@@ -124,12 +148,27 @@ export default function StaffAuthPage() {
       }
 
       if (data.user) {
-        setMessage('Sign-in successful! Redirecting to dashboard...');
+        // Fetch role and redirect accordingly
+        const { data: staffData, error: staffError } = await supabase
+          .from('staff_users')
+          .select('role')
+          .eq('id', data.user.id)
+          .single();
+        if (!staffError && staffData) {
+          if (staffData.role === 'admin') {
+            setMessage('Sign-in successful! Redirecting to admin dashboard...');
+            router.replace('/admin-dashboard');
+          } else {
+            setMessage('Sign-in successful! Redirecting to staff dashboard...');
+            router.replace('/dashboard/staff');
+          }
+        } else {
+          setMessage('Sign-in successful! Redirecting to staff dashboard...');
+          router.replace('/dashboard/staff');
+        }
         setEmail('');
         setPassword('');
-        router.replace('/dashboard'); // Redirect to dashboard after successful sign-in
       } else {
-         // This else block might be hit if, for example, the email is unconfirmed.
          setMessage('Sign-in failed. Please check your credentials or confirm your email.');
       }
     } catch (error) {
