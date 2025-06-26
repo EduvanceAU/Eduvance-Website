@@ -1,13 +1,12 @@
+// This page allows anyone to add resources to the Supabase DB (no login required)
 "use client";
 import React, { useState, useEffect } from 'react';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-export default function UploadResource() {
+export default function ContributorUploadResource() {
   const [supabaseClient, setSupabaseClient] = useState(null);
-  const [userId, setUserId] = useState(null);
-  const [isAuthReady, setIsAuthReady] = useState(false);
   const [subjects, setSubjects] = useState([]);
   const [loadingSubjects, setLoadingSubjects] = useState(true);
   const [message, setMessage] = useState('');
@@ -32,39 +31,15 @@ export default function UploadResource() {
       const client = window.supabase.createClient(supabaseUrl, supabaseKey);
       setSupabaseClient(client);
     }
-  }, [supabaseClient]);
+    // eslint-disable-next-line
+  }, []);
 
-  useEffect(() => {
-    if (!supabaseClient) return;
-
-    supabaseClient.auth.signInAnonymously()
-      .then(({ data, error }) => {
-        if (error) throw error;
-        setUserId(data.user.id);
-        setMessage(`Signed in as ${data.user.id}`);
-        setMessageType('success');
-      })
-      .catch(err => {
-        setMessage(`Auth failed: ${err.message}`);
-        setMessageType('error');
-      })
-      .finally(() => setIsAuthReady(true));
-
-    const { data: subscription } = supabaseClient.auth.onAuthStateChange((_e, session) => {
-      setUserId(session?.user?.id || null);
-      setMessage(session?.user ? 'Auth updated' : 'Not authenticated');
-      setMessageType(session?.user ? 'success' : 'error');
-      setIsAuthReady(true);
-    });
-
-    return () => subscription?.unsubscribe?.();
-  }, [supabaseClient]);
-
+  // Fetch subjects
   useEffect(() => {
     if (!supabaseClient) return;
     setLoadingSubjects(true);
     supabaseClient.from('subjects')
-      .select('id, name, code, syllabus_type') // 👈 syllabus_type added
+      .select('id, name, code, syllabus_type')
       .then(({ data, error }) => {
         if (error) {
           setMessage(`Subjects fetch failed: ${error.message}`);
@@ -77,6 +52,7 @@ export default function UploadResource() {
       });
   }, [supabaseClient]);
 
+  // Resource upload handler
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!title || !link || !selectedSubjectId || !resourceType) {
@@ -84,17 +60,23 @@ export default function UploadResource() {
       setMessageType('error');
       return;
     }
-    if (!supabaseClient || !userId) {
+    if (!supabaseClient) {
       setMessage("Not ready to submit");
       setMessageType('error');
       return;
     }
-
     const unitValue = unitChapter.trim() === '' ? 'General' : unitChapter.trim();
-
     const { error } = await supabaseClient
       .from('resources')
-      .insert({ title, link, description, resource_type: resourceType, subject_id: selectedSubjectId, unit_chapter_name: unitChapter,});
+      .insert({
+        title,
+        link,
+        description,
+        resource_type: resourceType,
+        subject_id: selectedSubjectId,
+        unit_chapter_name: unitValue,
+        uploaded_by_username: 'contributor',
+      });
     if (error) {
       setMessage(`Submission failed: ${error.message}`);
       setMessageType('error');
@@ -119,12 +101,6 @@ export default function UploadResource() {
           </div>
         )}
 
-        {(!supabaseClient || !isAuthReady) && (
-          <div className="p-3 bg-yellow-50 border border-yellow-200 text-yellow-800 rounded text-sm text-center">
-            {!supabaseClient ? 'Loading dependencies...' : 'Authenticating...'}
-          </div>
-        )}
-
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label htmlFor="title" className="block text-sm font-medium text-gray-700">Title *</label>
@@ -136,10 +112,8 @@ export default function UploadResource() {
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
               placeholder="e.g., Physics Chapter 1 Notes"
               required
-              disabled={!supabaseClient || !isAuthReady}
             />
           </div>
-
           <div>
             <label htmlFor="unitChapter" className="block text-sm font-medium text-gray-700">
               Unit/Chapter Name (Optional)
@@ -151,11 +125,9 @@ export default function UploadResource() {
               onChange={(e) => setUnitChapter(e.target.value)}
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
               placeholder="e.g., Unit 1: Kinematics"
-              disabled={!supabaseClient || !isAuthReady}
             />
             <p className="text-xs text-gray-500 mt-1">Leave blank if it applies to the whole subject (will be marked as "General")</p>
           </div>
-
           <div>
             <label htmlFor="link" className="block text-sm font-medium text-gray-700">Resource Link (URL) *</label>
             <input
@@ -166,10 +138,8 @@ export default function UploadResource() {
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
               placeholder="e.g., https://docs.google.com/..."
               required
-              disabled={!supabaseClient || !isAuthReady}
             />
           </div>
-
           <div>
             <label htmlFor="description" className="block text-sm font-medium text-gray-700">Description (Optional)</label>
             <textarea
@@ -179,10 +149,8 @@ export default function UploadResource() {
               rows="3"
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm resize-y"
               placeholder="A brief summary of the resource content."
-              disabled={!supabaseClient || !isAuthReady}
             ></textarea>
           </div>
-
           <div>
             <label htmlFor="resourceType" className="block text-sm font-medium text-gray-700">Resource Type *</label>
             <select
@@ -191,7 +159,6 @@ export default function UploadResource() {
               onChange={(e) => setResourceType(e.target.value)}
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
               required
-              disabled={!supabaseClient || !isAuthReady}
             >
               {resourceCategories.map((category) => (
                 <option key={category.value} value={category.value}>
@@ -200,7 +167,6 @@ export default function UploadResource() {
               ))}
             </select>
           </div>
-
           <div>
             <label htmlFor="subject" className="block text-sm font-medium text-gray-700">Subject *</label>
             <select
@@ -209,7 +175,7 @@ export default function UploadResource() {
               onChange={(e) => setSelectedSubjectId(e.target.value)}
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
               required
-              disabled={loadingSubjects || subjects.length === 0 || !supabaseClient || !isAuthReady}
+              disabled={loadingSubjects || subjects.length === 0}
             >
               {loadingSubjects ? (
                 <option>Loading subjects...</option>
@@ -222,11 +188,10 @@ export default function UploadResource() {
               )}
             </select>
           </div>
-
           <button
             type="submit"
             className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition"
-            disabled={!supabaseClient || !isAuthReady}
+            disabled={loadingSubjects || subjects.length === 0}
           >
             Submit Resource
           </button>
