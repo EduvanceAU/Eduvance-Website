@@ -21,9 +21,8 @@ export default function ContributorUploadResource() {
 
   const resourceCategories = [
     { value: 'note', label: 'Note' },
-    { value: 'topic_question', label: 'Topic Question' },
-    { value: 'marking_scheme', label: 'Marking Scheme' },
-    { value: 'extra_resource', label: 'Extra Resource' },
+    { value: 'topic_question', label: 'Topic Questions' },
+    { value: 'solved_papers', label: 'Solved Past Paper Questions' },
   ];
 
   useEffect(() => {
@@ -65,32 +64,38 @@ export default function ContributorUploadResource() {
       setMessageType('error');
       return;
     }
+  
     const unitValue = unitChapter.trim() === '' ? 'General' : unitChapter.trim();
+  
     const { error } = await supabaseClient
-      .from('resources')
+      .from('community_resource_requests')
       .insert({
+        contributor_name: "Anonymous Contributor", // You can make this dynamic
+        contributor_email: "anonymous@example.com", // Optional input field can be added
         title,
         link,
         description,
         resource_type: resourceType,
         subject_id: selectedSubjectId,
         unit_chapter_name: unitValue,
-        uploaded_by_username: 'contributor',
+        is_approved: false,
+        submitter_ip: null, // can be handled via Supabase Edge Functions if needed
       });
+  
     if (error) {
       setMessage(`Submission failed: ${error.message}`);
       setMessageType('error');
     } else {
-      setMessage("✅ Resource added successfully");
+      setMessage("✅ Resource request submitted for review");
       setMessageType('success');
-      setTitle(''); setLink(''); setDescription('');
+      setTitle(''); setLink(''); setDescription(''); setUnitChapter('');
     }
   };
 
   return (
     <div className="min-h-screen bg-blue-100 flex items-center justify-center p-4" style={{ fontFamily: 'Poppins, sans-serif' }}>
       <div className="bg-white rounded-xl shadow-lg max-w-md w-full p-8 space-y-6 tracking-[-0.025em]">
-        <h2 className="text-2xl font-semibold text-gray-800 text-center">Upload New Resource</h2>
+        <h2 className="text-2xl font-semibold text-gray-800 text-center">Contribute with new Resource</h2>
 
         {message && (
           <div className={`p-3 rounded-md text-sm ${

@@ -3,14 +3,14 @@ Resource Upload and Staff Dashboard Development:
    ✔ Resources DB table + Unit recongnition
    ✔ Resources DB link to all subjects
    ✔ Resources Upload Mechanism + Staff Dashboard Base Code
-   ☐ Staff Console Update for contributor's approval
+   ✔ Staff Console Update for contributor's approval @done(25-06-27 15:44)
    ✔ Admin Dashboard Addition + Admin Auth Setup
    ✔ Admin Permissions + Resource Authorization Status DB update
    ✔ Admin Subject Moderation Feature + Modular Subjects Update @done(25-06-26 19:45)
 
    ✔ Add Staff_ID data entry for the resource upload system
-   ☐ Unit Selection dropdown and selection form update
-   ☐ Update resource type selection form update
+   ✔ Unit Selection dropdown and selection form update @done(25-06-27 15:44)
+   ✔ Update resource type selection form update @done(25-06-27 15:44)
 
 Modular Subject Update:
    ✔ Add Admin Subject Adding Feature with necessary inputs @done(25-06-26 19:00)
@@ -18,13 +18,24 @@ Modular Subject Update:
    ✔ Add a system to generate files and pages for the created subject @done(25-06-26 19:45)
    ☐ Update the system for generating files for new subjects
 
+User Authentication :
+   ☐ Setup betterauth authentication system (providers : email, google, discord)
+   ☐ Setup google developer console settings and sync with betterauth for auth page
+   ☐ Add email list collection system for marketing purposes
+   ☐ Modify resources page to ask for authentication or user sign in verification for access
+
+New Resources Page Update :
+   ☐ Update UI to make the subject resource selection better
+   ☐ Add subject selection and new modular file structure for sub-links
+
 Other TODO:
+   ✔ Update Past Paper loading feature for all pages @done(25-06-27 16:34)
    ☐ Update Past Papers for Further Mathematics
    ☐ Update Community Notes pages for all subjects and update logic for DB
    ☐ Add user authentication for eduvance and collection of users logged email list (for marketing purposes)
-   ☐ Plan site pages and plans for : 
+   ✔ Plan site pages and plans for : @done(25-06-27 15:44)
    ✔ Becoming a community contributor : Request to upload resources -> Linked to staff console for approval @done(25-06-26 22:15)
-   ☐ Update Contributor Page form link to DB table for approval of resources
+   ✔ Update Contributor Page form link to DB table for approval of resources @done(25-06-27 15:44)
       - Become a tutor/Match with a tutor : People could sign up to teach/study with tutors
    ☐ Other miscellaneous pages for the website (About Eduvance, IGCSE/A Levels, Grading System Explained, FAQs and more)
    ☐ Collect testimonials from community members for the website
