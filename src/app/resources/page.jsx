@@ -2,37 +2,61 @@
 
 import Link from "next/link";
 import { useState, useEffect } from 'react';
+import { supabase } from './supabaseClient';
+import { Auth } from '@supabase/auth-ui-react';
+import { ThemeSupa } from '@supabase/auth-ui-shared';
 
 export default function Resources() {
+  const [session, setSession] = useState(null);
   const [subjects, setSubjects] = useState([]);
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchSubjects = async () => {
-      const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
-      const { data, error } = await supabase
-        .from("subjects")
-        .select("name, syllabus_type");
-
-      if (error) {
-        console.error("Error fetching subjects:", error.message);
-        return;
-      }
-
-      // 🧼 Deduplicate by subject name
-      const unique = {};
-      data.forEach((subj) => {
-        if (!unique[subj.name]) unique[subj.name] = subj;
-      });
-
-      setSubjects(Object.values(unique));
-    };
-
-    fetchSubjects();
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+    });
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+    return () => subscription.unsubscribe();
   }, []);
 
-  // 🔤 Convert subject name to kebab-case URL slug
+  useEffect(() => {
+    if (!session) return;
+    setLoading(true);
+    supabase
+      .from('subjects')
+      .select('name, syllabus_type')
+      .then(({ data, error }) => {
+        if (!error) {
+          // Deduplicate by subject name
+          const unique = {};
+          data.forEach((subj) => {
+            if (!unique[subj.name]) unique[subj.name] = subj;
+          });
+          setSubjects(Object.values(unique));
+        }
+        setLoading(false);
+      });
+  }, [session]);
+
+  if (!session) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Auth 
+          supabaseClient={supabase} 
+          appearance={{ theme: ThemeSupa }} 
+          providers={['google', 'discord']} 
+          redirectTo={typeof window !== 'undefined' ? `${window.location.origin}/resources` : undefined}
+        />
+      </div>
+    );
+  }
+
+  if (loading) {
+    return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
+  }
+
   const generatePath = (subjectName) => {
     return `/sub_links/${subjectName.toLowerCase().replace(/\s+/g, "-")}`;
   };
@@ -97,6 +121,7 @@ export default function Resources() {
             </Link>
           ))}
         </div>
+        <button className="mt-8 px-4 py-2 bg-red-500 text-white rounded-lg" onClick={() => supabase.auth.signOut()}>Sign Out</button>
       </div>
     </main>
   );
