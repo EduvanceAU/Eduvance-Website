@@ -33,7 +33,7 @@ Other TODO:
    ✔ Update Past Paper loading feature for all pages @done(25-06-27 16:34)
    ☐ Update Past Papers for Further Mathematics
    ☐ Update Community Notes pages for all subjects and update logic for DB
-   ☐ Add user authentication for eduvance and collection of users logged email list (for marketing purposes)
+   ✔ Add user authentication for eduvance and collection of users logged email list (for marketing purposes) @done(25-06-29 06:45)
    ✔ Plan site pages and plans for : @done(25-06-27 15:44)
    ✔ Becoming a community contributor : Request to upload resources -> Linked to staff console for approval @done(25-06-26 22:15)
    ✔ Update Contributor Page form link to DB table for approval of resources @done(25-06-27 15:44)
