@@ -6,32 +6,30 @@ const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
 export default function UploadResource() {
   const [supabaseClient, setSupabaseClient] = useState(null);
-  const [staffUser, setStaffUser] = useState(null); // Store staff user session
+  const [staffUser, setStaffUser] = useState(null);
   const [isAuthReady, setIsAuthReady] = useState(false);
   const [subjects, setSubjects] = useState([]);
   const [loadingSubjects, setLoadingSubjects] = useState(true);
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState(null);
-
-  // Login form state
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
   const [loginLoading, setLoginLoading] = useState(false);
-
   const [title, setTitle] = useState('');
   const [unitChapter, setUnitChapter] = useState('');
   const [link, setLink] = useState('');
   const [description, setDescription] = useState('');
   const [resourceType, setResourceType] = useState('note');
   const [selectedSubjectId, setSelectedSubjectId] = useState('');
-
   const [staffUsername, setStaffUsername] = useState('');
+  const [activeTab, setActiveTab] = useState('upload');
+  const [pendingResources, setPendingResources] = useState([]);
+  const [rejectionReasons, setRejectionReasons] = useState({});
 
   const resourceCategories = [
     { value: 'note', label: 'Note' },
-    { value: 'topic_question', label: 'Topic Question' },
-    { value: 'marking_scheme', label: 'Marking Scheme' },
-    { value: 'extra_resource', label: 'Extra Resource' },
+    { value: 'topic_question', label: 'Topic Questions' },
+    { value: 'solved_papers', label: 'Solved Past Paper Questions' },
   ];
 
   useEffect(() => {
@@ -39,35 +37,26 @@ export default function UploadResource() {
       const client = window.supabase.createClient(supabaseUrl, supabaseKey);
       setSupabaseClient(client);
     }
-    // eslint-disable-next-line
-  }, []); // Only run once on mount
+  }, []);
 
-  // Listen for auth state changes
   useEffect(() => {
     if (!supabaseClient) return;
     setIsAuthReady(false);
     const { data: subscription } = supabaseClient.auth.onAuthStateChange((_e, session) => {
       setStaffUser(session?.user || null);
       setIsAuthReady(true);
-      // Fetch username if user is logged in
       if (session?.user) {
         supabaseClient
           .from('staff_users')
           .select('username')
           .eq('id', session.user.id)
           .single()
-          .then(({ data: staffData, error: staffError }) => {
-            if (!staffError && staffData) {
-              setStaffUsername(staffData.username);
-            } else {
-              setStaffUsername('');
-            }
+          .then(({ data: staffData }) => {
+            setStaffUsername(staffData?.username || '');
           });
-      } else {
-        setStaffUsername('');
+        fetchPendingResources();
       }
     });
-    // Check initial session
     supabaseClient.auth.getSession().then(({ data }) => {
       setStaffUser(data?.session?.user || null);
       setIsAuthReady(true);
@@ -77,21 +66,15 @@ export default function UploadResource() {
           .select('username')
           .eq('id', data.session.user.id)
           .single()
-          .then(({ data: staffData, error: staffError }) => {
-            if (!staffError && staffData) {
-              setStaffUsername(staffData.username);
-            } else {
-              setStaffUsername('');
-            }
+          .then(({ data: staffData }) => {
+            setStaffUsername(staffData?.username || '');
           });
-      } else {
-        setStaffUsername('');
+        fetchPendingResources();
       }
     });
     return () => subscription?.unsubscribe?.();
   }, [supabaseClient]);
 
-  // Fetch subjects
   useEffect(() => {
     if (!supabaseClient) return;
     setLoadingSubjects(true);
@@ -109,7 +92,6 @@ export default function UploadResource() {
       });
   }, [supabaseClient]);
 
-  // Staff login handler
   const handleLogin = async (e) => {
     e.preventDefault();
     if (!supabaseClient) return;
@@ -127,24 +109,19 @@ export default function UploadResource() {
       setStaffUser(data.user);
       setMessage('Logged in successfully!');
       setMessageType('success');
-      // Fetch username from staff_users
       supabaseClient
         .from('staff_users')
         .select('username')
         .eq('id', data.user.id)
         .single()
-        .then(({ data: staffData, error: staffError }) => {
-          if (!staffError && staffData) {
-            setStaffUsername(staffData.username);
-          } else {
-            setStaffUsername('');
-          }
+        .then(({ data: staffData }) => {
+          setStaffUsername(staffData?.username || '');
         });
+      fetchPendingResources();
     }
     setLoginLoading(false);
   };
 
-  // Staff logout handler
   const handleLogout = async () => {
     if (!supabaseClient) return;
     await supabaseClient.auth.signOut();
@@ -153,7 +130,6 @@ export default function UploadResource() {
     setMessageType('success');
   };
 
-  // Resource upload handler
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!title || !link || !selectedSubjectId || !resourceType) {
@@ -177,6 +153,7 @@ export default function UploadResource() {
         subject_id: selectedSubjectId,
         unit_chapter_name: unitValue,
         uploaded_by_username: staffUsername,
+        is_approved: true
       });
     if (error) {
       setMessage(`Submission failed: ${error.message}`);
@@ -188,164 +165,113 @@ export default function UploadResource() {
     }
   };
 
+  const fetchPendingResources = async () => {
+    if (!supabaseClient) return;
+    const { data, error } = await supabaseClient
+      .from('community_resource_requests')
+      .select('*')
+      .eq('is_approved', false);
+    if (!error) setPendingResources(data);
+  };
+
+  const approveResource = async (id) => {
+    if (!supabaseClient) return;
+    const { data, error } = await supabaseClient
+      .from('community_resource_requests')
+      .update({ is_approved: true })
+      .eq('id', id)
+      .select()
+      .single();
+    if (!error && data) {
+      await supabaseClient.from('resources').insert({
+        title: data.title,
+        link: data.link,
+        description: data.description,
+        resource_type: data.resource_type,
+        subject_id: data.subject_id,
+        unit_chapter_name: data.unit_chapter_name,
+        uploaded_by_username: data.uploaded_by_username,
+        is_approved: true
+      });
+      fetchPendingResources();
+    }
+  };
+
+  const rejectResource = async (id) => {
+    if (!supabaseClient || !rejectionReasons[id]) return;
+  
+    const { error } = await supabaseClient
+      .from('community_resource_requests')
+      .update({ rejection_reason: rejectionReasons[id] })
+      .eq('id', id);
+  
+    if (!error) {
+      // 🧹 Remove from view if rejection was successful
+      setPendingResources((prev) => prev.filter((res) => res.id !== id));
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-blue-100 flex items-center justify-center p-4" style={{ fontFamily: 'Poppins, sans-serif' }}>
-      <div className="bg-white rounded-xl shadow-lg max-w-md w-full p-8 space-y-6 tracking-[-0.025em]">
-        <h2 className="text-2xl font-semibold text-gray-800 text-center">Upload New Resource</h2>
-
-        {message && (
-          <div className={`p-3 rounded-md text-sm ${
-            messageType === 'success' ? 'bg-green-50 border border-green-200 text-green-800' :
-            'bg-red-50 border border-red-200 text-red-800'
-          }`}>
-            {message}
-          </div>
-        )}
-
-        {/* Staff login form if not logged in */}
-        {!staffUser && (
-          <form onSubmit={handleLogin} className="space-y-4 mb-4">
-            <div>
-              <label htmlFor="loginEmail" className="block text-sm font-medium text-gray-700">Staff Email</label>
-              <input
-                type="email"
-                id="loginEmail"
-                value={loginEmail}
-                onChange={(e) => setLoginEmail(e.target.value)}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                required
-                disabled={loginLoading}
-              />
-            </div>
-            <div>
-              <label htmlFor="loginPassword" className="block text-sm font-medium text-gray-700">Password</label>
-              <input
-                type="password"
-                id="loginPassword"
-                value={loginPassword}
-                onChange={(e) => setLoginPassword(e.target.value)}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                required
-                disabled={loginLoading}
-              />
-            </div>
-            <button
-              type="submit"
-              className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition"
-              disabled={loginLoading}
-            >
-              {loginLoading ? 'Logging in...' : 'Login as Staff'}
-            </button>
+    <div className="min-h-screen bg-blue-100 p-6" style={{ fontFamily: 'Poppins, sans-serif' }}>
+      <div className="bg-white rounded-xl shadow-lg max-w-3xl mx-auto p-6">
+        {!staffUser ? (
+          <form onSubmit={handleLogin} className="space-y-4">
+            <input type="email" value={loginEmail} onChange={(e) => setLoginEmail(e.target.value)} placeholder="Staff Email" className="w-full border p-2 rounded" required />
+            <input type="password" value={loginPassword} onChange={(e) => setLoginPassword(e.target.value)} placeholder="Password" className="w-full border p-2 rounded" required />
+            <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded">{loginLoading ? 'Logging in...' : 'Login'}</button>
           </form>
-        )}
-
-        {/* Show upload form if staff is logged in */}
-        {staffUser && (
+        ) : (
           <>
-            <div className="flex justify-between items-center mb-2">
-              <span className="text-sm text-gray-600">Logged in as: {staffUser.email}</span>
-              <button onClick={handleLogout} className="text-xs text-blue-600 hover:underline">Logout</button>
+            <div className="flex justify-between items-center mb-4">
+              <p className="text-sm text-gray-600">Logged in as {staffUser.email}</p>
+              <button onClick={handleLogout} className="text-sm text-blue-600 hover:underline">Logout</button>
             </div>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label htmlFor="title" className="block text-sm font-medium text-gray-700">Title *</label>
-                <input
-                  type="text"
-                  id="title"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                  placeholder="e.g., Physics Chapter 1 Notes"
-                  required
-                  disabled={!supabaseClient || !isAuthReady}
-                />
-              </div>
-              <div>
-                <label htmlFor="unitChapter" className="block text-sm font-medium text-gray-700">
-                  Unit/Chapter Name (Optional)
-                </label>
-                <input
-                  type="text"
-                  id="unitChapter"
-                  value={unitChapter}
-                  onChange={(e) => setUnitChapter(e.target.value)}
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                  placeholder="e.g., Unit 1: Kinematics"
-                  disabled={!supabaseClient || !isAuthReady}
-                />
-                <p className="text-xs text-gray-500 mt-1">Leave blank if it applies to the whole subject (will be marked as "General")</p>
-              </div>
-              <div>
-                <label htmlFor="link" className="block text-sm font-medium text-gray-700">Resource Link (URL) *</label>
-                <input
-                  type="url"
-                  id="link"
-                  value={link}
-                  onChange={(e) => setLink(e.target.value)}
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                  placeholder="e.g., https://docs.google.com/..."
-                  required
-                  disabled={!supabaseClient || !isAuthReady}
-                />
-              </div>
-              <div>
-                <label htmlFor="description" className="block text-sm font-medium text-gray-700">Description (Optional)</label>
-                <textarea
-                  id="description"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  rows="3"
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm resize-y"
-                  placeholder="A brief summary of the resource content."
-                  disabled={!supabaseClient || !isAuthReady}
-                ></textarea>
-              </div>
-              <div>
-                <label htmlFor="resourceType" className="block text-sm font-medium text-gray-700">Resource Type *</label>
-                <select
-                  id="resourceType"
-                  value={resourceType}
-                  onChange={(e) => setResourceType(e.target.value)}
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                  required
-                  disabled={!supabaseClient || !isAuthReady}
-                >
-                  {resourceCategories.map((category) => (
-                    <option key={category.value} value={category.value}>
-                      {category.label}
-                    </option>
+            <div className="flex space-x-4 border-b mb-4">
+              <button onClick={() => setActiveTab('upload')} className={`py-2 px-4 ${activeTab === 'upload' ? 'border-b-2 border-blue-600 font-semibold' : 'text-gray-500'}`}>Upload Resource</button>
+              <button onClick={() => setActiveTab('approve')} className={`py-2 px-4 ${activeTab === 'approve' ? 'border-b-2 border-blue-600 font-semibold' : 'text-gray-500'}`}>Approve Submissions</button>
+            </div>
+            {message && (
+              <div className={`mb-4 p-3 rounded text-sm ${messageType === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>{message}</div>
+            )}
+            {activeTab === 'upload' && (
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Title" className="w-full border p-2 rounded" required />
+                <input type="text" value={unitChapter} onChange={(e) => setUnitChapter(e.target.value)} placeholder="Unit/Chapter Name (Optional)" className="w-full border p-2 rounded" />
+                <input type="url" value={link} onChange={(e) => setLink(e.target.value)} placeholder="Resource Link (URL)" className="w-full border p-2 rounded" required />
+                <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Description (Optional)" className="w-full border p-2 rounded" rows="3"></textarea>
+                <select value={resourceType} onChange={(e) => setResourceType(e.target.value)} className="w-full border p-2 rounded" required>
+                  {resourceCategories.map((cat) => <option key={cat.value} value={cat.value}>{cat.label}</option>)}
+                </select>
+                <select value={selectedSubjectId} onChange={(e) => setSelectedSubjectId(e.target.value)} className="w-full border p-2 rounded" required>
+                  {subjects.map((subject) => (
+                    <option key={subject.id} value={subject.id}>{subject.name} ({subject.code}) - {subject.syllabus_type}</option>
                   ))}
                 </select>
-              </div>
+                <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded">Submit Resource</button>
+              </form>
+            )}
+            {activeTab === 'approve' && (
               <div>
-                <label htmlFor="subject" className="block text-sm font-medium text-gray-700">Subject *</label>
-                <select
-                  id="subject"
-                  value={selectedSubjectId}
-                  onChange={(e) => setSelectedSubjectId(e.target.value)}
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                  required
-                  disabled={loadingSubjects || subjects.length === 0 || !supabaseClient || !isAuthReady}
-                >
-                  {loadingSubjects ? (
-                    <option>Loading subjects...</option>
-                  ) : (
-                    subjects.map((subject) => (
-                      <option key={subject.id} value={subject.id}>
-                        {subject.name} ({subject.code}) - {subject.syllabus_type}
-                      </option>
-                    ))
-                  )}
-                </select>
+                {pendingResources.map((res) => (
+                  <div key={res.id} className="bg-gray-100 p-4 rounded mb-3">
+                    <p className="font-bold">{res.title}</p>
+                    <p className="text-sm text-gray-600">{res.description}</p>
+                    <a href={res.link} className="text-blue-500 underline text-sm" target="_blank" rel="noopener noreferrer">{res.link}</a>
+                    <div className="flex space-x-2 mt-2">
+                      <button onClick={() => approveResource(res.id)} className="bg-green-500 text-white px-3 py-1 rounded">Approve</button>
+                      <input
+                        type="text"
+                        placeholder="Rejection reason"
+                        value={rejectionReasons[res.id] || ''}
+                        onChange={(e) => setRejectionReasons(prev => ({ ...prev, [res.id]: e.target.value }))}
+                        className="border px-2 py-1 rounded text-sm"
+                      />
+                      <button onClick={() => rejectResource(res.id)} className="bg-red-500 text-white px-3 py-1 rounded">Reject</button>
+                    </div>
+                  </div>
+                ))}
               </div>
-              <button
-                type="submit"
-                className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition"
-                disabled={!supabaseClient || !isAuthReady}
-              >
-                Submit Resource
-              </button>
-            </form>
+            )}
           </>
         )}
       </div>
