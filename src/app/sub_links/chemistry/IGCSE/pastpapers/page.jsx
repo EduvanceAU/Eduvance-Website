@@ -71,23 +71,25 @@ const specs = [
 
 export default function IGCSEPastPapersPage() {
   const subjectName = "Chemistry";
-  const syllabusType = "IGCSE";
-
+  const syllabusType = "IGCSE"; // This page is specifically for IGCSE papers
   const [selectedUnits, setSelectedUnits] = useState([]);
   const [papers, setPapers] = useState([]);
   const [selectedYears, setSelectedYears] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   const [showYearDropdown, setShowYearDropdown] = useState(false);
   const [showUnitDropdown, setShowUnitDropdown] = useState(false);
+  // NEW STATE FOR SPEC FILTER
   const [selectedSpec, setSelectedSpec] = useState(null);
   const [showSpecDropdown, setShowSpecDropdown] = useState(false);
 
   const yearDropdownRef = useRef(null);
   const unitDropdownRef = useRef(null);
+  // NEW REF FOR SPEC FILTER
   const specDropdownRef = useRef(null);
 
+
+  // Effect to handle clicks outside the dropdowns to close them
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (yearDropdownRef.current && !yearDropdownRef.current.contains(event.target)) {
@@ -96,6 +98,7 @@ export default function IGCSEPastPapersPage() {
       if (unitDropdownRef.current && !unitDropdownRef.current.contains(event.target)) {
         setShowUnitDropdown(false);
       }
+      // NEW: Close spec dropdown if click outside
       if (specDropdownRef.current && !specDropdownRef.current.contains(event.target)) {
         setShowSpecDropdown(false);
       }
@@ -105,28 +108,31 @@ export default function IGCSEPastPapersPage() {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, []);
+  }, []); // Empty dependency array means this runs once on mount
 
+  // Toggle functions for the main filter buttons, also closing the other dropdowns
   const handleToggleYearDropdown = () => {
     setShowYearDropdown(prev => !prev);
-    setShowUnitDropdown(false);
-    setShowSpecDropdown(false);
+    setShowUnitDropdown(false); // Close unit dropdown
+    setShowSpecDropdown(false); // NEW: Close spec dropdown
   };
 
   const handleToggleUnitDropdown = () => {
     setShowUnitDropdown(prev => !prev);
-    setShowYearDropdown(false);
-    setShowSpecDropdown(false);
+    setShowYearDropdown(false); // Close year dropdown
+    setShowSpecDropdown(false); // NEW: Close spec dropdown
   };
 
+  // NEW HANDLER FOR SPEC FILTER
   const handleToggleSpecDropdown = () => {
     setShowSpecDropdown(prev => !prev);
-    setShowYearDropdown(false);
+    setShowYearDropdown(false); // Close other dropdowns
     setShowUnitDropdown(false);
   };
 
+  // NEW TOGGLE FUNCTION FOR SPEC (single-select behavior)
   const toggleSpec = (specValue) => {
-    setSelectedSpec(prev => (prev === specValue ? null : specValue));
+    setSelectedSpec(prev => (prev === specValue ? null : specValue)); // Toggle selection
   };
 
   const toggleUnit = (unit) => {
@@ -143,9 +149,6 @@ export default function IGCSEPastPapersPage() {
 
   useEffect(() => {
     async function fetchPapers() {
-      setLoading(true);
-      setError(null);
-
       const { data: subjectData, error: subjectError } = await supabase
         .from('subjects')
         .select('id')
@@ -154,16 +157,13 @@ export default function IGCSEPastPapersPage() {
         .single();
 
       if (subjectError || !subjectData) {
-        setError(subjectError || new Error(`Subject "${subjectName}" for syllabus type "${syllabusType}" not found.`));
-        setLoading(false);
-        // Add a console.error for debugging if subject not found
-        console.error(`Frontend: Subject "${subjectName}" with syllabus "${syllabusType}" not found in DB.`, subjectError);
+        setError(subjectError || new Error(`Subject "${subjectName}" not found.`));
         return;
       }
 
       const subjectId = subjectData.id;
 
-      let query = supabase
+      const { data, error: papersError } = await supabase
         .from('papers')
         .select(`
           id,
@@ -173,54 +173,8 @@ export default function IGCSEPastPapersPage() {
           examiner_report_link,
           exam_sessions!inner ( session, year )
         `)
-        .eq('subject_id', subjectId);
-
-      if (selectedUnits.length > 0) {
-        const selectedUnitCodes = selectedUnits.map(unitLabel => units.find(u => u.unit === unitLabel)?.code).filter(Boolean);
-        if (selectedUnitCodes.length > 0) {
-          query = query.in('unit_code', selectedUnitCodes);
-        } else {
-          setPapers([]);
-          setLoading(false);
-          return;
-        }
-      }
-
-      let effectiveMinYear = -Infinity;
-      let effectiveMaxYear = Infinity;
-
-      if (selectedSpec === 'new') {
-        effectiveMinYear = NEW_SPEC_YEAR_START;
-      } else if (selectedSpec === 'old') {
-        effectiveMaxYear = OLD_SPEC_YEAR_END;
-      }
-
-      if (effectiveMinYear !== -Infinity) {
-        query = query.gte('exam_sessions.year', effectiveMinYear);
-      }
-      if (effectiveMaxYear !== Infinity) {
-        query = query.lte('exam_sessions.year', effectiveMaxYear);
-      }
-
-      if (selectedYears.length > 0) {
-        const validSelectedYears = selectedYears.filter(year =>
-          year >= effectiveMinYear && year <= effectiveMaxYear
-        );
-        if (validSelectedYears.length > 0) {
-          query = query.in('exam_sessions.year', validSelectedYears);
-        } else {
-          setPapers([]);
-          setLoading(false);
-          return;
-        }
-      } else if (!selectedSpec) {
-        query = query.gte('exam_sessions.year', DISPLAY_START_YEAR)
-                     .lte('exam_sessions.year', DISPLAY_END_YEAR);
-      }
-
-      query = query.order('unit_code', { ascending: true });
-
-      const { data, error: papersError } = await query;
+        .eq('subject_id', subjectId)
+        .order('unit_code', { ascending: true });
 
       if (papersError) {
         setError(papersError);
@@ -228,30 +182,46 @@ export default function IGCSEPastPapersPage() {
       } else {
         setPapers(data);
       }
-      setLoading(false);
     }
 
     fetchPapers();
-  }, [subjectName, syllabusType, selectedUnits, selectedYears, selectedSpec]);
+  }, []);
 
+  // Filter papers based on selected filters
+  const filteredPapers = papers && papers.filter(paper => {
+    let includePaper = true;
 
-  if (loading) {
-    return (
-      <main className="min-h-screen bg-white flex items-center justify-center">
-        <p className="text-xl text-[#153064]">Loading past papers...</p>
-      </main>
-    );
-  }
+    // Unit filter
+    if (selectedUnits.length > 0) {
+      const selectedUnitCodes = selectedUnits.map(unitLabel => units.find(u => u.unit === unitLabel)?.code);
+      if (!selectedUnitCodes.includes(paper.unit_code)) {
+        includePaper = false;
+      }
+    }
 
-  if (error) {
-    return (
-      <main className="min-h-screen bg-white flex items-center justify-center">
-        <p className="text-xl text-red-600">Error loading past papers: {error.message}</p>
-      </main>
-    );
-  }
+    // Spec filter
+    if (selectedSpec === 'new') {
+      if (paper.exam_sessions?.year < NEW_SPEC_YEAR_START) {
+        includePaper = false;
+      }
+    } else if (selectedSpec === 'old') {
+      if (paper.exam_sessions?.year > OLD_SPEC_YEAR_END) {
+        includePaper = false;
+      }
+    }
 
-  const groupedPapers = papers.reduce((acc, paper) => {
+    // Year filter
+    if (selectedYears.length > 0) {
+      if (!selectedYears.includes(paper.exam_sessions?.year)) {
+        includePaper = false;
+      }
+    }
+
+    return includePaper;
+  });
+
+  // Group papers by year and session for easier rendering
+  const groupedPapers = filteredPapers.reduce((acc, paper) => {
     const year = paper.exam_sessions?.year;
     const session = paper.exam_sessions?.session;
     const unitCode = paper.unit_code;
@@ -264,8 +234,11 @@ export default function IGCSEPastPapersPage() {
     return acc;
   }, {});
 
-
-  return (
+  return error ? (
+    <main className="min-h-screen bg-white flex items-center justify-center">
+      <p className="text-xl text-red-600">Error loading past papers: {error.message}</p>
+    </main>
+  ) : (
     <main className="min-h-screen bg-white flex flex-col items-center justify-start py-10">
       <div className="w-full max-w-5xl px-4">
         <h1
@@ -291,7 +264,7 @@ export default function IGCSEPastPapersPage() {
           className="text-sm sm:text-md lg:text-lg font-[500] leading-6 text-[#707070] mb-8 text-left tracking-[-0.015em]"
           style={{ fontFamily: "Poppins, sans-serif" }}
         >
-          Explore our collection of Edexcel IGCSE Level Chemistry Past Papers and Mark Schemes below. Practicing with IGCSE Chemistry past papers is one of the most effective ways to pinpoint the topics that need more focus—helping you revise smarter and prepare confidently for your upcoming exam
+          Explore our collection of Edexcel IGCSE Chemistry Past Papers and Mark Schemes below. Practicing with IGCSE Chemistry past papers is one of the most effective ways to pinpoint the topics that need more focus—helping you revise smarter and prepare confidently for your upcoming exam
         </h3>
 
         <div className="w-full mb-8">
@@ -301,6 +274,7 @@ export default function IGCSEPastPapersPage() {
           <SubjectButtons />
           <div className="flex flex-wrap gap-2">
 
+            {/* Years Filter Button & Dropdown */}
             <div className="relative" ref={yearDropdownRef}>
               <button
                 onClick={handleToggleYearDropdown}
@@ -324,12 +298,14 @@ export default function IGCSEPastPapersPage() {
                           ${selectedYears.includes(year) ? 'bg-blue-50 text-blue-700' : 'hover:bg-gray-100 text-gray-900'}`}
                         style={{ fontFamily: "Poppins, sans-serif" }}
                       >
+                        {/* Square Checkbox */}
                         <input
                           type="checkbox"
                           checked={selectedYears.includes(year)}
-                          onChange={() => {}}
+                          onChange={() => {}} // onChange is required but we handle click on div
                           className="form-checkbox h-4 w-4 text-blue-600 rounded mr-2"
                         />
+                        {/* Colored Pill for Year */}
                         <span className={`mr-2 px-2 py-0.5 rounded-full text-xs font-semibold ${getColorClass(index)}`}>
                           {year}
                         </span>
@@ -339,6 +315,7 @@ export default function IGCSEPastPapersPage() {
               )}
             </div>
 
+            {/* Units Filter Button & Dropdown */}
             <div className="relative" ref={unitDropdownRef}>
               <button
                 onClick={handleToggleUnitDropdown}
@@ -362,22 +339,25 @@ export default function IGCSEPastPapersPage() {
                         ${selectedUnits.includes(unit.unit) ? 'bg-blue-50 text-blue-700' : 'hover:bg-gray-100 text-gray-900'}`}
                       style={{ fontFamily: "Poppins, sans-serif" }}
                     >
+                      {/* Square Checkbox */}
                       <input
                         type="checkbox"
                         checked={selectedUnits.includes(unit.unit)}
-                        onChange={() => {}}
+                        onChange={() => {}} // onChange is required but we handle click on div
                         className="form-checkbox h-4 w-4 text-blue-600 rounded mr-2"
                       />
+                      {/* Colored Pill for Unit */}
                       <span className={`mr-2 px-2 py-0.5 rounded-full text-xs font-semibold ${getColorClass(index)}`}>
                         {unit.unit}
                       </span>
-                      <span>{unit.name}</span>
+                      <span>{unit.name}</span> {/* Full unit name */}
                     </div>
                   ))}
                 </div>
               )}
             </div>
 
+            {/* NEW SPEC FILTER BUTTON & DROPDOWN */}
             <div className="relative" ref={specDropdownRef}>
               <button
                 onClick={handleToggleSpecDropdown}
@@ -401,10 +381,11 @@ export default function IGCSEPastPapersPage() {
                         ${selectedSpec === specOption.value ? 'bg-blue-50 text-blue-700 font-semibold' : 'hover:bg-gray-100 text-gray-900'}`}
                       style={{ fontFamily: "Poppins, sans-serif" }}
                     >
+                      {/* Checkbox (visual only, logic is single-select via click) */}
                       <input
                         type="checkbox"
                         checked={selectedSpec === specOption.value}
-                        onChange={() => {}}
+                        onChange={() => {}} // onChange is required but click handler on div manages state
                         className="form-checkbox h-4 w-4 text-blue-600 rounded mr-2"
                       />
                       <span>{specOption.label}</span>
@@ -413,13 +394,18 @@ export default function IGCSEPastPapersPage() {
                 </div>
               )}
             </div>
+            {/* END NEW SPEC FILTER */}
 
           </div>
         </div>
 
         <div className="w-full space-y-10">
+          {/*
+              The rendering logic for years now iterates over the keys of groupedPapers (which are filtered years).
+              It also sorts them in descending order for display.
+          */}
           {Object.keys(groupedPapers)
-            .sort((a, b) => b - a)
+            .sort((a, b) => b - a) // Sort years descending for display
             .map((year) => (
               <div key={year}>
                 <h2
@@ -429,34 +415,40 @@ export default function IGCSEPastPapersPage() {
                   {year}
                 </h2>
 
+                {/* Outer Card for Each Session */}
                 {sessions.map((session) => (
+                  // Only render session card if there are papers for it in the grouped data
                   groupedPapers[year][session.value] && Object.keys(groupedPapers[year][session.value]).length > 0 ? (
                     <div
                       key={`${year}-${session.label}-session-card`}
-                      className="bg-white rounded-lg shadow-md mb-8 border border-gray-200 overflow-hidden"
+                      className="bg-white rounded-lg shadow-md mb-8 border border-gray-200 overflow-hidden" // Session Card styling, added overflow-hidden
                     >
+                      {/* Blue Header for the Session Card */}
                       <div className="bg-[#2871F9] text-white tracking-tight p-4 text-left font-bold text-xl sm:text-2xl"
                           style={{ fontFamily: "Poppins, sans-serif" }}>
-                        {session.label} Session {year}
+                        {session.label} Session {year} {/* Added year here for clarity */}
                       </div>
 
-                      <div className="p-6">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {/* Content area of the Session Card */}
+                      <div className="p-6"> {/* Padding for the content inside the card */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"> {/* Grid for Unit Cards */}
+                          {/* Iterate over the units from the 'units' array, but only display if paper data exists */}
                           {units
                             .map((unit) => {
                               const paperData = groupedPapers?.[year]?.[session.value]?.[unit.code];
 
+                              // Only render unit card if paper data exists for this unit in this session/year
                               if (paperData) {
                                 return (
                                   <div
                                     key={`${year}-${session.label}-${unit.unit}-unit-card`}
-                                    className="bg-gray-50 rounded-lg p-4 border border-gray-100 flex flex-col justify-between"
+                                    className="bg-gray-50 rounded-lg p-4 border border-gray-100 flex flex-col justify-between" // Unit Card styling
                                     style={{ fontFamily: "Poppins, sans-serif" }}
                                   >
                                     <h4 className="text-md font-semibold tracking-tight text-[#333333] mb-3 text-left">
                                       {`${unit.unit}: ${unit.name}`}
                                     </h4>
-                                    <div className="space-y-2">
+                                    <div className="space-y-2"> {/* Links container */}
                                       <Link
                                         href={paperData.question_paper_link || "#"}
                                         className={`block text-blue-600 font-medium hover:underline text-left text-sm
@@ -479,6 +471,7 @@ export default function IGCSEPastPapersPage() {
                                         Marking Scheme
                                       </Link>
 
+                                      {/* Examiner's Report Link */}
                                       <Link
                                         href={paperData.examiner_report_link || "#"}
                                         className={`block text-blue-600 font-medium hover:underline text-left text-sm
@@ -498,7 +491,7 @@ export default function IGCSEPastPapersPage() {
                         </div>
                       </div>
                     </div>
-                  ) : null
+                  ) : null // Don't render session div if no papers exist for it
                 ))}
               </div>
             ))}

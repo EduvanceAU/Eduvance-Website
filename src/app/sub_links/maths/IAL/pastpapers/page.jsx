@@ -71,19 +71,18 @@ const specs = [
   { label: 'Old Spec', value: 'old' },
 ];
 
-export default function PastPapersPage() {
+export default function IALPastPapersPage() {
   const subjectName = "Mathematics";
   const syllabusType = "IAL"; // This page is specifically for IAL papers
   const [selectedUnits, setSelectedUnits] = useState([]);
   const [papers, setPapers] = useState([]);
   const [selectedYears, setSelectedYears] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   const [showYearDropdown, setShowYearDropdown] = useState(false);
   const [showUnitDropdown, setShowUnitDropdown] = useState(false);
   // NEW STATE FOR SPEC FILTER
-  const [selectedSpec, setSelectedSpec] = useState(null); // 'new', 'old', or null
+  const [selectedSpec, setSelectedSpec] = useState(null);
   const [showSpecDropdown, setShowSpecDropdown] = useState(false);
 
   const yearDropdownRef = useRef(null);
@@ -150,28 +149,23 @@ export default function PastPapersPage() {
     );
   };
 
-  // UPDATED useEffect to include Spec filter logic and move existing filters to query
   useEffect(() => {
     async function fetchPapers() {
-      setLoading(true);
-      setError(null); // Clear previous errors
-
       const { data: subjectData, error: subjectError } = await supabase
         .from('subjects')
         .select('id')
         .eq('name', subjectName)
-        .eq('syllabus_type', syllabusType) // <-- THIS IS THE KEY CHANGE
+        .eq('syllabus_type', syllabusType)
         .single();
 
       if (subjectError || !subjectData) {
         setError(subjectError || new Error(`Subject "${subjectName}" not found.`));
-        setLoading(false);
         return;
       }
 
       const subjectId = subjectData.id;
 
-      let query = supabase
+      const { data, error: papersError } = await supabase
         .from('papers')
         .select(`
           id,
@@ -181,70 +175,8 @@ export default function PastPapersPage() {
           examiner_report_link,
           exam_sessions!inner ( session, year )
         `)
-        .eq('subject_id', subjectId);
-
-      // --- Filter by selected Units (moved from client-side render filtering) ---
-      if (selectedUnits.length > 0) {
-        // Convert unit names (e.g., "Unit 1") to their codes (e.g., "WPH11") for the query
-        const selectedUnitCodes = selectedUnits.map(unitLabel => units.find(u => u.unit === unitLabel)?.code).filter(Boolean);
-        if (selectedUnitCodes.length > 0) {
-          query = query.in('unit_code', selectedUnitCodes);
-        } else {
-          // If no valid unit codes found for selected units, return no papers
-          setPapers([]);
-          setLoading(false);
-          return;
-        }
-      }
-
-      // --- Determine the effective range of years based on Spec filter ---
-      let effectiveMinYear = -Infinity; // No lower bound initially
-      let effectiveMaxYear = Infinity;  // No upper bound initially
-
-      if (selectedSpec === 'new') {
-        effectiveMinYear = NEW_SPEC_YEAR_START; // From 2018 onwards
-      } else if (selectedSpec === 'old') {
-        effectiveMaxYear = OLD_SPEC_YEAR_END; // Up to 2017
-      }
-
-      // Apply these derived min/max years to the query
-      if (effectiveMinYear !== -Infinity) {
-        query = query.gte('exam_sessions.year', effectiveMinYear);
-      }
-      if (effectiveMaxYear !== Infinity) {
-        query = query.lte('exam_sessions.year', effectiveMaxYear);
-      }
-
-      // --- Apply specific years filter, which further refines the results ---
-      if (selectedYears.length > 0) {
-        // Filter selectedYears to only include those within the current effective spec range
-        const validSelectedYears = selectedYears.filter(year =>
-          year >= effectiveMinYear && year <= effectiveMaxYear
-        );
-        if (validSelectedYears.length > 0) {
-          query = query.in('exam_sessions.year', validSelectedYears);
-        } else {
-          // If specific years are chosen but none fall within the determined spec range,
-          // then no papers should be shown. Exit early to avoid empty query results.
-          setPapers([]);
-          setLoading(false);
-          return;
-        }
-      } else if (!selectedSpec) {
-        // If neither specific years nor a spec is selected, apply default display range (2020-2024).
-        // This ensures the initial view shows papers within the most common range.
-        query = query.gte('exam_sessions.year', DISPLAY_START_YEAR)
-                     .lte('exam_sessions.year', DISPLAY_END_YEAR);
-      }
-      // If selectedSpec is active but selectedYears is empty, the effectiveMin/MaxYear filters
-      // handle the year range, so no default DISPLAY_START/END_YEAR filter is needed here.
-
-      // --- DO NOT CHANGE THIS ORDER BIT AS PER YOUR REQUEST ---
-      // This will order by unit_code ascending as the primary sort from the DB.
-      // The year ordering in the UI will still be handled client-side in rendering.
-      query = query.order('unit_code', { ascending: true });
-
-      const { data, error: papersError } = await query;
+        .eq('subject_id', subjectId)
+        .order('unit_code', { ascending: true });
 
       if (papersError) {
         setError(papersError);
@@ -252,37 +184,51 @@ export default function PastPapersPage() {
       } else {
         setPapers(data);
       }
-      setLoading(false);
     }
 
     fetchPapers();
-  }, [subjectName, selectedUnits, selectedYears, selectedSpec]); // IMPORTANT: All filter dependencies are here
+  }, []);
 
+  // Filter papers based on selected filters
+  const filteredPapers = papers && papers.filter(paper => {
+    let includePaper = true;
 
-  if (loading) {
-    return (
-      <main className="min-h-screen bg-white flex items-center justify-center">
-        <p className="text-xl text-[#153064]">Loading past papers...</p>
-      </main>
-    );
-  }
+    // Unit filter
+    if (selectedUnits.length > 0) {
+      const selectedUnitCodes = selectedUnits.map(unitLabel => units.find(u => u.unit === unitLabel)?.code);
+      if (!selectedUnitCodes.includes(paper.unit_code)) {
+        includePaper = false;
+      }
+    }
 
-  if (error) {
-    return (
-      <main className="min-h-screen bg-white flex items-center justify-center">
-        <p className="text-xl text-red-600">Error loading past papers: {error.message}</p>
-      </main>
-    );
-  }
+    // Spec filter
+    if (selectedSpec === 'new') {
+      if (paper.exam_sessions?.year < NEW_SPEC_YEAR_START) {
+        includePaper = false;
+      }
+    } else if (selectedSpec === 'old') {
+      if (paper.exam_sessions?.year > OLD_SPEC_YEAR_END) {
+        includePaper = false;
+      }
+    }
+
+    // Year filter
+    if (selectedYears.length > 0) {
+      if (!selectedYears.includes(paper.exam_sessions?.year)) {
+        includePaper = false;
+      }
+    }
+
+    return includePaper;
+  });
 
   // Group papers by year and session for easier rendering
-  // This groupedPapers will now contain only the data filtered by Supabase
-  const groupedPapers = papers.reduce((acc, paper) => {
+  const groupedPapers = filteredPapers.reduce((acc, paper) => {
     const year = paper.exam_sessions?.year;
     const session = paper.exam_sessions?.session;
-    const unitCode = paper.unit_code; // WPH11, WPH12, etc.
+    const unitCode = paper.unit_code;
 
-    if (!year || !session) return acc; // Skip if session/year info is missing
+    if (!year || !session) return acc;
 
     if (!acc[year]) acc[year] = {};
     if (!acc[year][session]) acc[year][session] = {};
@@ -290,8 +236,11 @@ export default function PastPapersPage() {
     return acc;
   }, {});
 
-
-  return (
+  return error ? (
+    <main className="min-h-screen bg-white flex items-center justify-center">
+      <p className="text-xl text-red-600">Error loading past papers: {error.message}</p>
+    </main>
+  ) : (
     <main className="min-h-screen bg-white flex flex-col items-center justify-start py-10">
       <div className="w-full max-w-5xl px-4">
         <h1
@@ -300,6 +249,18 @@ export default function PastPapersPage() {
         >
           IAL <span className="bg-[#1A69FA] px-2 py-1 -rotate-1 inline-block"><span className="text-[#FFFFFF]">Mathematics</span></span> Past Papers
         </h1>
+
+        <div
+          className="inline-flex items-center justify-center px-4 py-2 mb-8 rounded-md shadow-xl"
+          style={{
+            border: "1.5px solid #DBDBDB",
+            fontFamily: "Poppins, sans-serif",
+          }}
+        >
+          <span className="text-md font-medium text-black tracking-tight">
+            <span className="font-[501]">Exam code:</span> {examCode}
+          </span>
+        </div>
 
         <h3
           className="text-sm sm:text-md lg:text-lg font-[500] leading-6 text-[#707070] mb-8 text-left tracking-[-0.015em]"
@@ -402,7 +363,7 @@ export default function PastPapersPage() {
             <div className="relative" ref={specDropdownRef}>
               <button
                 onClick={handleToggleSpecDropdown}
-                className="px-4 py-2 rounded-lg border cursor-pointer border-gray-400 text-sm font-[501] text-[#000000] hover:bg-gray-50 transition-colors flex items-center"
+                className="px-4 py-2 rounded-lg cursor-pointer border border-gray-400 text-sm font-[501] text-[#000000] hover:bg-gray-50 transition-colors flex items-center"
                 style={{ fontFamily: "Poppins, sans-serif" }}
               >
                 Spec
