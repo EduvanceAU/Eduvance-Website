@@ -19,14 +19,15 @@ Modular Subject Update:
    ☐ Update the system for generating files for new subjects
 
 User Authentication :
-   ☐ Setup betterauth authentication system (providers : email, google, discord)
-   ☐ Setup google developer console settings and sync with betterauth for auth page
+   ✔ Setup supabase authentication system (providers : email, google, discord) @done(25-06-29 06:24)
+   ✔ Setup google developer console settings and sync with supabase for auth page @done(25-06-29 06:23)
+   ☐ Setup discord developer app and sync with supabase for auth page
    ☐ Add email list collection system for marketing purposes
-   ☐ Modify resources page to ask for authentication or user sign in verification for access
+   ✔ Modify resources page to ask for authentication or user sign in verification for access @done(25-06-29 06:24)
 
 New Resources Page Update :
-   ☐ Update UI to make the subject resource selection better
-   ☐ Add subject selection and new modular file structure for sub-links
+   ✔ Update UI to make the subject resource selection better @done(25-06-29 06:20)
+   ✔ Add subject selection and new modular file structure for sub-links @done(25-06-29 06:23)
 
 Other TODO:
    ✔ Update Past Paper loading feature for all pages @done(25-06-27 16:34)
