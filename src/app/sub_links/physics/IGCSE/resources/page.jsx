@@ -2,6 +2,9 @@
 
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
+import { supabase } from "../lib/supabaseClient";
+import { Auth } from '@supabase/auth-ui-react';
+import { ThemeSupa } from '@supabase/auth-ui-shared';
 
 const examCode = '8PH0'
 
@@ -15,6 +18,8 @@ const units = [
 ];
 
 export default function IGCSEResources() {
+  const [session, setSession] = useState(null);
+  const [showLoginPopup, setShowLoginPopup] = useState(false);
   // This state will hold your links data, structured by unit
   const [unitResources, setUnitResources] = useState({
     "Unit 1": [
@@ -46,8 +51,58 @@ export default function IGCSEResources() {
     ],
   });
 
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      if (session) setShowLoginPopup(true);
+    });
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+      if (session) setShowLoginPopup(true);
+    });
+    return () => subscription.unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    if (showLoginPopup) {
+      const timer = setTimeout(() => setShowLoginPopup(false), 2500);
+      return () => clearTimeout(timer);
+    }
+  }, [showLoginPopup]);
+
+  if (!session) {
+    return (
+      <main className="min-h-screen flex items-center justify-center">
+        <Auth 
+          supabaseClient={supabase} 
+          appearance={{ theme: ThemeSupa }} 
+          providers={['google', 'discord']} 
+          redirectTo={typeof window !== 'undefined' ? window.location.href : undefined}
+        />
+      </main>
+    );
+  }
+
   return (
     <main className="min-h-screen bg-white flex flex-col items-center justify-start py-10">
+      {showLoginPopup && (
+        <div className="fixed top-6 left-1/2 transform -translate-x-1/2 z-50">
+          <div className="bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg animate-slide-in-fade-out">
+            Successfully logged in!
+          </div>
+          <style jsx>{`
+            .animate-slide-in-fade-out {
+              animation: slideInFadeOut 2.5s forwards;
+            }
+            @keyframes slideInFadeOut {
+              0% { opacity: 0; transform: translateY(-20px); }
+              10% { opacity: 1; transform: translateY(0); }
+              90% { opacity: 1; transform: translateY(0); }
+              100% { opacity: 0; transform: translateY(-20px); }
+            }
+          `}</style>
+        </div>
+      )}
       <div className="w-full max-w-7xl px-4">
         <h1
           className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#000000] mb-8 text-left tracking-[-0.035em]"
@@ -72,7 +127,7 @@ export default function IGCSEResources() {
           className="text-sm sm:text-md lg:text-lg font-[500] leading-6 text-[#707070] mb-8 text-left max-w-4xl tracking-[-0.015em]"
           style={{ fontFamily: "Poppins, sans-serif" }}
         >
-          Access a wide range of Edexcel IGCSE Physics resources—all in one place. Whether you’re brushing up on concepts or aiming to master exam strategies, these materials are designed to support your revision and boost your performance
+          Access a wide range of Edexcel IGCSE Physics resources—all in one place. Whether you're brushing up on concepts or aiming to master exam strategies, these materials are designed to support your revision and boost your performance
         </h3>
 
         {/* Unit Dividers and Resources */}
