@@ -3,26 +3,12 @@
 import Link from "next/link";
 import { useState, useEffect } from 'react';
 import { supabase } from './supabaseClient';
-import { Auth } from '@supabase/auth-ui-react';
-import { ThemeSupa } from '@supabase/auth-ui-shared';
 
 export default function Resources() {
-  const [session, setSession] = useState(null);
   const [subjects, setSubjects] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-    });
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-    });
-    return () => subscription.unsubscribe();
-  }, []);
-
-  useEffect(() => {
-    if (!session) return;
     setLoading(true);
     supabase
       .from('subjects')
@@ -38,20 +24,7 @@ export default function Resources() {
         }
         setLoading(false);
       });
-  }, [session]);
-
-  if (!session) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Auth 
-          supabaseClient={supabase} 
-          appearance={{ theme: ThemeSupa }} 
-          providers={['google', 'discord']} 
-          redirectTo={typeof window !== 'undefined' ? `${window.location.origin}/resources` : undefined}
-        />
-      </div>
-    );
-  }
+  }, []);
 
   if (loading) {
     return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
@@ -104,7 +77,7 @@ export default function Resources() {
 
         <div className="flex flex-col items-start gap-y-3">
           {subjects.map((subject) => (
-            <Link key={subject.name} href={generatePath(subject.name)}>
+            <a key={subject.name} href={generatePath(subject.name)}>
               <button className="flex items-center justify-between w-[90vw] max-w-[550px] px-6 py-4 bg-[#BAD1FD] rounded-[12px] group hover:bg-[#A8C6FF] transition-all duration-200 border-[#153064] border-1">
                 <p
                   className="text-xl font-[550] text-[#153064]"
@@ -118,10 +91,9 @@ export default function Resources() {
                   className="w-6 h-auto group-hover:translate-x-1 transition-transform duration-200"
                 />
               </button>
-            </Link>
+            </a>
           ))}
         </div>
-        <button className="mt-8 px-4 py-2 bg-red-500 text-white rounded-lg" onClick={() => supabase.auth.signOut()}>Sign Out</button>
       </div>
     </main>
   );

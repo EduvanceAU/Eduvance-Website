@@ -28,6 +28,12 @@ User Authentication :
 New Resources Page Update :
    ✔ Update UI to make the subject resource selection better @done(25-06-29 06:20)
    ✔ Add subject selection and new modular file structure for sub-links @done(25-06-29 06:23)
+   ✔ Updated UI + minor banner and menu changes @done(25-06-30 13:35)
+   ✔ Add auth required only at the resources page for subjects @done(25-06-30 13:46)
+   ✔ Add "Contribute your own notes" Button to the bottom of the page @done(25-06-30 13:35)
+   ✔ Add Join Discord Server button to the bottom of the page @done(25-06-30 13:35)
+   ✔ Add subject and resources selection side menu to main website page @done(25-06-30 13:35)
+   ✔ Update Resources section UI display for notes and resources @done(25-06-30 15:07)
 
 Other TODO:
    ✔ Update Past Paper loading feature for all pages @done(25-06-27 16:34)
