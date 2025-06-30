@@ -21,19 +21,47 @@ function toKebabCase(str) {
   return str.toLowerCase().replace(/\s+/g, '-');
 }
 
-// Helper: sanitize subject name for function name (remove non-alphanumeric, capitalize first letter)
+// Helper: sanitize subject name for function name (remove non-alphanumeric, capitalize each word, ensure valid identifier)
 function toComponentName(str) {
-  const cleaned = str.replace(/[^a-zA-Z0-9]/g, '');
-  return cleaned.charAt(0).toUpperCase() + cleaned.slice(1);
+  // Remove all non-alphanumeric characters and split into words
+  const words = str.replace(/[^a-zA-Z0-9 ]/g, ' ').split(' ').filter(Boolean);
+  // Capitalize each word and join
+  let compName = words.map(w => w.charAt(0).toUpperCase() + w.slice(1)).join('');
+  // If the first character is a digit, prefix with 'Subject'
+  if (/^[0-9]/.test(compName)) {
+    compName = 'Subject' + compName;
+  }
+  return compName;
 }
 
 // Helper: copy file with replacements, including function name
 function copyTemplateFile(src, dest, replacements = {}, subjectName = null) {
   if (fs.existsSync(dest)) return false;
   let content = fs.readFileSync(src, 'utf8');
+  // Add subject name replacements for 'Physics' and 'PHYSICS'
+  if (subjectName) {
+    replacements = {
+      ...replacements,
+      'Physics': subjectName,
+      'PHYSICS': subjectName.toUpperCase(),
+    };
+  }
+  // Skip replacements inside the 'subjects' array
+  // Find the 'subjects' array and temporarily replace it with a placeholder
+  let subjectsArrayMatch = content.match(/const subjects = \[[\s\S]*?\];/);
+  let subjectsArrayPlaceholder = '__SUBJECTS_ARRAY__';
+  let subjectsArray = null;
+  if (subjectsArrayMatch) {
+    subjectsArray = subjectsArrayMatch[0];
+    content = content.replace(subjectsArray, subjectsArrayPlaceholder);
+  }
   for (const [key, value] of Object.entries(replacements)) {
     const regex = new RegExp(key, 'g');
     content = content.replace(regex, value);
+  }
+  // Restore the original subjects array
+  if (subjectsArray) {
+    content = content.replace(subjectsArrayPlaceholder, subjectsArray);
   }
   // Special: Replace export default function name if subjectName is provided
   if (subjectName) {
