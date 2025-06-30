@@ -3,6 +3,7 @@ import Image from 'next/image';
 import Link from "next/link";
 import { useState, useRef, useEffect } from 'react';
 import { FaInfoCircle, FaBook, FaChalkboardTeacher, FaPhone, FaLifeRing, FaEllipsisH } from 'react-icons/fa';
+import { ChevronRight } from 'lucide-react';
 
 // Reusable components
 const TestimonialCard = ({ content, icon, headline, rotation }) => (
@@ -108,10 +109,23 @@ const NavDropdown = ({ label, items }) => {
 
 export default function Home() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [hoveredSidebarItem, setHoveredSidebarItem] = useState(null);
+
   return (
     <main className="min-h-screen bg-white relative overflow-x-hidden">
       <>
       <nav className="w-full h-[60px] flex justify-between items-center px-4 md:px-6 py-4 z-50 fixed top-0 left-0 bg-white bg-opacity-95">
+        {/* Sidebar Open Button (Far Left) */}
+        <button
+          className="mr-4 flex items-center justify-center w-10 h-10 rounded-full hover:bg-[#BAD1FD] transition-colors duration-200"
+          onClick={() => setSidebarOpen(true)}
+        >
+          {/* Hamburger Icon */}
+          <svg className="w-6 h-6 text-[#153064]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+
         {/* Left Side */}
         <div className="flex items-center gap-2">
           <Image src="/SmallLogo.png" alt="Eduvance" width={35} height={35} />
@@ -170,55 +184,99 @@ export default function Home() {
               </button>
             </a>
         </div>
-
-        {/* Hamburger Menu on sm */}
-        <div className="block sm:hidden">
-          <button onClick={() => setSidebarOpen(true)}>
-            <svg className="w-6 h-6 text-black" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          </button>
-        </div>
       </nav>
 
-      {/* Sidebar - Full screen width on all viewports */}
-      <div className={`fixed top-0 left-0 h-full w-full bg-white shadow-lg z-50 transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 ease-in-out`}>
-        <div className="flex justify-between items-center p-4 border-b">
-          <span className="text-3xl font-grand-local">Menu</span>
-          <button onClick={() => setSidebarOpen(false)}>
-            <svg className="w-6 h-6 text-black" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+      {/* Custom Sidebar - Slide-in from left */}
+      <div className={`fixed top-0 left-0 h-full w-76 bg-white z-50 flex flex-col shadow-lg transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 ease-in-out`} style={{ width: '320px', minWidth: '320px' }}>
+        {/* Close Button */}
+        <div className="flex justify-end p-4">
+          <button onClick={() => setSidebarOpen(false)} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-[#BAD1FD]">
+            <svg className="w-6 h-6 text-[#153064]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
         </div>
-
-        <img src="LightmodeLogo.png" className="w-[300px] h-auto mt-5 mx-auto block mb-10" />
-
-        <div className="flex flex-col gap-12 p-6 text-2xl font-[550] tracking-[-0.5px]">
-          <Link href="#" onClick={() => setSidebarOpen(false)} className="flex items-center gap-3">
-            <FaInfoCircle /> About Eduvance
-          </Link>
-          <Link href="#" onClick={() => setSidebarOpen(false)} className="flex items-center gap-3">
-            <FaBook /> IAL Edexcel Resources
-          </Link>
-          <Link href="#" onClick={() => setSidebarOpen(false)} className="flex items-center gap-3">
-            <FaChalkboardTeacher /> IGCSE Edexcel Resources
-          </Link>
-          <Link href="#" onClick={() => setSidebarOpen(false)} className="flex items-center gap-3">
-            <FaPhone /> Contact Us
-          </Link>
-          <Link href="#" onClick={() => setSidebarOpen(false)} className="flex items-center gap-3">
-            <FaLifeRing /> Support
-          </Link>
-          <Link href="#" onClick={() => setSidebarOpen(false)} className="flex items-center gap-3">
-            <FaEllipsisH /> More
-          </Link>
-
-          <a href="https://discord.gg/eduvance" target="_blank" rel="noopener noreferrer" className="z-10">
-            <button className="mt-4 bg-[#1871F2] text-white w-[95%] mx-auto py-3 rounded-[10px] hover:bg-blue-700 transition block text-xl">
-              Join Now
-            </button>
-          </a>
+        {/* Logo/Image */}
+        <div className="flex justify-left pt-2 mb-3 pl-6">
+          <img 
+            src="/BlueSolo.png" 
+            alt="Eduvance Logo" 
+            className="w-33 h-11 object-contain"
+          />
+        </div>
+        {/* Choose your exam board header */}
+        <h2 className="text-lg font-semibold tracking-[-1px] text-[#0C58E4] mb-6 px-6" style={{ fontFamily: 'Poppins, sans-serif' }}>
+          Choose your exam board
+        </h2>
+        {/* Sidebar Navigation */}
+        <div className="flex flex-col px-4 space-y-2">
+          <div
+            className={`relative px-4 py-3 rounded-lg cursor-pointer transition-all duration-200 ${
+              hoveredSidebarItem === 'igcse' ? 'bg-[#BAD1FD]' : ''
+            }`}
+            onMouseEnter={() => setHoveredSidebarItem('igcse')}
+            onMouseLeave={() => setHoveredSidebarItem(null)}
+          >
+            <div className="flex items-center justify-between">
+              <span className="text-[#000000] tracking-[-0.5px] font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                IGCSE
+              </span>
+              {hoveredSidebarItem === 'igcse' && (
+                <ChevronRight size={16} className="text-[#000000]" />
+              )}
+            </div>
+          </div>
+          <div
+            className={`relative px-4 py-3 rounded-lg cursor-pointer transition-all duration-200 ${
+              hoveredSidebarItem === 'as' ? 'bg-[#BAD1FD]' : ''
+            }`}
+            onMouseEnter={() => setHoveredSidebarItem('as')}
+            onMouseLeave={() => setHoveredSidebarItem(null)}
+          >
+            <div className="flex items-center justify-between">
+              <span className="text-[#000000] tracking-[-0.5px] font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                AS Levels
+              </span>
+              {hoveredSidebarItem === 'as' && (
+                <ChevronRight size={16} className="text-[#000000]" />
+              )}
+            </div>
+          </div>
+          <div
+            className={`relative px-4 py-3 rounded-lg cursor-pointer transition-all duration-200 ${
+              hoveredSidebarItem === 'a2' ? 'bg-[#BAD1FD]' : ''
+            }`}
+            onMouseEnter={() => setHoveredSidebarItem('a2')}
+            onMouseLeave={() => setHoveredSidebarItem(null)}
+          >
+            <div className="flex items-center justify-between">
+              <span className="text-[#000000] tracking-[-0.5px] font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                A2 Levels
+              </span>
+              {hoveredSidebarItem === 'a2' && (
+                <ChevronRight size={16} className="text-[#000000]" />
+              )}
+            </div>
+          </div>
+        </div>
+        {/* Subjects Section */}
+        <div className="mt-8 px-4">
+          <h3 className="text-lg font-semibold tracking-[-1px] text-[#0C58E4] mb-4 px-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
+            Subjects
+          </h3>
+          <div className="space-y-1">
+            {['Biology', 'Physics', 'Mathematics', 'Chemistry', 'Business', 'Economics'].map((subject) => (
+              <Link
+                key={subject}
+                href={`/sub_links/${subject.toLowerCase()}`}
+                className="block px-4 py-2 text-[#000000] tracking-[-0.5px] cursor-pointer hover:bg-[#BAD1FD] rounded transition-colors duration-200"
+                style={{ fontFamily: 'Poppins, sans-serif' }}
+                onClick={() => setSidebarOpen(false)}
+              >
+                {subject}
+              </Link>
+            ))}
+          </div>
         </div>
       </div>
     </>
