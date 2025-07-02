@@ -34,12 +34,14 @@ New Resources Pages Update :
    ✔ Add Join Discord Server button to the bottom of the page @done(25-06-30 13:35)
    ✔ Add subject and resources selection side menu to main website page @done(25-06-30 13:35)
    ✔ Update Resources section UI display for notes and resources @done(25-06-30 15:07)
-   ☐ Update the top bar (eduvance button -> main page) and side menu for better scalability
-   ☐ Add transition logic and responsive design for the side bar
-   ☐ Update side menu bar UI and options for better navigation
-   ☐ Update subject pages for button updates and user profile showcase
+   ✔ Update the top bar (eduvance button -> main page) and side menu for better scalability @done(25-07-02 16:54)
+   ✔ Add transition logic and responsive design for the side bar @done(25-07-02 16:54)
+   ✔ Update side menu bar UI and options for better navigation @done(25-07-02 16:54)
+   ✔ Update subject pages for button updates and user profile showcase @done(25-07-02 16:54)
+   ☐ Update session log out logic for top bar user showcase display
+   ☐ Ensure logged in session is checked for resource page
    
-   ☐ Update Community Notes pages logic (only include community contributed notes)
+   ✔ Update Community Notes pages logic (only include community contributed notes) @done(25-07-02 17:38)
    ✔ Update Past Paper loading feature for all pages @done(25-06-27 16:34)
 
 Other Pages:
@@ -50,7 +52,7 @@ Other Pages:
 
 Other TODO:
    ☐ Update Past Papers for Further Mathematics
-   ☐ Update Community Notes pages for all subjects and update logic for DB
+   ✔ Update Community Notes pages for all subjects and update logic for DB @done(25-07-02 17:38)
    ✔ Add user authentication for eduvance and collection of users logged email list (for marketing purposes) @done(25-06-29 06:45)
    ✔ Plan site pages and plans for : @done(25-06-27 15:44)
    ✔ Becoming a community contributor : Request to upload resources -> Linked to staff console for approval @done(25-06-26 22:15)

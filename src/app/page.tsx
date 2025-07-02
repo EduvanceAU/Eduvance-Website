@@ -115,19 +115,17 @@ export default function Home() {
     <main className="min-h-screen bg-white relative overflow-x-hidden">
       <>
       <nav className="w-full h-[60px] flex justify-between items-center px-4 md:px-6 py-4 z-50 fixed top-0 left-0 bg-white bg-opacity-95">
-        {/* Sidebar Open Button (Far Left) */}
-        <button
-          className="mr-4 flex items-center justify-center w-10 h-10 rounded-full hover:bg-[#BAD1FD] transition-colors duration-200"
-          onClick={() => setSidebarOpen(true)}
-        >
-          {/* Hamburger Icon */}
-          <svg className="w-6 h-6 text-[#153064]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-          </svg>
-        </button>
-
-        {/* Left Side */}
+        {/* 👈 Left Side: Sidebar Button + Logo in one group */}
         <div className="flex items-center gap-2">
+          <button
+            className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-[#BAD1FD] transition-colors duration-200"
+            onClick={() => setSidebarOpen(true)}
+          >
+            <svg className="w-6 h-6 text-[#153064]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+
           <Image src="/SmallLogo.png" alt="Eduvance" width={35} height={35} />
           <span className="font-grand-local text-xl sm:text-2xl text-black">Eduvance</span>
         </div>
