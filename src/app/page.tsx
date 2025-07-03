@@ -121,7 +121,7 @@ export default function Home() {
             className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-[#BAD1FD] transition-colors duration-200"
             onClick={() => setSidebarOpen(true)}
           >
-            <svg className="w-6 h-6 text-[#153064]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+            <svg className="w-6 h-6 text-[#0C58E4]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           </button>
@@ -187,22 +187,22 @@ export default function Home() {
       {/* Custom Sidebar - Slide-in from left */}
       {/* Scroll Ability */}
       <div className={`sidebarWheel sm:overflow-y-scroll sm:overscroll-none fixed top-0 left-0 h-full w-76 bg-white z-50 flex flex-col shadow-lg transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 ease-in-out`} style={{ width: '320px', minWidth: '320px' }}>
-        {/* Close Button */}
-        <div className="flex justify-end p-4">
-          <button onClick={() => setSidebarOpen(false)} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-[#BAD1FD]">
-            <svg className="w-6 h-6 text-[#153064]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
-        {/* Logo/Image */}
-        <div className="flex justify-left pt-2 mb-3 pl-6">
-          <img 
-            src="/BlueSolo.png" 
-            alt="Eduvance Logo" 
-            className="w-33 h-11 object-contain"
-          />
-        </div>
+        <div className="flex justify-between items-center p-4">
+              {/* Logo/Image */}
+          
+            <img
+              src="/BlueSolo.png"
+              alt="Eduvance Logo"
+              className="w-11 h-11 object-contain"
+            />
+            {/* Close Button */}
+            <button onClick={() => setSidebarOpen(false)} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-[#BAD1FD]">
+              <svg className="w-6 h-6 text-[#153064]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          
+          </div>
         {/* Choose your exam board header */}
         <h2 className="text-lg font-semibold tracking-[-1px] text-[#0C58E4] mb-6 px-6" style={{ fontFamily: 'Poppins, sans-serif' }}>
           Choose your exam board
@@ -283,12 +283,10 @@ export default function Home() {
       {/* Hero Section */}
       <section className="w-full min-h-screen flex flex-col relative pt-16">
         {/* Gradient Box in Background */}
-        <div className="absolute w-[95vw] h-[85vh] bg-gradient-to-b from-[#4E8CFF] to-[#0C60FB] rounded-2xl shadow-xl z-0 left-1/2 transform -translate-x-1/2 mb-[-50px]" />
+        <div className="flex text-center flex-col gap-4 items-center justify-center absolute w-[95vw] h-[85vh] bg-gradient-to-b from-[#4E8CFF] to-[#0C60FB] rounded-2xl shadow-xl z-0 left-1/2 transform -translate-x-1/2 mb-[-50px] overflow-hidden" >
+          
 
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="flex flex-col items-center justify-center text-center gap-8">
-
-            <img src="Headline.png" className="w-[800px] h-auto z-10 mt-30" />
+            <img src="Headline.png" className="w-[800px] h-auto z-10" />
 
             <h3 className="font-semibold text-white leading-[22px] text-xl max-w-[550px] z-10">
               Education drives progress. Eduvance helps you learn, revise, and stay ahead in your academic journey
@@ -299,26 +297,26 @@ export default function Home() {
               href="https://discord.gg/eduvance"
               target="_blank"
               rel="noopener noreferrer"
-              className="z-10"
+              className="z-20"
             >
-              <button className="bg-white text-[#428CF9] border-5 border-[#639afe] px-9 py-4 rounded-[16px] text-xl poppins-semibold shadow-lg flex items-center gap-5">
+              <button className="bg-white hover:bg-[#143166] text-[#428CF9] border-5 border-[#639afe] px-9 py-4 rounded-[16px] text-xl poppins-semibold shadow-lg flex items-center gap-5">
                 <img src="/discordLogo.png" alt="Discord" className="w-9 h-auto" />
                 Join our Discord Server
               </button>
             </a>
-          </div>
+            {/* Decorative Images (Positioned with absolute so they don't mess layout) */}
+            <img
+              src="bgCrypto.png"
+              alt="Decorative Crypto"
+              className="absolute left-1/2  transform rotate-90 sm:rotate-0 -translate-x-1/2 w-full h-auto z-10"
+            />
+            <img
+              src="DocWidgets.png"
+              alt=" "
+              className="absolute top-[70%] sm:top-[90%] w-[300px] sm:w-[300px] h-auto transform sm:-translate-y-40 translate-y-10 left-[-20px] z-0"
+            />
 
-          {/* Decorative Images (Positioned with absolute so they don't mess layout) */}
-          <img
-            src="bgCrypto.png"
-            alt="Decorative Crypto"
-            className="absolute left-1/2 transform -translate-x-1/2 -translate-y-140 w-[80%] max-w-[1000px] h-auto z-20"
-          />
-          <img
-            src="DocWidgets.png"
-            alt=" "
-            className="absolute w-[300px] sm:w-[300px] h-auto transform sm:-translate-y-40 translate-y-10 sm:left-[-50px] z-0"
-          />
+          
         </div>
       </section>
 
@@ -406,13 +404,13 @@ export default function Home() {
               href="https://discord.gg/Eduvance"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-block mt-15"
+              className="inline-block mt-15 "
             >
               <button
-                className="bg-[#3F82FD] text-white border-5 border-[#B1CCFF] border-opacity-50 px-9 py-3 rounded-full text-xl poppins-semibold flex items-center gap-5"
+                className="bg-[#3F82FD] hover:bg-[#143166] text-white border-5 border-[#B1CCFF] border-opacity-50 px-9 py-3 rounded-full text-xl poppins-semibold flex items-center gap-5"
                 style={{ fontFamily: 'Poppins, sans-serif' }}
               >
-                <img src="/WhiteDiscordLogo.png" alt="Discord" className="w-9 h-auto" />
+                <img src="/WhiteDiscordLogo.png" alt="Discord" className="w-9 h-auto hover:animate-spin" />
                 Join the community
               </button>
             </a>
