@@ -185,6 +185,7 @@ export default function Home() {
       </nav>
 
       {/* Custom Sidebar - Slide-in from left */}
+      {/* Scroll Ability */}
       <div className={`sidebarWheel sm:overflow-y-scroll sm:overscroll-none fixed top-0 left-0 h-full w-76 bg-white z-50 flex flex-col shadow-lg transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 ease-in-out`} style={{ width: '320px', minWidth: '320px' }}>
         {/* Close Button */}
         <div className="flex justify-end p-4">
