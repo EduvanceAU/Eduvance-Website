@@ -308,7 +308,7 @@ export default function Home() {
             <img
               src="bgCrypto.png"
               alt="Decorative Crypto"
-              className="absolute left-1/2  transform rotate-90 sm:rotate-0 -translate-x-1/2 w-full h-auto z-10"
+              className="absolute left-1/2  transform -translate-x-1/2 w-full h-auto z-10"
             />
             <img
               src="DocWidgets.png"
