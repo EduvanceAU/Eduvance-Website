@@ -78,7 +78,7 @@ export default function Resources() {
         <div className="flex flex-col items-start gap-y-3">
           {subjects.map((subject) => (
             <a key={subject.name} href={generatePath(subject.name)}>
-              <button className="flex items-center justify-between w-[90vw] max-w-[550px] px-6 py-4 bg-[#BAD1FD] rounded-[12px] group hover:bg-[#A8C6FF] transition-all duration-200 border-[#153064] border-1">
+              <button className="flex cursor-pointer items-center justify-between w-[90vw] max-w-[550px] px-6 py-4 bg-[#BAD1FD] rounded-[12px] group hover:bg-[#A8C6FF] transition-all duration-200 border-[#153064] border-1">
                 <p
                   className="text-xl font-[550] text-[#153064]"
                   style={{ fontFamily: "Poppins, sans-serif" }}
