@@ -9,14 +9,18 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@radix-ui/react-dialog": "^1.1.14",
+    "@radix-ui/react-slot": "^1.2.3",
     "@supabase/auth-ui-react": "^0.4.7",
     "@supabase/auth-ui-shared": "^0.1.8",
     "@supabase/supabase-js": "^2.50.2",
     "bcryptjs": "^3.0.2",
     "better-auth": "^1.2.12",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
     "dotenv": "^16.5.0",
     "framer-motion": "^12.18.1",
-    "lucide-react": "^0.514.0",
+    "lucide-react": "^0.525.0",
     "next": "15.3.1",
     "pg": "^8.16.3",
     "prisma": "^6.8.2",
@@ -24,6 +28,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-icons": "^5.5.0",
+    "tailwind-merge": "^3.3.1",
     "uuid": "^11.1.0"
   },
   "devDependencies": {
@@ -34,6 +39,7 @@
     "eslint": "^9",
     "eslint-config-next": "15.3.1",
     "tailwindcss": "^4",
+    "tw-animate-css": "^1.3.5",
     "typescript": "^5.8.3"
   }
 }

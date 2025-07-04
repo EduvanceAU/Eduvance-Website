@@ -15,21 +15,19 @@ const DISPLAY_END_YEAR = 2024;
 const years = Array.from({ length: DISPLAY_END_YEAR - DISPLAY_START_YEAR + 1 }, (_, i) => DISPLAY_START_YEAR + i);
 
 const units = [
-  { name: "Molecules, Diet, Transport & Health", code: "WBI11", unit: "Unit 1" },
-  { name: "Cells, Development, Biodiversity & Conservation", code: "WBI12", unit: "Unit 2" },
-  { name: "Practical Skills in Biology I", code: "WBI13", unit: "Unit 3" },
-  { name: "Genetics, Evolution & Ecology", code: "WBI14", unit: "Unit 4" },
-  { name: "Respiration, Internal Environment, Coordination & Gene Technology", code: "WBI15", unit: "Unit 5" },
-  { name: "Practical Biology & Investigation Skills", code: "WBI16", unit: "Unit 6" },
+  { name: "Paper 1B (Biology)", code: "1B", unit: "1B" },
+  { name: "Paper 1BR (Biology - Practicals)", code: "1BR", unit: "1BR" },
+  { name: "Paper 2B (Biology)", code: "2B", unit: "2B" },
+  { name: "Paper 2BR (Biology - Practicals)", code: "2BR", unit: "2BR" },
 ];
 
-const examCode = 'YBI11'
+const examCode = '4BH1'
 
 const subjects = [
-  { name: "Physics", link: "/sub_links/physics/IAL/pastpapers" },
-  { name: "Chemistry", link: "/sub_links/chemistry/IAL/pastpapers" },
-  { name: "Biology", link: "/sub_links/biology/IAL/pastpapers" },
-  { name: "Maths", link: "/sub_links/maths/IAL/pastpapers" },
+  { name: "Physics", link: "/sub_links/physics/IGCSE/pastpapers" },
+  { name: "Chemistry", link: "/sub_links/chemistry/IGCSE/pastpapers" },
+  { name: "Biology", link: "/sub_links/biology/IGCSE/pastpapers" },
+  { name: "Maths", link: "/sub_links/maths/IGCSE/pastpapers" },
 ];
 
 const SubjectButtons = () => {
@@ -73,9 +71,9 @@ const specs = [
   { label: 'Old Spec', value: 'old' },
 ];
 
-export default function IALPastPapersPage() {
+export default function IGCSEPastPapersPage() {
   const subjectName = "Biology";
-  const syllabusType = "IAL"; // This page is specifically for IAL papers
+  const syllabusType = "IGCSE"; // This page is specifically for IGCSE papers
   const [selectedUnits, setSelectedUnits] = useState([]);
   const [papers, setPapers] = useState([]);
   const [selectedYears, setSelectedYears] = useState([]);
@@ -243,13 +241,13 @@ export default function IALPastPapersPage() {
       <p className="text-xl text-red-600">Error loading past papers: {error.message}</p>
     </main>
   ) : (
-    <main className="min-h-screen bg-white flex flex-col items-center justify-start py-10 m-10">
+    <main className="min-h-screen bg-white flex flex-col items-center justify-start py-10">
       <div className="w-full max-w-5xl px-4">
         <h1
           className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#000000] mb-8 text-left tracking-[-0.035em]"
           style={{ fontFamily: "Poppins, sans-serif" }}
         >
-          IAL <span className="bg-[#1A69FA] px-2 py-1 -rotate-1 inline-block"><span className="text-[#FFFFFF]">Biology</span></span> Past Papers
+          IGCSE <span className="bg-[#1A69FA] px-2 py-1 -rotate-1 inline-block"><span className="text-[#FFFFFF]">Biology</span></span> Past Papers
         </h1>
 
         <div
@@ -268,7 +266,7 @@ export default function IALPastPapersPage() {
           className="text-sm sm:text-md lg:text-lg font-[500] leading-6 text-[#707070] mb-8 text-left tracking-[-0.015em]"
           style={{ fontFamily: "Poppins, sans-serif" }}
         >
-          Explore our collection of Edexcel IAL Level Biology Past Papers and Mark Schemes below. Practicing with A Level Biology past papers is one of the most effective ways to pinpoint the topics that need more focus—helping you revise smarter and prepare confidently for your upcoming exam
+          Explore our collection of Edexcel IGCSE Biology Past Papers and Mark Schemes below. Practicing with IGCSE Biology past papers is one of the most effective ways to pinpoint the topics that need more focus—helping you revise smarter and prepare confidently for your upcoming exam
         </h3>
 
         <div className="w-full mb-8">
