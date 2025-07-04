@@ -25,7 +25,7 @@ User Authentication :
    ☐ Add email list collection system for marketing purposes
    ✔ Modify resources page to ask for authentication or user sign in verification for access @done(25-06-29 06:24)
 
-New Resources Page Update :
+New Resources Pages Update :
    ✔ Update UI to make the subject resource selection better @done(25-06-29 06:20)
    ✔ Add subject selection and new modular file structure for sub-links @done(25-06-29 06:23)
    ✔ Updated UI + minor banner and menu changes @done(25-06-30 13:35)
@@ -34,15 +34,28 @@ New Resources Page Update :
    ✔ Add Join Discord Server button to the bottom of the page @done(25-06-30 13:35)
    ✔ Add subject and resources selection side menu to main website page @done(25-06-30 13:35)
    ✔ Update Resources section UI display for notes and resources @done(25-06-30 15:07)
+   ✔ Update the top bar (eduvance button -> main page) and side menu for better scalability @done(25-07-02 16:54)
+   ✔ Add transition logic and responsive design for the side bar @done(25-07-02 16:54)
+   ✔ Update side menu bar UI and options for better navigation @done(25-07-02 16:54)
+   ✔ Update subject pages for button updates and user profile showcase @done(25-07-02 16:54)
+   ☐ Update session log out logic for top bar user showcase display
+   ☐ Ensure logged in session is checked for resource page
+   
+   ✔ Update Community Notes pages logic (only include community contributed notes) @done(25-07-02 17:38)
+   ✔ Update Past Paper loading feature for all pages @done(25-06-27 16:34)
+
+Other Pages:
+   ☐ Other miscellaneous pages for the website (About Eduvance, IGCSE/A Levels, Grading System Explained, FAQs and more)
+   ☐ Update UI for all miscellaneous pages and add the relevant content
+   ☐ Update the code for all miscellaneous pages on the website
+   ☐ Add links to all miscellaneous pages and side bars
 
 Other TODO:
-   ✔ Update Past Paper loading feature for all pages @done(25-06-27 16:34)
    ☐ Update Past Papers for Further Mathematics
-   ☐ Update Community Notes pages for all subjects and update logic for DB
+   ✔ Update Community Notes pages for all subjects and update logic for DB @done(25-07-02 17:38)
    ✔ Add user authentication for eduvance and collection of users logged email list (for marketing purposes) @done(25-06-29 06:45)
    ✔ Plan site pages and plans for : @done(25-06-27 15:44)
    ✔ Becoming a community contributor : Request to upload resources -> Linked to staff console for approval @done(25-06-26 22:15)
    ✔ Update Contributor Page form link to DB table for approval of resources @done(25-06-27 15:44)
-      - Become a tutor/Match with a tutor : People could sign up to teach/study with tutors
-   ☐ Other miscellaneous pages for the website (About Eduvance, IGCSE/A Levels, Grading System Explained, FAQs and more)
+   - Become a tutor/Match with a tutor : People could sign up to teach/study with tutors
    ☐ Collect testimonials from community members for the website
