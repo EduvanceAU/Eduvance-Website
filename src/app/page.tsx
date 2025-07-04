@@ -177,7 +177,7 @@ export default function Home() {
               rel="noopener noreferrer"
               className="z-10"
             >
-              <button className="bg-[#1871F2] text-white border-2 border-white px-4 py-1 rounded-[10px] hover:bg-blue-700 transition text-sm sm:text-base poppins-semibold shadow-lg">
+              <button className="bg-[#1871F2] cursor-pointer text-white border-2 border-white px-4 py-1 rounded-[10px] hover:bg-blue-700 transition text-sm sm:text-base poppins-semibold shadow-lg">
                 Join Now
               </button>
             </a>
@@ -299,7 +299,7 @@ export default function Home() {
               rel="noopener noreferrer"
               className="z-20"
             >
-              <button className="bg-white hover:bg-[#143166] text-[#428CF9] border-5 border-[#639afe] px-9 py-4 rounded-[16px] text-xl poppins-semibold shadow-lg flex items-center gap-5">
+              <button className="bg-white cursor-pointer hover:bg-[#BDD4FF] text-[#428CF9] border-5 border-[#639afe] px-9 py-4 rounded-[16px] text-xl poppins-semibold shadow-lg flex items-center gap-5">
                 <img src="/discordLogo.png" alt="Discord" className="w-9 h-auto" />
                 Join our Discord Server
               </button>
@@ -360,7 +360,7 @@ export default function Home() {
             </h3>
 
             <Link href="/resources" className="inline-block mt-6">
-              <button className="bg-[#2D74F8] text-[#FFFFFF] px-6 py-2 rounded-[50px] text-xl poppins-semibold shadow-lg flex items-center gap-2">
+              <button className="bg-[#2D74F8] text-[#FFFFFF] px-6 py-2 rounded-[50px] text-xl poppins-semibold shadow-lg flex items-center gap-2 cursor-pointer">
                 Explore Resources
                 <img src="/ArrowR.png" alt="Arrow Right" className="w-6 h-auto" />
               </button>
@@ -377,7 +377,7 @@ export default function Home() {
               className="inline-block px-6 py-0.6 border-2 border-[#4B89FD] rounded-full text-black font-semibold tracking-[-0.7px] text-lg mb-8"
               style={{ fontFamily: 'Poppins, sans-serif' }}
             >
-              Trusted by +17,000 Students worldwide
+              Trusted by +18,000 Students worldwide
             </div>
 
             <img
@@ -407,7 +407,7 @@ export default function Home() {
               className="inline-block mt-15 "
             >
               <button
-                className="bg-[#3F82FD] hover:bg-[#143166] text-white border-5 border-[#B1CCFF] border-opacity-50 px-9 py-3 rounded-full text-xl poppins-semibold flex items-center gap-5"
+                className="bg-[#3F82FD] cursor-pointer hover:bg-[#1F54B5] text-white border-5 border-[#B1CCFF] border-opacity-50 px-9 py-3 rounded-full text-xl poppins-semibold flex items-center gap-5"
                 style={{ fontFamily: 'Poppins, sans-serif' }}
               >
                 <img src="/WhiteDiscordLogo.png" alt="Discord" className="w-9 h-auto hover:animate-spin" />
@@ -466,9 +466,9 @@ export default function Home() {
                 <a href="#" className="text-[#757575] tracking-[-0.5px] font-medium hover:text-slate-950" style={{ fontFamily: 'Poppins, sans-serif' }}>Resources</a>
                 <a href="#" className="text-[#757575] tracking-[-0.5px] font-medium hover:text-slate-950" style={{ fontFamily: 'Poppins, sans-serif' }}>Past Papers</a>
                 <a href="#" className="text-[#757575] tracking-[-0.5px] font-medium hover:text-slate-950" style={{ fontFamily: 'Poppins, sans-serif' }}>Match with a Tutor</a>
-                <Link href='/staffAccess' className="text-[#757575] tracking-[-0.5px] font-medium hover:text-slate-950" style={{ fontFamily: 'Poppins, sans-serif' }}> Staff Page</Link>
-                <a href="#" className="text-[#757575] tracking-[-0.5px] font-medium hover:text-slate-950" style={{ fontFamily: 'Poppins, sans-serif' }}>About</a>
-                <a href="#" className="text-[#757575] tracking-[-0.5px] font-medium hover:text-slate-950" style={{ fontFamily: 'Poppins, sans-serif' }}>Community</a>
+                <Link href='/staffAccess' className="text-[#757575] tracking-[-0.5px] font-medium hover:text-slate-950" style={{ fontFamily: 'Poppins, sans-serif' }}> Staff Access</Link>
+                <a href="/others/about_eduvance" className="text-[#757575] tracking-[-0.5px] font-medium hover:text-slate-950" style={{ fontFamily: 'Poppins, sans-serif' }}>About</a>
+                <a href="https://discord.gg/Eduvance" className="text-[#757575] tracking-[-0.5px] font-medium hover:text-slate-950" style={{ fontFamily: 'Poppins, sans-serif' }}>Community</a>
               </div>
 
               {/* Column 2 */}
@@ -481,8 +481,8 @@ export default function Home() {
 
               {/* Column 3 */}
               <div className="flex flex-col">
-                <a href="#" className="text-black tracking-[-0.6px] text-lg font-[550] mb-2" style={{ fontFamily: 'Poppins, sans-serif' }}>Join the Community</a>
-                <a href="" className="text-[#757575] tracking-[-0.5px] font-medium hover:text-slate-950" style={{ fontFamily: 'Poppins, sans-serif' }}>Join the Discord Server</a>
+                <h3 className="text-black tracking-[-0.6px] text-lg font-[550] mb-2" style={{ fontFamily: 'Poppins, sans-serif' }}>Join the Community</h3>
+                <a href="https://discord.gg/Eduvance" className="text-[#757575] tracking-[-0.5px] font-medium hover:text-slate-950" style={{ fontFamily: 'Poppins, sans-serif' }}>Join the Discord Server</a>
                 <a href="/contributor" className="text-[#757575] tracking-[-0.5px] font-medium hover:text-slate-950" style={{ fontFamily: 'Poppins, sans-serif' }}>Become a community contributor</a>
                 <a href="#" className="text-[#757575] tracking-[-0.5px] font-medium hover:text-slate-950" style={{ fontFamily: 'Poppins, sans-serif' }}>Become a tutor</a>
               </div>
