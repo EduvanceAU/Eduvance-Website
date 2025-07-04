@@ -97,3 +97,11 @@ body {
   position: relative;
   z-index: 2;
 }
+
+.sidebarWheel::-webkit-scrollbar {
+  display: none;
+}
+.sidebarWheel {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
