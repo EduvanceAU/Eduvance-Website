@@ -172,7 +172,7 @@ export default function Home() {
         {/* Right Side - Button hidden on sm */}
         <div className="hidden sm:block">
           <a
-              href="https://discord.gg/eduvance"
+              href="https://discord.gg/YfKzGPpxaj"
               target="_blank"
               rel="noopener noreferrer"
               className="z-10"
@@ -294,7 +294,7 @@ export default function Home() {
 
             {/* Discord Button */}
             <a
-              href="https://discord.gg/eduvance"
+              href="https://discord.gg/YfKzGPpxaj"
               target="_blank"
               rel="noopener noreferrer"
               className="z-20"
@@ -401,7 +401,7 @@ export default function Home() {
 
 
             <a
-              href="https://discord.gg/Eduvance"
+              href="https://discord.gg/YfKzGPpxaj"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-block mt-15 "
@@ -468,7 +468,7 @@ export default function Home() {
                 <a href="#" className="text-[#757575] tracking-[-0.5px] font-medium hover:text-slate-950" style={{ fontFamily: 'Poppins, sans-serif' }}>Match with a Tutor</a>
                 <Link href='/staffAccess' className="text-[#757575] tracking-[-0.5px] font-medium hover:text-slate-950" style={{ fontFamily: 'Poppins, sans-serif' }}> Staff Access</Link>
                 <a href="/others/about_eduvance" className="text-[#757575] tracking-[-0.5px] font-medium hover:text-slate-950" style={{ fontFamily: 'Poppins, sans-serif' }}>About</a>
-                <a href="https://discord.gg/Eduvance" className="text-[#757575] tracking-[-0.5px] font-medium hover:text-slate-950" style={{ fontFamily: 'Poppins, sans-serif' }}>Community</a>
+                <a href="https://discord.gg/YfKzGPpxaj" className="text-[#757575] tracking-[-0.5px] font-medium hover:text-slate-950" style={{ fontFamily: 'Poppins, sans-serif' }}>Community</a>
               </div>
 
               {/* Column 2 */}
@@ -482,7 +482,7 @@ export default function Home() {
               {/* Column 3 */}
               <div className="flex flex-col">
                 <h3 className="text-black tracking-[-0.6px] text-lg font-[550] mb-2" style={{ fontFamily: 'Poppins, sans-serif' }}>Join the Community</h3>
-                <a href="https://discord.gg/Eduvance" className="text-[#757575] tracking-[-0.5px] font-medium hover:text-slate-950" style={{ fontFamily: 'Poppins, sans-serif' }}>Join the Discord Server</a>
+                <a href="https://discord.gg/YfKzGPpxaj" className="text-[#757575] tracking-[-0.5px] font-medium hover:text-slate-950" style={{ fontFamily: 'Poppins, sans-serif' }}>Join the Discord Server</a>
                 <a href="/contributor" className="text-[#757575] tracking-[-0.5px] font-medium hover:text-slate-950" style={{ fontFamily: 'Poppins, sans-serif' }}>Become a community contributor</a>
                 <a href="#" className="text-[#757575] tracking-[-0.5px] font-medium hover:text-slate-950" style={{ fontFamily: 'Poppins, sans-serif' }}>Become a tutor</a>
               </div>
