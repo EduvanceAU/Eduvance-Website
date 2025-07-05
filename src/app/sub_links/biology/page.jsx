@@ -13,10 +13,10 @@ export default function Biology() {
       <div className="transition-all duration-300">
         {/* Custom Banner Header */}
         <div
-          className="w-full h-[250px] relative flex items-center bg-cover bg-right-bottom md:bg-center bg-no-repeat transition-all duration-300"
+          className="w-full h-[250px] relative flex items-center bg-cover bg-right lg:bg-center bg-no-repeat transition-all duration-300"
           style={{ backgroundImage: "url('/Banner.png')" }}
         >
-          <h1 className="text-white font-grand-local text-3xl sm:text-5xl md:text-7xl ml-17 tracking-[-1px]">
+          <h1 className="text-white font-grand-local text-5xl sm:text-4xl md:text-4xl ml-17 tracking-[-1px]">
             Biology
           </h1>
         </div>
@@ -137,7 +137,7 @@ export default function Biology() {
             {/* Always-visible slim buttons below the cards */}
             <div className="flex flex-wrap justify-between gap-4 w-full">
               <a
-                href="https://discord.gg/YfKzGPpxaj"
+                href="https://discord.gg/Eduvance"
                 className="w-full h-14 rounded-xl bg-[#F2F6FF] font-[550] tracking-[-0.5px] border-[1.5px] border-[#0C58E4] flex items-center justify-start pl-4 text-black hover:text-[#0C58E4] hover:bg-[#BAD1FD] bg-blend-multiply transition-all duration-300"
               >
                 <img src="/ServerIcon.png" alt="Contribute" className="w-5 h-4 mr-4" />
