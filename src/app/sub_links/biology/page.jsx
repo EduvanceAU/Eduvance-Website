@@ -455,7 +455,7 @@ export default function Biology() {
             {/* Always-visible slim buttons below the cards */}
             <div className="flex flex-wrap justify-between gap-4 w-full">
               <a
-                href="https://discord.gg/Eduvance"
+                href="https://discord.gg/YfKzGPpxaj"
                 className="w-full h-14 rounded-xl bg-[#F2F6FF] font-[550] tracking-[-0.5px] border-[1.5px] border-[#0C58E4] flex items-center justify-start pl-4 text-black hover:text-[#0C58E4] hover:bg-[#BAD1FD] bg-blend-multiply transition-all duration-300"
               >
                 <img src="/ServerIcon.png" alt="Contribute" className="w-5 h-4 mr-4" />
