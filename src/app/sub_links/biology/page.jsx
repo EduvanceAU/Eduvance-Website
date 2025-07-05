@@ -13,10 +13,10 @@ export default function Biology() {
       <div className="transition-all duration-300">
         {/* Custom Banner Header */}
         <div
-          className="w-full h-[250px] relative flex items-center bg-cover bg-right-bottom sm:bg-center bg-no-repeat transition-all duration-300"
+          className="w-full h-[250px] relative flex items-center bg-cover bg-right-bottom md:bg-center bg-no-repeat transition-all duration-300"
           style={{ backgroundImage: "url('/Banner.png')" }}
         >
-          <h1 className="text-white font-grand-local text-3xl sm:text-xl md:text-7xl ml-17 tracking-[-1px]">
+          <h1 className="text-white font-grand-local text-3xl sm:text-5xl md:text-7xl ml-17 tracking-[-1px]">
             Biology
           </h1>
         </div>
