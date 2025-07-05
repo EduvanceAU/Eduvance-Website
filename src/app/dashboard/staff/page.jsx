@@ -132,12 +132,19 @@ export default function UploadResource() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log('Submit button clicked');
     if (!title || !link || !selectedSubjectId || !resourceType) {
       setMessage("Fill all required fields");
       setMessageType('error');
       return;
     }
-    if (!supabaseClient || !staffUser) {
+    if (!supabaseClient) {
+      setMessage("Supabase client not initialized. Please wait and try again.");
+      setMessageType('error');
+      console.error('Supabase client not initialized');
+      return;
+    }
+    if (!staffUser) {
       setMessage("Not ready to submit");
       setMessageType('error');
       return;
@@ -153,7 +160,7 @@ export default function UploadResource() {
         subject_id: selectedSubjectId,
         unit_chapter_name: unitValue,
         uploaded_by_username: staffUsername,
-        is_approved: true
+        approved: false
       });
     if (error) {
       setMessage(`Submission failed: ${error.message}`);
@@ -170,7 +177,7 @@ export default function UploadResource() {
     const { data, error } = await supabaseClient
       .from('community_resource_requests')
       .select('*')
-      .eq('is_approved', false);
+      .eq('approved', false);
     if (!error) setPendingResources(data);
   };
 
@@ -178,7 +185,7 @@ export default function UploadResource() {
     if (!supabaseClient) return;
     const { data, error } = await supabaseClient
       .from('community_resource_requests')
-      .update({ is_approved: true })
+      .update({ approved: true })
       .eq('id', id)
       .select()
       .single();
@@ -191,7 +198,7 @@ export default function UploadResource() {
         subject_id: data.subject_id,
         unit_chapter_name: data.unit_chapter_name,
         uploaded_by_username: data.uploaded_by_username,
-        is_approved: true
+        approved: true
       });
       fetchPendingResources();
     }
@@ -253,7 +260,7 @@ export default function UploadResource() {
                       <option key={subject.id} value={subject.id}>{subject.name} ({subject.code}) - {subject.syllabus_type}</option>
                     ))}
                   </select>
-                  <button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 transition text-white py-2 rounded-lg flex items-center justify-center gap-2"><svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M7 10l5 5m0 0l5-5m-5 5V4" /></svg>Submit Resource</button>
+                  <button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 transition text-white py-2 rounded-lg flex items-center justify-center gap-2" disabled={!supabaseClient}><svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M7 10l5 5m0 0l5-5m-5 5V4" /></svg>Submit Resource</button>
                 </form>
               </>
             )}
