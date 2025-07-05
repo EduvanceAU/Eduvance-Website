@@ -112,173 +112,8 @@ export default function Main() {
   const [hoveredSidebarItem, setHoveredSidebarItem] = useState(null);
 
   return (
-    <main className="min-h-screen bg-white relative overflow-x-hidden">
-      <>
-        <nav className="w-full h-[60px] flex justify-between items-center px-4 md:px-6 py-4 z-50 fixed top-0 left-0 bg-white bg-opacity-95">
-          {/* 👈 Left Side: Sidebar Button + Logo in one group */}
-          <div className="flex items-center gap-2">
-            <button
-              className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-[#BAD1FD] transition-colors duration-200"
-              onClick={() => setSidebarOpen(true)}
-            >
-              <svg className="w-6 h-6 text-[#0C58E4]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
-            </button>
-
-            <Image src="/SmallLogo.png" alt="Eduvance" width={35} height={35} />
-            <span className="font-grand-local text-xl sm:text-2xl text-black">Eduvance</span>
-          </div>
-
-          {/* Center Links - Hidden on sm */}
-          <div className="hidden sm:flex flex-wrap gap-3 sm:gap-4 md:gap-5 justify-center items-center">
-            <NavDropdown
-              label="About Edexcel"
-              items={[
-                { label: "About Edexcel", href: "/about/edexcel" },
-                { label: "Exam Structure", href: "/about/exam-structure" },
-                { label: "Grading System", href: "/about/grading" },
-              ]}
-            />
-            <NavDropdown
-              label="IAL Edexcel Resources"
-              items={[
-                { label: "Physics", href: "/sub_links/physics/IAL/resources" },
-                { label: "Chemistry", href: "/sub_links/chemistry/IAL/resources" },
-                { label: "Biology", href: "/sub_links/biology/IAL/resources" },
-                { label: "Mathematics", href: "/sub_links/maths/IAL/resources" },
-              ]}
-            />
-            <NavDropdown
-              label="IGCSE Edexcel Resources"
-              items={[
-                { label: "Physics", href: "/sub_links/physics/IGCSE/resources" },
-                { label: "Chemistry", href: "/sub_links/chemistry/IGCSE/resources" },
-                { label: "Biology", href: "/sub_links/biology/IGCSE/resources" },
-                { label: "Mathematics", href: "/sub_links/maths/IGCSE/resources" },
-              ]}
-            />
-            <NavDropdown
-              label="More"
-              items={[
-                { label: "Contact Us", href: "/contact" },
-                { label: "FAQ", href: "/faq" },
-                { label: "Privacy Policy", href: "/privacy" },
-                { label: "Terms of Service", href: "/terms" },
-              ]}
-            />
-          </div>
-
-          {/* Right Side - Button hidden on sm */}
-          <div className="hidden sm:block">
-            <a
-                href="https://discord.gg/YfKzGPpxaj"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="z-10"
-              >
-                <button className="bg-[#1871F2] cursor-pointer text-white border-2 border-white px-4 py-1 rounded-[10px] hover:bg-blue-700 transition text-sm sm:text-base poppins-semibold shadow-lg">
-                  Join Now
-                </button>
-              </a>
-          </div>
-        </nav>
-
-        {/* Custom Sidebar - Slide-in from left */}
-        {/* Scroll Ability */}
-        <div className={`sidebarWheel sm:overflow-y-scroll sm:overscroll-none fixed top-0 left-0 h-full w-76 bg-white z-50 flex flex-col shadow-lg transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 ease-in-out`} style={{ width: '320px', minWidth: '320px' }}>
-          <div className="flex justify-between items-center p-4">
-                {/* Logo/Image */}
-            
-              <img
-                src="/BlueSolo.png"
-                alt="Eduvance Logo"
-                className="w-11 h-11 object-contain"
-              />
-              {/* Close Button */}
-              <button onClick={() => setSidebarOpen(false)} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-[#BAD1FD]">
-                <svg className="w-6 h-6 text-[#153064]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            
-            </div>
-          {/* Choose your exam board header */}
-          <h2 className="text-lg font-semibold tracking-[-1px] text-[#0C58E4] mb-6 px-6" style={{ fontFamily: 'Poppins, sans-serif' }}>
-            Choose your exam board
-          </h2>
-          {/* Sidebar Navigation */}
-          <div className="flex flex-col px-4 space-y-2">
-            <div
-              className={`relative px-4 py-3 rounded-lg cursor-pointer transition-all duration-200 ${
-                hoveredSidebarItem === 'igcse' ? 'bg-[#BAD1FD]' : ''
-              }`}
-              onMouseEnter={() => setHoveredSidebarItem('igcse')}
-              onMouseLeave={() => setHoveredSidebarItem(null)}
-            >
-              <div className="flex items-center justify-between">
-                <span className="text-[#000000] tracking-[-0.5px] font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                  IGCSE
-                </span>
-                {hoveredSidebarItem === 'igcse' && (
-                  <ChevronRight size={16} className="text-[#000000]" />
-                )}
-              </div>
-            </div>
-            <div
-              className={`relative px-4 py-3 rounded-lg cursor-pointer transition-all duration-200 ${
-                hoveredSidebarItem === 'as' ? 'bg-[#BAD1FD]' : ''
-              }`}
-              onMouseEnter={() => setHoveredSidebarItem('as')}
-              onMouseLeave={() => setHoveredSidebarItem(null)}
-            >
-              <div className="flex items-center justify-between">
-                <span className="text-[#000000] tracking-[-0.5px] font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                  AS Levels
-                </span>
-                {hoveredSidebarItem === 'as' && (
-                  <ChevronRight size={16} className="text-[#000000]" />
-                )}
-              </div>
-            </div>
-            <div
-              className={`relative px-4 py-3 rounded-lg cursor-pointer transition-all duration-200 ${
-                hoveredSidebarItem === 'a2' ? 'bg-[#BAD1FD]' : ''
-              }`}
-              onMouseEnter={() => setHoveredSidebarItem('a2')}
-              onMouseLeave={() => setHoveredSidebarItem(null)}
-            >
-              <div className="flex items-center justify-between">
-                <span className="text-[#000000] tracking-[-0.5px] font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                  A2 Levels
-                </span>
-                {hoveredSidebarItem === 'a2' && (
-                  <ChevronRight size={16} className="text-[#000000]" />
-                )}
-              </div>
-            </div>
-          </div>
-          {/* Subjects Section */}
-          <div className="mt-8 px-4">
-            <h3 className="text-lg font-semibold tracking-[-1px] text-[#0C58E4] mb-4 px-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
-              Subjects
-            </h3>
-            <div className="space-y-1">
-              {['Biology', 'Physics', 'Mathematics', 'Chemistry', 'Business', 'Economics'].map((subject) => (
-                <Link
-                  key={subject}
-                  href={`/sub_links/${subject.toLowerCase()}`}
-                  className="block px-4 py-2 text-[#000000] tracking-[-0.5px] cursor-pointer hover:bg-[#BAD1FD] rounded transition-colors duration-200"
-                  style={{ fontFamily: 'Poppins, sans-serif' }}
-                  onClick={() => setSidebarOpen(false)}
-                >
-                  {subject}
-                </Link>
-              ))}
-            </div>
-          </div>
-        </div>
-      </>
+    <>
+      <Home/>
       {/* Hero Section */}
       <section className="w-full min-h-screen flex flex-col relative pt-16">
         {/* Gradient Box in Background */}
@@ -293,7 +128,7 @@ export default function Main() {
 
             {/* Discord Button */}
             <a
-              href="https://discord.gg/YfKzGPpxaj"
+              href="https://discord.gg/eduvance"
               target="_blank"
               rel="noopener noreferrer"
               className="z-20"
@@ -376,7 +211,7 @@ export default function Main() {
               className="inline-block px-6 py-0.6 border-2 border-[#4B89FD] rounded-full text-black font-semibold tracking-[-0.7px] text-lg mb-8"
               style={{ fontFamily: 'Poppins, sans-serif' }}
             >
-              Trusted by +18,000 Students worldwide
+              Trusted by +17,000 Students worldwide
             </div>
 
             <img
@@ -400,7 +235,7 @@ export default function Main() {
 
 
             <a
-              href="https://discord.gg/YfKzGPpxaj"
+              href="https://discord.gg/Eduvance"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-block mt-15 "
@@ -465,9 +300,9 @@ export default function Main() {
                 <a href="#" className="text-[#757575] tracking-[-0.5px] font-medium hover:text-slate-950" style={{ fontFamily: 'Poppins, sans-serif' }}>Resources</a>
                 <a href="#" className="text-[#757575] tracking-[-0.5px] font-medium hover:text-slate-950" style={{ fontFamily: 'Poppins, sans-serif' }}>Past Papers</a>
                 <a href="#" className="text-[#757575] tracking-[-0.5px] font-medium hover:text-slate-950" style={{ fontFamily: 'Poppins, sans-serif' }}>Match with a Tutor</a>
-                <Link href='/staffAccess' className="text-[#757575] tracking-[-0.5px] font-medium hover:text-slate-950" style={{ fontFamily: 'Poppins, sans-serif' }}> Staff Access</Link>
-                <a href="/others/about_eduvance" className="text-[#757575] tracking-[-0.5px] font-medium hover:text-slate-950" style={{ fontFamily: 'Poppins, sans-serif' }}>About</a>
-                <a href="https://discord.gg/YfKzGPpxaj" className="text-[#757575] tracking-[-0.5px] font-medium hover:text-slate-950" style={{ fontFamily: 'Poppins, sans-serif' }}>Community</a>
+                <Link href='/staffAccess' className="text-[#757575] tracking-[-0.5px] font-medium hover:text-slate-950" style={{ fontFamily: 'Poppins, sans-serif' }}> Staff Page</Link>
+                <a href="#" className="text-[#757575] tracking-[-0.5px] font-medium hover:text-slate-950" style={{ fontFamily: 'Poppins, sans-serif' }}>About</a>
+                <a href="#" className="text-[#757575] tracking-[-0.5px] font-medium hover:text-slate-950" style={{ fontFamily: 'Poppins, sans-serif' }}>Community</a>
               </div>
 
               {/* Column 2 */}
@@ -480,8 +315,8 @@ export default function Main() {
 
               {/* Column 3 */}
               <div className="flex flex-col">
-                <h3 className="text-black tracking-[-0.6px] text-lg font-[550] mb-2" style={{ fontFamily: 'Poppins, sans-serif' }}>Join the Community</h3>
-                <a href="https://discord.gg/YfKzGPpxaj" className="text-[#757575] tracking-[-0.5px] font-medium hover:text-slate-950" style={{ fontFamily: 'Poppins, sans-serif' }}>Join the Discord Server</a>
+                <a href="#" className="text-black tracking-[-0.6px] text-lg font-[550] mb-2" style={{ fontFamily: 'Poppins, sans-serif' }}>Join the Community</a>
+                <a href="" className="text-[#757575] tracking-[-0.5px] font-medium hover:text-slate-950" style={{ fontFamily: 'Poppins, sans-serif' }}>Join the Discord Server</a>
                 <a href="/contributor" className="text-[#757575] tracking-[-0.5px] font-medium hover:text-slate-950" style={{ fontFamily: 'Poppins, sans-serif' }}>Become a community contributor</a>
                 <a href="#" className="text-[#757575] tracking-[-0.5px] font-medium hover:text-slate-950" style={{ fontFamily: 'Poppins, sans-serif' }}>Become a tutor</a>
               </div>
@@ -489,6 +324,6 @@ export default function Main() {
           </div>
         </div>
       </footer>
-    </main>
+    </>
   );
 }
