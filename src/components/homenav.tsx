@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/dialog"
 
 // Dropdown component
-const NavDropdown = ({ label, items }) => {
+const NavDropdown = ({ labelMain, labelSmall, items }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
 
@@ -41,7 +41,8 @@ const NavDropdown = ({ label, items }) => {
         onClick={() => setIsOpen(!isOpen)}
         className="cursor-pointer text-[#555555] text-sm sm:text-base lg:text-lg font-semibold hover:text-black transition tracking-[-1px] flex items-center gap-1"
       >
-        {label}
+        <p className='hidden lg:block'>{labelMain}</p>
+        <p className='block lg:hidden'>{labelSmall}</p>
         <svg
           className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`}
           fill="none"
@@ -189,7 +190,8 @@ function Home(props) {
         {/* Center Links - Hidden on sm */}
         <div className="hidden sm:flex flex-wrap gap-3 sm:gap-4 md:gap-5 justify-center items-center">
           <NavDropdown
-            label="About Edexcel"
+            labelMain="About Edexcel"
+            labelSmall="About"
             items={[
               { label: "About Edexcel", href: "/about/edexcel" },
               { label: "Exam Structure", href: "/about/exam-structure" },
@@ -197,7 +199,8 @@ function Home(props) {
             ]}
           />
           <NavDropdown
-            label="IAL Edexcel Resources"
+            labelMain="IAL Edexcel Resources"
+            labelSmall="IAL"
             items={[
               { label: "Physics", href: "/sub_links/physics/IAL/resources" },
               { label: "Chemistry", href: "/sub_links/chemistry/IAL/resources" },
@@ -206,7 +209,8 @@ function Home(props) {
             ]}
           />
           <NavDropdown
-            label="IGCSE Edexcel Resources"
+            labelMain="IGCSE Edexcel Resources"
+            labelSmall="IGCSE"
             items={[
               { label: "Physics", href: "/sub_links/physics/IGCSE/resources" },
               { label: "Chemistry", href: "/sub_links/chemistry/IGCSE/resources" },
@@ -215,7 +219,8 @@ function Home(props) {
             ]}
           />
           <NavDropdown
-            label="More"
+            labelMain="More"
+            labelSmall="More"
             items={[
               { label: "Contact Us", href: "/contact" },
               { label: "FAQ", href: "/faq" },
@@ -240,7 +245,7 @@ function Home(props) {
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-md p-4">
                   <DialogHeader>
-                    <DialogTitle className="text-2xl font-bold text-[#0C58E4] mb-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                    <DialogTitle className="text-2xl font-bold text-[#0C58E4]" style={{ fontFamily: 'Poppins, sans-serif' }}>
                         Welcome to Eduvance
                     </DialogTitle>
                     <DialogDescription className="text-gray-600" style={{ fontFamily: 'Poppins, sans-serif' }}>
@@ -275,7 +280,7 @@ function Home(props) {
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-md p-4">
                   <DialogHeader>
-                    <DialogTitle className="text-2xl font-bold text-[#0C58E4] mb-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                    <DialogTitle className="text-2xl font-bold text-[#0C58E4]" style={{ fontFamily: 'Poppins, sans-serif' }}>
                       Welcome to Eduvance
                     </DialogTitle>
                     <DialogDescription className="text-gray-600" style={{ fontFamily: 'Poppins, sans-serif' }}>                      
