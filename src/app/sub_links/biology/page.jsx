@@ -56,32 +56,35 @@ export default function Biology() {
                   <h3 className="font-semibold text-xl md:text-2xl text-[#0C58E4] tracking-[-1px] mb-6" style={{ fontFamily: 'Poppins, sans-serif' }}>
                     IAL Biology Resources
                   </h3>
-                  {/* Resource Cards - Flex row for single-line layout (IAL) */}
-                  <div className="text-xs sm:text-base flex flex-row flex-nowrap overflow-x-auto gap-4 md:gap-6 mb-8 sm:px-1 w-full items-start">
+                  {/* Resource Cards - CSS Grid for single-line layout (IAL) and 2x2 layout for mobile */}
+                  <div className="text-xs sm:text-base grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4 md:gap-6 mb-8 sm:px-1 w-full">
                     <Link
                       href="/sub_links/biology/IAL/communityNotes"
-                      className={`transition-all duration-300 w-1/4 h-40 rounded-xl font-[550] sm:tracking-[-0.5px] border-[1.5px] border-[#0C58E4] flex items-end justify-start pl-1 sm:pl-4 pb-2 sm:pb-4 text-black hover:text-[#0C58E4] hover:bg-[#CEE0FF] bg-blend-multiply cursor-pointer`}
+                      className="transition-all duration-300 h-40 rounded-xl font-[550] tracking-[-0.5px] border-[1.5px] border-[#0C58E4] flex items-end justify-start pl-4 pb-4 text-black hover:text-[#0C58E4] hover:bg-[#CEE0FF] bg-blend-multiply cursor-pointer"
                       style={{ backgroundImage: "url('/Notes Background.png')", backgroundSize: 'cover', backgroundPosition: 'center' }}
                     >
                       Community Notes
                     </Link>
+                    
                     <Link
                       href="/sub_links/biology/IAL/resources"
-                      className={`transition-all duration-300 w-1/4 h-40 rounded-xl font-[550] sm:tracking-[-0.5px] border-[1.5px] border-[#0C58E4] flex items-end justify-start pl-1 sm:pl-4 pb-2 sm:pb-4 text-black hover:text-[#0C58E4] hover:bg-[#CEE0FF] bg-blend-multiply cursor-pointer`}
+                      className="transition-all duration-300 h-40 rounded-xl font-[550] tracking-[-0.5px] border-[1.5px] border-[#0C58E4] flex items-end justify-start pl-4 pb-4 text-black hover:text-[#0C58E4] hover:bg-[#CEE0FF] bg-blend-multiply cursor-pointer"
                       style={{ backgroundImage: "url('/PPQ Background.png')", backgroundSize: 'cover', backgroundPosition: 'center' }}
                     >
                       Eduvance Resources
                     </Link>
+
                     <Link
                       href="/sub_links/biology/IAL/pastpapers"
-                      className={`transition-all duration-300 w-1/4 h-40 rounded-xl font-[550] sm:tracking-[-0.5px] border-[1.5px] border-[#0C58E4] flex items-end justify-start pl-1 sm:pl-4 pb-2 sm:pb-4 text-black hover:text-[#0C58E4] hover:bg-[#CEE0FF] bg-blend-multiply cursor-pointer`}
+                      className="transition-all duration-300 h-40 rounded-xl font-[550] tracking-[-0.5px] border-[1.5px] border-[#0C58E4] flex items-end justify-start pl-4 pb-4 text-black hover:text-[#0C58E4] hover:bg-[#CEE0FF] bg-blend-multiply cursor-pointer"
                       style={{ backgroundImage: "url('/Papers Background.png')", backgroundSize: 'cover', backgroundPosition: 'center' }}
                     >
                       Past Papers
                     </Link>
+
                     <a
                       href="../../contributor/"
-                      className={`transition-all duration-300 w-1/4 h-40 rounded-xl font-[550] sm:tracking-[-0.5px] border-[1.5px] border-[#0C58E4] flex items-end justify-start pl-1 sm:pl-4 pb-2 sm:pb-4 text-black hover:text-[#0C58E4] hover:bg-[#CEE0FF] bg-blend-multiply cursor-pointer`}
+                      className="transition-all duration-300 h-40 rounded-xl font-[550] tracking-[-0.5px] border-[1.5px] border-[#0C58E4] flex items-end justify-start pl-4 pb-4 text-black hover:text-[#0C58E4] hover:bg-[#CEE0FF] bg-blend-multiply cursor-pointer"
                       style={{ backgroundImage: "url('/Share Notes Background.png')", backgroundSize: 'cover', backgroundPosition: 'center' }}
                     >
                       Share Your Notes
@@ -93,32 +96,35 @@ export default function Biology() {
                   <h3 className="font-semibold text-xl md:text-2xl text-[#0C58E4] tracking-[-1px] mb-6" style={{ fontFamily: 'Poppins, sans-serif' }}>
                     IGCSE Biology Resources
                   </h3>
-                  {/* Resource Cards - Flex row for single-line layout (IAL) */}
-                  <div className="text-xs sm:text-base flex flex-row flex-nowrap overflow-x-auto gap-4 md:gap-6 mb-8 sm:px-1 w-full items-start">
+                  {/* Resource Cards - CSS Grid for single-line layout (IGCSE) and 2x2 layout for mobile */}
+                  <div className="text-xs sm:text-base grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4 md:gap-6 mb-8 sm:px-1 w-full">
                     <Link
-                      href="/sub_links/biology/IGCSE/communityNotes"
-                      className={`transition-all duration-300 w-1/4 h-40 rounded-xl font-[550] sm:tracking-[-0.5px] border-[1.5px] border-[#0C58E4] flex items-end justify-start pl-1 sm:pl-4 pb-2 sm:pb-4 text-black hover:text-[#0C58E4] hover:bg-[#CEE0FF] bg-blend-multiply cursor-pointer`}
+                      href="/sub_links/biology/IAL/communityNotes"
+                      className="transition-all duration-300 h-40 rounded-xl font-[550] tracking-[-0.5px] border-[1.5px] border-[#0C58E4] flex items-end justify-start pl-4 pb-4 text-black hover:text-[#0C58E4] hover:bg-[#CEE0FF] bg-blend-multiply cursor-pointer"
                       style={{ backgroundImage: "url('/Notes Background.png')", backgroundSize: 'cover', backgroundPosition: 'center' }}
                     >
                       Community Notes
                     </Link>
+                    
                     <Link
-                      href="/sub_links/biology/IGCSE/resources"
-                      className={`transition-all duration-300 w-1/4 h-40 rounded-xl font-[550] sm:tracking-[-0.5px] border-[1.5px] border-[#0C58E4] flex items-end justify-start pl-1 sm:pl-4 pb-2 sm:pb-4 text-black hover:text-[#0C58E4] hover:bg-[#CEE0FF] bg-blend-multiply cursor-pointer`}
+                      href="/sub_links/biology/IAL/resources"
+                      className="transition-all duration-300 h-40 rounded-xl font-[550] tracking-[-0.5px] border-[1.5px] border-[#0C58E4] flex items-end justify-start pl-4 pb-4 text-black hover:text-[#0C58E4] hover:bg-[#CEE0FF] bg-blend-multiply cursor-pointer"
                       style={{ backgroundImage: "url('/PPQ Background.png')", backgroundSize: 'cover', backgroundPosition: 'center' }}
                     >
                       Eduvance Resources
                     </Link>
+
                     <Link
-                      href="/sub_links/biology/IGCSE/pastpapers"
-                      className={`transition-all duration-300 w-1/4 h-40 rounded-xl font-[550] sm:tracking-[-0.5px] border-[1.5px] border-[#0C58E4] flex items-end justify-start pl-1 sm:pl-4 pb-2 sm:pb-4 text-black hover:text-[#0C58E4] hover:bg-[#CEE0FF] bg-blend-multiply cursor-pointer`}
+                      href="/sub_links/biology/IAL/pastpapers"
+                      className="transition-all duration-300 h-40 rounded-xl font-[550] tracking-[-0.5px] border-[1.5px] border-[#0C58E4] flex items-end justify-start pl-4 pb-4 text-black hover:text-[#0C58E4] hover:bg-[#CEE0FF] bg-blend-multiply cursor-pointer"
                       style={{ backgroundImage: "url('/Papers Background.png')", backgroundSize: 'cover', backgroundPosition: 'center' }}
                     >
                       Past Papers
                     </Link>
+
                     <a
                       href="../../contributor/"
-                      className={`transition-all duration-300 w-1/4 h-40 rounded-xl font-[550] sm:tracking-[-0.5px] border-[1.5px] border-[#0C58E4] flex items-end justify-start pl-1 sm:pl-4 pb-2 sm:pb-4 text-black hover:text-[#0C58E4] hover:bg-[#CEE0FF] bg-blend-multiply cursor-pointer`}
+                      className="transition-all duration-300 h-40 rounded-xl font-[550] tracking-[-0.5px] border-[1.5px] border-[#0C58E4] flex items-end justify-start pl-4 pb-4 text-black hover:text-[#0C58E4] hover:bg-[#CEE0FF] bg-blend-multiply cursor-pointer"
                       style={{ backgroundImage: "url('/Share Notes Background.png')", backgroundSize: 'cover', backgroundPosition: 'center' }}
                     >
                       Share Your Notes
