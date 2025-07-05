@@ -18,9 +18,19 @@ const units = [
 export default function IALResources() {
   const [unitResources, setUnitResources] = useState({});
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
-    const fetchResources = async () => {
+    const checkSessionAndFetch = async () => {
+      setLoading(true);
+      const { data: sessionData } = await supabase.auth.getSession();
+      if (!sessionData?.session?.user) {
+        setUser(null);
+        setLoading(false);
+        return;
+      }
+      setUser(sessionData.session.user);
       try {
         // First get the subject ID
         const { data: subjectData, error: subjectError } = await supabase
@@ -32,58 +42,83 @@ export default function IALResources() {
 
         if (subjectError || !subjectData) {
           setError(subjectError || new Error('Subject "Biology" not found.'));
+          setLoading(false);
           return;
         }
 
         const subjectId = subjectData.id;
 
-        // Then fetch resources for this subject
+        // Fetch only approved resources for this subject
         const { data: resources, error: resourcesError } = await supabase
           .from('resources')
           .select('*')
           .eq('subject_id', subjectId)
+          .eq('approved', true)
           .order('created_at', { ascending: false });
 
         if (resourcesError) {
           setError(resourcesError);
-          console.error('Error fetching resources:', resourcesError.message);
+          setLoading(false);
           return;
         }
 
-        // Group resources by unit and resource type
+        // Group resources by unit using the units const
         const groupedResources = {};
+        units.forEach((unit) => {
+          groupedResources[unit.unit] = [];
+        });
+        // Also add a 'General' group for resources that don't match any unit
+        groupedResources['General'] = [];
 
         resources.forEach((resource) => {
-          // Extract unit from title or use a default if not found
-          const unitMatch = resource.title.match(/Unit\s*\d+/i);
-          const unit = unitMatch ? unitMatch[0] : 'General';
-          
-          if (!groupedResources[unit]) {
-            groupedResources[unit] = [];
-          }
+          // Try to match the resource's unit_chapter_name or code to the units const
+          let matchedUnit = units.find(
+            (u) =>
+              (resource.unit_chapter_name &&
+                (resource.unit_chapter_name.toLowerCase() === u.name.toLowerCase() ||
+                 resource.unit_chapter_name.toLowerCase() === u.unit.toLowerCase() ||
+                 resource.unit_chapter_name.toLowerCase() === u.code.toLowerCase())) ||
+              (resource.unit_code && resource.unit_code.toLowerCase() === u.code.toLowerCase())
+          );
+          let unitKey = matchedUnit ? matchedUnit.unit : 'General';
 
-          let group = groupedResources[unit].find((grp) => grp.heading === resource.resource_type);
+          // Group by resource_type within the unit
+          let group = groupedResources[unitKey].find((grp) => grp.heading === resource.resource_type);
           if (!group) {
             group = { heading: resource.resource_type, links: [] };
-            groupedResources[unit].push(group);
+            groupedResources[unitKey].push(group);
           }
-
           group.links.push({
             name: resource.title,
             url: resource.link,
             description: resource.description
           });
         });
-
         setUnitResources(groupedResources);
+        setLoading(false);
       } catch (error) {
-        console.error("Error fetching resources:", error);
         setError(error);
+        setLoading(false);
       }
     };
-
-    fetchResources();
+    checkSessionAndFetch();
   }, []);
+
+  if (loading) {
+    return (
+      <main className="min-h-screen bg-white flex items-center justify-center">
+        <p className="text-xl text-gray-600">Loading...</p>
+      </main>
+    );
+  }
+
+  if (!user) {
+    return (
+      <main className="min-h-screen bg-white flex items-center justify-center">
+        <p className="text-xl text-blue-600">Please log in to view resources.</p>
+      </main>
+    );
+  }
 
   if (error) {
     return (
@@ -144,6 +179,37 @@ export default function IALResources() {
             </div>
           </div>
         ))}
+        {/* General resources not matching any unit */}
+        {unitResources['General'] && unitResources['General'].length > 0 && (
+          <div className="mb-12">
+            <div className="w-full h-16 flex items-center px-6 mb-8" style={{ backgroundColor: "#BAD1FD" }}>
+              <h2 className="text-2xl font-semibold tracking-tight" style={{ color: "#153064", fontFamily: "Poppins, sans-serif" }}>
+                General Resources
+              </h2>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+              {unitResources['General'].map((resourceGroup, index) => (
+                <div key={index} className="flex flex-col p-4 border border-gray-200 rounded-lg">
+                  <h4 className="text-lg font-semibold text-[#153064] mb-2" style={{ fontFamily: "Poppins, sans-serif" }}>
+                    {resourceGroup.heading}
+                  </h4>
+                  <ul className="space-y-3">
+                    {resourceGroup.links.map((link, linkIndex) => (
+                      <li key={linkIndex} className="flex flex-col">
+                        <Link href={link.url} className="text-[#1A69FA] hover:underline text-md">
+                          {link.name}
+                        </Link>
+                        {link.description && (
+                          <p className="text-sm text-gray-600 mt-1">{link.description}</p>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </main>
   );
