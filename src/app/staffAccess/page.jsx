@@ -157,7 +157,7 @@ export default function StaffAuthPage() {
         if (!staffError && staffData) {
           if (staffData.role === 'admin') {
             setMessage('Sign-in successful! Redirecting to admin dashboard...');
-            router.replace('/admin-dashboard');
+            router.replace('/dashboard/admin');
           } else {
             setMessage('Sign-in successful! Redirecting to staff dashboard...');
             router.replace('/dashboard/staff');

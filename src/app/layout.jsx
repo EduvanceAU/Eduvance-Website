@@ -1,5 +1,6 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import Script from 'next/script';
+import { Analytics } from "@vercel/analytics/next"
 import "./globals.css";
 
 const geistSans = Geist({
@@ -14,7 +15,7 @@ const geistMono = Geist_Mono({
 
 export const metadata = {
   title: "Eduvance",
-  description: "Education drives progress. Eduvance helps you learn, revise, and stay ahead in your academic journey",
+  description: "Eduvance - Advance with Us",
 };
 
 export default function RootLayout({ children }) {
@@ -26,12 +27,13 @@ export default function RootLayout({ children }) {
           src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
           strategy="beforeInteractive"
         />
-        <link rel="icon" href="/BlueSolo.png" />
+        <link rel="icon" href="/BlueSolo.png" type="image/png" />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         {children}
+        <Analytics />
       </body>
     </html>
   );
