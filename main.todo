@@ -46,7 +46,7 @@ New Resources Pages Update :
    ☐ Ensure logged in session is checked for resource page
    ☐ Scrollable side bar
    ☐ Breakpoints for mobile responsive design
-   ☐ Consistent top/side bar updates for overall website
+   ✔ Consistent top/side bar updates for overall website @done(25-07-05 10:35)
    
    ✔ Update Community Notes pages logic (only include community contributed notes) @done(25-07-02 17:38)
    ✔ Update Past Paper loading feature for all pages @done(25-06-27 16:34)
@@ -74,3 +74,6 @@ Community Feeback :
    ✔ Staff Page name changed to Staff Access @done(25-07-04 16:34)
    ✔ Footer page links to be updated @done(25-07-04 16:34)
    ✔ Update all subject pages to have the right UI and responsive design @done(25-07-04 16:34)
+   ☐ Update links for the top bar in the website
+   ☐ Chemsitry Page Typo
+   ☐ Update discord invite links
