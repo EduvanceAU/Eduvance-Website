@@ -44,9 +44,10 @@ New Resources Pages Update :
    ✔ Update subject pages for button updates and user profile showcase @done(25-07-02 16:54)
    ☐ Update session log out logic for top bar user showcase display
    ☐ Ensure logged in session is checked for resource page
-   ✔ Scrollable side bar @done(25-07-05 16:40)
-   ✔ Breakpoints for mobile responsive design @done(25-07-05 16:48)
-   ✔ Consistent top/side bar updates for overall website (Made a homenav.tsx component) @done(25-07-05 10:35)
+   ☐ Scrollable side bar
+   ☐ Breakpoints for mobile responsive design
+   ✔ Consistent top/side bar updates for overall website @done(25-07-05 10:35)
+   
    ✔ Update Community Notes pages logic (only include community contributed notes) @done(25-07-02 17:38)
    ✔ Update Past Paper loading feature for all pages @done(25-06-27 16:34)
 
@@ -66,7 +67,7 @@ Other TODO:
    - Become a tutor/Match with a tutor : People could sign up to teach/study with tutors
    ☐ Collect testimonials from community members for the website
 
-Community Feedback :
+Community Feeback :
    ✔ Update member counts on all pages to 18k @done(25-07-04 16:34)
    ☐ Footer image spacing with the main div
    ☐ Adding placeholder for the community section (Biomeac, Maryam, Map)
@@ -74,6 +75,5 @@ Community Feedback :
    ✔ Footer page links to be updated @done(25-07-04 16:34)
    ✔ Update all subject pages to have the right UI and responsive design @done(25-07-04 16:34)
    ☐ Update links for the top bar in the website
-   ☐ Chemsitry Page Typo
-   ☐ Update discord invite links
-   ✔ Pointer Icon/Cursor on Buttons (Stig) @done(25-07-05 16:42)
+   ✔ Chemsitry Page Typo @done(25-07-05 10:57)
+   ✔ Update discord invite links @done(25-07-05 10:57)
