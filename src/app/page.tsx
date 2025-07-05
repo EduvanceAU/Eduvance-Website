@@ -12,7 +12,7 @@ const TestimonialCard = ({ content, icon, headline, rotation }) => (
       {content}
     </p>
     <div className="flex items-center mt-4">
-      <img src={icon} alt={headline} className="w-6 h-6 mr-2" />
+      <img src={icon} alt={headline} className="w-6 h-6 mr-2 rounded-full" />
       <h3 className="text-white font-semibold text-lg">{headline}</h3>
     </div>
   </div>
@@ -418,23 +418,23 @@ export default function Main() {
           <div className="relative">
             <div className="flex flex-col lg:flex-row gap-[-100px] items-stretch justify-center mt-24">
               <TestimonialCard
-                content="Partnering with 00Pixel completely transformed our online presence. They didn't just deliver a beautiful website—they created a high-performance platform that drives real results. Within three months, our conversions increased by 35%, and the site is optimised to keep that momentum going. If you're looking for a team that combines design with strategy, 00Pixel is the way to go!"
-                icon="/icon1.png"
-                headline="Headline 1"
+                content="Bro Eduvance.au is actually carrying rn 😭 the new UI? chef's kiss fr 💅🏻 admin panel finally usable (we made it y'all 😭). Mobile still kinda crunchy ngl but overall? smooth ✨ Sidebar's clean, Discord login bangs 🔥 flow's tight. Devs cooking hard at 3am 🔥 pls fix the scroll bug before I cry again 😩. Love this team fr 🤍"
+                icon="/map.png"
+                headline="Zesty Mapleon"
                 rotation="rotate-[-2deg]"
               />
 
               <TestimonialCard
-                content="We were struggling to find a web partner who understood our vision—until we found 00Pixel. They built a website that not only looks amazing but is also designed to attract and convert. Since launching, our client inquiries have doubled, and we're seeing a clear return on investment. Their ability to balance creativity with business goals is rare and invaluable!"
-                icon="/icon2.png"
-                headline="Headline 2"
+                content="Eduvance.au has grown into way more than just a past papers site—it's a full ecosystem now. From responsive mobile layouts to secret side projects (that we barely keep under wraps), the devs really care about UX, not just content. Whether it's skilled roles, server boosts, or the legit Minecraft server coming soon, it all builds this weird but productive culture. People move on, but the impact stays real."
+                icon="/bio.png"
+                headline="Biomeac"
                 rotation="rotate-[1deg]"
               />
 
               <TestimonialCard
-                content="Our website was outdated and failing to generate leads—00Pixel changed everything. From the start, they focused on creating a user-friendly experience while ensuring the backend was optimised for growth. We've seen a 40% increase in lead generation and a more seamless process for our customers. If you want a team that's as invested in your success as you are, 00Pixel is it!"
-                icon="/icon3.png"
-                headline="Headline 3"
+                content="Eduvance is seriously one of the slickest, most community-driven edu platforms out there. Every design and feature feels intentional—mobile's clean. But honestly, it's the people that make it—staff actually know regulars, and feedback turns into real changes. It's not just a notes dump, it's a whole vibe. From early server boosts to now helping thousands, Eduvance is straight-up him"
+                icon="/maryam.png"
+                headline="Maryam"
                 rotation="rotate-[-1.5deg]"
               />
             </div>
