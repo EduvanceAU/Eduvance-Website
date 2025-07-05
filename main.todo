@@ -11,17 +11,21 @@ Resource Upload and Staff Dashboard Development:
    ✔ Add Staff_ID data entry for the resource upload system
    ✔ Unit Selection dropdown and selection form update @done(25-06-27 15:44)
    ✔ Update resource type selection form update @done(25-06-27 15:44)
+   ✔ Update Staff console UI for better user experience @done(25-07-04 15:34)
 
-Modular Subject Update:
+Modular Subject Update and Admin Console:
    ✔ Add Admin Subject Adding Feature with necessary inputs @done(25-06-26 19:00)
    ✔ Update Main Subject selection page for resources to fetch subjects from database @done(25-06-26 18:21)
    ✔ Add a system to generate files and pages for the created subject @done(25-06-26 19:45)
-   ☐ Update the system for generating files for new subjects
+   ✔ Update the system for generating files for new subjects @done(25-07-04 15:34)
+   ✔ Update Admin console UI for better user experience @done(25-07-04 15:34)
+   ✔ Update approve section on admin console for editing the resources @done(25-07-04 15:34)
+   ✔ Update resources box div for extra information on the resource and staff members @done(25-07-04 15:34)
 
 User Authentication :
    ✔ Setup supabase authentication system (providers : email, google, discord) @done(25-06-29 06:24)
    ✔ Setup google developer console settings and sync with supabase for auth page @done(25-06-29 06:23)
-   ☐ Setup discord developer app and sync with supabase for auth page
+   ✔ Setup discord developer app and sync with supabase for auth page @done(25-07-04 15:34)
    ☐ Add email list collection system for marketing purposes
    ✔ Modify resources page to ask for authentication or user sign in verification for access @done(25-06-29 06:24)
 
@@ -40,7 +44,9 @@ New Resources Pages Update :
    ✔ Update subject pages for button updates and user profile showcase @done(25-07-02 16:54)
    ☐ Update session log out logic for top bar user showcase display
    ☐ Ensure logged in session is checked for resource page
-   
+   ✔ Scrollable side bar @done(25-07-05 16:40)
+   ✔ Breakpoints for mobile responsive design @done(25-07-05 16:48)
+   ✔ Consistent top/side bar updates for overall website (Made a homenav.tsx component) @done(25-07-05 10:35)
    ✔ Update Community Notes pages logic (only include community contributed notes) @done(25-07-02 17:38)
    ✔ Update Past Paper loading feature for all pages @done(25-06-27 16:34)
 
@@ -59,3 +65,15 @@ Other TODO:
    ✔ Update Contributor Page form link to DB table for approval of resources @done(25-06-27 15:44)
    - Become a tutor/Match with a tutor : People could sign up to teach/study with tutors
    ☐ Collect testimonials from community members for the website
+
+Community Feedback :
+   ✔ Update member counts on all pages to 18k @done(25-07-04 16:34)
+   ☐ Footer image spacing with the main div
+   ☐ Adding placeholder for the community section (Biomeac, Maryam, Map)
+   ✔ Staff Page name changed to Staff Access @done(25-07-04 16:34)
+   ✔ Footer page links to be updated @done(25-07-04 16:34)
+   ✔ Update all subject pages to have the right UI and responsive design @done(25-07-04 16:34)
+   ☐ Update links for the top bar in the website
+   ☐ Chemsitry Page Typo
+   ☐ Update discord invite links
+   ✔ Pointer Icon/Cursor on Buttons (Stig) @done(25-07-05 16:42)

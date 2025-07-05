@@ -31,16 +31,16 @@ export default function Biology() {
             <div className="flex rounded-[15px] bg-[#F2F6FF] border-[#0C58E4] border-2 p-1 w-full h-[65px] justify-between mb-10">
               <button
                 onClick={() => setSelected('option1')}
-                className={`w-1/2 py-2 text-center rounded-[10px] transition-all ease-in-out duration-500 text-sm md:text-base lg:text-xl ${
+                className={`cursor-pointer w-1/2 py-2 text-center rounded-[10px] transition-all ease-in-out duration-500 text-sm md:text-base lg:text-xl ${
                   selected === 'option1' ? 'bg-[#D0E0FF] shadow-md font-semibold tracking-[-0.75px]' : ''
                 }`}
                 style={{ fontFamily: 'Poppins, sans-serif' }}
               >
-                International A Levels
+                IALs
               </button>
               <button
                 onClick={() => setSelected('option2')}
-                className={`w-1/2 py-2 text-center rounded-[10px] transition-all ease-in-out duration-500 text-sm md:text-base lg:text-xl ${
+                className={`cursor-pointer w-1/2 py-2 text-center rounded-[10px] transition-all ease-in-out duration-500 text-sm md:text-base lg:text-xl ${
                   selected === 'option2' ? 'bg-[#D0E0FF] shadow-md font-semibold tracking-[-0.75px]' : 'bg transparent'
                 }`}
                 style={{ fontFamily: 'Poppins, sans-serif' }}
@@ -57,7 +57,7 @@ export default function Biology() {
                     IAL Biology Resources
                   </h3>
                   {/* Resource Cards - CSS Grid for single-line layout (IAL) and 2x2 layout for mobile */}
-                  <div className="text-xs sm:text-base grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4 md:gap-6 mb-8 sm:px-1 w-full">
+                  <div className="text-base grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8 sm:px-1 w-full">
                     <Link
                       href="/sub_links/biology/IAL/communityNotes"
                       className="transition-all duration-300 h-40 rounded-xl font-[550] tracking-[-0.5px] border-[1.5px] border-[#0C58E4] flex items-end justify-start pl-4 pb-4 text-black hover:text-[#0C58E4] hover:bg-[#CEE0FF] bg-blend-multiply cursor-pointer"
@@ -97,7 +97,7 @@ export default function Biology() {
                     IGCSE Biology Resources
                   </h3>
                   {/* Resource Cards - CSS Grid for single-line layout (IGCSE) and 2x2 layout for mobile */}
-                  <div className="text-xs sm:text-base grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4 md:gap-6 mb-8 sm:px-1 w-full">
+                  <div className="text-base grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8 sm:px-1 w-full">
                     <Link
                       href="/sub_links/biology/IAL/communityNotes"
                       className="transition-all duration-300 h-40 rounded-xl font-[550] tracking-[-0.5px] border-[1.5px] border-[#0C58E4] flex items-end justify-start pl-4 pb-4 text-black hover:text-[#0C58E4] hover:bg-[#CEE0FF] bg-blend-multiply cursor-pointer"
