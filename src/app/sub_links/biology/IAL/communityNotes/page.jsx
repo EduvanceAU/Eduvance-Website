@@ -58,13 +58,6 @@ export default function IALCommunityNotesPage() {
           IAL <span className="bg-[#1A69FA] px-2 py-1 -rotate-1 inline-block"><span className="text-[#FFFFFF]">Biology</span></span> Community Notes
         </h1>
 
-        <h3
-          className="text-sm sm:text-md lg:text-lg font-[500] leading-6 text-[#707070] mb-8 text-left tracking-[-0.015em]"
-          style={{ fontFamily: "Poppins, sans-serif" }}
-        >
-          Explore our collection of Edexcel A Level Biology community-contributed resources, including detailed notes, explanations, and revision tips. These resources are perfect for deepening your understanding, clarifying tricky concepts, and supporting your study alongside past papers.
-        </h3>
-
         <div
           className="inline-flex items-center justify-center px-4 py-2 mb-8 rounded-md shadow-xl"
           style={{
@@ -76,6 +69,14 @@ export default function IALCommunityNotesPage() {
             <span className="font-[501]">Exam code:</span> {examCode}
           </span>
         </div>
+
+        <h3
+          className="text-sm sm:text-md lg:text-lg font-[500] leading-6 text-[#707070] mb-8 text-left tracking-[-0.015em]"
+          style={{ fontFamily: "Poppins, sans-serif" }}
+        >
+          Explore our collection of Edexcel A Level Biology community-contributed resources, including detailed notes, explanations, and revision tips. These resources are perfect for deepening your understanding, clarifying tricky concepts, and supporting your study alongside past papers.
+        </h3>
+
 
         <div className="w-full mb-8">
           <h2 className="text-xl font-[550] tracking-tight text-[#000000] mb-4 text-left">
