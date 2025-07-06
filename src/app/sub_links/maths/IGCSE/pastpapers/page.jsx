@@ -14,8 +14,6 @@ const DISPLAY_START_YEAR = 2020;
 const DISPLAY_END_YEAR = 2024;
 const years = Array.from({ length: DISPLAY_END_YEAR - DISPLAY_START_YEAR + 1 }, (_, i) => DISPLAY_START_YEAR + i);
 
-const examCode = "Maths"
-
 const units = [
   { name: "Paper 1", code: "1", unit: "1" },
   { name: "Paper 1R", code: "1R", unit: "1R" },

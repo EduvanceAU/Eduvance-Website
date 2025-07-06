@@ -1,6 +1,6 @@
 "use client";
-import { useState, useEffect, useRef } from 'react';
-import { ChevronRight, ChevronLeft, Menu } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { ChevronRight, ChevronLeft } from 'lucide-react';
 import Link from 'next/link';
 import { supabase } from './client/supabaseClient';
 import { Auth } from '@supabase/auth-ui-react';
@@ -11,32 +11,22 @@ export default function Physics() {
   const [hoveredSidebarItem, setHoveredSidebarItem] = useState(null);
   const [isHeaderHovered, setIsHeaderHovered] = useState(false);
   const [isSidebarHovered, setIsSidebarHovered] = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showLoginPopup, setShowLoginPopup] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
-  const [showSubjectPopup, setShowSubjectPopup] = useState(null);
-  const popupRef = useRef();
-  const subjects = [
-    'Biology', 'Physics', 'Maths', 'Chemistry', 'Business', 'Economics'
-  ];
-  const [popupPosition, setPopupPosition] = useState({ top: 0, left: 0 });
-  const buttonRefs = {
-    communityNotes: useRef(),
-    resources: useRef(),
-  };
 
   const isDimmed = isHeaderHovered || isSidebarHovered;
 
-  // // Disable scrolling on mount
-  // useEffect(() => {
-  //   const originalOverflow = document.body.style.overflow;
-  //   document.body.style.overflow = 'hidden';
-  //   return () => {
-  //     document.body.style.overflow = originalOverflow;
-  //   };
-  // }, []);
+  // Disable scrolling on mount
+  useEffect(() => {
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = originalOverflow;
+    };
+  }, []);
 
   useEffect(() => {
     // Get initial session
@@ -92,30 +82,6 @@ export default function Physics() {
     setShowAuthModal(false);
   };
 
-  // Close popup on outside click
-  useEffect(() => {
-    function handleClickOutside(event) {
-      if (popupRef.current && !popupRef.current.contains(event.target)) {
-        setShowSubjectPopup(null);
-      }
-    }
-    if (showSubjectPopup) {
-      document.addEventListener('mousedown', handleClickOutside);
-      return () => document.removeEventListener('mousedown', handleClickOutside);
-    }
-  }, [showSubjectPopup]);
-
-  // When showSubjectPopup changes, update popup position
-  useEffect(() => {
-    if (showSubjectPopup && buttonRefs[showSubjectPopup]?.current) {
-      const rect = buttonRefs[showSubjectPopup].current.getBoundingClientRect();
-      setPopupPosition({
-        top: rect.top - 100, // 8px higher than the top of the button
-        left: rect.right + 5, // 4px to the right of the button
-      });
-    }
-  }, [showSubjectPopup]);
-
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-white">
@@ -128,29 +94,19 @@ export default function Physics() {
     <div className="flex min-h-screen bg-white overflow-hidden">
       {/* Sidebar */}
       <div
-        className={`sidebarWheel sm:overflow-y-scroll sm:overscroll-none fixed left-0 top-0 h-full z-40 flex flex-col bg-white transition-all duration-300 ${sidebarOpen ? 'w-64' : 'w-0'}`}
+        className={`fixed left-0 top-0 h-full z-30 flex flex-col bg-white transition-all duration-300 ${sidebarOpen ? 'w-64' : 'w-0'}`}
         onMouseEnter={() => setIsSidebarHovered(true)}
         onMouseLeave={() => setIsSidebarHovered(false)}
       >
-        
-          
         {sidebarOpen && (
           <>
-            <div className="flex justify-between items-center p-4">
-              {/* Logo/Image */}
-            
+            {/* Logo/Image */}
+            <div className="flex justify-left pt-8 mb-3">
               <img
                 src="/BlueSolo.png"
                 alt="Eduvance Logo"
-                className="w-11 h-11 object-contain"
+                className="w-33 h-11 object-contain"
               />
-              {/* Close Button */}
-              <button onClick={() => setSidebarOpen(false)} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-[#BAD1FD]">
-                <svg className="w-6 h-6 text-[#153064]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            
             </div>
 
             {/* Choose your exam board header */}
@@ -237,8 +193,13 @@ export default function Physics() {
               >
                 Eduvance Services
               </h3>
-              <div className="space-y-1 relative">
-                {[{ name: 'Past Paper Finder', href: '/tools/formula-sheet' }].map((tool) => (
+              <div className="space-y-1">
+                {[
+                  { name: 'Past Paper Finder', href: '/tools/formula-sheet' },
+                  { name: 'Community Notes', href: '/tools/unit-converter' },
+                  { name: 'Eduvance Resources', href: '/tools/topic-tracker' },
+                  { name: 'Share Your Notes!', href: '/tools/mock-paper' },
+                ].map((tool) => (
                   <Link
                     key={tool.name}
                     href={tool.href}
@@ -248,50 +209,6 @@ export default function Physics() {
                     {tool.name}
                   </Link>
                 ))}
-                <button
-                  ref={buttonRefs.communityNotes}
-                  className="block w-full text-left px-3 py-1 text-[#000000] tracking-[-0.5px] cursor-pointer hover:bg-[#BAD1FD] rounded transition-colors duration-200"
-                  style={{ fontFamily: 'Poppins, sans-serif' }}
-                  onClick={() => setShowSubjectPopup(showSubjectPopup === 'communityNotes' ? null : 'communityNotes')}
-                >
-                  Community Notes
-                </button>
-                <button
-                  ref={buttonRefs.resources}
-                  className="block w-full text-left px-3 py-1 text-[#000000] tracking-[-0.5px] cursor-pointer hover:bg-[#BAD1FD] rounded transition-colors duration-200"
-                  style={{ fontFamily: 'Poppins, sans-serif' }}
-                  onClick={() => setShowSubjectPopup(showSubjectPopup === 'resources' ? null : 'resources')}
-                >
-                  Eduvance Resources
-                </button>
-                <Link
-                  href="/tools/topic-tracker"
-                  className="block px-3 py-1 text-[#000000] tracking-[-0.5px] cursor-pointer hover:bg-[#BAD1FD] rounded transition-colors duration-200"
-                  style={{ fontFamily: 'Poppins, sans-serif' }}
-                >
-                  Share Your Notes!
-                </Link>
-                {/* Pop-up for subject selection */}
-                {showSubjectPopup && (
-                  <div
-                    ref={popupRef}
-                    className="fixed z-50 bg-white border border-[#BAD1FD] rounded shadow-lg p-2 min-w-[180px]"
-                    style={{ top: popupPosition.top, left: popupPosition.left }}
-                  >
-                    <div className="font-semibold text-[#0C58E4] mb-2 text-sm">Select Subject</div>
-                    {subjects.map((subject) => (
-                      <Link
-                        key={subject}
-                        href={`/sub_links/${subject.toLowerCase()}/IAL/${showSubjectPopup}`}
-                        className="block px-3 py-1 text-[#000000] tracking-[-0.5px] cursor-pointer hover:bg-[#BAD1FD] rounded transition-colors duration-200"
-                        style={{ fontFamily: 'Poppins, sans-serif' }}
-                        onClick={() => setShowSubjectPopup(null)}
-                      >
-                        {subject}
-                      </Link>
-                    ))}
-                  </div>
-                )}
               </div>
             </div>
 
@@ -302,23 +219,17 @@ export default function Physics() {
 
       {/* Header */}
       <div
-        className={`absolute top-0 ${sidebarOpen ? 'left-64' : 'left-6'} right-0 h-16  z-20 transition-all duration-300 flex items-center justify-between px-4`}
+        className={`fixed top-0 ${sidebarOpen ? 'left-64' : 'left-6'} right-0 h-16 bg-white shadow-sm z-20 transition-all duration-300 flex items-center justify-between px-4`}
         onMouseEnter={() => setIsHeaderHovered(true)}
         onMouseLeave={() => setIsHeaderHovered(false)}
       >
         {/* Sidebar Toggle */}
-        {/* <button
-          className=" p-1  transition-all duration-300 focus:outline-none"
-          
-        > */}
         <button
-          className="flex items-center justify-center w-10 h-10 rounded-full hover:bg-[#BAD1FD] transition-colors duration-200"
+          className="bg-white border border-[#0C58E4] rounded-full p-1 shadow transition-all duration-300 focus:outline-none"
           style={{ width: 32, height: 32 }}
           onClick={() => setSidebarOpen((open) => !open)}
         >
-          <svg className="w-6 h-6 text-[#0C58E4]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-          </svg>
+          {sidebarOpen ? <ChevronLeft size={20} className="text-[#0C58E4]" /> : <ChevronRight size={20} className="text-[#0C58E4]" />}
         </button>
 
         {/* Center Image Button */}
@@ -407,7 +318,7 @@ export default function Physics() {
       )}
 
       {/* Main Content */}
-      <div className={`transition-all duration-300 ${sidebarOpen ? 'ml-64' : 'ml-0'} mt-16 flex-1 ${isDimmed ? 'opacity-80' : 'opacity-100'} z-0`}>
+      <div className={`transition-all duration-300 ${sidebarOpen ? 'ml-64' : 'ml-0'} mt-16 flex-1 ${isDimmed ? 'opacity-50' : 'opacity-100'}`}>
         {/* Custom Banner Header */}
         <div
           className="w-full h-[210px] relative flex items-center bg-cover bg-center bg-no-repeat transition-all duration-300"
@@ -425,7 +336,7 @@ export default function Physics() {
             </h3>
 
             {/* Selection Bar - Responsive width */}
-            <div className="flex rounded-[15px] bg-[#F2F6FF] border-[#0C58E4] border-2 p-1 w-full h-[65px] justify-between mb-10">
+            <div className="flex rounded-[15px] bg-[#F2F6FF] border-[#0C58E4] border-2 p-1 w-full max-w-[1200px] h-[65px] justify-between mb-10">
               <button
                 onClick={() => setSelected('option1')}
                 className={`w-1/2 py-2 text-center rounded-[10px] transition-all ease-in-out duration-500 text-sm md:text-base lg:text-xl ${
@@ -454,31 +365,39 @@ export default function Physics() {
                     IAL Physics Resources
                   </h3>
                   {/* Resource Cards - Flex row for single-line layout (IAL) */}
-                  <div className="flex flex-row flex-nowrap overflow-x-auto gap-4 md:gap-6 mb-8 px-1 w-full items-start">
+                  <div className="flex flex-row flex-nowrap overflow-x-auto gap-4 md:gap-6 mb-8 px-1 w-full">
                     <Link
                       href="/sub_links/physics/IAL/communityNotes"
-                      className={`transition-all duration-300 w-1/4 h-40 rounded-xl font-[550] tracking-[-0.5px] border-[1.5px] border-[#0C58E4] flex items-end justify-start pl-4 pb-4 text-black hover:text-[#0C58E4] hover:bg-[#CEE0FF] bg-blend-multiply cursor-pointer`}
+                      className={`transition-all duration-300 ${
+                                  sidebarOpen ? 'min-w-[255px]' : 'min-w-[300px]'
+                                } h-40 rounded-xl font-[550] tracking-[-0.5px] border-[1.5px] border-[#0C58E4] flex items-end justify-start pl-4 pb-4 text-black hover:text-[#0C58E4] hover:bg-[#CEE0FF] bg-blend-multiply cursor-pointer`}
                       style={{ backgroundImage: "url('/Notes Background.png')", backgroundSize: 'cover', backgroundPosition: 'center' }}
                     >
                       Community Notes
                     </Link>
                     <Link
                       href="/sub_links/physics/IAL/resources"
-                      className={`transition-all duration-300 w-1/4 h-40 rounded-xl font-[550] tracking-[-0.5px] border-[1.5px] border-[#0C58E4] flex items-end justify-start pl-4 pb-4 text-black hover:text-[#0C58E4] hover:bg-[#CEE0FF] bg-blend-multiply cursor-pointer`}
+                      className={`transition-all duration-300 ${
+                                  sidebarOpen ? 'min-w-[255px]' : 'min-w-[300px]'
+                                } h-40 rounded-xl font-[550] tracking-[-0.5px] border-[1.5px] border-[#0C58E4] flex items-end justify-start pl-4 pb-4 text-black hover:text-[#0C58E4] hover:bg-[#CEE0FF] bg-blend-multiply cursor-pointer`}
                       style={{ backgroundImage: "url('/PPQ Background.png')", backgroundSize: 'cover', backgroundPosition: 'center' }}
                     >
                       Eduvance Resources
                     </Link>
                     <Link
                       href="/sub_links/physics/IAL/pastpapers"
-                      className={`transition-all duration-300 w-1/4 h-40 rounded-xl font-[550] tracking-[-0.5px] border-[1.5px] border-[#0C58E4] flex items-end justify-start pl-4 pb-4 text-black hover:text-[#0C58E4] hover:bg-[#CEE0FF] bg-blend-multiply cursor-pointer`}
+                      className={`transition-all duration-300 ${
+                                  sidebarOpen ? 'min-w-[250px]' : 'min-w-[300px]'
+                                } h-40 rounded-xl font-[550] tracking-[-0.5px] border-[1.5px] border-[#0C58E4] flex items-end justify-start pl-4 pb-4 text-black hover:text-[#0C58E4] hover:bg-[#CEE0FF] bg-blend-multiply cursor-pointer`}
                       style={{ backgroundImage: "url('/Papers Background.png')", backgroundSize: 'cover', backgroundPosition: 'center' }}
                     >
                       Past Papers
                     </Link>
                     <a
                       href="../../contributor/"
-                      className={`transition-all duration-300 w-1/4 h-40 rounded-xl font-[550] tracking-[-0.5px] border-[1.5px] border-[#0C58E4] flex items-end justify-start pl-4 pb-4 text-black hover:text-[#0C58E4] hover:bg-[#CEE0FF] bg-blend-multiply cursor-pointer`}
+                      className={`transition-all duration-300 ${
+                                  sidebarOpen ? 'min-w-[255px]' : 'min-w-[300px]'
+                                } h-40 rounded-xl font-[550] tracking-[-0.5px] border-[1.5px] border-[#0C58E4] flex items-end justify-start pl-4 pb-4 text-black hover:text-[#0C58E4] hover:bg-[#CEE0FF] bg-blend-multiply cursor-pointer`}
                       style={{ backgroundImage: "url('/Share Notes Background.png')", backgroundSize: 'cover', backgroundPosition: 'center' }}
                     >
                       Share Your Notes
@@ -491,31 +410,39 @@ export default function Physics() {
                     IGCSE Physics Resources
                   </h3>
                   {/* Resource Cards - Flex row for single-line layout (IAL) */}
-                  <div className="flex flex-row flex-nowrap overflow-x-auto gap-4 md:gap-6 mb-8 px-1 w-full justify-center">
+                  <div className="flex flex-row flex-nowrap overflow-x-auto gap-4 md:gap-6 mb-8 px-1 w-full">
                     <Link
                       href="/sub_links/physics/IGCSE/communityNotes"
-                      className={`transition-all duration-300 w-1/4 h-40 rounded-xl font-[550] tracking-[-0.5px] border-[1.5px] border-[#0C58E4] flex items-end justify-start pl-4 pb-4 text-black hover:text-[#0C58E4] hover:bg-[#CEE0FF] bg-blend-multiply cursor-pointer`}
+                      className={`transition-all duration-300 ${
+                                  sidebarOpen ? 'min-w-[255px]' : 'min-w-[300px]'
+                                } h-40 rounded-xl font-[550] tracking-[-0.5px] border-[1.5px] border-[#0C58E4] flex items-end justify-start pl-4 pb-4 text-black hover:text-[#0C58E4] hover:bg-[#CEE0FF] bg-blend-multiply cursor-pointer`}
                       style={{ backgroundImage: "url('/Notes Background.png')", backgroundSize: 'cover', backgroundPosition: 'center' }}
                     >
                       Community Notes
                     </Link>
                     <Link
                       href="/sub_links/physics/IGCSE/resources"
-                      className={`transition-all duration-300 w-1/4 h-40 rounded-xl font-[550] tracking-[-0.5px] border-[1.5px] border-[#0C58E4] flex items-end justify-start pl-4 pb-4 text-black hover:text-[#0C58E4] hover:bg-[#CEE0FF] bg-blend-multiply cursor-pointer`}
+                      className={`transition-all duration-300 ${
+                                  sidebarOpen ? 'min-w-[255px]' : 'min-w-[300px]'
+                                } h-40 rounded-xl font-[550] tracking-[-0.5px] border-[1.5px] border-[#0C58E4] flex items-end justify-start pl-4 pb-4 text-black hover:text-[#0C58E4] hover:bg-[#CEE0FF] bg-blend-multiply cursor-pointer`}
                       style={{ backgroundImage: "url('/PPQ Background.png')", backgroundSize: 'cover', backgroundPosition: 'center' }}
                     >
                       Eduvance Resources
                     </Link>
                     <Link
                       href="/sub_links/physics/IGCSE/pastpapers"
-                      className={`transition-all duration-300 w-1/4 h-40 rounded-xl font-[550] tracking-[-0.5px] border-[1.5px] border-[#0C58E4] flex items-end justify-start pl-4 pb-4 text-black hover:text-[#0C58E4] hover:bg-[#CEE0FF] bg-blend-multiply cursor-pointer`}
+                      className={`transition-all duration-300 ${
+                                  sidebarOpen ? 'min-w-[255px]' : 'min-w-[300px]'
+                                } h-40 rounded-xl font-[550] tracking-[-0.5px] border-[1.5px] border-[#0C58E4] flex items-end justify-start pl-4 pb-4 text-black hover:text-[#0C58E4] hover:bg-[#CEE0FF] bg-blend-multiply cursor-pointer`}
                       style={{ backgroundImage: "url('/Papers Background.png')", backgroundSize: 'cover', backgroundPosition: 'center' }}
                     >
                       Past Papers
                     </Link>
                     <a
                       href="../../contributor/"
-                      className={`transition-all duration-300 w-1/4 h-40 rounded-xl font-[550] tracking-[-0.5px] border-[1.5px] border-[#0C58E4] flex items-end justify-start pl-4 pb-4 text-black hover:text-[#0C58E4] hover:bg-[#CEE0FF] bg-blend-multiply cursor-pointer`}
+                      className={`transition-all duration-300 ${
+                                  sidebarOpen ? 'min-w-[255px]' : 'min-w-[300px]'
+                                } h-40 rounded-xl font-[550] tracking-[-0.5px] border-[1.5px] border-[#0C58E4] flex items-end justify-start pl-4 pb-4 text-black hover:text-[#0C58E4] hover:bg-[#CEE0FF] bg-blend-multiply cursor-pointer`}
                       style={{ backgroundImage: "url('/Share Notes Background.png')", backgroundSize: 'cover', backgroundPosition: 'center' }}
                     >
                       Share Your Notes
@@ -528,7 +455,7 @@ export default function Physics() {
             {/* Always-visible slim buttons below the cards */}
             <div className="flex flex-wrap justify-between gap-4 w-full">
               <a
-                href="https://discord.gg/YfKzGPpxaj"
+                href="https://discord.gg/Eduvance"
                 className="w-full h-14 rounded-xl bg-[#F2F6FF] font-[550] tracking-[-0.5px] border-[1.5px] border-[#0C58E4] flex items-center justify-start pl-4 text-black hover:text-[#0C58E4] hover:bg-[#BAD1FD] bg-blend-multiply transition-all duration-300"
               >
                 <img src="/ServerIcon.png" alt="Contribute" className="w-5 h-4 mr-4" />
