@@ -5,7 +5,7 @@ import { useState } from "react";
 
 const units = [
   { name: "IAL Chemistry", code: "8PH0", unit: "IAL" },
-  { name: "Structure, Bonding & Introduction to Organic Chemistry", code: "WCH11", unit: "Unit 1" },
+  { name: "Structure, Bonding & Introduction toOrganic Chemistry", code: "WCH11", unit: "Unit 1" },
   { name: "Energetics, Group Chemistry, Halogenoalkanes & Alcohols", code: "WCH12", unit: "Unit 2" },
   { name: "Practical Skills in Chemistry I", code: "WCH13", unit: "Unit 3" },
   { name: "Rates, Equilibria & Further Organic Chemistry", code: "WCH14", unit: "Unit 4" },

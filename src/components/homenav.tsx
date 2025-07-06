@@ -18,7 +18,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { useRouter, usePathname } from 'next/navigation';
 
 // Dropdown component
 const NavDropdown = ({ labelMain, labelSmall, items }) => {
@@ -112,8 +111,7 @@ function Home(props) {
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showLoginPopup, setShowLoginPopup] = useState(false);
-  const router = useRouter();
-  const pathname = typeof window !== 'undefined' ? window.location.pathname : '';
+  // const [showLogoutPopup, setShowLogoutPopup] = useState(false);
 
   useEffect(() => {
     // Get initial session
@@ -155,7 +153,6 @@ function Home(props) {
   // }, [showLogoutPopup]);
 
   const handleLogout = async () => {
-    console.log('Logout button clicked');
     const { error } = await supabase.auth.signOut();
     if (error) {
       console.error('Logout failed:', error.message);
@@ -164,24 +161,8 @@ function Home(props) {
   
     // Clear session manually
     setSession(null);
+    // setShowLogoutPopup(true);
     setShowLoginPopup(false);  
-
-    // If on a resource page, redirect to subject page
-    // Match: /sub_links/[subject]/IAL/resources or /sub_links/[subject]/IGCSE/resources
-    const match = pathname.match(/^\/sub_links\/([^/]+)\/(IAL|IGCSE)\/resources/);
-    if (match) {
-      const subject = match[1];
-      const redirectPath = `/sub_links/${subject}`;
-      console.log('Redirecting to:', redirectPath);
-      try {
-        router.push(redirectPath);
-      } catch (e) {
-        console.error('router.push failed, using window.location.href', e);
-        window.location.href = redirectPath;
-      }
-    } else {
-      console.log('Logged out, no redirect needed.');
-    }
   };
 
 
