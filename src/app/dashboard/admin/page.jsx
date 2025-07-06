@@ -1,7 +1,6 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
@@ -207,25 +206,21 @@ export default function AdminDashboard() {
     }
   };
 
-  return (
-    <div className="min-h-screen bg-blue-100 p-6" style={{ fontFamily: 'Poppins, sans-serif' }}>
-      <div className="bg-white rounded-xl shadow-lg max-w-3xl mx-auto p-6">
+  return (  
+    <div className={`pt-20 ${!staffUser ? "h-screen":"min-h-screen h-fit"} bg-blue-100 p-6 flex justify-center items-center`} style={{ fontFamily: 'Poppins, sans-serif' }}>
+      <div className={`h-fit bg-white rounded-xl shadow-lg max-w-3xl mx-auto p-6`}>
         {!staffUser ? (
           <form onSubmit={handleLogin} className="space-y-4">
             <input type="email" value={loginEmail} onChange={(e) => setLoginEmail(e.target.value)} placeholder="Staff Email" className="w-full border p-2 rounded" required />
             <input type="password" value={loginPassword} onChange={(e) => setLoginPassword(e.target.value)} placeholder="Password" className="w-full border p-2 rounded" required />
-            <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded">{loginLoading ? 'Logging in...' : 'Login'}</button>
+            <button type="submit" className="cursor-pointer w-full bg-blue-600 text-white py-2 rounded">{loginLoading ? 'Logging in...' : 'Login'}</button>
           </form>
         ) : (
           <>
-            <div className="flex justify-between items-center mb-4">
-              <p className="text-sm text-gray-600">Logged in as {staffUser.email}</p>
-              <button onClick={handleLogout} className="text-sm text-blue-600 hover:underline">Logout</button>
-            </div>
             <div className="flex space-x-4 border-b mb-4">
-              <button onClick={() => setActiveTab('upload')} className={`py-2 px-4 ${activeTab === 'upload' ? 'border-b-2 border-blue-600 font-semibold' : 'text-gray-500'}`}>Upload Resource</button>
-              <button onClick={() => setActiveTab('approve')} className={`py-2 px-4 ${activeTab === 'approve' ? 'border-b-2 border-blue-600 font-semibold' : 'text-gray-500'}`}>Approve Resources</button>
-              <button onClick={() => setActiveTab('subjects')} className={`py-2 px-4 ${activeTab === 'subjects' ? 'border-b-2 border-blue-600 font-semibold' : 'text-gray-500'}`}>Add Subject</button>
+              <button onClick={() => setActiveTab('upload')} className={`cursor-pointer py-2 px-4 ${activeTab === 'upload' ? 'border-b-2 border-blue-600 font-semibold' : 'text-gray-500'}`}>Upload Resource</button>
+              <button onClick={() => setActiveTab('approve')} className={`cursor-pointer py-2 px-4 ${activeTab === 'approve' ? 'border-b-2 border-blue-600 font-semibold' : 'text-gray-500'}`}>Approve Resources</button>
+              <button onClick={() => setActiveTab('subjects')} className={`cursor-pointer py-2 px-4 ${activeTab === 'subjects' ? 'border-b-2 border-blue-600 font-semibold' : 'text-gray-500'}`}>Add Subject</button>
             </div>
             {message && (
               <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className={`mb-4 p-3 rounded text-sm ${messageType === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>{message}</motion.div>
@@ -235,7 +230,7 @@ export default function AdminDashboard() {
                 <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Title *" className="w-full border p-2 rounded" required />
                 <input type="text" value={unitChapter} onChange={(e) => setUnitChapter(e.target.value)} placeholder="Unit/Chapter (optional)" className="w-full border p-2 rounded" />
                 <input type="url" value={link} onChange={(e) => setLink(e.target.value)} placeholder="Link *" className="w-full border p-2 rounded" required />
-                <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Description (optional)" className="w-full border p-2 rounded"></textarea>
+                <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Description (optional)" className="w-full border p-2 rounded min-h-[100px]"></textarea>
                 <select value={resourceType} onChange={(e) => setResourceType(e.target.value)} className="w-full border p-2 rounded">
                   {resourceCategories.map((cat) => (
                     <option key={cat.value} value={cat.value}>{cat.label}</option>
@@ -246,19 +241,19 @@ export default function AdminDashboard() {
                     <option key={sub.id} value={sub.id}>{sub.name} ({sub.code}) - {sub.syllabus_type}</option>
                   ))}
                 </select>
-                <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded">Submit Resource</button>
+                <button type="submit" className="cursor-pointer w-full bg-blue-600 text-white py-2 rounded">Submit Resource</button>
               </form>
             )}
             {activeTab === 'approve' && (
-              <div>
+              <div className="flex flex-col flex-wrap min-w-0 w-full">
                 {unapprovedResources.map((res) => (
-                  <div key={res.id} className="bg-gray-100 p-4 rounded mb-3">
-                    <p className="font-bold">{res.title}</p>
-                    <p className="text-sm text-gray-600">{res.description}</p>
-                    <a href={res.link} className="text-blue-500 underline text-sm" target="_blank" rel="noopener noreferrer">{res.link}</a>
-                    <div className="flex space-x-2 mt-2">
-                      <button onClick={() => approveResource(res.id)} className="bg-green-500 text-white px-3 py-1 rounded">Approve</button>
-                      <button onClick={() => deleteResource(res.id)} className="bg-red-500 text-white px-3 py-1 rounded">Delete</button>
+                  <div key={res.id} className="bg-gray-100 p-4 rounded mb-3 flex flex-col flex-shrink min-w-0 w-full ">
+                    <p className="font-bold break-words">{res.title}</p>
+                    <p className="text-sm text-gray-600 break-words">{res.description}</p>
+                    <a href={res.link} className="text-blue-500 underline text-sm break-all" target="_blank" rel="noopener noreferrer">{res.link}</a>
+                    <div className="flex space-x-2 mt-2 flex-wrap">
+                      <button onClick={() => approveResource(res.id)} className="cursor-pointer bg-green-500 text-white px-3 py-1 rounded">Approve</button>
+                      <button onClick={() => deleteResource(res.id)} className="cursor-pointer bg-red-500 text-white px-3 py-1 rounded">Delete</button>
                     </div>
                   </div>
                 ))}
@@ -269,7 +264,7 @@ export default function AdminDashboard() {
                 <input type="text" value={newSubjectName} onChange={(e) => setNewSubjectName(e.target.value)} placeholder="Subject Name *" className="w-full border p-2 rounded" required />
                 <input type="text" value={newSubjectCode} onChange={(e) => setNewSubjectCode(e.target.value)} placeholder="Subject Code *" className="w-full border p-2 rounded" required />
                 <input type="text" value={newSubjectType} onChange={(e) => setNewSubjectType(e.target.value)} placeholder="Syllabus Type *" className="w-full border p-2 rounded" required />
-                <button type="submit" className="w-full bg-green-600 text-white py-2 rounded">Add Subject</button>
+                <button type="submit" className="cursor-pointer w-full bg-green-600 text-white py-2 rounded">Add Subject</button>
               </form>
             )}
           </>
