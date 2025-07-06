@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from 'react';
-
+import {Home} from '@/components/homenav'
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
@@ -212,23 +212,19 @@ export default function UploadResource() {
   };
 
   return (
-    <div className="min-h-screen bg-blue-100 p-6" style={{ fontFamily: 'Poppins, sans-serif' }}>
-      <div className="bg-white rounded-xl shadow-lg max-w-3xl mx-auto p-6">
+    <div className={`pt-20 ${!staffUser ? "h-screen":"min-h-screen h-fit"} bg-blue-100 p-6 flex justify-center items-center`} style={{ fontFamily: 'Poppins, sans-serif' }}>
+      <div className={`h-fit bg-white rounded-xl shadow-lg max-w-3xl mx-auto p-6`}>
         {!staffUser ? (
           <form onSubmit={handleLogin} className="space-y-4">
             <input type="email" value={loginEmail} onChange={(e) => setLoginEmail(e.target.value)} placeholder="Staff Email" className="w-full border p-2 rounded" required />
             <input type="password" value={loginPassword} onChange={(e) => setLoginPassword(e.target.value)} placeholder="Password" className="w-full border p-2 rounded" required />
-            <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded">{loginLoading ? 'Logging in...' : 'Login'}</button>
+            <button type="submit" className="cursor-pointer w-full bg-blue-600 text-white py-2 rounded">{loginLoading ? 'Logging in...' : 'Login'}</button>
           </form>
         ) : (
           <>
-            <div className="flex justify-between items-center mb-4">
-              <p className="text-sm text-gray-600">Logged in as {staffUser.email}</p>
-              <button onClick={handleLogout} className="text-sm text-blue-600 hover:underline">Logout</button>
-            </div>
             <div className="flex space-x-4 border-b mb-4">
-              <button onClick={() => setActiveTab('upload')} className={`py-2 px-4 ${activeTab === 'upload' ? 'border-b-2 border-blue-600 font-semibold' : 'text-gray-500'}`}>Upload Resource</button>
-              <button onClick={() => setActiveTab('approve')} className={`py-2 px-4 ${activeTab === 'approve' ? 'border-b-2 border-blue-600 font-semibold' : 'text-gray-500'}`}>Approve Submissions</button>
+              <button onClick={() => setActiveTab('upload')} className={`cursor-pointer py-2 px-4 ${activeTab === 'upload' ? 'border-b-2 border-blue-600 font-semibold' : 'text-gray-500'}`}>Upload Resource</button>
+              <button onClick={() => setActiveTab('approve')} className={`cursor-pointer py-2 px-4 ${activeTab === 'approve' ? 'border-b-2 border-blue-600 font-semibold' : 'text-gray-500'}`}>Approve Submissions</button>
             </div>
             {message && (
               <div className={`mb-4 p-3 rounded text-sm ${messageType === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>{message}</div>
@@ -247,26 +243,26 @@ export default function UploadResource() {
                     <option key={subject.id} value={subject.id}>{subject.name} ({subject.code}) - {subject.syllabus_type}</option>
                   ))}
                 </select>
-                <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded">Submit Resource</button>
+                <button type="submit" className="cursor-pointer w-full bg-blue-600 text-white py-2 rounded">Submit Resource</button>
               </form>
             )}
             {activeTab === 'approve' && (
               <div>
                 {pendingResources.map((res) => (
-                  <div key={res.id} className="bg-gray-100 p-4 rounded mb-3">
-                    <p className="font-bold">{res.title}</p>
-                    <p className="text-sm text-gray-600">{res.description}</p>
-                    <a href={res.link} className="text-blue-500 underline text-sm" target="_blank" rel="noopener noreferrer">{res.link}</a>
-                    <div className="flex space-x-2 mt-2">
-                      <button onClick={() => approveResource(res.id)} className="bg-green-500 text-white px-3 py-1 rounded">Approve</button>
+                  <div key={res.id} className="bg-gray-100 p-4 rounded mb-3 flex flex-col flex-shrink min-w-0 w-full ">
+                    <p className="font-bold break-words">{res.title}</p>
+                    <p className="text-sm text-gray-600 break-words">{res.description}</p>
+                    <a href={res.link} className="text-blue-500 underline text-sm break-all" target="_blank" rel="noopener noreferrer">{res.link}</a>
+                    <div className="flex mt-2 flex-wrap flex-col sm:flex-row gap-2">
+                      <button onClick={() => approveResource(res.id)} className="cursor-pointer bg-green-500 text-white px-3 py-1 rounded">Approve</button>
                       <input
                         type="text"
                         placeholder="Rejection reason"
                         value={rejectionReasons[res.id] || ''}
                         onChange={(e) => setRejectionReasons(prev => ({ ...prev, [res.id]: e.target.value }))}
-                        className="border px-2 py-1 rounded text-sm"
+                        className="border-1 border-zinc-700 px-2 py-1 rounded text-sm"
                       />
-                      <button onClick={() => rejectResource(res.id)} className="bg-red-500 text-white px-3 py-1 rounded">Reject</button>
+                      <button onClick={() => rejectResource(res.id)} className="cursor-pointer bg-red-500 text-white px-3 py-1 rounded">Reject</button>
                     </div>
                   </div>
                 ))}
