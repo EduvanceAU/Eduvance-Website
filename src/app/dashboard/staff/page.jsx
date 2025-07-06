@@ -234,7 +234,7 @@ export default function UploadResource() {
                 <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Title" className="w-full border p-2 rounded" required />
                 <input type="text" value={unitChapter} onChange={(e) => setUnitChapter(e.target.value)} placeholder="Unit/Chapter Name (Optional)" className="w-full border p-2 rounded" />
                 <input type="url" value={link} onChange={(e) => setLink(e.target.value)} placeholder="Resource Link (URL)" className="w-full border p-2 rounded" required />
-                <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Description (Optional)" className="w-full border p-2 rounded" rows="3"></textarea>
+                <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Description (Optional)" className="min-h-[100px] w-full border p-2 rounded" rows="3"></textarea>
                 <select value={resourceType} onChange={(e) => setResourceType(e.target.value)} className="w-full border p-2 rounded" required>
                   {resourceCategories.map((cat) => <option key={cat.value} value={cat.value}>{cat.label}</option>)}
                 </select>
