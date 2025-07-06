@@ -7,7 +7,7 @@ Resource Upload and Staff Dashboard Development:
    ✔ Admin Dashboard Addition + Admin Auth Setup
    ✔ Admin Permissions + Resource Authorization Status DB update
    ✔ Admin Subject Moderation Feature + Modular Subjects Update @done(25-06-26 19:45)
-
+   ✔ Admin and Staff Dashboard Responsiveness @done(25-07-06 19:28)
    ✔ Add Staff_ID data entry for the resource upload system
    ✔ Unit Selection dropdown and selection form update @done(25-06-27 15:44)
    ✔ Update resource type selection form update @done(25-06-27 15:44)
