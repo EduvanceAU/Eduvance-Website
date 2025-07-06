@@ -102,26 +102,20 @@ export default function IALCommunityNotesPage() {
               </div>
 
               {expandedUnits[unit.unit] && (
-                <div className="p-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 p-6 cursor-pointer">
                   {/* Add your links here, for example: */}
-                  <ul className="list-disc list-inside">
-                    <li>
-                      <Link
-                        href="#"
-                        className="text-blue-600 hover:underline"
-                      >
-                        Link to Note 1
-                      </Link>
-                    </li>
-                    <li>
-                      <Link
-                        href="#"
-                        className="text-blue-600 hover:underline"
-                      >
-                        Link to Note 2
-                      </Link>
-                    </li>
-                  </ul>
+                  <div className="flex flex-col p-5 border border-gray-200 rounded-2xl shadow-md bg-white hover:shadow-xl transition-shadow duration-200 group" style={{ minHeight: '120px', position: 'relative' }}>
+                    <span className="text-sm font-semibold text-[#1A69FA] tracking-tight uppercase" style={{ fontFamily: 'Poppins, sans-serif', letterSpacing: '0.04em' }}>test</span>
+                    <Link href="{link.url}" className="text-lg font-bold text-[#153064] hover:text-[#1A69FA] transition-colors duration-150" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                      Test
+                    </Link>
+                    
+                    <p className="text-sm text-gray-600">Test</p>
+                    
+                    <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                      <svg width="22" height="22" fill="none" stroke="#1A69FA" strokeWidth="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
