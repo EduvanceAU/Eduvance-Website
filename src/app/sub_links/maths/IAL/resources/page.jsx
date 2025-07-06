@@ -13,6 +13,8 @@ const units = [
   { name: "Statistics I", code: "WST01", unit: "Statistics 1" },
 ];
 
+const examCode = 'WMA';
+
 export default function IALResources() {
   const [unitResources, setUnitResources] = useState({});
   const [error, setError] = useState(null);
