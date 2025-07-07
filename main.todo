@@ -7,7 +7,7 @@ Resource Upload and Staff Dashboard Development:
    ✔ Admin Dashboard Addition + Admin Auth Setup
    ✔ Admin Permissions + Resource Authorization Status DB update
    ✔ Admin Subject Moderation Feature + Modular Subjects Update @done(25-06-26 19:45)
-
+   ✔ Admin and Staff Dashboard Responsiveness @done(25-07-06 19:28)
    ✔ Add Staff_ID data entry for the resource upload system
    ✔ Unit Selection dropdown and selection form update @done(25-06-27 15:44)
    ✔ Update resource type selection form update @done(25-06-27 15:44)
@@ -50,8 +50,8 @@ New Resources Pages Update :
    ✔ Update Community Notes pages logic (only include community contributed notes) @done(25-07-02 17:38)
    ✔ Update Past Paper loading feature for all pages @done(25-06-27 16:34)
 
-   ☐ Update UI and Cards elements for all resources pages for all subjetcs
-   ☐ Update UI and Cards elements for all community notes pages for all subjetcs
+   ✔ Update UI and Cards elements for all resources pages for all subjetcs @done(25-07-07 14:59)
+   ✔ Update UI and Cards elements for all community notes pages for all subjetcs @done(25-07-07 14:59)
    ☐ Sync and Update UI for all subject pages individually
    ☐ Update all pages to accomodate the universal top bar
 
@@ -69,16 +69,16 @@ Other TODO:
    ✔ Becoming a community contributor : Request to upload resources -> Linked to staff console for approval @done(25-06-26 22:15)
    ✔ Update Contributor Page form link to DB table for approval of resources @done(25-06-27 15:44)
    - Become a tutor/Match with a tutor : People could sign up to teach/study with tutors
-   ☐ Collect testimonials from community members for the website
+   ✔ Collect testimonials from community members for the website @done(25-07-07 15:42)
 
 Community Feedback :
    ✔ Update member counts on all pages to 18k @done(25-07-04 16:34)
    ☐ Footer image spacing with the main div
-   ☐ Adding placeholder for the community section (Biomeac, Maryam, Map)
+   ✔ Adding placeholder for the community section (Biomeac, Maryam, Map) @done(25-07-07 14:59)
    ✔ Staff Page name changed to Staff Access @done(25-07-04 16:34)
    ✔ Footer page links to be updated @done(25-07-04 16:34)
    ✔ Update all subject pages to have the right UI and responsive design @done(25-07-04 16:34)
    ☐ Update links for the top bar in the website
-   ☐ Chemsitry Page Typo
-   ☐ Update discord invite links
+   ✔ Chemsitry Page Typo @done(25-07-07 14:59)
+   ✔ Update discord invite links @done(25-07-07 14:59)
    ✔ Pointer Icon/Cursor on Buttons (Stig) @done(25-07-05 16:42)

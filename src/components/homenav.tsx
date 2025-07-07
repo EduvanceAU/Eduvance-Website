@@ -309,7 +309,7 @@ function Home(props) {
           ) : (
             <>
               
-              {session.user?.user_metadata?.avatar_url ? <img className='border-[#1871F2] p-0.5 border-2 rounded-full w-10 h-10' src={session.user?.user_metadata?.avatar_url}/>: <span className="text-[#0C58E4] tracking-[-0.5px] font-semibold px-3 py-1 rounded">{session.user?.email}</span>}
+              {session.user?.user_metadata?.avatar_url ? <img className='border-[#1871F2] p-0.5 border-2 rounded-full w-10 h-10' src={session.user?.user_metadata?.avatar_url}/>: <span className="text-[#0C58E4] tracking-[-0.5px] font-semibold px-3 py-1 rounded hidden lg:block">{session.user?.email}</span>}
               
               <button
                 className="text-[#0C58E4] cursor-pointer tracking-[-0.5px] font-semibold px-3 py-1 rounded transition hover:underline"

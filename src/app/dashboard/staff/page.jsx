@@ -213,7 +213,7 @@ export default function UploadResource() {
 
   return (
     <div className="min-h-screen bg-blue-100 p-6" style={{ fontFamily: 'Poppins, sans-serif' }}>
-      <div className="bg-white rounded-xl shadow-lg max-w-3xl mx-auto p-6">
+      <div className="bg-white rounded-xl shadow-lg max-w-xl mx-auto p-6 mt-20">
         {!staffUser ? (
           <form onSubmit={handleLogin} className="space-y-4">
             <input type="email" value={loginEmail} onChange={(e) => setLoginEmail(e.target.value)} placeholder="Staff Email" className="w-full border p-2 rounded" required />
