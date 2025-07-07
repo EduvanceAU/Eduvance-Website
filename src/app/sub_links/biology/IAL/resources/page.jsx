@@ -54,9 +54,8 @@ export default function IALResources() {
         const groupedResources = {};
 
         resources.forEach((resource) => {
-          // Extract unit from title or use a default if not found
-          const unitMatch = resource.title.match(/Unit\s*\d+/i);
-          const unit = unitMatch ? unitMatch[0] : 'General';
+          // Use unit_chapter_name from the database, fallback to 'General' if not present
+          const unit = resource.unit_chapter_name || 'General';
           
           if (!groupedResources[unit]) {
             groupedResources[unit] = [];
@@ -74,6 +73,9 @@ export default function IALResources() {
             description: resource.description
           });
         });
+
+        // Debug log to verify grouping
+        console.log('Grouped Resources:', groupedResources);
 
         setUnitResources(groupedResources);
       } catch (error) {
