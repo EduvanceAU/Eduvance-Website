@@ -92,146 +92,12 @@ export default function Physics() {
 
   return (
     <div className="flex min-h-screen bg-white overflow-hidden">
-      {/* Sidebar */}
-      <div
-        className={`fixed left-0 top-0 h-full z-30 flex flex-col bg-white transition-all duration-300 ${sidebarOpen ? 'w-64' : 'w-0'}`}
-        onMouseEnter={() => setIsSidebarHovered(true)}
-        onMouseLeave={() => setIsSidebarHovered(false)}
-      >
-        {sidebarOpen && (
-          <>
-            {/* Logo/Image */}
-            <div className="flex justify-left pt-8 mb-3">
-              <img
-                src="/BlueSolo.png"
-                alt="Eduvance Logo"
-                className="w-33 h-11 object-contain"
-              />
-            </div>
-
-            {/* Choose your exam board header */}
-            <h2 className="text-lg font-semibold tracking-[-1px] text-[#0C58E4] mb-4 px-6" style={{ fontFamily: 'Poppins, sans-serif' }}>
-              Choose your exam board
-            </h2>
-
-            {/* Sidebar Navigation */}
-            <div className="flex flex-col px-4 space-y-2">
-              <div
-                className={`relative px-4 py-1 rounded-lg cursor-pointer transition-all duration-200 ${
-                  hoveredSidebarItem === 'igcse' ? 'bg-[#BAD1FD]' : ''
-                }`}
-                onMouseEnter={() => setHoveredSidebarItem('igcse')}
-                onMouseLeave={() => setHoveredSidebarItem(null)}
-              >
-                <div className="flex items-center justify-between">
-                  <span className="text-[#000000] tracking-[-0.5px] font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                    IGCSE
-                  </span>
-                  {hoveredSidebarItem === 'igcse' && (
-                    <ChevronRight size={16} className="text-[#000000]" />
-                  )}
-                </div>
-              </div>
-
-              <div
-                className={`relative px-4 py-1 rounded-lg cursor-pointer transition-all duration-200 ${
-                  hoveredSidebarItem === 'as' ? 'bg-[#BAD1FD]' : ''
-                }`}
-                onMouseEnter={() => setHoveredSidebarItem('as')}
-                onMouseLeave={() => setHoveredSidebarItem(null)}
-              >
-                <div className="flex items-center justify-between">
-                  <span className="text-[#000000] tracking-[-0.5px] font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                    AS Levels
-                  </span>
-                  {hoveredSidebarItem === 'as' && (
-                    <ChevronRight size={16} className="text-[#000000]" />
-                  )}
-                </div>
-              </div>
-
-              <div
-                className={`relative px-4 py-1 rounded-lg cursor-pointer transition-all duration-200 ${
-                  hoveredSidebarItem === 'a2' ? 'bg-[#BAD1FD]' : ''
-                }`}
-                onMouseEnter={() => setHoveredSidebarItem('a2')}
-                onMouseLeave={() => setHoveredSidebarItem(null)}
-              >
-                <div className="flex items-center justify-between">
-                  <span className="text-[#000000] tracking-[-0.5px] font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                    A2 Levels
-                  </span>
-                  {hoveredSidebarItem === 'a2' && (
-                    <ChevronRight size={16} className="text-[#000000]" />
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* Subjects Section */}
-            <div className="mt-4 px-4">
-              <h3 className="text-lg font-semibold tracking-[-1px] text-[#0C58E4] mb-4 px-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                Subjects
-              </h3>
-              <div className="space-y-1">
-                {['Biology', 'Physics', 'Maths', 'Chemistry', 'Business', 'Economics'].map((subject) => (
-                  <Link
-                    key={subject}
-                    href={`/sub_links/${subject.toLowerCase()}`}
-                    className="block px-3 py-1 text-[#000000] tracking-[-0.5px] cursor-pointer hover:bg-[#BAD1FD] rounded transition-colors duration-200"
-                    style={{ fontFamily: 'Poppins, sans-serif' }}
-                  >
-                    {subject}
-                  </Link>
-                ))}
-              </div>
-
-              {/* 🚀 New Extra Button Group Section */}
-              <h3
-                className="text-lg font-semibold tracking-[-1px] text-[#0C58E4] mt-8 mb-4 px-2"
-                style={{ fontFamily: 'Poppins, sans-serif' }}
-              >
-                Eduvance Services
-              </h3>
-              <div className="space-y-1">
-                {[
-                  { name: 'Past Paper Finder', href: '/tools/formula-sheet' },
-                  { name: 'Community Notes', href: '/tools/unit-converter' },
-                  { name: 'Eduvance Resources', href: '/tools/topic-tracker' },
-                  { name: 'Share Your Notes!', href: '/tools/mock-paper' },
-                ].map((tool) => (
-                  <Link
-                    key={tool.name}
-                    href={tool.href}
-                    className="block px-3 py-1 text-[#000000] tracking-[-0.5px] cursor-pointer hover:bg-[#BAD1FD] rounded transition-colors duration-200"
-                    style={{ fontFamily: 'Poppins, sans-serif' }}
-                  >
-                    {tool.name}
-                  </Link>
-                ))}
-              </div>
-            </div>
-
-            
-          </>
-        )}
-      </div>
-
       {/* Header */}
       <div
-        className={`fixed top-0 ${sidebarOpen ? 'left-64' : 'left-6'} right-0 h-16 bg-white shadow-sm z-20 transition-all duration-300 flex items-center justify-between px-4`}
+        className={`fixed top-0 left-0 right-0 h-16 bg-white shadow-sm z-20 transition-all duration-300 flex items-center justify-between px-4`}
         onMouseEnter={() => setIsHeaderHovered(true)}
         onMouseLeave={() => setIsHeaderHovered(false)}
       >
-        {/* Sidebar Toggle */}
-        <button
-          className="bg-white border border-[#0C58E4] rounded-full p-1 shadow transition-all duration-300 focus:outline-none"
-          style={{ width: 32, height: 32 }}
-          onClick={() => setSidebarOpen((open) => !open)}
-        >
-          {sidebarOpen ? <ChevronLeft size={20} className="text-[#0C58E4]" /> : <ChevronRight size={20} className="text-[#0C58E4]" />}
-        </button>
-
         {/* Center Image Button */}
         <Link href="/" className="absolute left-1/2 transform -translate-x-1/2">
           <img
@@ -318,7 +184,7 @@ export default function Physics() {
       )}
 
       {/* Main Content */}
-      <div className={`transition-all duration-300 ${sidebarOpen ? 'ml-64' : 'ml-0'} mt-20 flex-1 ${isDimmed ? 'opacity-50' : 'opacity-100'}`}>
+      <div className={`transition-all duration-300 flex-1`}>
         {/* Custom Banner Header */}
         <div
           className="w-full h-[210px] relative flex items-center bg-cover bg-center bg-no-repeat transition-all duration-300"
@@ -364,8 +230,8 @@ export default function Physics() {
                   <h3 className="font-semibold text-xl md:text-2xl text-[#0C58E4] tracking-[-1px] mb-6" style={{ fontFamily: 'Poppins, sans-serif' }}>
                     IAL Physics Resources
                   </h3>
-                  {/* Resource Cards - Flex row for single-line layout (IAL) */}
-                  <div className="flex flex-row flex-nowrap overflow-x-auto gap-4 md:gap-6 mb-8 px-1 w-full">
+                  {/* Resource Cards - Full width, stacked on small screens */}
+                  <div className="flex flex-col md:flex-row flex-wrap gap-4 md:gap-6 mb-8 w-full">
                     <Link
                       href="/sub_links/physics/IAL/communityNotes"
                       className={`transition-all duration-300 ${
@@ -409,8 +275,8 @@ export default function Physics() {
                   <h3 className="font-semibold text-xl md:text-2xl text-[#0C58E4] tracking-[-1px] mb-6" style={{ fontFamily: 'Poppins, sans-serif' }}>
                     IGCSE Physics Resources
                   </h3>
-                  {/* Resource Cards - Flex row for single-line layout (IAL) */}
-                  <div className="flex flex-row flex-nowrap overflow-x-auto gap-4 md:gap-6 mb-8 px-1 w-full">
+                  {/* Resource Cards - Full width, stacked on small screens */}
+                  <div className="flex flex-col md:flex-row flex-wrap gap-4 md:gap-6 mb-8 w-full">
                     <Link
                       href="/sub_links/physics/IGCSE/communityNotes"
                       className={`transition-all duration-300 ${
