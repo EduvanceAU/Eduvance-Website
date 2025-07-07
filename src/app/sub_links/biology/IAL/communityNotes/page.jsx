@@ -50,82 +50,64 @@ export default function IALCommunityNotesPage() {
 
   return (
     <main className="min-h-screen bg-white flex flex-col items-center justify-start py-10 m-10">
-      <div className="w-full max-w-5xl px-4">
-        <h1
-          className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#000000] mb-8 text-left tracking-[-0.035em]"
-          style={{ fontFamily: "Poppins, sans-serif" }}
-        >
+      <div className="w-full max-w-7xl px-4">
+        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#000000] mb-8 text-left tracking-[-0.035em]" style={{ fontFamily: "Poppins, sans-serif" }}>
           IAL <span className="bg-[#1A69FA] px-2 py-1 -rotate-1 inline-block"><span className="text-[#FFFFFF]">Biology</span></span> Community Notes
         </h1>
 
-        <h3
-          className="text-sm sm:text-md lg:text-lg font-[500] leading-6 text-[#707070] mb-8 text-left tracking-[-0.015em]"
-          style={{ fontFamily: "Poppins, sans-serif" }}
-        >
-          Explore our collection of Edexcel A Level Biology community-contributed resources, including detailed notes, explanations, and revision tips. These resources are perfect for deepening your understanding, clarifying tricky concepts, and supporting your study alongside past papers.
-        </h3>
-
-        <div
-          className="inline-flex items-center justify-center px-4 py-2 mb-8 rounded-md shadow-xl"
-          style={{
-            border: "1.5px solid #DBDBDB",
-            fontFamily: "Poppins, sans-serif",
-          }}
-        >
+        <div className="inline-flex items-center justify-center px-4 py-2 mb-8 rounded-md" style={{ border: "1.5px solid #DBDBDB", fontFamily: "Poppins, sans-serif" }}>
           <span className="text-md font-medium text-black tracking-tight">
             <span className="font-[501]">Exam code:</span> {examCode}
           </span>
         </div>
 
+        <h3 className="text-sm sm:text-md lg:text-lg font-[500] leading-6 text-[#707070] mb-8 text-left max-w-4xl tracking-[-0.015em]" style={{ fontFamily: "Poppins, sans-serif" }}>
+          Explore our collection of Edexcel IAL Biology community-contributed resources, including detailed notes, explanations, and revision tips. These resources are perfect for deepening your understanding, clarifying tricky concepts, and supporting your study alongside past papers.
+        </h3>
+
+        {/* Subjects Buttons */}
         <div className="w-full mb-8">
           <h2 className="text-xl font-[550] tracking-tight text-[#000000] mb-4 text-left">
             Subjects
           </h2>
           <SubjectButtons />
-          <div className="flex flex-wrap gap-2">
-          </div>
         </div>
 
-        <div className="w-full space-y-10">
-          {units.map((unit) => (
-            <div
-              key={unit.unit}
-              className="bg-white rounded-lg shadow-md mb-8 border border-gray-200 overflow-hidden"
-            >
-              <div
-                className="bg-[#2871F9] text-white tracking-tight p-4 text-left font-bold text-xl sm:text-2xl cursor-pointer"
-                style={{ fontFamily: "Poppins, sans-serif" }}
-                onClick={() => toggleUnit(unit.unit)}
-              >
-                {unit.name}
-              </div>
-
-              {expandedUnits[unit.unit] && (
-                <div className="p-6">
-                  {/* Add your links here, for example: */}
-                  <ul className="list-disc list-inside">
-                    <li>
-                      <Link
-                        href="#"
-                        className="text-blue-600 hover:underline"
-                      >
-                        Link to Note 1
-                      </Link>
-                    </li>
-                    <li>
-                      <Link
-                        href="#"
-                        className="text-blue-600 hover:underline"
-                      >
-                        Link to Note 2
-                      </Link>
-                    </li>
-                  </ul>
-                </div>
-              )}
+        {/* Dynamic Units Rendering */}
+        {units.slice(1).map((unitData) => (
+          <div key={unitData.code} className="mb-12">
+            {/* Divider */}
+            <div className="w-full h-16 flex items-center px-6 mb-8" style={{ backgroundColor: "#BAD1FD" }}>
+              <h2 className="text-2xl font-semibold tracking-tight" style={{ color: "#153064", fontFamily: "Poppins, sans-serif" }}>
+                {unitData.unit} {unitData.name}
+              </h2>
             </div>
-          ))}
-        </div>
+
+            {/* Notes Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+              {/* Placeholder notes, replace with dynamic data if available */}
+              <div className="flex flex-col p-4 border border-gray-200 rounded-lg">
+                <h4 className="text-lg font-semibold text-[#153064] mb-2" style={{ fontFamily: "Poppins, sans-serif" }}>
+                  Community Notes
+                </h4>
+                <ul className="space-y-3">
+                  <li className="flex flex-col">
+                    <Link href="#" className="text-[#1A69FA] hover:underline text-md">
+                      Link to Note 1
+                    </Link>
+                    <p className="text-sm text-gray-600 mt-1">Description for Note 1</p>
+                  </li>
+                  <li className="flex flex-col">
+                    <Link href="#" className="text-[#1A69FA] hover:underline text-md">
+                      Link to Note 2
+                    </Link>
+                    <p className="text-sm text-gray-600 mt-1">Description for Note 2</p>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
     </main>
   );
