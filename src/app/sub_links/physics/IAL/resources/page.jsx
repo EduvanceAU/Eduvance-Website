@@ -119,7 +119,7 @@ export default function IALResources() {
 
   return (
     <main className="min-h-screen bg-white flex flex-col items-center justify-start py-10">
-      <div className="w-full max-w-7xl px-4">
+      <div className="w-full max-w-7xl px-4 mt-20">
         <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#000000] mb-8 text-left tracking-[-0.035em]" style={{ fontFamily: "Poppins, sans-serif" }}>
           IAL <span className="bg-[#1A69FA] px-2 py-1 -rotate-1 inline-block"><span className="text-[#FFFFFF]">Physics</span></span> Resources
         </h1>
