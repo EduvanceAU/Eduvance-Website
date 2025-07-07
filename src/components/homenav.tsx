@@ -2,7 +2,6 @@
 import Image from 'next/image';
 import Link from "next/link";
 import { useState, useRef, useEffect } from 'react';
-import { FaInfoCircle, FaBook, FaChalkboardTeacher, FaPhone, FaLifeRing, FaEllipsisH } from 'react-icons/fa';
 import { ChevronRight } from 'lucide-react';
 import { supabase } from './client/supabaseClient';
 import { Auth } from '@supabase/auth-ui-react';
@@ -10,10 +9,8 @@ import { ThemeSupa } from '@supabase/auth-ui-shared';
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -77,11 +74,8 @@ const NavDropdown = ({ labelMain, labelSmall, items }) => {
 function Home(props) {
   let extra: React.ReactNode = null;
   if (props.showExtra){
-    extra = (<div>
-        <h3
-          className="text-lg font-semibold tracking-[-1px] text-[#0C58E4] mt-8 mb-4 px-2"
-          style={{ fontFamily: 'Poppins, sans-serif' }}
-        >
+    extra = (<div className="mt-8 px-4">
+        <h3 className="text-lg font-semibold tracking-[-1px] text-[#0C58E4] mb-4 px-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
           Eduvance Services
         </h3>
         <div className="space-y-1">
@@ -94,7 +88,7 @@ function Home(props) {
             <Link
               key={tool.name}
               href={tool.href}
-              className="block px-3 py-1 text-[#000000] tracking-[-0.5px] cursor-pointer hover:bg-[#BAD1FD] rounded transition-colors duration-200"
+              className="block px-4 py-2 text-[#000000] tracking-[-0.5px] cursor-pointer hover:bg-[#BAD1FD] rounded transition-colors duration-200"
               style={{ fontFamily: 'Poppins, sans-serif' }}
             >
               {tool.name}
@@ -453,8 +447,8 @@ function Home(props) {
               </Link>
             ))}
           </div>
-          {extra}
         </div>
+        {extra}
       </div>
     </main>
   );
