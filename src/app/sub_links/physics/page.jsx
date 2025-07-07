@@ -318,7 +318,7 @@ export default function Physics() {
       )}
 
       {/* Main Content */}
-      <div className={`transition-all duration-300 ${sidebarOpen ? 'ml-64' : 'ml-0'} mt-16 flex-1 ${isDimmed ? 'opacity-50' : 'opacity-100'}`}>
+      <div className={`transition-all duration-300 ${sidebarOpen ? 'ml-64' : 'ml-0'} mt-20 flex-1 ${isDimmed ? 'opacity-50' : 'opacity-100'}`}>
         {/* Custom Banner Header */}
         <div
           className="w-full h-[210px] relative flex items-center bg-cover bg-center bg-no-repeat transition-all duration-300"
