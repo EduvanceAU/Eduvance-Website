@@ -109,29 +109,12 @@ export default function IALResources() {
     fetchResources();
   }, [session]);
 
-  if (!session) {
-    return (
-      <main className="min-h-screen flex items-center justify-center">
-        <Auth 
-          supabaseClient={supabase} 
-          appearance={{ theme: ThemeSupa }} 
-          providers={['google', 'discord']} 
-          redirectTo={typeof window !== 'undefined' ? window.location.href : undefined}
-        />
-      </main>
-    );
-  }
-
   if (error) {
     return (
       <main className="min-h-screen bg-white flex items-center justify-center">
         <p className="text-xl text-red-600">Error loading resources: {error.message}</p>
       </main>
     );
-  }
-
-  if (loading) {
-    return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
   }
 
   return (
@@ -153,13 +136,12 @@ export default function IALResources() {
 
         {/* General Resources */}
         {unitResources["General"] && (
-          <div className="mb-12">
-            <div className="w-full h-16 flex items-center px-6 mb-8 bg-gray-200">
-              <h2 className="text-2xl font-semibold tracking-tight text-gray-800" style={{ fontFamily: "Poppins, sans-serif" }}>
-                General Resources
-              </h2>
+          <div className="bg-white rounded-lg shadow-md mb-8 border border-gray-200 overflow-hidden">
+            <div className="bg-gray-200 text-black tracking-tight p-4 text-left font-bold text-xl sm:text-2xl"
+                style={{ fontFamily: "Poppins, sans-serif" }}>  
+              General Resources
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 p-6">
               {unitResources["General"].map((resourceGroup, groupIndex) => (
                 resourceGroup.links.map((link, linkIndex) => (
                   <div
@@ -186,13 +168,13 @@ export default function IALResources() {
 
         {/* Unit-Based Resources */}
         {units.map((unitData) => (
-          <div key={unitData.code} className="mb-12">
-            <div className="w-full h-16 flex items-center px-6 mb-8" style={{ backgroundColor: "#BAD1FD" }}>
-              <h2 className="text-2xl font-semibold tracking-tight" style={{ color: "#153064", fontFamily: "Poppins, sans-serif" }}>
-                {unitData.unit} {unitData.name}
-              </h2>
+          <div key={unitData.code} className="bg-white rounded-lg shadow-md mb-8 border border-gray-200 overflow-hidden">
+            {/* Session Card styling, added overflow-hidden */}
+            <div className="bg-[#2871F9] text-white tracking-tight p-4 text-left font-bold text-xl sm:text-2xl"
+                style={{ fontFamily: "Poppins, sans-serif" }}>
+              {unitData.unit} {unitData.name}
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 p-6">
               {(unitResources[unitData.unit] || []).map((resourceGroup, groupIndex) => (
                 resourceGroup.links.map((link, linkIndex) => (
                   <div
