@@ -97,7 +97,7 @@ export default function ContributorUploadResource() {
       <Home showExtra/>
       <div className="pt-20 pr-10 pl-10 pb-10 min-h-screen bg-blue-100 flex items-center justify-center" style={{ fontFamily: 'Poppins, sans-serif' }}>
         <div className="bg-white rounded-xl shadow-lg max-w-md w-full p-8 tracking-[-0.025em]">
-          <h2 className="text-2xl font-semibold text-gray-800 text-center">Contribute with new Resource</h2>
+          <h2 className="text-2xl font-semibold text-gray-800 text-center">Contribute with new resource</h2>
 
           {message && (
             <div className={`p-3 rounded-md text-sm ${
