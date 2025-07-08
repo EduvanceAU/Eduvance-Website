@@ -26,7 +26,7 @@ export default function RootLayout({ children }) {
           src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
           strategy="beforeInteractive"
         />
-        <link rel="icon" href="/BlueSolo.png" />
+        <link rel="icon" href="/BlueSolo.svg" />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}

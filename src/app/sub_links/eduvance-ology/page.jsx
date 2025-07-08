@@ -11,7 +11,7 @@ export default function Eduvanceology() {
       {/* Banner Image - Responsive width */}
       <div className="hidden md:block lg:block xl:block w-full h-[210px] relative">
         <Image 
-          src="/Eduvance-ology_Banner.png" 
+          src="/Eduvance-ology_Banner.svg" 
           alt="Eduvance-ology" 
           fill
           priority
@@ -64,7 +64,7 @@ export default function Eduvanceology() {
                 <Link
                   href="/sub_links/physics/IAL/communityNotes"
                   className="hover-tint w-full sm:w-[calc(50%-8px)] md:w-[calc(33.33%-16px)] h-40 rounded-xl font-[550] tracking-[-0.5px] border-[1.5px] border-[#153064] flex items-end justify-start pl-4 pb-4 text-[#153064] hover:bg-[#BAD1FD] transition-all duration-300 cursor-pointer"
-                  style={{ backgroundImage: "url('/Notes Background.png')", backgroundSize: 'cover', backgroundPosition: 'center' }}
+                  style={{ backgroundImage: "url('/Notes Background.svg')", backgroundSize: 'cover', backgroundPosition: 'center' }}
                 >
                   Community Notes
                 </Link>
@@ -72,7 +72,7 @@ export default function Eduvanceology() {
                 <Link
                   href="/sub_links/physics/IAL/resources"
                   className="hover-tint w-full sm:w-[calc(50%-8px)] md:w-[calc(33.33%-16px)] h-40 rounded-xl font-[550] tracking-[-0.5px] border-[1.5px] border-[#153064] flex items-end justify-start pl-4 pb-4 text-[#153064] hover:bg-[#BAD1FD] transition-all duration-300 cursor-pointer"
-                  style={{ backgroundImage: "url('/PPQ Background.png')", backgroundSize: 'cover', backgroundPosition: 'center' }}
+                  style={{ backgroundImage: "url('/PPQ Background.svg')", backgroundSize: 'cover', backgroundPosition: 'center' }}
                 >
                   Eduvance Resources
                 </Link>
@@ -80,7 +80,7 @@ export default function Eduvanceology() {
                 <Link
                   href="/sub_links/physics/IAL/pastpapers"
                   className="hover-tint w-full sm:w-[calc(50%-8px)] md:w-[calc(33.33%-16px)] h-40 rounded-xl font-[550] tracking-[-0.5px] border-[1.5px] border-[#153064] flex items-end justify-start pl-4 pb-4 text-[#153064] hover:bg-[#BAD1FD] transition-all duration-300 cursor-pointer"
-                  style={{ backgroundImage: "url('/Papers Background.png')", backgroundSize: 'cover', backgroundPosition: 'center' }}
+                  style={{ backgroundImage: "url('/Papers Background.svg')", backgroundSize: 'cover', backgroundPosition: 'center' }}
                 >
                   Past Papers
                 </Link>
@@ -116,7 +116,7 @@ export default function Eduvanceology() {
                 <Link
                   href="/page1"
                   className="hover-tint w-full sm:w-[calc(50%-8px)] md:w-[calc(33.33%-16px)] h-40 rounded-xl font-[550] tracking-[-0.5px] border-[1.5px] border-[#153064] flex items-end justify-start pl-4 pb-4 text-[#153064] hover:bg-[#BAD1FD] transition-all duration-300 cursor-pointer"
-                  style={{ backgroundImage: "url('/Notes Background.png')", backgroundSize: 'cover', backgroundPosition: 'center' }}
+                  style={{ backgroundImage: "url('/Notes Background.svg')", backgroundSize: 'cover', backgroundPosition: 'center' }}
                 >
                   Community Notes
                 </Link>
@@ -124,7 +124,7 @@ export default function Eduvanceology() {
                 <Link
                   href="/page2"
                   className="hover-tint w-full sm:w-[calc(50%-8px)] md:w-[calc(33.33%-16px)] h-40 rounded-xl font-[550] tracking-[-0.5px] border-[1.5px] border-[#153064] flex items-end justify-start pl-4 pb-4 text-[#153064] hover:bg-[#BAD1FD] transition-all duration-300 cursor-pointer"
-                  style={{ backgroundImage: "url('/PPQ Background.png')", backgroundSize: 'cover', backgroundPosition: 'center' }}
+                  style={{ backgroundImage: "url('/PPQ Background.svg')", backgroundSize: 'cover', backgroundPosition: 'center' }}
                 >
                   Eduvance Resources
                 </Link>
@@ -132,7 +132,7 @@ export default function Eduvanceology() {
                 <Link
                   href="/sub_links/physics/IGCSE/pastpapers"
                   className="hover-tint w-full sm:w-[calc(50%-8px)] md:w-[calc(33.33%-16px)] h-40 rounded-xl font-[550] tracking-[-0.5px] border-[1.5px] border-[#153064] flex items-end justify-start pl-4 pb-4 text-[#153064] hover:bg-[#BAD1FD] transition-all duration-300 cursor-pointer"
-                  style={{ backgroundImage: "url('/Papers Background.png')", backgroundSize: 'cover', backgroundPosition: 'center' }}
+                  style={{ backgroundImage: "url('/Papers Background.svg')", backgroundSize: 'cover', backgroundPosition: 'center' }}
                 >
                   Past Papers
                 </Link>
