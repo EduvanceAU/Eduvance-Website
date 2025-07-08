@@ -37,7 +37,7 @@ const SubjectButtons = () => {
     <div className="flex flex-wrap gap-2 mb-6">
       {subjects.map((subject, index) => (
         <Link key={index} href={subject.link}>
-          <button className="px-4 py-2 bg-blue-600 cursor-pointer text-white rounded-lg hover:bg-blue-500 transition">
+          <button className="px-4 py-2 cursor-pointer bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition">
             {subject.name}
           </button>
         </Link>
@@ -243,7 +243,7 @@ export default function IALPastPapersPage() {
       <p className="text-xl text-red-600">Error loading past papers: {error.message}</p>
     </main>
   ) : (
-    <main className="min-h-screen bg-white flex flex-col items-center justify-start py-10">
+    <main className="min-h-screen bg-white flex flex-col items-center justify-start py-10 m-10">
       <div className="w-full max-w-5xl px-4">
         <h1
           className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#000000] mb-8 text-left tracking-[-0.035em]"
