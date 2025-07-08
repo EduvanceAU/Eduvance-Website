@@ -35,7 +35,7 @@ const ScrollingColumn: React.FC<ScrollingColumnProps> = ({ direction, count = 15
         {items.map((_, i) => (
           <img
             key={i}
-            src="/Page.png"
+            src="/Page.svg"
             className="rounded-2xl w-full object-cover"
             alt={`scroll-page-${i}`}
           />
@@ -43,7 +43,7 @@ const ScrollingColumn: React.FC<ScrollingColumnProps> = ({ direction, count = 15
         {items.map((_, i) => (
           <img
             key={`dup-${i}`}
-            src="/Page.png"
+            src="/Page.svg"
             className="rounded-2xl w-full object-cover"
             alt={`scroll-page-dup-${i}`}
           />
@@ -124,7 +124,7 @@ export default function Main() {
         <div className="flex text-center flex-col gap-4 items-center justify-center absolute w-[95vw] h-[85vh] bg-gradient-to-b from-[#4E8CFF] to-[#0C60FB] rounded-2xl shadow-xl z-0 left-1/2 transform -translate-x-1/2 mb-[-50px] overflow-hidden" >
           
 
-            <img src="Headline.png" className="w-[800px] h-auto z-10" />
+            <img src="Headline.svg" className="w-[800px] h-auto z-10" />
 
             <h3 className="font-semibold text-white leading-[22px] text-xl max-w-[550px] z-10">
               Education drives progress. Eduvance helps you learn, revise, and stay ahead in your academic journey
@@ -138,18 +138,18 @@ export default function Main() {
               className="z-20"
             >
               <button className="cursor-pointer bg-white hover:bg-[#143166] text-[#428CF9] border-5 border-[#639afe] px-9 py-4 rounded-[16px] text-xl poppins-semibold shadow-lg flex items-center gap-5">
-                <img src="/discordLogo.png" alt="Discord" className="w-9 h-auto" />
+                <img src="/discordLogo.svg" alt="Discord" className="w-9 h-auto" />
                 Join our Discord Server
               </button>
             </a>
             {/* Decorative Images (Positioned with absolute so they don't mess layout) */}
             <img
-              src="bgCrypto.png"
+              src="bgCrypto.svg"
               alt="Decorative Crypto"
               className="absolute left-1/2 transform -translate-x-1/2 w-full h-auto z-10"
             />
             <img
-              src="DocWidgets.png"
+              src="DocWidgets.svg"
               alt=" "
               className="absolute top-[70%] sm:top-[90%] w-[300px] sm:w-[300px] h-auto transform sm:-translate-y-40 translate-y-10 left-[-20px] z-0"
             />
@@ -200,7 +200,7 @@ export default function Main() {
             <Link href="/resources" className="inline-block mt-6">
               <button className="cursor-pointer bg-[#2D74F8] hover:bg-[#143166] text-[#FFFFFF] px-6 py-2 rounded-[50px] text-xl poppins-semibold shadow-lg flex items-center gap-2">
                 Explore Resources
-                <img src="/ArrowR.png" alt="Arrow Right" className="w-6 h-auto" />
+                <img src="/ArrowR.svg" alt="Arrow Right" className="w-6 h-auto" />
               </button>
             </Link>
           </div>
@@ -219,7 +219,7 @@ export default function Main() {
             </div>
 
             <img
-              src="QuotationMarks.png"
+              src="QuotationMarks.svg"
               className="hidden sm:block w-[1200px] h-auto mx-auto absolute left-1/2 transform -translate-x-1/2 -translate-y-0 z-0"
             />
 
@@ -248,7 +248,7 @@ export default function Main() {
                 className="cursor-pointer bg-[#3F82FD] hover:bg-[#143166] text-white border-5 border-[#B1CCFF] border-opacity-50 px-9 py-3 rounded-full text-xl poppins-semibold flex items-center gap-5"
                 style={{ fontFamily: 'Poppins, sans-serif' }}
               >
-                <img src="/WhiteDiscordLogo.png" alt="Discord" className="w-9 h-auto" />
+                <img src="/WhiteDiscordLogo.svg" alt="Discord" className="w-9 h-auto" />
                 Join the community
               </button>
             </a>
@@ -258,7 +258,7 @@ export default function Main() {
             <div className="flex flex-col lg:flex-row gap-[-100px] items-stretch justify-center mt-24">
               <TestimonialCard
                 content="Bro Eduvance.au is actually carrying rn 😭 the new UI? chef's kiss fr 💅🏻 admin panel finally usable (we made it y'all 😭). Mobile still kinda crunchy ngl but overall? smooth ✨ Sidebar's clean, Discord login bangs 🔥 flow's tight. Devs cooking hard at 3am 🔥 pls fix the scroll bug before I cry again 😩. Love this team fr 🤍"
-                icon="/map.png"
+                icon="/map.svg"
                 headline="Mapleon, Senior Moderator"
                 rotation="rotate-[-2deg]"
                 imageClassName="rounded-full"
@@ -266,7 +266,7 @@ export default function Main() {
 
               <TestimonialCard
                 content="Eduvance is seriously one of the slickest, most community-driven edu platforms out there. Every design and feature feels intentional—mobile's clean. But honestly, it's the people that make it—staff actually know regulars, and feedback turns into real changes. It's not just a notes dump, it's a whole vibe. From early server boosts to now helping thousands, Eduvance is straight-up him"
-                icon="/maryam.png"
+                icon="/maryam.svg"
                 headline="Maryam, Head Moderator"
                 rotation="rotate-[1deg]"
                 imageClassName="rounded-full"
@@ -274,7 +274,7 @@ export default function Main() {
 
               <TestimonialCard
                 content="Eduvance.au has grown into way more than just a past papers site—it’s a full ecosystem now. From responsive mobile layouts to secret side projects (that we barely keep under wraps), the devs really care about UX, not just content. Whether it’s skilled roles, server boosts, or the legit Minecraft server coming soon, it all builds this weird but productive culture. People move on, but the impact stays real."
-                icon="/bio.png"
+                icon="/bio.svg"
                 headline="Biomeac, Co-Founder"
                 rotation="rotate-[-1.5deg]"
                 imageClassName="rounded-full"
@@ -287,12 +287,12 @@ export default function Main() {
       {/* Footer Section */}
       <footer className="w-full bg-[#357BFD] pt-24 pb-8">
         <div className="container mx-auto px-4 relative">
-          <img src="EduvanceFooter.png" className="h-auto w-[1900px] mx-auto transform -translate-y-5" />
+          <img src="EduvanceFooter.svg" className="h-auto w-[1900px] mx-auto transform -translate-y-5" />
 
           <div className="rounded-2xl p-6 max-w-[1850px] mx-auto h-[920px] sm:h-[920px] lg:h-[520px] bg-gradient-to-b from-[#FFFFFF] via-[#FAFCFF] to-[#357BFD] flex flex-col lg:flex-row gap-8 shadow-[0px_-10px_30px_#357BFD40] translate-y-[-40px]">
             {/* Left Column */}
             <div className="w-full lg:w-1/3 flex flex-col items-start mt-[6px]">
-              <img src="BiggerLogo.png" className="w-auto h-15 object-contain mb-4" />
+              <img src="BiggerLogo.svg" className="w-auto h-15 object-contain mb-4" />
               <p className="text-[#757575] text-base leading-5 tracking-tight font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
                 A growing student-led community built for learners across AS, A Levels, AP, and undergrad programs. From revision and learning resources to solving your doubts, we're here to make education easier, smarter, and more connected
               </p>

@@ -41,7 +41,7 @@ export default function Resources() {
         <div className="relative w-full h-[250px] sm:h-[200px] md:h-[180px] lg:h-[150px]">
           {/* PagesWidget at 5% from top, 0% from left */}
           <img
-            src="PagesWidget.png"
+            src="PagesWidget.svg"
             alt="Pages Widget"
             className="absolute top-[5%] left-0 w-80 h-auto"
           />
@@ -79,7 +79,7 @@ export default function Resources() {
                   {subject.name} Revision Resources
                 </p>
                 <img
-                  src="/BArrowR.png"
+                  src="/BArrowR.svg"
                   alt="Arrow Right"
                   className="w-6 h-auto group-hover:translate-x-1 transition-transform duration-200"
                 />
