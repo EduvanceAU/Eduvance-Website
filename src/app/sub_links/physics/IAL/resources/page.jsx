@@ -18,6 +18,18 @@ const units = [
 ];
 
 export default function IALResources() {
+  const [expandedUnits, setExpandedUnits] = useState(units.reduce((acc, unit) => {
+      acc[unit.unit] = true;
+      return acc;
+    }, {}));
+  
+  const toggleUnit = (unit) => {
+    setExpandedUnits(prev => ({
+      ...prev,
+      [unit]: !prev[unit]
+    }));
+  };
+  
   const [session, setSession] = useState(null);
   const [unitResources, setUnitResources] = useState({});
   const [error, setError] = useState(null);
@@ -96,7 +108,8 @@ export default function IALResources() {
             description: resource.description,
           });
         });
-
+        // Debug log to verify grouping
+        console.log('Grouped Resources:', groupedResources);
         setUnitResources(groupedResources);
         setLoading(false);
       } catch (error) {
@@ -109,19 +122,6 @@ export default function IALResources() {
     fetchResources();
   }, [session]);
 
-  if (!session) {
-    return (
-      <main className="min-h-screen flex items-center justify-center">
-        <Auth 
-          supabaseClient={supabase} 
-          appearance={{ theme: ThemeSupa }} 
-          providers={['google', 'discord']} 
-          redirectTo={typeof window !== 'undefined' ? window.location.href : undefined}
-        />
-      </main>
-    );
-  }
-
   if (error) {
     return (
       <main className="min-h-screen bg-white flex items-center justify-center">
@@ -130,13 +130,9 @@ export default function IALResources() {
     );
   }
 
-  if (loading) {
-    return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
-  }
-
   return (
-    <main className="min-h-screen bg-white flex flex-col items-center justify-start py-10">
-      <div className="w-full max-w-7xl px-4">
+    <main className="min-h-screen bg-white flex flex-col items-center justify-start py-10 m-10">
+      <div className="w-full max-w-5xl px-4">
         <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#000000] mb-8 text-left tracking-[-0.035em]" style={{ fontFamily: "Poppins, sans-serif" }}>
           IAL <span className="bg-[#1A69FA] px-2 py-1 -rotate-1 inline-block"><span className="text-[#FFFFFF]">Physics</span></span> Resources
         </h1>
@@ -153,13 +149,12 @@ export default function IALResources() {
 
         {/* General Resources */}
         {unitResources["General"] && (
-          <div className="mb-12">
-            <div className="w-full h-16 flex items-center px-6 mb-8 bg-gray-200">
-              <h2 className="text-2xl font-semibold tracking-tight text-gray-800" style={{ fontFamily: "Poppins, sans-serif" }}>
-                General Resources
-              </h2>
+          <div className="cursor-pointer bg-white rounded-lg shadow-md mb-8 border border-gray-200 overflow-hidden">
+            <div className="bg-gray-200 text-black tracking-tight p-4 text-left font-bold text-xl sm:text-2xl"
+                style={{ fontFamily: "Poppins, sans-serif" }}>  
+              General Resources
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 p-6">
               {unitResources["General"].map((resourceGroup, groupIndex) => (
                 resourceGroup.links.map((link, linkIndex) => (
                   <div
@@ -186,56 +181,40 @@ export default function IALResources() {
 
         {/* Unit-Based Resources */}
         {units.map((unitData) => (
-          <div key={unitData.code} className="mb-12">
-            <div className="w-full h-16 flex items-center px-6 mb-8" style={{ backgroundColor: "#BAD1FD" }}>
-              <h2 className="text-2xl font-semibold tracking-tight" style={{ color: "#153064", fontFamily: "Poppins, sans-serif" }}>
-                {unitData.unit} {unitData.name}
-              </h2>
+          <div key={unitData.unit} className="bg-white rounded-lg shadow-md mb-8 border border-gray-200 overflow-hidden">
+            {/* Session Card styling, added overflow-hidden */}
+            <div className="bg-[#2871F9] cursor-pointer text-white tracking-tight p-4 text-left font-bold text-xl sm:text-2xl"
+                style={{ fontFamily: "Poppins, sans-serif" }}
+                onClick={() => toggleUnit(unitData.unit)}>
+              {unitData.name}
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-              {(unitResources[unitData.unit] || []).map((resourceGroup, groupIndex) => (
-                resourceGroup.links.map((link, linkIndex) => (
-                  <div
-                    key={groupIndex + '-' + linkIndex}
-                    className="flex flex-col p-5 border border-gray-200 rounded-2xl shadow-md bg-white hover:shadow-xl transition-shadow duration-200 group"
-                    style={{ minHeight: '120px', position: 'relative' }}
-                  >
-                    <span className="text-sm font-semibold text-[#1A69FA] mb-1 tracking-tight uppercase" style={{ fontFamily: 'Poppins, sans-serif', letterSpacing: '0.04em' }}>{resourceGroup.heading}</span>
-                    <Link href={link.url} className="text-lg font-bold text-[#153064] hover:text-[#1A69FA] transition-colors duration-150 mb-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                      {link.name}
-                    </Link>
-                    {link.description && (
-                      <p className="text-sm text-gray-600 mt-1">{link.description}</p>
-                    )}
-                    <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                      <svg width="22" height="22" fill="none" stroke="#1A69FA" strokeWidth="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            {expandedUnits[unitData.unit] && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 p-6">
+                {(unitResources[unitData.unit] || []).map((resourceGroup, groupIndex) => (
+                  resourceGroup.links.map((link, linkIndex) => (
+                    <div
+                      key={groupIndex + '-' + linkIndex}
+                      className="flex flex-col p-5 border border-gray-200 rounded-2xl shadow-md bg-white hover:shadow-xl transition-shadow duration-200 group"
+                      style={{ minHeight: '120px', position: 'relative' }}
+                    >
+                      <span className="text-sm font-semibold text-[#1A69FA] mb-1 tracking-tight uppercase" style={{ fontFamily: 'Poppins, sans-serif', letterSpacing: '0.04em' }}>{resourceGroup.heading}</span>
+                      <Link href={link.url} className="text-lg font-bold text-[#153064] hover:text-[#1A69FA] transition-colors duration-150 mb-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                        {link.name}
+                      </Link>
+                      {link.description && (
+                        <p className="text-sm text-gray-600 mt-1">{link.description}</p>
+                      )}
+                      <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                        <svg width="22" height="22" fill="none" stroke="#1A69FA" strokeWidth="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                      </div>
                     </div>
-                  </div>
-                ))
-              ))}
-            </div>
+                  ))
+                ))}
+              </div>
+            )}
           </div>
         ))}
       </div>
-
-      {showLoginPopup && (
-        <div className="fixed top-6 left-1/2 transform -translate-x-1/2 z-50">
-          <div className="bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg animate-slide-in-fade-out">
-            Successfully logged in!
-          </div>
-          <style jsx>{`
-            .animate-slide-in-fade-out {
-              animation: slideInFadeOut 2.5s forwards;
-            }
-            @keyframes slideInFadeOut {
-              0% { opacity: 0; transform: translateY(-20px); }
-              10% { opacity: 1; transform: translateY(0); }
-              90% { opacity: 1; transform: translateY(0); }
-              100% { opacity: 0; transform: translateY(-20px); }
-            }
-          `}</style>
-        </div>
-      )}
     </main>
   );
 }

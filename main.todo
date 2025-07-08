@@ -50,10 +50,10 @@ New Resources Pages Update :
    ✔ Update Community Notes pages logic (only include community contributed notes) @done(25-07-02 17:38)
    ✔ Update Past Paper loading feature for all pages @done(25-06-27 16:34)
 
-   ✔ Update UI and Cards elements for all resources pages for all subjetcs @done(25-07-07 14:59)
-   ✔ Update UI and Cards elements for all community notes pages for all subjetcs @done(25-07-07 14:59)
+   ☐ Update UI and Cards elements for all resources pages for all subjects
+   ☐ Update UI and Cards elements for all community notes pages for all subjects
    ☐ Sync and Update UI for all subject pages individually
-   ☐ Update all pages to accomodate the universal top bar
+   ✔ Update all pages to accomodate the universal top bar @done(25-07-07 23:29)
 
 Other Pages:
    ☐ Other miscellaneous pages for the website (About Eduvance, IGCSE/A Levels, Grading System Explained, FAQs and more)
@@ -69,16 +69,16 @@ Other TODO:
    ✔ Becoming a community contributor : Request to upload resources -> Linked to staff console for approval @done(25-06-26 22:15)
    ✔ Update Contributor Page form link to DB table for approval of resources @done(25-06-27 15:44)
    - Become a tutor/Match with a tutor : People could sign up to teach/study with tutors
-   ✔ Collect testimonials from community members for the website @done(25-07-07 15:42)
+   ☐ Collect testimonials from community members for the website
 
 Community Feedback :
    ✔ Update member counts on all pages to 18k @done(25-07-04 16:34)
    ☐ Footer image spacing with the main div
-   ✔ Adding placeholder for the community section (Biomeac, Maryam, Map) @done(25-07-07 14:59)
+   ☐ Adding placeholder for the community section (Biomeac, Maryam, Map)
    ✔ Staff Page name changed to Staff Access @done(25-07-04 16:34)
    ✔ Footer page links to be updated @done(25-07-04 16:34)
    ✔ Update all subject pages to have the right UI and responsive design @done(25-07-04 16:34)
    ☐ Update links for the top bar in the website
-   ✔ Chemsitry Page Typo @done(25-07-07 14:59)
-   ✔ Update discord invite links @done(25-07-07 14:59)
+   ✔ Chemistry Page Typo @done(25-07-07 14:59)
+   ☐ Update discord invite links
    ✔ Pointer Icon/Cursor on Buttons (Stig) @done(25-07-05 16:42)

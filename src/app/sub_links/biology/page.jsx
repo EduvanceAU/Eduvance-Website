@@ -1,16 +1,40 @@
 "use client";
 import { useState, useEffect } from 'react';
-import { ChevronRight, ChevronLeft, Menu } from 'lucide-react';
 import Link from 'next/link';
-import { supabase } from './client/supabaseClient';
-import { Auth } from '@supabase/auth-ui-react';
-import { ThemeSupa } from '@supabase/auth-ui-shared';
-import {Home} from '@/components/homenav'
+
 export default function Biology() {
   const [selected, setSelected] = useState('option1');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  useEffect(() => {
+    const target = document.querySelector('.sidebarWheel');
+    if (!target) return;
+
+    const observer = new MutationObserver((mutationsList) => {
+      for (const mutation of mutationsList) {
+        if (
+          mutation.type === 'attributes' &&
+          mutation.attributeName === 'data-sidebar'
+        ) {
+          const value = target.getAttribute('data-sidebar');
+          if(value === "open"){
+            setSidebarOpen(true)
+          }
+          else{
+            setSidebarOpen(false)
+          }
+        }
+      }
+    });
+
+    observer.observe(target, { attributes: true, attributeFilter: ['data-sidebar'] });
+
+    return () => observer.disconnect();
+  }, []);
+
   return (<>
       {/* Main Content */}
-      <div className="transition-all duration-300">
+      <div className={`transition-all duration-300 ${sidebarOpen ? 'sm:ml-64' : 'ml-0'}`}>
         {/* Custom Banner Header */}
         <div
           className="w-full h-[250px] relative flex items-center bg-cover bg-right lg:bg-center bg-no-repeat transition-all duration-300"
@@ -50,7 +74,7 @@ export default function Biology() {
             </div>
 
             {/* Conditional content */}
-            <div className="w-full transition-all duration-500 ease-in-out">
+            <div className={`w-full ${sidebarOpen ? 'max-w-[1200px]' : 'max-w-[1440px]'} transition-all duration-500 ease-in-out`}>
               {selected === "option1" ? (
                 <>
                   <h3 className="font-semibold text-xl md:text-2xl text-[#0C58E4] tracking-[-1px] mb-6" style={{ fontFamily: 'Poppins, sans-serif' }}>
@@ -99,7 +123,7 @@ export default function Biology() {
                   {/* Resource Cards - CSS Grid for single-line layout (IGCSE) and 2x2 layout for mobile */}
                   <div className="text-base grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8 sm:px-1 w-full">
                     <Link
-                      href="/sub_links/biology/IAL/communityNotes"
+                      href="/sub_links/biology/IGCSE/communityNotes"
                       className="transition-all duration-300 h-40 rounded-xl font-[550] tracking-[-0.5px] border-[1.5px] border-[#0C58E4] flex items-end justify-start pl-4 pb-4 text-black hover:text-[#0C58E4] hover:bg-[#CEE0FF] bg-blend-multiply cursor-pointer"
                       style={{ backgroundImage: "url('/Notes Background.png')", backgroundSize: 'cover', backgroundPosition: 'center' }}
                     >
@@ -107,7 +131,7 @@ export default function Biology() {
                     </Link>
                     
                     <Link
-                      href="/sub_links/biology/IAL/resources"
+                      href="/sub_links/biology/IGCSE/resources"
                       className="transition-all duration-300 h-40 rounded-xl font-[550] tracking-[-0.5px] border-[1.5px] border-[#0C58E4] flex items-end justify-start pl-4 pb-4 text-black hover:text-[#0C58E4] hover:bg-[#CEE0FF] bg-blend-multiply cursor-pointer"
                       style={{ backgroundImage: "url('/PPQ Background.png')", backgroundSize: 'cover', backgroundPosition: 'center' }}
                     >
@@ -115,7 +139,7 @@ export default function Biology() {
                     </Link>
 
                     <Link
-                      href="/sub_links/biology/IAL/pastpapers"
+                      href="/sub_links/biology/IGCSE/pastpapers"
                       className="transition-all duration-300 h-40 rounded-xl font-[550] tracking-[-0.5px] border-[1.5px] border-[#0C58E4] flex items-end justify-start pl-4 pb-4 text-black hover:text-[#0C58E4] hover:bg-[#CEE0FF] bg-blend-multiply cursor-pointer"
                       style={{ backgroundImage: "url('/Papers Background.png')", backgroundSize: 'cover', backgroundPosition: 'center' }}
                     >
