@@ -162,6 +162,7 @@ function Home(props) {
 
   return (
     <main className="bg-white relative overflow-x-hidden">
+      
       <nav className="w-full h-[60px] flex justify-between items-center px-4 md:px-6 py-4 z-50 fixed top-0 left-0 bg-white bg-opacity-95">
         {/* 👈 Left Side: Sidebar Button + Logo in one group */}
         <div className="flex items-center gap-2">
@@ -357,23 +358,22 @@ function Home(props) {
       )} */}
       {/* Custom Sidebar - Slide-in from left */}
       {/* Scroll Ability */}
-      <div className={`sidebarWheel overflow-y-scroll overscroll-none fixed top-0 left-0 h-full w-76 bg-white z-50 flex flex-col shadow-lg transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 ease-in-out`} style={{ width: '320px', minWidth: '320px' }}>
+      <div data-sidebar={sidebarOpen ? 'open' : 'closed'} className={`sidebarWheel overflow-y-scroll overscroll-none fixed top-0 left-0 h-full bg-white z-50 flex flex-col shadow-lg transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 ease-in-out`} style={{ width: '280px', minWidth: '280px' }}>
         <div className="flex justify-between items-center p-4">
-              {/* Logo/Image */}
-          
-            <img
-              src="/BlueSolo.png"
-              alt="Eduvance Logo"
-              className="w-11 h-11 object-contain"
-            />
-            {/* Close Button */}
-            <button onClick={() => setSidebarOpen(false)} className="cursor-pointer w-8 h-8 flex items-center justify-center rounded-full hover:bg-[#BAD1FD]">
-              <svg className="w-6 h-6 text-[#153064]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          
-          </div>
+          {/* Logo/Image */}
+        
+          <img
+            src="/BlueSolo.png"
+            alt="Eduvance Logo"
+            className="w-11 h-11 object-contain"
+          />
+          {/* Close Button */}
+          <button onClick={() => setSidebarOpen(false)} className="cursor-pointer w-8 h-8 flex items-center justify-center rounded-full hover:bg-[#BAD1FD]">
+            <svg className="w-6 h-6 text-[#153064]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>          
+        </div>
         {/* Choose your exam board header */}
         <h2 className="text-lg font-semibold tracking-[-1px] text-[#0C58E4] mb-6 px-6" style={{ fontFamily: 'Poppins, sans-serif' }}>
           Choose your exam board
