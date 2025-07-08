@@ -17,7 +17,6 @@ export default function Biology() {
           mutation.attributeName === 'data-sidebar'
         ) {
           const value = target.getAttribute('data-sidebar');
-          console.log('Sidebar state changed:', value);
           if(value === "open"){
             setSidebarOpen(true)
           }
