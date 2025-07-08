@@ -148,7 +148,7 @@ export default function Main() {
             <Image
               src="bgCrypto.svg"
               alt="Decorative Crypto"
-              width={800} height={800}
+              width={1461} height={939}
               className="absolute left-1/2 transform -translate-x-1/2 w-full h-auto z-10"
             />
             <Image
