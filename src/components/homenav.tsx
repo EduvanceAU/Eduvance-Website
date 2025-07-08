@@ -38,10 +38,10 @@ const NavDropdown = ({ labelMain, labelSmall, items }) => {
         onClick={() => setIsOpen(!isOpen)}
         className="cursor-pointer text-[#555555] text-sm sm:text-base lg:text-lg font-semibold hover:text-black transition tracking-[-1px] flex items-center gap-1"
       >
-        <p className='hidden lg:block'>{labelMain}</p>
-        <p className='block lg:hidden'>{labelSmall}</p>
+        <p className='max-[1055px]:hidden min-[1055px]:block'>{labelMain}</p>
+        <p className='max-[665px]:hidden min-[1055px]:hidden max-[1055px]:block'>{labelSmall}</p>
         <svg
-          className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+          className={`max-[665px]:hidden w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`}
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -175,7 +175,7 @@ function Home(props) {
             </svg>
           </button>
           <Link href="/">
-            <Image src="/SmallLogo.png" alt="Eduvance" width={35} height={35} />
+            <Image src="/SmallLogo.svg" alt="Eduvance" width={35} height={35} />
           </Link>
           <Link href="/">
             <span className="font-grand-local text-xl sm:text-2xl text-black">Eduvance</span>
@@ -363,7 +363,7 @@ function Home(props) {
           {/* Logo/Image */}
         
           <img
-            src="/BlueSolo.png"
+            src="/BlueSolo.svg"
             alt="Eduvance Logo"
             className="w-11 h-11 object-contain"
           />
