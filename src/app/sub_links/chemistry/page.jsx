@@ -4,9 +4,37 @@ import Link from 'next/link';
 import {Home} from '@/components/homenav'
 export default function Chemistry() {
   const [selected, setSelected] = useState('option1');
-  return(<>
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  useEffect(() => {
+    const target = document.querySelector('.sidebarWheel');
+    if (!target) return;
+
+    const observer = new MutationObserver((mutationsList) => {
+      for (const mutation of mutationsList) {
+        if (
+          mutation.type === 'attributes' &&
+          mutation.attributeName === 'data-sidebar'
+        ) {
+          const value = target.getAttribute('data-sidebar');
+          if(value === "open"){
+            setSidebarOpen(true)
+          }
+          else{
+            setSidebarOpen(false)
+          }
+        }
+      }
+    });
+
+    observer.observe(target, { attributes: true, attributeFilter: ['data-sidebar'] });
+
+    return () => observer.disconnect();
+  }, []);
+
+  return (<>
       {/* Main Content */}
-      <div className="transition-all duration-300">
+      <div className={`transition-all duration-300 ${sidebarOpen ? 'sm:ml-64' : 'ml-0'}`}>
         {/* Custom Banner Header */}
         <div
           className="w-full h-[250px] relative flex items-center bg-cover bg-right lg:bg-center bg-no-repeat transition-all duration-300"
@@ -46,7 +74,7 @@ export default function Chemistry() {
             </div>
 
             {/* Conditional content */}
-            <div className="w-full transition-all duration-500 ease-in-out">
+            <div className={`w-full ${sidebarOpen ? 'max-w-[1200px]' : 'max-w-[1440px]'} transition-all duration-500 ease-in-out`}>
               {selected === "option1" ? (
                 <>
                   <h3 className="font-semibold text-xl md:text-2xl text-[#0C58E4] tracking-[-1px] mb-6" style={{ fontFamily: 'Poppins, sans-serif' }}>
