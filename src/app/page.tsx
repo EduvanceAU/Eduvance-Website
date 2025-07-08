@@ -126,7 +126,7 @@ export default function Main() {
         <div className="flex text-center flex-col gap-4 items-center justify-center absolute w-[95vw] h-[85vh] bg-gradient-to-b from-[#4E8CFF] to-[#0C60FB] rounded-2xl shadow-xl z-0 left-1/2 transform -translate-x-1/2 mb-[-50px] overflow-hidden" >
           
 
-            <Image src="Headline.svg" alt="Headline" width={800} height={800} className="w-[800px] h-auto z-10" />
+            <Image src="Headline.svg" alt="Headline" width={800} height={272} className="w-[800px] h-auto z-10" />
 
             <h3 className="font-semibold text-white leading-[22px] text-xl max-w-[550px] z-10">
               Education drives progress. Eduvance helps you learn, revise, and stay ahead in your academic journey
@@ -148,13 +148,13 @@ export default function Main() {
             <Image
               src="bgCrypto.svg"
               alt="Decorative Crypto"
-              width={800} height={800}
+              width={1461} height={939}
               className="absolute left-1/2 transform -translate-x-1/2 w-full h-auto z-10"
             />
             <Image
               src="DocWidgets.svg"
               alt="DocWidgets"
-              width={800} height={800}
+              width={300} height={350}
               className="absolute top-[70%] sm:top-[90%] w-[300px] sm:w-[300px] h-auto transform sm:-translate-y-40 translate-y-10 left-[-20px] z-0"
             />
 
