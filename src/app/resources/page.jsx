@@ -45,17 +45,10 @@ export default function Resources() {
             alt="Pages Widget"
             className="absolute top-[5%] left-0 w-80 h-auto"
           />
-
-          {/* Underline at 60% from left, 40% from top */}
-          <img
-            src="Underline.png"
-            alt="Underline"
-            className="absolute top-[155%] sm:top-[165%] left-[38%] w-auto h-[15px]"
-          />
         </div>
 
         <h1 className="text-4xl font-semibold text-left leading-[40px] tracking-tighter z-10 max-w-[520px]" style={{ fontFamily: 'Poppins, sans-serif' }}>
-          Study materials to level up your exam prep and stay on track
+          Study materials to level up your exam prep and <span className="underline decoration-6 decoration-[#246dfd] underline-offset-8">stay on track</span>
         </h1>
 
         <h3 className="text-xl font-[550] text-left text-stone-500 leading-[25px] tracking-[-0.015em] z-10 max-w-[640px]" style={{ fontFamily: 'Poppins, sans-serif' }}>
