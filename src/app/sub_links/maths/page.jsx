@@ -38,7 +38,7 @@ export default function Mathematics() {
         {/* Custom Banner Header */}
         <div
           className="w-full h-[250px] relative flex items-center bg-cover bg-right lg:bg-center bg-no-repeat transition-all duration-300"
-          style={{ backgroundImage: "url('/Banner.png')" }}
+          style={{ backgroundImage: "url('/Banner.svg')" }}
         >
           <h1 className="text-white font-grand-local text-xl md:text-7xl ml-17 tracking-[-1px]">
             Mathematics
@@ -85,7 +85,7 @@ export default function Mathematics() {
                     <Link
                       href="/sub_links/maths/IAL/communityNotes"
                       className="transition-all duration-300 h-40 rounded-xl font-[550] tracking-[-0.5px] border-[1.5px] border-[#0C58E4] flex items-end justify-start pl-4 pb-4 text-black hover:text-[#0C58E4] hover:bg-[#CEE0FF] bg-blend-multiply cursor-pointer"
-                      style={{ backgroundImage: "url('/Notes Background.png')", backgroundSize: 'cover', backgroundPosition: 'center' }}
+                      style={{ backgroundImage: "url('/Notes Background.svg')", backgroundSize: 'cover', backgroundPosition: 'center' }}
                     >
                       Community Notes
                     </Link>
@@ -93,7 +93,7 @@ export default function Mathematics() {
                     <Link
                       href="/sub_links/maths/IAL/resources"
                       className="transition-all duration-300 h-40 rounded-xl font-[550] tracking-[-0.5px] border-[1.5px] border-[#0C58E4] flex items-end justify-start pl-4 pb-4 text-black hover:text-[#0C58E4] hover:bg-[#CEE0FF] bg-blend-multiply cursor-pointer"
-                      style={{ backgroundImage: "url('/PPQ Background.png')", backgroundSize: 'cover', backgroundPosition: 'center' }}
+                      style={{ backgroundImage: "url('/PPQ Background.svg')", backgroundSize: 'cover', backgroundPosition: 'center' }}
                     >
                       Eduvance Resources
                     </Link>
@@ -101,7 +101,7 @@ export default function Mathematics() {
                     <Link
                       href="/sub_links/maths/IAL/pastpapers"
                       className="transition-all duration-300 h-40 rounded-xl font-[550] tracking-[-0.5px] border-[1.5px] border-[#0C58E4] flex items-end justify-start pl-4 pb-4 text-black hover:text-[#0C58E4] hover:bg-[#CEE0FF] bg-blend-multiply cursor-pointer"
-                      style={{ backgroundImage: "url('/Papers Background.png')", backgroundSize: 'cover', backgroundPosition: 'center' }}
+                      style={{ backgroundImage: "url('/Papers Background.svg')", backgroundSize: 'cover', backgroundPosition: 'center' }}
                     >
                       Past Papers
                     </Link>
@@ -109,7 +109,7 @@ export default function Mathematics() {
                     <a
                       href="../../contributor/"
                       className="transition-all duration-300 h-40 rounded-xl font-[550] tracking-[-0.5px] border-[1.5px] border-[#0C58E4] flex items-end justify-start pl-4 pb-4 text-black hover:text-[#0C58E4] hover:bg-[#CEE0FF] bg-blend-multiply cursor-pointer"
-                      style={{ backgroundImage: "url('/Share Notes Background.png')", backgroundSize: 'cover', backgroundPosition: 'center' }}
+                      style={{ backgroundImage: "url('/Share Notes Background.svg')", backgroundSize: 'cover', backgroundPosition: 'center' }}
                     >
                       Share Your Notes
                     </a>
@@ -125,7 +125,7 @@ export default function Mathematics() {
                     <Link
                       href="/sub_links/maths/IGCSE/communityNotes"
                       className="transition-all duration-300 h-40 rounded-xl font-[550] tracking-[-0.5px] border-[1.5px] border-[#0C58E4] flex items-end justify-start pl-4 pb-4 text-black hover:text-[#0C58E4] hover:bg-[#CEE0FF] bg-blend-multiply cursor-pointer"
-                      style={{ backgroundImage: "url('/Notes Background.png')", backgroundSize: 'cover', backgroundPosition: 'center' }}
+                      style={{ backgroundImage: "url('/Notes Background.svg')", backgroundSize: 'cover', backgroundPosition: 'center' }}
                     >
                       Community Notes
                     </Link>
@@ -133,7 +133,7 @@ export default function Mathematics() {
                     <Link
                       href="/sub_links/maths/IGCSE/resources"
                       className="transition-all duration-300 h-40 rounded-xl font-[550] tracking-[-0.5px] border-[1.5px] border-[#0C58E4] flex items-end justify-start pl-4 pb-4 text-black hover:text-[#0C58E4] hover:bg-[#CEE0FF] bg-blend-multiply cursor-pointer"
-                      style={{ backgroundImage: "url('/PPQ Background.png')", backgroundSize: 'cover', backgroundPosition: 'center' }}
+                      style={{ backgroundImage: "url('/PPQ Background.svg')", backgroundSize: 'cover', backgroundPosition: 'center' }}
                     >
                       Eduvance Resources
                     </Link>
@@ -141,7 +141,7 @@ export default function Mathematics() {
                     <Link
                       href="/sub_links/maths/IGCSE/pastpapers"
                       className={`transition-all duration-300 h-40 rounded-xl font-[550] tracking-[-0.5px] border-[1.5px] border-[#0C58E4] flex items-end justify-start pl-4 pb-4 text-black hover:text-[#0C58E4] hover:bg-[#CEE0FF] bg-blend-multiply cursor-pointer`}
-                      style={{ backgroundImage: "url('/Papers Background.png')", backgroundSize: 'cover', backgroundPosition: 'center' }}
+                      style={{ backgroundImage: "url('/Papers Background.svg')", backgroundSize: 'cover', backgroundPosition: 'center' }}
                     >
                       Past Papers
                     </Link>
@@ -149,7 +149,7 @@ export default function Mathematics() {
                     <a
                       href="../../contributor/"
                       className="transition-all duration-300 h-40 rounded-xl font-[550] tracking-[-0.5px] border-[1.5px] border-[#0C58E4] flex items-end justify-start pl-4 pb-4 text-black hover:text-[#0C58E4] hover:bg-[#CEE0FF] bg-blend-multiply cursor-pointer"
-                      style={{ backgroundImage: "url('/Share Notes Background.png')", backgroundSize: 'cover', backgroundPosition: 'center' }}
+                      style={{ backgroundImage: "url('/Share Notes Background.svg')", backgroundSize: 'cover', backgroundPosition: 'center' }}
                     >
                       Share Your Notes
                     </a>
@@ -164,7 +164,7 @@ export default function Mathematics() {
                 href="https://discord.gg/Eduvance"
                 className="w-full h-14 rounded-xl bg-[#F2F6FF] font-[550] tracking-[-0.5px] border-[1.5px] border-[#0C58E4] flex items-center justify-start pl-4 text-black hover:text-[#0C58E4] hover:bg-[#BAD1FD] bg-blend-multiply transition-all duration-300"
               >
-                <img src="/ServerIcon.png" alt="Contribute" className="w-5 h-4 mr-4" />
+                <img src="/ServerIcon.svg" alt="Contribute" className="w-5 h-4 mr-4" />
                 Join Our Discord Server
               </a>
             </div>
