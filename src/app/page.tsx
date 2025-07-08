@@ -273,7 +273,7 @@ export default function Main() {
               />
 
               <TestimonialCard
-                content="Our website was outdated and failing to generate leads—00Pixel changed everything. From the start, they focused on creating a user-friendly experience while ensuring the backend was optimised for growth. We've seen a 40% increase in lead generation and a more seamless process for our customers. If you want a team that's as invested in your success as you are, 00Pixel is it!"
+                content="Eduvance.au has grown into way more than just a past papers site—it’s a full ecosystem now. From responsive mobile layouts to secret side projects (that we barely keep under wraps), the devs really care about UX, not just content. Whether it’s skilled roles, server boosts, or the legit Minecraft server coming soon, it all builds this weird but productive culture. People move on, but the impact stays real."
                 icon="/bio.png"
                 headline="Biomeac, Co-Founder"
                 rotation="rotate-[-1.5deg]"
