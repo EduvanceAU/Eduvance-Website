@@ -6,14 +6,14 @@ import { FaInfoCircle, FaBook, FaChalkboardTeacher, FaPhone, FaLifeRing, FaEllip
 import { ChevronRight } from 'lucide-react';
 import { Home } from '@/components/homenav'
 // Reusable components
-const TestimonialCard = ({ content, icon, headline, rotation }) => (
+const TestimonialCard = ({ content, icon, headline, rotation, imageClassName }) => (
   <div className={`bg-gradient-to-r from-[#347BFF] to-[#2566E2] border border-white rounded-xl p-6 ${rotation} w-full md:w-110 mx-2 md:mx-0 h-full`}>
     <p className="text-white text-sm font-light leading-relaxed">
       {content}
     </p>
     <div className="flex items-center mt-4">
-      <img src={icon} alt={headline} className="w-6 h-6 mr-2" />
-      <h3 className="text-white font-semibold text-lg">{headline}</h3>
+      <img src={icon} alt={headline} className={`w-6 h-6 mr-2 ${imageClassName}`} />
+      <h3 className="text-white font-semibold text-md">{headline}</h3>
     </div>
   </div>
 );
@@ -257,24 +257,27 @@ export default function Main() {
           <div className="relative">
             <div className="flex flex-col lg:flex-row gap-[-100px] items-stretch justify-center mt-24">
               <TestimonialCard
-                content="Partnering with 00Pixel completely transformed our online presence. They didn't just deliver a beautiful website—they created a high-performance platform that drives real results. Within three months, our conversions increased by 35%, and the site is optimised to keep that momentum going. If you're looking for a team that combines design with strategy, 00Pixel is the way to go!"
-                icon="/icon1.png"
-                headline="Headline 1"
+                content="Bro Eduvance.au is actually carrying rn 😭 the new UI? chef's kiss fr 💅🏻 admin panel finally usable (we made it y'all 😭). Mobile still kinda crunchy ngl but overall? smooth ✨ Sidebar's clean, Discord login bangs 🔥 flow's tight. Devs cooking hard at 3am 🔥 pls fix the scroll bug before I cry again 😩. Love this team fr 🤍"
+                icon="/map.png"
+                headline="Mapleon, Senior Moderator"
                 rotation="rotate-[-2deg]"
+                imageClassName="rounded-full"
               />
 
               <TestimonialCard
-                content="We were struggling to find a web partner who understood our vision—until we found 00Pixel. They built a website that not only looks amazing but is also designed to attract and convert. Since launching, our client inquiries have doubled, and we're seeing a clear return on investment. Their ability to balance creativity with business goals is rare and invaluable!"
-                icon="/icon2.png"
-                headline="Headline 2"
+                content="Eduvance is seriously one of the slickest, most community-driven edu platforms out there. Every design and feature feels intentional—mobile's clean. But honestly, it's the people that make it—staff actually know regulars, and feedback turns into real changes. It's not just a notes dump, it's a whole vibe. From early server boosts to now helping thousands, Eduvance is straight-up him"
+                icon="/maryam.png"
+                headline="Maryam, Head Moderator"
                 rotation="rotate-[1deg]"
+                imageClassName="rounded-full"
               />
 
               <TestimonialCard
                 content="Our website was outdated and failing to generate leads—00Pixel changed everything. From the start, they focused on creating a user-friendly experience while ensuring the backend was optimised for growth. We've seen a 40% increase in lead generation and a more seamless process for our customers. If you want a team that's as invested in your success as you are, 00Pixel is it!"
-                icon="/icon3.png"
-                headline="Headline 3"
+                icon="/bio.png"
+                headline="Biomeac, Co-Founder"
                 rotation="rotate-[-1.5deg]"
+                imageClassName="rounded-full"
               />
             </div>
           </div>
