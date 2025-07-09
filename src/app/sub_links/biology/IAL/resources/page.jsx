@@ -6,33 +6,22 @@ import { supabase } from "../lib/supabaseClient";
 
 const examCode = '8BI0';
 
-const units = [
-  { name: "Molecules, Diet, Transport & Health", code: "WBI11", unit: "Unit 1" },
-  { name: "Cells, Development, Biodiversity & Conservation", code: "WBI12", unit: "Unit 2" },
-  { name: "Practical Skills in Biology I", code: "WBI13", unit: "Unit 3" },
-  { name: "Genetics, Evolution & Ecology", code: "WBI14", unit: "Unit 4" },
-  { name: "Respiration, Internal Environment, Coordination & Gene Technology", code: "WBI15", unit: "Unit 5" },
-  { name: "Practical Biology & Investigation Skills", code: "WBI16", unit: "Unit 6" },
-];
-
 export default function IALResources() {
-  const [expandedUnits, setExpandedUnits] = useState(units.reduce((acc, unit) => {
-      acc[unit.unit] = true;
-      return acc;
-    }, {}));
-  
+
+  const [units, setUnits] = useState([]);
+  const [expandedUnits, setExpandedUnits] = useState({});
+  const [session, setSession] = useState(null);
+  const [unitResources, setUnitResources] = useState({});
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [showLoginPopup, setShowLoginPopup] = useState(false);
+
   const toggleUnit = (unit) => {
     setExpandedUnits(prev => ({
       ...prev,
       [unit]: !prev[unit]
     }));
   };
-  
-  const [session, setSession] = useState(null);
-  const [unitResources, setUnitResources] = useState({});
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [showLoginPopup, setShowLoginPopup] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -52,6 +41,41 @@ export default function IALResources() {
       return () => clearTimeout(timer);
     }
   }, [showLoginPopup]);
+
+  // Fetch units from subject table
+  useEffect(() => {
+    const fetchUnits = async () => {
+      const { data: subjectData, error: subjectError } = await supabase
+        .from('subjects')
+        .select('units')
+        .eq('name', 'Biology')
+        .eq('syllabus_type', 'IAL')
+        .single();
+      if (subjectError || !subjectData) {
+        setError(subjectError || new Error('Subject "Biology" not found.'));
+        return;
+      }
+      let fetchedUnits = subjectData.units || [];
+      // Sort by unit number if possible, fallback to name
+      fetchedUnits.sort((a, b) => {
+        const getUnitNum = (u) => {
+          const match = (u.unit || '').match(/Unit\s*(\d+)/i);
+          return match ? parseInt(match[1], 10) : Number.MAX_SAFE_INTEGER;
+        };
+        const numA = getUnitNum(a);
+        const numB = getUnitNum(b);
+        if (numA !== numB) return numA - numB;
+        return (a.name || '').localeCompare(b.name || '');
+      });
+      setUnits(fetchedUnits);
+      // Set all units expanded by default
+      setExpandedUnits(fetchedUnits.reduce((acc, unit) => {
+        acc[unit.unit] = true;
+        return acc;
+      }, {}));
+    };
+    fetchUnits();
+  }, []);
 
   useEffect(() => {
     if (!session) return;
@@ -104,6 +128,8 @@ export default function IALResources() {
             name: resource.title,
             url: resource.link,
             description: resource.description,
+            contributor: resource.uploaded_by_username,
+            last: resource.updated_at
           });
         });
         // Debug log to verify grouping
@@ -142,7 +168,7 @@ export default function IALResources() {
         </div>
 
         <h3 className="text-sm sm:text-md lg:text-lg font-[500] leading-6 text-[#707070] mb-8 text-left max-w-4xl tracking-[-0.015em]" style={{ fontFamily: "Poppins, sans-serif" }}>
-          Access a wide range of Edexcel IAL Level Biology resources—all in one place. Whether you're brushing up on concepts or aiming to master exam strategies, these materials are designed to support your revision and boost your performance
+          Access a wide range of Edexcel IAL Biology resources—all in one place. Whether you're brushing up on concepts or aiming to master exam strategies, these materials are designed to support your revision and boost your performance
         </h3>
 
         {/* General Resources */}
@@ -152,26 +178,27 @@ export default function IALResources() {
                 style={{ fontFamily: "Poppins, sans-serif" }}>  
               General Resources
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 p-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
               {unitResources["General"].map((resourceGroup, groupIndex) => (
                 resourceGroup.links.map((link, linkIndex) => (
-                  <div
-                    key={groupIndex + '-' + linkIndex}
-                    className="flex flex-col p-5 border border-gray-200 rounded-2xl shadow-md bg-white hover:shadow-xl transition-shadow duration-200 group"
-                    style={{ minHeight: '120px', position: 'relative' }}
-                  >
-                    <span className="text-sm font-semibold text-[#1A69FA] mb-1 tracking-tight uppercase" style={{ fontFamily: 'Poppins, sans-serif', letterSpacing: '0.04em' }}>{resourceGroup.heading}</span>
-                    <Link href={link.url} className="text-lg font-bold text-[#153064] hover:text-[#1A69FA] transition-colors duration-150 mb-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                      {link.name}
-                    </Link>
-                    {link.description && (
-                      <p className="text-sm text-gray-600 mt-1">{link.description}</p>
-                    )}
-                    <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                      <svg width="22" height="22" fill="none" stroke="#1A69FA" strokeWidth="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <Link key={groupIndex + '-' + linkIndex} href={link.url} style={{ fontFamily: 'Poppins, sans-serif' }}>
+                    <div className="cursor-pointer flex flex-col p-5 border h-fit border-gray-200 rounded-2xl shadow-md bg-white hover:shadow-xl transition-shadow duration-200 group sm:min-h-[120px] sm:min-w-[300px]" style={{ position: 'relative' }}>
+                      {/* <span className="text-sm font-semibold text-[#1A69FA] mb-1 tracking-tight uppercase" style={{ fontFamily: 'Poppins, sans-serif', letterSpacing: '0.04em' }}>{resourceGroup.heading}</span> */}
+                      
+                        {link.name && (<p className="text-xl font-bold text-[#153064]">{link.name}</p>)}
+                        {link.description && (
+                          <p className="text-sm text-gray-600 mt-2 border-l-4 mb-2 border-blue-600 pl-2">{link.description}</p>
+                        )}
+                        <div className="flex flex-col justify-end items-end">
+                          {resourceGroup.heading && (<div className="cursor-pointer mt-1 text-xs font-semibold tracking-tight uppercase w-fit px-2 py-0.5 text-green-400 ring ring-green-400 rounded-md hover:bg-green-400 hover:text-white transition-colors">{resourceGroup.heading}</div>)}
+                          {link.contributor && (<p className="text-xs text-gray-600 mt-1 text-right">Shared by {link.contributor}</p>)}
+                          {link.last && (<p className="text-xs text-gray-600 mt-1 text-right">{link.contributor ? "On ": "Shared On "}{new Date(link.last).toLocaleString(undefined, {year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'})}</p>)}
+                        </div>
+                      <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                        <svg width="22" height="22" fill="none" stroke="#1A69FA" strokeWidth="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                      </div>
                     </div>
-                  </div>
-                ))
+                  </Link>))
               ))}
             </div>
           </div>
@@ -190,23 +217,24 @@ export default function IALResources() {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 p-6">
                 {(unitResources[unitData.unit] || []).map((resourceGroup, groupIndex) => (
                   resourceGroup.links.map((link, linkIndex) => (
-                    <div
-                      key={groupIndex + '-' + linkIndex}
-                      className="flex flex-col p-5 border border-gray-200 rounded-2xl shadow-md bg-white hover:shadow-xl transition-shadow duration-200 group"
-                      style={{ minHeight: '120px', position: 'relative' }}
-                    >
-                      <span className="text-sm font-semibold text-[#1A69FA] mb-1 tracking-tight uppercase" style={{ fontFamily: 'Poppins, sans-serif', letterSpacing: '0.04em' }}>{resourceGroup.heading}</span>
-                      <Link href={link.url} className="text-lg font-bold text-[#153064] hover:text-[#1A69FA] transition-colors duration-150 mb-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                        {link.name}
-                      </Link>
-                      {link.description && (
-                        <p className="text-sm text-gray-600 mt-1">{link.description}</p>
-                      )}
+                    <Link key={groupIndex + '-' + linkIndex} href={link.url} style={{ fontFamily: 'Poppins, sans-serif' }}>
+                    <div className="cursor-pointer flex flex-col p-5 border h-fit border-gray-200 rounded-2xl shadow-md bg-white hover:shadow-xl transition-shadow duration-200 group sm:min-h-[120px] sm:min-w-[300px]" style={{ position: 'relative' }}>
+                      {/* <span className="text-sm font-semibold text-[#1A69FA] mb-1 tracking-tight uppercase" style={{ fontFamily: 'Poppins, sans-serif', letterSpacing: '0.04em' }}>{resourceGroup.heading}</span> */}
+                      
+                        {link.name && (<p className="text-xl font-bold text-[#153064]">{link.name}</p>)}
+                        {link.description && (
+                          <p className="text-sm text-gray-600 mt-2 border-l-4 mb-2 border-blue-600 pl-2">{link.description}</p>
+                        )}
+                        <div className="flex flex-col justify-end items-end">
+                          {resourceGroup.heading && (<div className="cursor-pointer mt-1 text-xs font-semibold tracking-tight uppercase w-fit px-2 py-0.5 text-green-400 ring ring-green-400 rounded-md hover:bg-green-400 hover:text-white transition-colors">{resourceGroup.heading}</div>)}
+                          {link.contributor && (<p className="text-xs text-gray-600 mt-1 text-right">Shared by {link.contributor}</p>)}
+                          {link.last && (<p className="text-xs text-gray-600 mt-1 text-right">{link.contributor ? "On ": "Shared On "}{new Date(link.last).toLocaleString(undefined, {year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'})}</p>)}
+                        </div>
                       <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                         <svg width="22" height="22" fill="none" stroke="#1A69FA" strokeWidth="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                       </div>
                     </div>
-                  ))
+                  </Link>))
                 ))}
               </div>
             )}

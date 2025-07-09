@@ -238,7 +238,7 @@ function Home(props) {
                     Log In  
                   </button>
                 </DialogTrigger>
-                <DialogContent className="sm:max-w-md p-4">
+                <DialogContent className="sm:max-w-md pl-8 pr-8 pt-6 pb-4 max-h-[95vh]">
                   <DialogHeader>
                     <DialogTitle className="text-2xl font-bold text-[#0C58E4]" style={{ fontFamily: 'Poppins, sans-serif' }}>
                         Welcome to Eduvance
@@ -273,7 +273,7 @@ function Home(props) {
                     Join Now
                   </button>
                 </DialogTrigger>
-                <DialogContent className="sm:max-w-md p-4">
+                <DialogContent className="sm:max-w-md pl-8 pr-8 pt-6 pb-4 max-h-[95vh]">
                   <DialogHeader>
                     <DialogTitle className="text-2xl font-bold text-[#0C58E4]" style={{ fontFamily: 'Poppins, sans-serif' }}>
                       Welcome to Eduvance
