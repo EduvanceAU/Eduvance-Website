@@ -1,14 +1,6 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -585,20 +577,20 @@ export default function AdminDashboard() {
               </>
             )}
             {/* Unit/Chapter dropdown or input for edit modal */}
-            {/* {showEditModal && (
-              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30">
-                <div className="bg-white rounded-2xl shadow-lg p-6 w-full max-w-lg relative">
+            {showEditModal && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center transparent bg-opacity-30">
+                <div className="bg-white rounded-2xl shadow-2xl backdrop-blur-2xl p-6 w-full max-w-lg relative">
                   <button onClick={closeEditResource} className="cursor-pointer absolute top-2 right-2 text-gray-400 hover:text-red-500 text-xl">&times;</button>
                   <h3 className="text-lg font-semibold mb-4 text-blue-700">Edit Resource</h3>
                   <div className="space-y-3">
                     <input name="title" value={editForm.title} onChange={handleEditFormChange} placeholder="Title" className="w-full border p-2 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 transition" />
-                    
+                    {/* Unit/Chapter dropdown or input for edit modal */}
                     {(() => {
                       const selectedSubject = subjects.find(sub => sub.id === editForm.subject_id);
                       const units = selectedSubject?.units || [];
                       if (Array.isArray(units) && units.length > 0) {
                         return (
-                          <select name="unit_chapter_name" value={editForm.unit_chapter_name} onChange={handleEditFormChange} className="w-full border p-2 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 transition">
+                          <select name="unit_chapter_name" value={editForm.unit_chapter_name} onChange={handleEditFormChange} className="cursor-pointer w-full border p-2 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 transition">
                             <option value="">Select Unit/Chapter (optional)</option>
                             {units.map((unit, idx) => (
                               <option key={unit.code || unit.name || idx} value={unit.unit || unit.name}>{unit.unit ? `${unit.unit} - ${unit.name}` : unit.name}</option>
@@ -613,22 +605,22 @@ export default function AdminDashboard() {
                       }
                     })()}
                     <input name="link" value={editForm.link} onChange={handleEditFormChange} placeholder="Link" className="w-full border p-2 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 transition" />
-                    <textarea name="description" value={editForm.description} onChange={handleEditFormChange} placeholder="Description (optional)" className="w-full border p-2 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 transition"></textarea>
-                    <select name="resource_type" value={editForm.resource_type} onChange={handleEditFormChange} className="w-full border p-2 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 transition">
+                    <textarea name="description" value={editForm.description} onChange={handleEditFormChange} placeholder="Description (optional)" className="min-h-[100px] w-full border p-2 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 transition"></textarea>
+                    <select name="resource_type" value={editForm.resource_type} onChange={handleEditFormChange} className="cursor-pointer w-full p-2 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 transition">
                       {resourceCategories.map((cat) => (
                         <option key={cat.value} value={cat.value}>{cat.label}</option>
                       ))}
                     </select>
-                    <select name="subject_id" value={editForm.subject_id} onChange={handleEditFormChange} className="w-full border p-2 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 transition">
+                    <select name="subject_id" value={editForm.subject_id} onChange={handleEditFormChange} className="cursor-pointer w-full p-2 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 transition">
                       {subjects.map((sub) => (
                         <option key={sub.id} value={sub.id}>{sub.name} ({sub.code}) - {sub.syllabus_type}</option>
                       ))}
                     </select>
-                    <button onClick={saveEditResource} disabled={editLoading} className="cursor-pointer w-full bg-blue-600 hover:bg-blue-700 transition text-white py-2 rounded-lg flex items-center justify-center gap-2 mt-2">{editLoading ? 'Saving...' : 'Save Changes'}</button>
+                    <button onClick={saveEditResource} disabled={editLoading} className="cursor-pointer w-full bg-blue-600 hover:bg-blue-700 transition text-white py-2 rounded-lg flex items-center justify-center gap-2 mt-2">{editLoading ? 'Saving...' : 'Save Changes'}</button> 
                   </div>
                 </div>
               </div>
-            )} */}
+            )}
             {latestResources.length > 0 && (
               <div className="mt-8">
                 <h2 className="text-xl font-semibold text-blue-700 mb-2 flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor"><path d="M263.72-96Q234-96 213-117.15T192-168v-384q0-29.7 21.15-50.85Q234.3-624 264-624h24v-96q0-79.68 56.23-135.84 56.22-56.16 136-56.16Q560-912 616-855.84q56 56.16 56 135.84v96h24q29.7 0 50.85 21.15Q768-581.7 768-552v384q0 29.7-21.16 50.85Q725.68-96 695.96-96H263.72Zm.28-72h432v-384H264v384Zm216.21-120Q510-288 531-309.21t21-51Q552-390 530.79-411t-51-21Q450-432 429-410.79t-21 51Q408-330 429.21-309t51 21ZM360-624h240v-96q0-50-35-85t-85-35q-50 0-85 35t-35 85v96Zm-96 456v-384 384Z"/></svg>Latest Approved Resources</h2>
@@ -650,55 +642,7 @@ export default function AdminDashboard() {
                           </div>
                         </div>
                         <div className="flex space-x-2 mt-2 md:mt-0">
-                          <Dialog>
-                            <DialogTrigger asChild>
-                              <button onClick={() => openEditResource(res)} className="cursor-pointer bg-yellow-400 hover:bg-yellow-500 transition text-white px-3 py-1 rounded-md flex items-center gap-1"><svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536M9 11l6 6M3 17v4h4l12-12a2 2 0 00-2.828-2.828L3 17z" /></svg>Edit</button>
-                            </DialogTrigger>
-                            <DialogContent className="sm:max-w-md pl-8 pr-8 pt-6 pb-4 max-h-[95vh]">
-                              <DialogHeader>
-                                <DialogTitle className="text-2xl font-bold text-[#0C58E4]" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                                  Edit Resource
-                                </DialogTitle>
-                              </DialogHeader>
-                                <div className="space-y-3">
-                                  <input name="title" value={editForm.title} onChange={handleEditFormChange} placeholder="Title" className="w-full border p-2 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 transition" />
-                                  {/* Unit/Chapter dropdown or input for edit modal */}
-                                  {(() => {
-                                    const selectedSubject = subjects.find(sub => sub.id === editForm.subject_id);
-                                    const units = selectedSubject?.units || [];
-                                    if (Array.isArray(units) && units.length > 0) {
-                                      return (
-                                        <select name="unit_chapter_name" value={editForm.unit_chapter_name} onChange={handleEditFormChange} className="cursor-pointer w-full border p-2 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 transition">
-                                          <option value="">Select Unit/Chapter (optional)</option>
-                                          {units.map((unit, idx) => (
-                                            <option key={unit.code || unit.name || idx} value={unit.unit || unit.name}>{unit.unit ? `${unit.unit} - ${unit.name}` : unit.name}</option>
-                                          ))}
-                                          <option value="General">General</option>
-                                        </select>
-                                      );
-                                    } else {
-                                      return (
-                                        <input name="unit_chapter_name" value={editForm.unit_chapter_name} onChange={handleEditFormChange} placeholder="Unit/Chapter (optional)" className="w-full border p-2 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 transition" />
-                                      );
-                                    }
-                                  })()}
-                                  <input name="link" value={editForm.link} onChange={handleEditFormChange} placeholder="Link" className="w-full border p-2 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 transition" />
-                                  <textarea name="description" value={editForm.description} onChange={handleEditFormChange} placeholder="Description (optional)" className="min-h-[100px] w-full border p-2 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 transition"></textarea>
-                                  <select name="resource_type" value={editForm.resource_type} onChange={handleEditFormChange} className="cursor-pointer w-full p-2 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 transition">
-                                    {resourceCategories.map((cat) => (
-                                      <option key={cat.value} value={cat.value}>{cat.label}</option>
-                                    ))}
-                                  </select>
-                                  <select name="subject_id" value={editForm.subject_id} onChange={handleEditFormChange} className="cursor-pointer w-full p-2 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 transition">
-                                    {subjects.map((sub) => (
-                                      <option key={sub.id} value={sub.id}>{sub.name} ({sub.code}) - {sub.syllabus_type}</option>
-                                    ))}
-                                  </select>
-                                  <button onClick={saveEditResource} disabled={editLoading} className="cursor-pointer w-full bg-blue-600 hover:bg-blue-700 transition text-white py-2 rounded-lg flex items-center justify-center gap-2 mt-2">{editLoading ? 'Saving...' : 'Save Changes'}</button> 
-                                </div>
-                            </DialogContent>
-                          </Dialog> 
-                          {/* <button onClick={() => openEditResource(res)} className="cursor-pointer bg-yellow-400 hover:bg-yellow-500 transition text-white px-3 py-1 rounded-md flex items-center gap-1"><svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536M9 11l6 6M3 17v4h4l12-12a2 2 0 00-2.828-2.828L3 17z" /></svg>Edit</button> */}
+                          <button onClick={() => openEditResource(res)} className="cursor-pointer bg-yellow-400 hover:bg-yellow-500 transition text-white px-3 py-1 rounded-md flex items-center gap-1"><svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536M9 11l6 6M3 17v4h4l12-12a2 2 0 00-2.828-2.828L3 17z" /></svg>Edit</button>
                           <button onClick={() => deleteApprovedResource(res.id)} className="cursor-pointer bg-red-500 hover:bg-red-600 transition text-white px-3 py-1 rounded-md flex items-center gap-1"><svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>Delete</button>
                         </div>
                       </div>
