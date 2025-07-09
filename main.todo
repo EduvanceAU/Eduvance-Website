@@ -82,3 +82,12 @@ Community Feedback :
    ✔ Chemistry Page Typo @done(25-07-07 14:59)
    ☐ Update discord invite links
    ✔ Pointer Icon/Cursor on Buttons (Stig) @done(25-07-05 16:42)
+
+Systems Todo:
+   ✔ Update Admin Console UI for extra information (revert) @done(25-07-09 12:05)
+   ✔ Update Subject Addition form for extra unit and other information on Admin Console @done(25-07-09 12:05)
+   ✔ Updated BIO IAL Resource Page for new unit field integration @done(25-07-09 12:05)
+   ✔ Updated Staff/Admin Console for new submit resource button @done(25-07-09 12:06)
+   ✔ Updated Community Contributor Page for new unit field dropdown @done(25-07-09 12:06)
+   ✔ Updated Staff Console for using community notes table from DB @done(25-07-09 12:06)
+   ☐ Update new subject files addition system for modular and robust workflow
