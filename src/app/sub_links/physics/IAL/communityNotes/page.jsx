@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const units = [
   { name: "IAL Physics", code: "8PH0", unit: "IAL" },
@@ -49,32 +49,32 @@ export default function IALCommunityNotesPage() {
     }));
   };
 
-  useEffect(() => {
-    const fetchNotes = async () => {
-      const { data, error } = await supabase
-        .from("community_resource_requests")
-        .select("title, link, unit_chapter_name, subject_id")
-        .eq("is_approved", true);
+  // useEffect(() => {
+  //   const fetchNotes = async () => {
+  //     const { data, error } = await supabase
+  //       .from("community_resource_requests")
+  //       .select("title, link, unit_chapter_name, subject_id")
+  //       .eq("is_approved", true);
 
-      if (error) {
-        console.error("Error fetching notes:", error);
-        return;
-      }
+  //     if (error) {
+  //       console.error("Error fetching notes:", error);
+  //       return;
+  //     }
 
-      // Filter to only Physics subject and map notes by unit
-      const physicsSubjectId = "147cf381-568e-4594-b9d1-6d624c91fa80"; // replace this
-      const filtered = data.filter(
-        (note) =>
-          note.subject_id === physicsSubjectId &&
-          note.unit_chapter_name &&
-          units.some((u) => u.unit === note.unit_chapter_name)
-      );
+  //     // Filter to only Physics subject and map notes by unit
+  //     const physicsSubjectId = "147cf381-568e-4594-b9d1-6d624c91fa80"; // replace this
+  //     const filtered = data.filter(
+  //       (note) =>
+  //         note.subject_id === physicsSubjectId &&
+  //         note.unit_chapter_name &&
+  //         units.some((u) => u.unit === note.unit_chapter_name)
+  //     );
 
-      setNotes(filtered);
-    };
+  //     setNotes(filtered);
+  //   };
 
-    fetchNotes();
-  }, []);
+  //   fetchNotes();
+  // }, []);
 
   return (
     <main className="min-h-screen bg-white flex flex-col items-center justify-start py-10 m-10">

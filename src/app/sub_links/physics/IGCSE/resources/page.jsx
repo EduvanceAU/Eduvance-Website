@@ -6,7 +6,7 @@ import { supabase } from "../lib/supabaseClient";
 import { Auth } from '@supabase/auth-ui-react';
 import { ThemeSupa } from '@supabase/auth-ui-shared';
 
-const examCode = '8PH0'
+const examCode = '4PH1'
 
 const units = [
   { name: "Mechanics and Materials", code: "WPH11", unit: "Unit 1" },
