@@ -415,8 +415,8 @@ export default function AdminDashboard() {
                         );
                       }
                     })()}
+                    <span className="text-xs text-gray-500">Paste a valid URL (Google Drive, Dropbox, etc.):</span>
                     <input type="url" value={link} onChange={(e) => setLink(e.target.value)} placeholder="Link *" className="w-full border p-2 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 transition" required />
-                    <span className="text-xs text-gray-500">Paste a valid URL (Google Drive, Dropbox, etc.)</span>
                     <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Description (optional)" className="min-h-[100px] w-full border p-2 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 transition"></textarea>
                   </div>
                   <div className="flex flex-col md:flex-row gap-2">
@@ -456,7 +456,7 @@ export default function AdminDashboard() {
                           </div>
                           <div className='flex justify-start gap-2 text-xs'>
                             <div className="cursor-pointer w-fit px-4 py-0.5 text-green-400 ring ring-green-400 rounded-md hover:bg-green-400 hover:text-white transition-colors">{res.unit_chapter_name}</div>
-                            <div className="cursor-pointer w-fit px-4 py-0.5 text-orange-400 ring ring-orange-400 rounded-md hover:bg-orange-400 hover:text-white transition-colors">{res.resource_type}</div>
+                            <div className="cursor-pointer w-fit px-4 py-0.5 text-orange-400 uppercase ring ring-orange-400 rounded-md hover:bg-orange-400 hover:text-white transition-colors">{res.resource_type}</div>
                           </div>
                         </div>
                         <div className="flex space-x-2 sm:mt-2 md:mt-0">
@@ -479,7 +479,7 @@ export default function AdminDashboard() {
                   <span className="text-xs text-gray-500">e.g. IAL, IGCSE, etc.</span>
                   {/* Add Units Section */}
                   <div className="bg-white border border-blue-200 rounded-lg p-2 mt-2">
-                    <h4 className="font-semibold text-blue-700 mb-2 text-base">Add Units for subject</h4>
+                    <h4 className="font-semibold text-blue-700 mb-2 text-base">Add Units for Subject</h4>
                     <div className="flex flex-col sm:flex-row gap-3 mb-2 items-center">
                       <input type="text" value={newUnitNumber} onChange={e => setNewUnitNumber(e.target.value)} placeholder="Unit No (Unit 1)" className="text-sm text-gray-500 border p-2 rounded w-full sm:w-1/5" />
                       <input type="text" value={newUnitName} onChange={e => setNewUnitName(e.target.value)} placeholder="Unit Name" className="text-sm text-gray-500 border p-2 rounded w-full sm:w-2/5" />
@@ -599,7 +599,7 @@ export default function AdminDashboard() {
                           </div>
                           <div className='flex justify-start gap-2 text-xs'>
                             <div className="cursor-pointer w-fit px-4 py-0.5 text-green-400 ring ring-green-400 rounded-md hover:bg-green-400 hover:text-white transition-colors">{res.unit_chapter_name}</div>
-                            <div className="cursor-pointer w-fit px-4 py-0.5 text-orange-400 ring ring-orange-400 rounded-md hover:bg-orange-400 hover:text-white transition-colors">{res.resource_type}</div>
+                            <div className="cursor-pointer w-fit px-4 py-0.5 text-orange-400 uppercase ring ring-orange-400 rounded-md hover:bg-orange-400 hover:text-white transition-colors">{res.resource_type}</div>
                           </div>
                         </div>
                         <div className="flex space-x-2 sm:mt-2 md:mt-0">
