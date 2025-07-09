@@ -480,11 +480,11 @@ export default function AdminDashboard() {
                   {/* Add Units Section */}
                   <div className="bg-white border border-blue-200 rounded-lg p-2 mt-2">
                     <h4 className="font-semibold text-blue-700 mb-2 text-base">Add Units for subject</h4>
-                    <div className="flex flex-row gap-3 mb-2 items-center">
-                      <input type="text" value={newUnitNumber} onChange={e => setNewUnitNumber(e.target.value)} placeholder="Unit No (Unit 1)" className="text-sm text-gray-500 border p-2 rounded w-1/5" />
-                      <input type="text" value={newUnitName} onChange={e => setNewUnitName(e.target.value)} placeholder="Unit Name" className="text-sm text-gray-500 border p-2 rounded w-2/5" />
-                      <input type="text" value={newUnitCode} onChange={e => setNewUnitCode(e.target.value)} placeholder="Code (WPH11)" className="text-sm text-gray-500 border p-2 rounded w-1/5" />
-                      <button type="button" onClick={handleAddUnit} className="cursor-pointer bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded text-sm whitespace-nowrap">Add</button>
+                    <div className="flex flex-col sm:flex-row gap-3 mb-2 items-center">
+                      <input type="text" value={newUnitNumber} onChange={e => setNewUnitNumber(e.target.value)} placeholder="Unit No (Unit 1)" className="text-sm text-gray-500 border p-2 rounded w-full sm:w-1/5" />
+                      <input type="text" value={newUnitName} onChange={e => setNewUnitName(e.target.value)} placeholder="Unit Name" className="text-sm text-gray-500 border p-2 rounded w-full sm:w-2/5" />
+                      <input type="text" value={newUnitCode} onChange={e => setNewUnitCode(e.target.value)} placeholder="Code (WPH11)" className="text-sm text-gray-500 border p-2 rounded w-full sm:w-1/5" />
+                      <button type="button" onClick={handleAddUnit} className="cursor-pointer bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded text-sm whitespace-nowrap w-full sm:w-fit">Add</button>
                     </div>
                     {newUnits.length > 0 && (
                       <ul className="list-disc pl-5 mt-2 space-y-1">
