@@ -315,6 +315,10 @@ export default function UploadResource() {
                         <p className="font-bold break-words text-blue-800">{res.title}</p>
                         <p className="text-sm text-gray-600 break-words mb-1">{res.description}</p>
                         <a href={res.link} className="text-blue-500 underline text-sm break-all" target="_blank" rel="noopener noreferrer">{res.link}</a>
+                        <div className='flex justify-start gap-2 text-xs mb-2 mt-2'>
+                          <div className="cursor-pointer w-fit px-4 py-0.5 text-green-400 ring ring-green-400 rounded-md hover:bg-green-400 hover:text-white transition-colors">{res.unit_chapter_name}</div>
+                          <div className="cursor-pointer w-fit px-4 py-0.5 text-orange-400 ring ring-orange-400 rounded-md hover:bg-orange-400 hover:text-white transition-colors">{res.resource_type}</div>
+                        </div>
                         <div className="text-xs text-gray-700 mt-1">
                           <span className="font-semibold">Contributor:</span> {res.contributor_name || 'Anonymous'} ({res.contributor_email || 'N/A'})
                         </div>
