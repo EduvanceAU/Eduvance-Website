@@ -168,7 +168,7 @@ export default function IALResources() {
         </div>
 
         <h3 className="text-sm sm:text-md lg:text-lg font-[500] leading-6 text-[#707070] mb-8 text-left max-w-4xl tracking-[-0.015em]" style={{ fontFamily: "Poppins, sans-serif" }}>
-          Access a wide range of Edexcel IAL Level Biology resources—all in one place. Whether you're brushing up on concepts or aiming to master exam strategies, these materials are designed to support your revision and boost your performance
+          Access a wide range of Edexcel IAL Biology resources—all in one place. Whether you're brushing up on concepts or aiming to master exam strategies, these materials are designed to support your revision and boost your performance
         </h3>
 
         {/* General Resources */}

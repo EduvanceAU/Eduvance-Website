@@ -139,10 +139,14 @@ export default function Main() {
               rel="noopener noreferrer"
               className="z-20"
             >
-              <button className="cursor-pointer bg-white hover:bg-[#143166] hover:text-white text-[#428CF9] border-5 border-[#639afe] px-9 py-4 rounded-[16px] text-xl poppins-semibold shadow-lg flex items-center gap-5">
-                <Image src="/discordLogo.svg" alt="Discord" width={36} height={36} className="w-9 h-auto" />
-                Join our Discord Server
-              </button>
+            <button className="group cursor-pointer bg-white hover:bg-[#143166] hover:text-white text-[#428CF9] border-5 border-[#639afe] px-9 py-4 rounded-[16px] text-xl poppins-semibold shadow-lg flex items-center gap-5">
+              <div className="relative w-9 h-9">
+                <Image src="/discordLogo.svg" alt="Discord" fill className="object-contain opacity-100 group-hover:opacity-0 transition-opacity duration-20"/>
+                <Image src="/WhiteDiscordLogo.svg" alt="Discord Hover" fill className="object-contain opacity-0 group-hover:opacity-100 transition-opacity duration-20"/>
+              </div>
+              Join our Discord Server
+            </button>
+
             </a>
             {/* Decorative Images (Positioned with absolute so they don't mess layout) */}
             <Image
