@@ -38,14 +38,29 @@ export default function ContributorUploadResource() {
     if (!supabaseClient) return;
     setLoadingSubjects(true);
     supabaseClient.from('subjects')
-      .select('id, name, code, syllabus_type')
+      .select('id, name, code, syllabus_type, units')
       .then(({ data, error }) => {
         if (error) {
           setMessage(`Subjects fetch failed: ${error.message}`);
           setMessageType('error');
         } else {
-          setSubjects(data || []);
-          if (data?.[0]?.id) setSelectedSubjectId(data[0].id);
+          // Sort units for each subject
+          const sortedSubjects = (data || []).map(sub => {
+            let units = sub.units || [];
+            units.sort((a, b) => {
+              const getUnitNum = (u) => {
+                const match = (u.unit || '').match(/Unit\s*(\d+)/i);
+                return match ? parseInt(match[1], 10) : Number.MAX_SAFE_INTEGER;
+              };
+              const numA = getUnitNum(a);
+              const numB = getUnitNum(b);
+              if (numA !== numB) return numA - numB;
+              return (a.name || '').localeCompare(b.name || '');
+            });
+            return { ...sub, units };
+          });
+          setSubjects(sortedSubjects);
+          if (sortedSubjects?.[0]?.id) setSelectedSubjectId(sortedSubjects[0].id);
         }
         setLoadingSubjects(false);
       });
@@ -125,14 +140,33 @@ export default function ContributorUploadResource() {
               <label htmlFor="unitChapter" className="block text-sm font-medium text-gray-700">
                 Unit/Chapter Name (Optional)
               </label>
-              <input
-                type="text"
-                id="unitChapter"
-                value={unitChapter}
-                onChange={(e) => setUnitChapter(e.target.value)}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                placeholder="e.g., Unit 1: Kinematics"
-              />
+              {/* Unit/Chapter dropdown or input */}
+              {(() => {
+                const selectedSubject = subjects.find(sub => sub.id === selectedSubjectId);
+                const units = selectedSubject?.units || [];
+                if (Array.isArray(units) && units.length > 0) {
+                  return (
+                    <select value={unitChapter} onChange={e => setUnitChapter(e.target.value)} className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                      <option value="">Select Unit/Chapter (optional)</option>
+                      {units.map((unit, idx) => (
+                        <option key={unit.code || unit.name || idx} value={unit.unit || unit.name}>{unit.unit ? `${unit.unit} - ${unit.name}` : unit.name}</option>
+                      ))}
+                      <option value="General">General</option>
+                    </select>
+                  );
+                } else {
+                  return (
+                    <input
+                      type="text"
+                      id="unitChapter"
+                      value={unitChapter}
+                      onChange={(e) => setUnitChapter(e.target.value)}
+                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                      placeholder="e.g., Unit 1: Kinematics"
+                    />
+                  );
+                }
+              })()}
               <p className="text-xs text-gray-500 mt-1">Leave blank if it applies to the whole subject (will be marked as "General")</p>
             </div>
             <div>

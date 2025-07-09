@@ -6,33 +6,22 @@ import { supabase } from "../lib/supabaseClient";
 
 const examCode = '8BI0';
 
-const units = [
-  { name: "Molecules, Diet, Transport & Health", code: "WBI11", unit: "Unit 1" },
-  { name: "Cells, Development, Biodiversity & Conservation", code: "WBI12", unit: "Unit 2" },
-  { name: "Practical Skills in Biology I", code: "WBI13", unit: "Unit 3" },
-  { name: "Genetics, Evolution & Ecology", code: "WBI14", unit: "Unit 4" },
-  { name: "Respiration, Internal Environment, Coordination & Gene Technology", code: "WBI15", unit: "Unit 5" },
-  { name: "Practical Biology & Investigation Skills", code: "WBI16", unit: "Unit 6" },
-];
-
 export default function IALResources() {
-  const [expandedUnits, setExpandedUnits] = useState(units.reduce((acc, unit) => {
-      acc[unit.unit] = true;
-      return acc;
-    }, {}));
-  
+
+  const [units, setUnits] = useState([]);
+  const [expandedUnits, setExpandedUnits] = useState({});
+  const [session, setSession] = useState(null);
+  const [unitResources, setUnitResources] = useState({});
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [showLoginPopup, setShowLoginPopup] = useState(false);
+
   const toggleUnit = (unit) => {
     setExpandedUnits(prev => ({
       ...prev,
       [unit]: !prev[unit]
     }));
   };
-  
-  const [session, setSession] = useState(null);
-  const [unitResources, setUnitResources] = useState({});
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [showLoginPopup, setShowLoginPopup] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -52,6 +41,41 @@ export default function IALResources() {
       return () => clearTimeout(timer);
     }
   }, [showLoginPopup]);
+
+  // Fetch units from subject table
+  useEffect(() => {
+    const fetchUnits = async () => {
+      const { data: subjectData, error: subjectError } = await supabase
+        .from('subjects')
+        .select('units')
+        .eq('name', 'Biology')
+        .eq('syllabus_type', 'IAL')
+        .single();
+      if (subjectError || !subjectData) {
+        setError(subjectError || new Error('Subject "Biology" not found.'));
+        return;
+      }
+      let fetchedUnits = subjectData.units || [];
+      // Sort by unit number if possible, fallback to name
+      fetchedUnits.sort((a, b) => {
+        const getUnitNum = (u) => {
+          const match = (u.unit || '').match(/Unit\s*(\d+)/i);
+          return match ? parseInt(match[1], 10) : Number.MAX_SAFE_INTEGER;
+        };
+        const numA = getUnitNum(a);
+        const numB = getUnitNum(b);
+        if (numA !== numB) return numA - numB;
+        return (a.name || '').localeCompare(b.name || '');
+      });
+      setUnits(fetchedUnits);
+      // Set all units expanded by default
+      setExpandedUnits(fetchedUnits.reduce((acc, unit) => {
+        acc[unit.unit] = true;
+        return acc;
+      }, {}));
+    };
+    fetchUnits();
+  }, []);
 
   useEffect(() => {
     if (!session) return;
