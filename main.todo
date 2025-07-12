@@ -55,6 +55,12 @@ New Resources Pages Update :
    ☐ Sync and Update UI for all subject pages individually
    ✔ Update all pages to accomodate the universal top bar @done(25-07-07 23:29)
 
+   ✔ Updated Physics IAL pages for following the new units field system @done(25-07-12 16:16)
+   ✔ Updated Physics IGCSE pages for following the new units field system @done(25-07-12 16:16)
+   ✔ Updated Biology and Physics Resources Tables and tested for data showcase @done(25-07-12 16:16)
+   ✔ Updated folder name from sub links to subjects @done(25-07-12 16:16)
+   ✔ Added universal auth system for easy user experience @done(25-07-12 16:16)
+
 Other Pages:
    ☐ Other miscellaneous pages for the website (About Eduvance, IGCSE/A Levels, Grading System Explained, FAQs and more)
    ☐ Update UI for all miscellaneous pages and add the relevant content
@@ -69,7 +75,7 @@ Other TODO:
    ✔ Becoming a community contributor : Request to upload resources -> Linked to staff console for approval @done(25-06-26 22:15)
    ✔ Update Contributor Page form link to DB table for approval of resources @done(25-06-27 15:44)
    - Become a tutor/Match with a tutor : People could sign up to teach/study with tutors
-   ☐ Collect testimonials from community members for the website
+   ✔ Collect testimonials from community members for the website @done(25-07-12 16:17)
 
 Community Feedback :
    ✔ Update member counts on all pages to 18k @done(25-07-04 16:34)

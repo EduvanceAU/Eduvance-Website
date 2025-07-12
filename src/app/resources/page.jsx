@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState, useEffect } from 'react';
 import { supabase } from './supabaseClient';
-
+import {Home} from '@/components/homenav'
 export default function Resources() {
   const [subjects, setSubjects] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -31,11 +31,13 @@ export default function Resources() {
   }
 
   const generatePath = (subjectName) => {
-    return `/sub_links/${subjectName.toLowerCase().replace(/\s+/g, "-")}`;
+    return `/subjects/${subjectName.toLowerCase().replace(/\s+/g, "-")}`;
   };
 
   return (
-    <main className="flex flex-col lg:flex-row w-full min-h-screen">
+    <>
+    <Home showExtra/>
+    <main className="flex flex-col lg:flex-row w-full min-h-screen px-4 py-4">
       {/* Left Side */}
       <div className="w-full lg:w-1/2 flex flex-col items-start justify-center gap-6 px-10 py-16 relative">
         <div className="relative w-full h-[250px] sm:h-[200px] md:h-[180px] lg:h-[150px]">
@@ -71,7 +73,7 @@ export default function Resources() {
         <div className="flex flex-col items-start gap-y-3">
           {subjects.map((subject) => (
             <a key={subject.name} href={generatePath(subject.name)}>
-              <button className="flex items-center justify-between w-[90vw] max-w-[550px] px-6 py-4 bg-[#BAD1FD] rounded-[12px] group hover:bg-[#A8C6FF] transition-all duration-200 border-[#153064] border-1">
+              <button className="cursor-pointer flex items-center justify-between w-[90vw] max-w-[550px] px-6 py-4 bg-[#BAD1FD] rounded-[12px] group hover:bg-[#A8C6FF] transition-all duration-200 border-[#153064] border-1">
                 <p
                   className="text-xl font-[550] text-[#153064]"
                   style={{ fontFamily: "Poppins, sans-serif" }}
@@ -89,5 +91,6 @@ export default function Resources() {
         </div>
       </div>
     </main>
+    </>
   );
 }
