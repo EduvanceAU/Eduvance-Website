@@ -31,7 +31,7 @@ export default function Resources() {
   }
 
   const generatePath = (subjectName) => {
-    return `/sub_links/${subjectName.toLowerCase().replace(/\s+/g, "-")}`;
+    return `/subjects/${subjectName.toLowerCase().replace(/\s+/g, "-")}`;
   };
 
   return (
