@@ -50,9 +50,9 @@ New Resources Pages Update :
    ✔ Update Community Notes pages logic (only include community contributed notes) @done(25-07-02 17:38)
    ✔ Update Past Paper loading feature for all pages @done(25-06-27 16:34)
 
-   ☐ Update UI and Cards elements for all resources pages for all subjects
-   ☐ Update UI and Cards elements for all community notes pages for all subjects
-   ☐ Sync and Update UI for all subject pages individually
+   ✔ Update UI and Cards elements for all resources pages for all subjects @done(25-07-13 04:22)
+   ✔ Update UI and Cards elements for all community notes pages for all subjects @done(25-07-13 04:22)
+   ✔ Sync and Update UI for all subject pages individually @done(25-07-13 04:22)
    ✔ Update all pages to accomodate the universal top bar @done(25-07-07 23:29)
 
    ✔ Updated Physics IAL pages for following the new units field system @done(25-07-12 16:16)
@@ -63,6 +63,25 @@ New Resources Pages Update :
 
 Other Pages:
    ☐ Other miscellaneous pages for the website (About Eduvance, IGCSE/A Levels, Grading System Explained, FAQs and more)
+      - More (Header)
+         - Contact Us
+         - FAQ
+         - Privacy Policy
+         - Terms of Service
+      - About Edexcel (Header)
+         - About Edexcel
+         - Exam Structure
+         - Grading System
+      - Navigation (Footer)
+         - Past Papers (like resources page)
+         - Match with a Tutor
+         - About
+         - Community
+      - Legal Info (Footer)
+         - Community Guidelines
+         - Terms Of Services
+         - Privacy Policy
+
    ☐ Update UI for all miscellaneous pages and add the relevant content
    ☐ Update the code for all miscellaneous pages on the website
    ☐ Add links to all miscellaneous pages and side bars
@@ -80,11 +99,11 @@ Other TODO:
 Community Feedback :
    ✔ Update member counts on all pages to 18k @done(25-07-04 16:34)
    ☐ Footer image spacing with the main div
-   ☐ Adding placeholder for the community section (Biomeac, Maryam, Map)
+   ✔ Adding placeholder for the community section (Biomeac, Maryam, Map) @done(25-07-13 04:22)
    ✔ Staff Page name changed to Staff Access @done(25-07-04 16:34)
    ✔ Footer page links to be updated @done(25-07-04 16:34)
    ✔ Update all subject pages to have the right UI and responsive design @done(25-07-04 16:34)
-   ☐ Update links for the top bar in the website
+   ✔ Update links for the top bar in the website @done(25-07-13 04:22)
    ✔ Chemistry Page Typo @done(25-07-07 14:59)
    ☐ Update discord invite links
    ✔ Pointer Icon/Cursor on Buttons (Stig) @done(25-07-05 16:42)
@@ -96,4 +115,4 @@ Systems Todo:
    ✔ Updated Staff/Admin Console for new submit resource button @done(25-07-09 12:06)
    ✔ Updated Community Contributor Page for new unit field dropdown @done(25-07-09 12:06)
    ✔ Updated Staff Console for using community notes table from DB @done(25-07-09 12:06)
-   ☐ Update new subject files addition system for modular and robust workflow
+   ✔ Update new subject files addition system for modular and robust workflow @done(25-07-13 04:22)
