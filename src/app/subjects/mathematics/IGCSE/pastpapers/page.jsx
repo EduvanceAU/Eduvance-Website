@@ -3,37 +3,46 @@
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
 import { supabase } from "../lib/supabaseClient";
-import { useSupabaseAuth } from "@/components/client/SupabaseAuthContext";
 import { useRouter } from 'next/navigation';
 
 const sessions = [
   { label: "January", value: "January" },
   { label: "May/June", value: "May/June" },
-  { label: "Oct/Nov", value: "Oct/Nov" }, 
+  { label: "Oct/Nov", value: "Oct/Nov" },
 ];
 
 // At the top, define variables for subjectName, syllabusType, and examCode
-const subjectName = '{subjectName}';
+const subjectName = 'Mathematics';
 const subjectSlug = subjectName.toLowerCase().replace(/\s+/g, '-');
-const syllabusType = '{syllabusType}';
-const examCode = '{examCode}';
+const syllabusType = 'IGCSE';
+const examCode = 'MAT';
 
 const DISPLAY_START_YEAR = 2020;
 const DISPLAY_END_YEAR = 2024;
 const years = Array.from({ length: DISPLAY_END_YEAR - DISPLAY_START_YEAR + 1 }, (_, i) => DISPLAY_START_YEAR + i);
 
+
+const [units, setUnits] = useState([]);
+const [expandedUnits, setExpandedUnits] = useState({});
+
+
 // Remove the static subjects array
-// Add SubjectButtons component that fetches subjects dynamically
+// const subjects = [
+//   { name: subjectName, link: `/subjects/mathematics/$IGCSE/pastpapers` },
+//   // Add more subjects as needed, or leave as a single template entry
+// ];
+
 const SubjectButtons = () => {
   const [subjects, setSubjects] = useState([]);
   const router = useRouter();
 
   useEffect(() => {
+    // Placeholder: Fetch subjects from Supabase or API
     async function fetchSubjects() {
+      // Example: fetch from Supabase
       const { data, error } = await supabase
         .from('subjects')
         .select('name')
-        .order('name', { ascending: true })
         .eq('syllabus_type', syllabusType);
       if (!error && data) {
         setSubjects(data.map(subj => subj.name));
@@ -48,7 +57,7 @@ const SubjectButtons = () => {
         <button
           key={index}
           className="px-4 py-2 cursor-pointer bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition"
-          onClick={() => router.push(`/subjects/${name}/${syllabusType}/pastpapers`)}
+          onClick={() => router.push(`/subjects/${name}/$IGCSE/pastpapers`)}
         >
           {name}
         </button>
@@ -84,15 +93,15 @@ const specs = [
   { label: 'Old Spec', value: 'old' },
 ];
 
-export default function IALPastPapersPage() {
-  // Replace all instances of 'Physics' with subjectName, 'IAL' with syllabusType, and '8PH0' with examCode
+export default function IGCSEPastPapersPage() {
+  // Replace all instances of 'Physics' with subjectName, 'IGCSE' with syllabusType, and '4PH1' with examCode
+  const subjectName = 'Mathematics';
+  const subjectSlug = subjectName.toLowerCase().replace(/\s+/g, '-');
+  const syllabusType = 'IGCSE'; // This page is specifically for IGCSE papers
   const [selectedUnits, setSelectedUnits] = useState([]);
   const [papers, setPapers] = useState([]);
   const [selectedYears, setSelectedYears] = useState([]);
   const [error, setError] = useState(null);
-  const [units, setUnits] = useState([]);
-  const [expandedUnits, setExpandedUnits] = useState({});
-  const { session } = useSupabaseAuth();
 
   const [showYearDropdown, setShowYearDropdown] = useState(false);
   const [showUnitDropdown, setShowUnitDropdown] = useState(false);
@@ -174,7 +183,7 @@ export default function IALPastPapersPage() {
         .single();
 
       if (subjectError || !subjectData) {
-        setError(subjectError || new Error(`Subject "${subjectName}" not found.`));
+        setError(subjectError || new Error(`Subject "mathematics" not found.`));
         return;
       }
 
@@ -214,7 +223,7 @@ export default function IALPastPapersPage() {
         .eq('syllabus_type', syllabusType)
         .single();
       if (subjectError || !subjectData) {
-        setError(subjectError || new Error(`Subject "${subjectName}" not found.`));
+        setError(subjectError || new Error(`Subject "mathematics" not found.`));
         return;
       }
       let fetchedUnits = subjectData.units || [];
@@ -296,7 +305,7 @@ export default function IALPastPapersPage() {
           className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#000000] mb-8 text-left tracking-[-0.035em]"
           style={{ fontFamily: "Poppins, sans-serif" }}
         >
-          {syllabusType} <span className="bg-[#1A69FA] px-2 py-1 -rotate-1 inline-block"><span className="text-[#FFFFFF]">{subjectName}</span></span> Past Papers
+          IGCSE <span className="bg-[#1A69FA] px-2 py-1 -rotate-1 inline-block"><span className="text-[#FFFFFF]">Mathematics</span></span> Past Papers
         </h1>
 
         <div
@@ -307,7 +316,7 @@ export default function IALPastPapersPage() {
           }}
         >
           <span className="text-md font-medium text-black tracking-tight">
-            <span className="font-[501]">Exam code:</span> {examCode}
+            <span className="font-[501]">Exam code:</span> MAT
           </span>
         </div>
 
@@ -315,7 +324,7 @@ export default function IALPastPapersPage() {
           className="text-sm sm:text-md lg:text-lg font-[500] leading-6 text-[#707070] mb-8 text-left tracking-[-0.015em]"
           style={{ fontFamily: "Poppins, sans-serif" }}
         >
-          Explore our collection of Edexcel {syllabusType} {subjectName} Past Papers and Mark Schemes below. Practicing with {syllabusType} {subjectName} past papers is one of the most effective ways to pinpoint the topics that need more focus—helping you revise smarter and prepare confidently for your upcoming exam
+          Explore our collection of Edexcel IGCSE Mathematics Past Papers and Mark Schemes below. Practicing with IGCSE Mathematics past papers is one of the most effective ways to pinpoint the topics that need more focus—helping you revise smarter and prepare confidently for your upcoming exam
         </h3>
 
         <div className="w-full mb-8">
