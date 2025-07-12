@@ -6,9 +6,11 @@ import { supabase } from "../lib/supabaseClient";
 import { useSupabaseAuth } from "@/components/client/SupabaseAuthContext";
 import { Auth } from '@supabase/auth-ui-react';
 import { ThemeSupa } from '@supabase/auth-ui-shared';
+import { useRouter } from 'next/router';
 
 // At the top, define variables for subjectName, syllabusType, and examCode
 const subjectName = '{subjectName}';
+const subjectSlug = subjectName.toLowerCase().replace(/\s+/g, '-');
 const syllabusType = '{syllabusType}';
 const examCode = '{examCode}';
 
@@ -144,6 +146,39 @@ export default function IGCSEResources() {
     fetchResources();
   }, [session]);
 
+  // Add SubjectButtons component that fetches subjects dynamically
+  const SubjectButtons = () => {
+    const [subjects, setSubjects] = useState([]);
+    const router = useRouter();
+
+    useEffect(() => {
+      async function fetchSubjects() {
+        const { data, error } = await supabase
+          .from('subjects')
+          .select('name')
+          .eq('syllabus_type', syllabusType);
+        if (!error && data) {
+          setSubjects(data.map(subj => subj.name));
+        }
+      }
+      fetchSubjects();
+    }, []);
+
+    return (
+      <div className="flex flex-wrap gap-2 mb-6">
+        {subjects.map((name, index) => (
+          <button
+            key={index}
+            className="px-4 py-2 cursor-pointer bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition"
+            onClick={() => router.push(`/subjects/${name}/${syllabusType}/resources`)}
+          >
+            {name}
+          </button>
+        ))}
+      </div>
+    );
+  };
+
   if (error) {
     return (
       <main className="min-h-screen bg-white flex items-center justify-center">
@@ -237,6 +272,7 @@ export default function IGCSEResources() {
             )}
           </div>
         ))}
+        <SubjectButtons />
       </div>
     </main>
   );
