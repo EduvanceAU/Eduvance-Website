@@ -74,13 +74,16 @@ const NavDropdown = ({ labelMain, labelSmall, items }) => {
 
 function Home(props) {
   const [subjects, setSubjects] = useState([]);
+  const [NonUniqueSubjects, setNQSubjects] = useState([]);
   useEffect(() => {
     // Dynamically generating subject list for sidebar
       supabase
       .from('subjects')
       .select('name, syllabus_type')
+      .order('name', { ascending: true })
       .then(({ data, error }) => {
         if (!error) {
+          setNQSubjects(data);
           const subject_list = [...new Set(data.map(item => item.name))];
           setSubjects(subject_list.sort());
         }
@@ -173,7 +176,6 @@ function Home(props) {
     setShowLoginPopup(false);  
   };
 
-
   return (
     <main className="bg-white relative overflow-x-hidden">
       
@@ -210,23 +212,19 @@ function Home(props) {
           <NavDropdown
             labelMain="IAL Edexcel Resources"
             labelSmall="IAL"
-            items={[
-              { label: "Physics", href: "/subjects/physics/IAL/resources" },
-              { label: "Chemistry", href: "/subjects/chemistry/IAL/resources" },
-              { label: "Biology", href: "/subjects/biology/IAL/resources" },
-              { label: "Mathematics", href: "/subjects/maths/IAL/resources" },
-            ]}
-          />
+            items={NonUniqueSubjects
+                    .filter((subject) => subject.syllabus_type === "IAL")
+                    .map((subject) => ({label: subject.name, href: `/subjects/${subject.name.toLowerCase()}/IAL/resources`,
+                    }))
+                  }/>
           <NavDropdown
             labelMain="IGCSE Edexcel Resources"
             labelSmall="IGCSE"
-            items={[
-              { label: "Physics", href: "/subjects/physics/IGCSE/resources" },
-              { label: "Chemistry", href: "/subjects/chemistry/IGCSE/resources" },
-              { label: "Biology", href: "/subjects/biology/IGCSE/resources" },
-              { label: "Mathematics", href: "/subjects/maths/IGCSE/resources" },
-            ]}
-          />
+            items={NonUniqueSubjects
+                    .filter((subject) => subject.syllabus_type === "IGCSE")
+                    .map((subject) => ({label: subject.name, href: `/subjects/${subject.name.toLowerCase()}/IGCSE/resources`,
+                    }))
+                  }/>
           <NavDropdown
             labelMain="More"
             labelSmall="More"
