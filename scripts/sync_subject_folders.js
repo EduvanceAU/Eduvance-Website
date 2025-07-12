@@ -51,10 +51,10 @@ function copyTemplateFolder(srcDir, destDir, replacements) {
         content = content.replace(regex, value);
       }
       // Also replace any /subjects/SomeSubject/ with /subjects/{subjectName}/
-      content = content.replace(/\/subjects\/[a-zA-Z0-9\-]+\//g, '/subjects/{subjectName}/');
+      // content = content.replace(/\/subjects\/[a-zA-Z0-9\-]+\//g, '/subjects/{subjectName}/');
       // Also replace any direct subject name usage (e.g., Physics, PHYSICS) with {subjectName}
-      content = content.replace(/Physics/g, '{subjectName}');
-      content = content.replace(/PHYSICS/g, '{subjectName}');
+      // content = content.replace(/Physics/g, '{subjectName}');
+      // content = content.replace(/PHYSICS/g, '{subjectName}');
       fs.writeFileSync(destPath, content, 'utf8');
     }
   }
@@ -101,6 +101,7 @@ async function main() {
       path.join(TEMPLATE_DIR),
       subjDir,
       {
+        '\\$\\{subjectName\\}': toKebabCase(subj.name),
         '\\{subjectName\\}': subj.name,
         '\\{subjectCode\\}': subj.codes['IAL'] || subj.codes['IGCSE'] || '', // fallback to any code
         '\\{syllabusType\\}': '', // Not used in main page.jsx
@@ -115,6 +116,7 @@ async function main() {
         path.join(TEMPLATE_DIR, type),
         typeDir,
         {
+          '\\$\\{subjectName\\}': toKebabCase(subj.name),
           '\\{subjectName\\}': subj.name,
           '\\{subjectCode\\}': subj.codes[type] || '',
           '\\{syllabusType\\}': type,
