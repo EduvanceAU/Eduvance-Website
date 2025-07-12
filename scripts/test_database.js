@@ -91,24 +91,32 @@ async function listPapersByCriteria() {
         `).limit(20); // Limit to 20 for brevity, remove for all if needed
 
         if (subjectInput) {
-          // Find subject ID
+          // Find subject ID(s)
           const { data: subjectData, error: subjectError } = await supabase
             .from('subjects')
-            .select('id')
-            .ilike('name', `%${subjectInput}%`) // Case-insensitive partial match
-            .single();
+            .select('id, name')
+            .ilike('name', `%${subjectInput}%`); // Case-insensitive partial match
 
-          if (subjectError || !subjectData) {
+          if (subjectError || !subjectData || subjectData.length === 0) {
             console.error(`Could not find subject matching "${subjectInput}". Error: ${subjectError?.message || 'No subject found.'}`);
             rl.close();
             return;
           }
-          query = query.eq('subject_id', subjectData.id);
+          
+          // If multiple subjects found, use the first one (or you could prompt user to choose)
+          if (subjectData.length > 1) {
+            console.log(`Found ${subjectData.length} subjects matching "${subjectInput}":`);
+            subjectData.forEach((s, index) => console.log(`  ${index + 1}. ${s.name} (ID: ${s.id})`));
+            console.log(`Using the first match: ${subjectData[0].name}`);
+          }
+          
+          const subjectIds = subjectData.map(s => s.id);
+          query = query.in('subject_id', subjectIds);
         }
 
         if (sessionInput || yearInput) {
           // Find exam session ID(s)
-          let examSessionQuery = supabase.from('exam_sessions').select('id');
+          let examSessionQuery = supabase.from('exam_sessions').select('id, session, year');
           if (sessionInput) {
             examSessionQuery = examSessionQuery.ilike('session', `%${sessionInput}%`); // Case-insensitive partial match
           }
@@ -125,8 +133,77 @@ async function listPapersByCriteria() {
 
           if (examSessionError || !examSessionData || examSessionData.length === 0) {
             console.error(`Could not find exam session matching criteria. Error: ${examSessionError?.message || 'No exam sessions found.'}`);
+            
+            // Show helpful suggestions
+            console.log('\n--- Available Exam Sessions ---');
+            const { data: allSessions, error: allSessionsError } = await supabase
+              .from('exam_sessions')
+              .select('session, year')
+              .order('year', { ascending: false })
+              .order('session', { ascending: true });
+            
+            if (!allSessionsError && allSessions) {
+              console.log('Available sessions:');
+              allSessions.forEach(s => console.log(`  - ${s.session} ${s.year}`));
+              
+              // Show specific suggestions based on input
+              if (sessionInput && !yearInput) {
+                const matchingSessions = allSessions.filter(s => 
+                  s.session.toLowerCase().includes(sessionInput.toLowerCase())
+                );
+                if (matchingSessions.length > 0) {
+                  console.log(`\nSuggested sessions matching "${sessionInput}":`);
+                  matchingSessions.forEach(s => console.log(`  - ${s.session} ${s.year}`));
+                }
+              }
+              
+              if (yearInput && !sessionInput) {
+                const matchingYears = allSessions.filter(s => s.year == parseInt(yearInput));
+                if (matchingYears.length > 0) {
+                  console.log(`\nSuggested sessions for year ${yearInput}:`);
+                  matchingYears.forEach(s => console.log(`  - ${s.session} ${s.year}`));
+                }
+              }
+              
+              // Handle case where both session and year are specified
+              if (sessionInput && yearInput) {
+                const parsedYear = parseInt(yearInput);
+                
+                // Find sessions matching the session name (ignoring year)
+                const sessionMatches = allSessions.filter(s => 
+                  s.session.toLowerCase().includes(sessionInput.toLowerCase())
+                );
+                
+                // Find sessions matching the year (ignoring session)
+                const yearMatches = allSessions.filter(s => s.year == parsedYear);
+                
+                if (sessionMatches.length > 0) {
+                  console.log(`\nSuggested sessions matching "${sessionInput}" (different years):`);
+                  sessionMatches.forEach(s => console.log(`  - ${s.session} ${s.year}`));
+                }
+                
+                if (yearMatches.length > 0) {
+                  console.log(`\nSuggested sessions for year ${yearInput} (different sessions):`);
+                  yearMatches.forEach(s => console.log(`  - ${s.session} ${s.year}`));
+                }
+                
+                // If no exact session match, suggest closest alternatives
+                if (sessionMatches.length === 0) {
+                  console.log(`\nNote: No sessions found containing "${sessionInput}". Available session types are:`);
+                  const uniqueSessions = [...new Set(allSessions.map(s => s.session))];
+                  uniqueSessions.forEach(session => console.log(`  - ${session}`));
+                }
+              }
+            }
+            
             rl.close();
             return;
+          }
+
+          if (examSessionData.length > 1) {
+            console.log(`Found ${examSessionData.length} exam sessions matching criteria:`);
+            examSessionData.forEach((s, index) => console.log(`  ${index + 1}. ${s.session} ${s.year}`));
+            console.log('Using all matching sessions.');
           }
 
           const examSessionIds = examSessionData.map(s => s.id);
