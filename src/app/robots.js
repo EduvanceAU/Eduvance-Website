@@ -3,7 +3,7 @@ export default function robots() {
     rules: {
       userAgent: '*',
       allow: '/',
-      disallow: ['/staffAccess/','/dashboard/admin/', '/dashboard/staff/']
+      disallow: ['/staffAccess/','/dashboard/admin/', '/dashboard/staff/', '/api/']
     }
   }
 }

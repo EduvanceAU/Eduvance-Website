@@ -198,20 +198,20 @@ function Home(props) {
             labelMain="IAL Edexcel Resources"
             labelSmall="IAL"
             items={[
-              { label: "Physics", href: "/sub_links/physics/IAL/resources" },
-              { label: "Chemistry", href: "/sub_links/chemistry/IAL/resources" },
-              { label: "Biology", href: "/sub_links/biology/IAL/resources" },
-              { label: "Mathematics", href: "/sub_links/maths/IAL/resources" },
+              { label: "Physics", href: "/subjects/physics/IAL/resources" },
+              { label: "Chemistry", href: "/subjects/chemistry/IAL/resources" },
+              { label: "Biology", href: "/subjects/biology/IAL/resources" },
+              { label: "Mathematics", href: "/subjects/maths/IAL/resources" },
             ]}
           />
           <NavDropdown
             labelMain="IGCSE Edexcel Resources"
             labelSmall="IGCSE"
             items={[
-              { label: "Physics", href: "/sub_links/physics/IGCSE/resources" },
-              { label: "Chemistry", href: "/sub_links/chemistry/IGCSE/resources" },
-              { label: "Biology", href: "/sub_links/biology/IGCSE/resources" },
-              { label: "Mathematics", href: "/sub_links/maths/IGCSE/resources" },
+              { label: "Physics", href: "/subjects/physics/IGCSE/resources" },
+              { label: "Chemistry", href: "/subjects/chemistry/IGCSE/resources" },
+              { label: "Biology", href: "/subjects/biology/IGCSE/resources" },
+              { label: "Mathematics", href: "/subjects/maths/IGCSE/resources" },
             ]}
           />
           <NavDropdown
@@ -439,7 +439,7 @@ function Home(props) {
             {['Biology', 'Physics', 'Mathematics', 'Chemistry', 'Business', 'Economics'].map((subject) => (
               <Link
                 key={subject}
-                href={`/sub_links/${subject.toLowerCase()}`}
+                href={`/subjects/${subject.toLowerCase()}`}
                 className="block px-4 py-2 text-[#000000] tracking-[-0.5px] cursor-pointer hover:bg-[#BAD1FD] rounded transition-colors duration-200"
                 style={{ fontFamily: 'Poppins, sans-serif' }}
                 onClick={() => setSidebarOpen(false)}
