@@ -32,7 +32,7 @@ const NavDropdown = ({ labelMain, labelSmall, items }) => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
-
+  
   return (
     <div className="relative" ref={dropdownRef}>
       <button
@@ -73,6 +73,18 @@ const NavDropdown = ({ labelMain, labelSmall, items }) => {
 };
 
 function Home(props) {
+  const [subjects, setSubjects] = useState([]);
+  useEffect(() => {
+      supabase
+      .from('subjects')
+      .select('name, syllabus_type')
+      .then(({ data, error }) => {
+        if (!error) {
+          const subject_list = [...new Set(data.map(item => item.name))];
+          setSubjects(subject_list.sort());
+        }
+      });
+    }, []);
   let extra: React.ReactNode = null;
   if (props.showExtra){
     extra = (<div className="mt-8 px-4">
@@ -436,7 +448,7 @@ function Home(props) {
             Subjects
           </h3>
           <div className="space-y-1">
-            {['Biology', 'Physics', 'Mathematics', 'Chemistry', 'Business', 'Economics'].map((subject) => (
+            {subjects.map((subject) => (
               <Link
                 key={subject}
                 href={`/subjects/${subject.toLowerCase()}`}
