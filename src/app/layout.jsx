@@ -1,6 +1,7 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import Script from 'next/script';
 import "./globals.css";
+import SupabaseAuthProvider from "@/components/client/SupabaseAuthContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,11 +28,18 @@ export default function RootLayout({ children }) {
           strategy="beforeInteractive"
         />
         <link rel="icon" href="/BlueSolo.svg" />
+        <meta property="theme-color" content="#0c60fb" />
+        <meta property="og:image" content="/SmallLogo.svg" />
+        <meta property="og:title" content="Eduvance"/>
+        <meta property="twitter:title" content="Eduvance"/>
+        <meta name="twitter:image" content="/SmallLogo.svg" />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <SupabaseAuthProvider>
+          {children}
+        </SupabaseAuthProvider>
       </body>
     </html>
   );
