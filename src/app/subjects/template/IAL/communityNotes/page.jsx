@@ -27,7 +27,7 @@ const SubjectButtons = () => {
 };
 
 export default function IALCommunityNotesPage() {
-  const examCode = {subjectCode};
+  const examCode = '{subjectCode}';
   const { session, user, loading: authLoading } = useSupabaseAuth();
   const [units, setUnits] = useState([]);
   const [expandedUnits, setExpandedUnits] = useState({});
@@ -48,7 +48,7 @@ export default function IALCommunityNotesPage() {
       const { data: subjectData, error: subjectError } = await supabase
         .from('subjects')
         .select('units')
-        .eq('name', {subjectName})
+        .eq('name', '{subjectName}')
         .eq('syllabus_type', 'IAL')
         .single();
       if (subjectError || !subjectData) {
@@ -84,7 +84,7 @@ export default function IALCommunityNotesPage() {
       const { data: subjectData, error: subjectError } = await supabase
         .from('subjects')
         .select('id')
-        .eq('name', {subjectName})
+        .eq('name', '{subjectName}')
         .eq('syllabus_type', 'IAL')
         .single();
       if (subjectError || !subjectData) {
