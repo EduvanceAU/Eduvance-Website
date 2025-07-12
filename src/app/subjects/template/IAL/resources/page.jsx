@@ -6,17 +6,46 @@ import { supabase } from "../lib/supabaseClient";
 import { useSupabaseAuth } from "@/components/client/SupabaseAuthContext";
 import { Auth } from '@supabase/auth-ui-react';
 import { ThemeSupa } from '@supabase/auth-ui-shared';
+import { useRouter } from 'next/router';
 
-const examCode = '8PH0';
+// At the top, define variables for subjectName, syllabusType, and examCode
+const subjectName = '{subjectName}';
+const subjectSlug = subjectName.toLowerCase().replace(/\s+/g, '-');
+const syllabusType = '{syllabusType}';
+const examCode = '{examCode}';
 
-const units = [
-  { name: "Mechanics and Materials", code: "WPH11", unit: "Unit 1" },
-  { name: "Waves and Electricity", code: "WPH12", unit: "Unit 2" },
-  { name: "Practical Skills in Physics I", code: "WPH13", unit: "Unit 3" },
-  { name: "Further Mechanics, Fields and Particles", code: "WPH14", unit: "Unit 4" },
-  { name: "Thermodynamics, Radiation, Oscillations and Cosmology", code: "WPH15", unit: "Unit 5" },
-  { name: "Practical Skills in Physics II", code: "WPH16", unit: "Unit 6" },
-];
+// Add SubjectButtons component that fetches subjects dynamically
+const SubjectButtons = () => {
+  const [subjects, setSubjects] = useState([]);
+  const router = useRouter();
+
+  useEffect(() => {
+    async function fetchSubjects() {
+      const { data, error } = await supabase
+        .from('subjects')
+        .select('name')
+        .eq('syllabus_type', syllabusType);
+      if (!error && data) {
+        setSubjects(data.map(subj => subj.name));
+      }
+    }
+    fetchSubjects();
+  }, []);
+
+  return (
+    <div className="flex flex-wrap gap-2 mb-6">
+      {subjects.map((name, index) => (
+        <button
+          key={index}
+          className="px-4 py-2 cursor-pointer bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition"
+          onClick={() => router.push(`/subjects/${name}/${syllabusType}/resources`)}
+        >
+          {name}
+        </button>
+      ))}
+    </div>
+  );
+};
 
 export default function IALResources() {
   const { session, user, loading: authLoading } = useSupabaseAuth();
@@ -40,8 +69,8 @@ export default function IALResources() {
       const { data: subjectData, error: subjectError } = await supabase
         .from('subjects')
         .select('units')
-        .eq('name', 'Physics')
-        .eq('syllabus_type', 'IAL')
+        .eq('name', subjectName)
+        .eq('syllabus_type', syllabusType)
         .single();
       if (subjectError || !subjectData) {
         setError(subjectError || new Error('Subject "Physics" not found.'));
@@ -76,8 +105,8 @@ export default function IALResources() {
         const { data: subjectData, error: subjectError } = await supabase
           .from('subjects')
           .select('id')
-          .eq('name', 'Physics')
-          .eq('syllabus_type', 'IAL')
+          .eq('name', subjectName)
+          .eq('syllabus_type', syllabusType)
           .single();
 
         if (subjectError || !subjectData) {
@@ -145,7 +174,7 @@ export default function IALResources() {
     <main className="min-h-screen bg-white flex flex-col items-center justify-start py-10 m-10">
       <div className="w-full max-w-5xl px-4">
         <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#000000] mb-8 text-left tracking-[-0.035em]" style={{ fontFamily: "Poppins, sans-serif" }}>
-          IAL <span className="bg-[#1A69FA] px-2 py-1 -rotate-1 inline-block"><span className="text-[#FFFFFF]">Physics</span></span> Resources
+          {syllabusType} <span className="bg-[#1A69FA] px-2 py-1 -rotate-1 inline-block"><span className="text-[#FFFFFF]">{subjectName}</span></span> Resources
         </h1>
 
         <div className="inline-flex items-center justify-center px-4 py-2 mb-8 rounded-md" style={{ border: "1.5px solid #DBDBDB", fontFamily: "Poppins, sans-serif" }}>
@@ -155,7 +184,7 @@ export default function IALResources() {
         </div>
 
         <h3 className="text-sm sm:text-md lg:text-lg font-[500] leading-6 text-[#707070] mb-8 text-left max-w-4xl tracking-[-0.015em]" style={{ fontFamily: "Poppins, sans-serif" }}>
-          Access a wide range of Edexcel IAL Level Physics resources—all in one place. Whether you're brushing up on concepts or aiming to master exam strategies, these materials are designed to support your revision and boost your performance
+          Access a wide range of Edexcel {syllabusType} {subjectName} resources—all in one place. Whether you're brushing up on concepts or aiming to master exam strategies, these materials are designed to support your revision and boost your performance
         </h3>
 
         {/* General Resources */}

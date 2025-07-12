@@ -45,10 +45,16 @@ function copyTemplateFolder(srcDir, destDir, replacements) {
       copyTemplateFolder(srcPath, destPath, replacements);
     } else if (entry.isFile()) {
       let content = fs.readFileSync(srcPath, 'utf8');
+      // Replace all subject names and resource links with {subjectName} in all template files
       for (const [key, value] of Object.entries(replacements)) {
         const regex = new RegExp(key, 'g');
         content = content.replace(regex, value);
       }
+      // Also replace any /subjects/SomeSubject/ with /subjects/{subjectName}/
+      content = content.replace(/\/subjects\/[a-zA-Z0-9\-]+\//g, '/subjects/{subjectName}/');
+      // Also replace any direct subject name usage (e.g., Physics, PHYSICS) with {subjectName}
+      content = content.replace(/Physics/g, '{subjectName}');
+      content = content.replace(/PHYSICS/g, '{subjectName}');
       fs.writeFileSync(destPath, content, 'utf8');
     }
   }

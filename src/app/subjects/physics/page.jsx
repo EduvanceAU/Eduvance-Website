@@ -40,7 +40,7 @@ export default function Physics() {
           className="w-full h-[250px] relative flex items-center bg-cover bg-right lg:bg-center bg-no-repeat transition-all duration-300"
           style={{ backgroundImage: "url('/Banner.svg')" }}
         >
-          <h1 className="text-white font-grand-local text-xl md:text-7xl ml-17 tracking-[-1px]">
+          <h1 className="text-white font-grand-local text-5xl sm:text-4xl md:text-4xl ml-17 tracking-[-1px]">
             Physics
           </h1>
         </div>
@@ -140,4 +140,37 @@ export default function Physics() {
 
                     <Link
                       href="/subjects/physics/IGCSE/pastpapers"
-                      className={`
+                      className="transition-all duration-300 h-40 rounded-xl font-[550] tracking-[-0.5px] border-[1.5px] border-[#0C58E4] flex items-end justify-start pl-4 pb-4 text-black hover:text-[#0C58E4] hover:bg-[#CEE0FF] bg-blend-multiply cursor-pointer"
+                      style={{ backgroundImage: "url('/Papers Background.svg')", backgroundSize: 'cover', backgroundPosition: 'center' }}
+                    >
+                      Past Papers
+                    </Link>
+
+                    <a
+                      href="../../contributor/"
+                      className="transition-all duration-300 h-40 rounded-xl font-[550] tracking-[-0.5px] border-[1.5px] border-[#0C58E4] flex items-end justify-start pl-4 pb-4 text-black hover:text-[#0C58E4] hover:bg-[#CEE0FF] bg-blend-multiply cursor-pointer"
+                      style={{ backgroundImage: "url('/Share Notes Background.svg')", backgroundSize: 'cover', backgroundPosition: 'center' }}
+                    >
+                      Share Your Notes
+                    </a>
+                  </div>
+                </>
+              )}
+            </div>
+
+            {/* Always-visible slim buttons below the cards */}
+            <div className="flex flex-wrap justify-between gap-4 w-full">
+              <a
+                href="https://discord.gg/Eduvance"
+                className="w-full h-14 rounded-xl bg-[#F2F6FF] font-[550] tracking-[-0.5px] border-[1.5px] border-[#0C58E4] flex items-center justify-start pl-4 text-black hover:text-[#0C58E4] hover:bg-[#BAD1FD] bg-blend-multiply transition-all duration-300"
+              >
+                <img src="/ServerIcon.svg" alt="Contribute" className="w-5 h-4 mr-4" />
+                Join Our Discord Server
+              </a>
+            </div>
+          </div>
+        </main>
+      </div>
+  </>
+  );
+}

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { useSupabaseAuth } from "@/components/client/SupabaseAuthContext";
+import { useRouter } from 'next/router';
 
 const sessions = [
   { label: "January", value: "January" },
@@ -13,6 +14,7 @@ const sessions = [
 
 // At the top, define variables for subjectName, syllabusType, and examCode
 const subjectName = '{subjectName}';
+const subjectSlug = subjectName.toLowerCase().replace(/\s+/g, '-');
 const syllabusType = '{syllabusType}';
 const examCode = '{examCode}';
 
@@ -20,22 +22,35 @@ const DISPLAY_START_YEAR = 2020;
 const DISPLAY_END_YEAR = 2024;
 const years = Array.from({ length: DISPLAY_END_YEAR - DISPLAY_START_YEAR + 1 }, (_, i) => DISPLAY_START_YEAR + i);
 
-const subjects = [
-  { name: "Physics", link: "/subjects/physics/IAL/pastpapers" },
-  { name: "Chemistry", link: "/subjects/chemistry/IAL/pastpapers" },
-  { name: "Biology", link: "/subjects/biology/IAL/pastpapers" },
-  { name: "Maths", link: "/subjects/maths/IAL/pastpapers" },
-];
-
+// Remove the static subjects array
+// Add SubjectButtons component that fetches subjects dynamically
 const SubjectButtons = () => {
+  const [subjects, setSubjects] = useState([]);
+  const router = useRouter();
+
+  useEffect(() => {
+    async function fetchSubjects() {
+      const { data, error } = await supabase
+        .from('subjects')
+        .select('name')
+        .eq('syllabus_type', syllabusType);
+      if (!error && data) {
+        setSubjects(data.map(subj => subj.name));
+      }
+    }
+    fetchSubjects();
+  }, []);
+
   return (
     <div className="flex flex-wrap gap-2 mb-6">
-      {subjects.map((subject, index) => (
-        <Link key={index} href={subject.link}>
-          <button className="px-4 py-2 cursor-pointer bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition">
-            {subject.name}
-          </button>
-        </Link>
+      {subjects.map((name, index) => (
+        <button
+          key={index}
+          className="px-4 py-2 cursor-pointer bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition"
+          onClick={() => router.push(`/subjects/${name}/${syllabusType}/pastpapers`)}
+        >
+          {name}
+        </button>
       ))}
     </div>
   );
@@ -280,7 +295,7 @@ export default function IALPastPapersPage() {
           className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#000000] mb-8 text-left tracking-[-0.035em]"
           style={{ fontFamily: "Poppins, sans-serif" }}
         >
-          IAL <span className="bg-[#1A69FA] px-2 py-1 -rotate-1 inline-block"><span className="text-[#FFFFFF]">Physics</span></span> Past Papers
+          {syllabusType} <span className="bg-[#1A69FA] px-2 py-1 -rotate-1 inline-block"><span className="text-[#FFFFFF]">{subjectName}</span></span> Past Papers
         </h1>
 
         <div
@@ -299,7 +314,7 @@ export default function IALPastPapersPage() {
           className="text-sm sm:text-md lg:text-lg font-[500] leading-6 text-[#707070] mb-8 text-left tracking-[-0.015em]"
           style={{ fontFamily: "Poppins, sans-serif" }}
         >
-          Explore our collection of Edexcel IAL Level Physics Past Papers and Mark Schemes below. Practicing with A Level Physics past papers is one of the most effective ways to pinpoint the topics that need more focus—helping you revise smarter and prepare confidently for your upcoming exam
+          Explore our collection of Edexcel {syllabusType} {subjectName} Past Papers and Mark Schemes below. Practicing with {syllabusType} {subjectName} past papers is one of the most effective ways to pinpoint the topics that need more focus—helping you revise smarter and prepare confidently for your upcoming exam
         </h3>
 
         <div className="w-full mb-8">
