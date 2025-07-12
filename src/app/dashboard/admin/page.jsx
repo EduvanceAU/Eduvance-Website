@@ -90,7 +90,7 @@ export default function AdminDashboard() {
   useEffect(() => {
     if (!supabaseClient) return;
     setLoadingSubjects(true);
-    supabaseClient.from('subjects').select('id, name, code, syllabus_type, units').then(({ data, error }) => {
+    supabaseClient.from('subjects').select('id, name, code, syllabus_type, units').order('name', { ascending: true }).then(({ data, error }) => {
       if (error) {
         setMessage(`Subjects fetch failed: ${error.message}`);
         setMessageType('error');

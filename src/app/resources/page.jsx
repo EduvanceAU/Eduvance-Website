@@ -13,6 +13,7 @@ export default function Resources() {
     supabase
       .from('subjects')
       .select('name, syllabus_type')
+      .order('name', { ascending: true })
       .then(({ data, error }) => {
         if (!error) {
           // Deduplicate by subject name
