@@ -81,6 +81,7 @@ export default function UploadResource() {
     setLoadingSubjects(true);
     supabaseClient.from('subjects')
       .select('id, name, code, syllabus_type, units')
+      .order('name', { ascending: true })
       .then(({ data, error }) => {
         if (error) {
           setMessage(`Subjects fetch failed: ${error.message}`);
