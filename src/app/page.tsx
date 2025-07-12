@@ -307,7 +307,7 @@ export default function Main() {
             <div className="w-full lg:w-1/3 flex flex-col items-start mt-[6px]">
               <Image src={BiggerLogo} alt="Bigger logo" className="w-auto h-15 object-contain mb-4" />
               <p className="text-[#757575] text-base leading-5 tracking-tight font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                A growing student-led community built for learners across AS, A Levels, AP, and undergrad programs. From revision and learning resources to solving your doubts, we're here to make education easier, smarter, and more connected
+                A thriving student-led community built for learners across IGCSE and IALs (AS+ A2). From revision and learning resources to solving your doubts, we're here to make education easier, smarter, and more connected
               </p>
             </div>
 
