@@ -261,7 +261,7 @@ export default function Main() {
                 className="cursor-pointer bg-[#3F82FD] hover:bg-[#143166] text-white border-5 border-[#B1CCFF] border-opacity-50 px-9 py-3 rounded-full text-xl poppins-semibold flex items-center gap-5"
                 style={{ fontFamily: 'Poppins, sans-serif' }}
               >
-                <Image src={WhiteDiscordLogo} alt="Discord" width={36} height={36} className="w-9 h-auto" />
+                <Image src={WhiteDiscordLogo} alt="Discord" className="w-9 h-auto" />
                 Join the community
               </button>
             </a>
