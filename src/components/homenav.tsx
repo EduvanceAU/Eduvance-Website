@@ -75,6 +75,7 @@ const NavDropdown = ({ labelMain, labelSmall, items }) => {
 function Home(props) {
   const [subjects, setSubjects] = useState([]);
   useEffect(() => {
+    // Dynamically generating subject list for sidebar
       supabase
       .from('subjects')
       .select('name, syllabus_type')
