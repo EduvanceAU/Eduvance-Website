@@ -32,7 +32,6 @@ export default function ContributorUploadResource() {
     }
     // eslint-disable-next-line
   }, []);
-
   // Fetch subjects
   useEffect(() => {
     if (!supabaseClient) return;
@@ -221,11 +220,27 @@ export default function ContributorUploadResource() {
                 {loadingSubjects ? (
                   <option>Loading subjects...</option>
                 ) : (
-                  subjects.map((subject) => (
-                    <option key={subject.id} value={subject.id}>
-                      {subject.name} ({subject.code}) - {subject.syllabus_type}
-                    </option>
-                  ))
+                  <>
+                    <optgroup label="IAL">
+                      {subjects
+                        .filter((subject) => subject.syllabus_type === "IAL")
+                        .map((subject) => (
+                          <option key={subject.id} value={subject.id}>
+                            {subject.name} ({subject.code}) - {subject.syllabus_type}
+                          </option>
+                        ))}
+                    </optgroup>
+
+                    <optgroup label="IGCSE">
+                      {subjects
+                        .filter((subject) => subject.syllabus_type === "IGCSE")
+                        .map((subject) => (
+                          <option key={subject.id} value={subject.id}>
+                            {subject.name} ({subject.code}) - {subject.syllabus_type}
+                          </option>
+                        ))}
+                    </optgroup>
+                  </>
                 )}
               </select>
             </div>

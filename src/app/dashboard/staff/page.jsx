@@ -297,9 +297,25 @@ export default function UploadResource() {
                     {resourceCategories.map((cat) => <option key={cat.value} value={cat.value}>{cat.label}</option>)}
                   </select>
                   <select value={selectedSubjectId} onChange={(e) => setSelectedSubjectId(e.target.value)} className="cursor-pointer w-full border p-2 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 transition" required>
-                    {subjects.map((subject) => (
-                      <option key={subject.id} value={subject.id}>{subject.name} ({subject.code}) - {subject.syllabus_type}</option>
-                    ))}
+                    <optgroup label="IAL">
+                      {subjects
+                        .filter((subject) => subject.syllabus_type === "IAL")
+                        .map((subject) => (
+                          <option key={subject.id} value={subject.id}>
+                            {subject.name} ({subject.code}) - {subject.syllabus_type}
+                          </option>
+                        ))}
+                    </optgroup>
+
+                    <optgroup label="IGCSE">
+                      {subjects
+                        .filter((subject) => subject.syllabus_type === "IGCSE")
+                        .map((subject) => (
+                          <option key={subject.id} value={subject.id}>
+                            {subject.name} ({subject.code}) - {subject.syllabus_type}
+                          </option>
+                        ))}
+                    </optgroup>
                   </select>
                   <button type="submit" className="cursor-pointer w-full bg-blue-600 hover:bg-blue-700 transition text-white py-2 rounded-lg flex items-center justify-center gap-2"><svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M7 10l5 5m0 0l5-5m-5 5V4" /></svg>Submit Resource</button>
                 </form>

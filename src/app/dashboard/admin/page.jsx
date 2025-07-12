@@ -401,7 +401,7 @@ export default function AdminDashboard() {
                       const units = selectedSubject?.units || [];
                       if (Array.isArray(units) && units.length > 0) {
                         return (
-                          <select value={unitChapter} onChange={e => setUnitChapter(e.target.value)} className="w-full border p-2 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 transition">
+                          <select value={unitChapter} onChange={e => setUnitChapter(e.target.value)} className="cursor-pointer w-full border p-2 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 transition">
                             <option value="">Select Unit/Chapter (optional)</option>
                             {units.map((unit, idx) => (
                               <option key={unit.code || unit.name || idx} value={unit.unit || unit.name}>{unit.unit ? `${unit.unit} - ${unit.name}` : unit.name}</option>
@@ -426,9 +426,25 @@ export default function AdminDashboard() {
                       ))}
                     </select>
                     <select value={selectedSubjectId} onChange={(e) => setSelectedSubjectId(e.target.value)} className="cursor-pointer w-full border p-2 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 transition">
-                      {subjects.map((sub) => (
-                        <option key={sub.id} value={sub.id}>{sub.name} ({sub.code}) - {sub.syllabus_type}</option>
-                      ))}
+                      <optgroup label="IAL">
+                        {subjects
+                          .filter((subject) => subject.syllabus_type === "IAL")
+                          .map((subject) => (
+                            <option key={subject.id} value={subject.id}>
+                              {subject.name} ({subject.code}) - {subject.syllabus_type}
+                            </option>
+                          ))}
+                      </optgroup>
+
+                      <optgroup label="IGCSE">
+                        {subjects
+                          .filter((subject) => subject.syllabus_type === "IGCSE")
+                          .map((subject) => (
+                            <option key={subject.id} value={subject.id}>
+                              {subject.name} ({subject.code}) - {subject.syllabus_type}
+                            </option>
+                          ))}
+                      </optgroup>
                     </select>
                   </div>
                     <button type="submit" className="cursor-pointer w-full bg-blue-600 hover:bg-blue-700 transition text-white py-2 rounded-lg flex items-center justify-center gap-2"><svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M7 10l5 5m0 0l5-5m-5 5V4" /></svg>Submit Resource</button>
