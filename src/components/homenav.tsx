@@ -6,7 +6,8 @@ import { ChevronRight } from 'lucide-react';
 import { supabase } from './client/supabaseClient';
 import { Auth } from '@supabase/auth-ui-react';
 import { ThemeSupa } from '@supabase/auth-ui-shared';
-import { Button } from "@/components/ui/button"
+import BlueSolo from '@/assets/png/BlueSolo.png'
+import SmallLogo from '@/assets/png/SmallLogo.png'
 import {
   Dialog,
   DialogContent,
@@ -175,7 +176,7 @@ function Home(props) {
             </svg>
           </button>
           <Link href="/">
-            <Image src="/SmallLogo.svg" alt="Eduvance" width={35} height={35} />
+            <Image src={SmallLogo} alt="Eduvance" width={35} height={35} />
           </Link>
           <Link href="/">
             <span className="font-grand-local text-xl sm:text-2xl text-black">Eduvance</span>
@@ -362,8 +363,8 @@ function Home(props) {
         <div className="flex justify-between items-center p-4">
           {/* Logo/Image */}
         
-          <img
-            src="/BlueSolo.svg"
+          <Image
+            src={BlueSolo}
             alt="Eduvance Logo"
             className="w-11 h-11 object-contain"
           />
