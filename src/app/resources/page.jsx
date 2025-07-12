@@ -39,7 +39,7 @@ export default function Resources() {
     <Home showExtra/>
     <main className="flex flex-col lg:flex-row w-full min-h-screen px-4 py-4">
       {/* Left Side */}
-      <div className="w-full lg:w-1/2 flex flex-col items-start justify-center gap-6 px-10 py-16 relative">
+      <div className="w-full lg:w-1/2 flex flex-col items-start justify-center gap-6 px-10 py-5 lg:py-16 relative">
         <div className="relative w-full h-[250px] sm:h-[200px] md:h-[180px] lg:h-[150px]">
           {/* PagesWidget at 5% from top, 0% from left */}
           <img
@@ -65,7 +65,7 @@ export default function Resources() {
       </div>
 
       {/* Right Side */}
-      <div className="w-full lg:w-1/2 flex flex-col items-center lg:items-start justify-center gap-6 px-10 py-16">
+      <div className="w-full lg:w-1/2 flex flex-col items-center lg:items-start justify-center gap-6 px-10 py-5 lg:py-16">
         <h1 className="text-4xl font-semibold leading-[40px] tracking-tighter" style={{ fontFamily: 'Poppins, sans-serif' }}>
           Browse Resources by Subject
         </h1>
@@ -78,7 +78,7 @@ export default function Resources() {
                   className="text-xl font-[550] text-[#153064]"
                   style={{ fontFamily: "Poppins, sans-serif" }}
                 >
-                  {subject.name} Revision Resources
+                  {subject.name} <span className="hidden sm:inline">Revision Resources</span>
                 </p>
                 <img
                   src="/BArrowR.svg"
