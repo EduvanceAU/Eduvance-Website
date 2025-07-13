@@ -5,23 +5,34 @@ import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { useSupabaseAuth } from "@/components/client/SupabaseAuthContext";
 
-const subjects = [
-  { name: "Physics", link: "/subjects/physics/IAL/communityNotes" },
-  { name: "Chemistry", link: "/subjects/chemistry/IAL/communityNotes" },
-  { name: "Biology", link: "/subjects/biology/IAL/communityNotes" },
-  { name: "Maths", link: "/subjects/maths/IAL/communityNotes" },
-];
-
 const SubjectButtons = () => {
+  const [subjects, setSubjects] = useState([]);
+
+  useEffect(() => {
+    async function fetchSubjects() {
+      const { data, error } = await supabase
+        .from('subjects')
+        .select('name')
+        .eq('syllabus_type', 'IAL');
+      if (!error && data) {
+        setSubjects(data.map(subj => subj.name));
+      }
+    }
+    fetchSubjects();
+  }, []);
+
   return (
     <div className="flex flex-wrap gap-2 mb-6">
-      {subjects.map((subject, index) => (
-        <Link key={index} href={subject.link}>
-          <button className="px-4 py-2 cursor-pointer bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition">
-            {subject.name}
-          </button>
-        </Link>
-      ))}
+      {subjects.map((name, index) => {
+        const slug = name.toLowerCase().replace(/\s+/g, '-');
+        return (
+          <Link key={index} href={`/subjects/${slug}/IAL/communityNotes`}>
+            <button className="px-4 py-2 cursor-pointer bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition">
+              {name}
+            </button>
+          </Link>
+        );
+      })}
     </div>
   );
 };
@@ -160,7 +171,6 @@ export default function IALCommunityNotesPage() {
             Subjects
           </h2>
           <SubjectButtons />
-          <div className="flex flex-wrap gap-2"></div>
         </div>
 
         <div className="w-full space-y-10">

@@ -5,31 +5,41 @@ import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { useSupabaseAuth } from "@/components/client/SupabaseAuthContext";
 
-// At the top, define template variables
-const subjectName = '{subjectName}';
-const examCode = '{examCode}';
-const syllabusType = '{syllabusType}';
-
-const subjects = [
-  { name: subjectName, link: `/subjects/${subjectName}/${syllabusType}/communityNotes` },
-  // Add more subjects as needed, or leave as a single template entry
-];
-
 const SubjectButtons = () => {
+  const [subjects, setSubjects] = useState([]);
+
+  useEffect(() => {
+    async function fetchSubjects() {
+      const { data, error } = await supabase
+        .from('subjects')
+        .select('name')
+        .order('name', { ascending: true })
+        .eq('syllabus_type', 'IGCSE');
+      if (!error && data) {
+        setSubjects(data.map(subj => subj.name));
+      }
+    }
+    fetchSubjects();
+  }, []);
+
   return (
     <div className="flex flex-wrap gap-2 mb-6">
-      {subjects.map((subject, index) => (
-        <Link key={index} href={subject.link}>
-          <button className="px-4 py-2 cursor-pointer bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition">
-            {subject.name}
-          </button>
-        </Link>
-      ))}
+      {subjects.map((name, index) => {
+        const slug = name.toLowerCase().replace(/\s+/g, '-');
+        return (
+          <Link key={index} href={`/subjects/${slug}/IGCSE/communityNotes`}>
+            <button className="px-4 py-2 cursor-pointer bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition">
+              {name}
+            </button>
+          </Link>
+        );
+      })}
     </div>
   );
 };
 
 export default function IGCSECommunityNotesPage() {
+  const examCode = '{subjectCode}';
   const { session, user, loading: authLoading } = useSupabaseAuth();
   const [units, setUnits] = useState([]);
   const [expandedUnits, setExpandedUnits] = useState({});
@@ -50,11 +60,11 @@ export default function IGCSECommunityNotesPage() {
       const { data: subjectData, error: subjectError } = await supabase
         .from('subjects')
         .select('units')
-        .eq('name', subjectName)
-        .eq('syllabus_type', syllabusType)
+        .eq('name', '{subjectName}')
+        .eq('syllabus_type', 'IGCSE')
         .single();
       if (subjectError || !subjectData) {
-        setError(subjectError || new Error(`Subject "${subjectName}" not found.`));
+        setError(subjectError || new Error('Subject "{subjectName}" not found.'));
         return;
       }
       let fetchedUnits = subjectData.units || [];
@@ -82,15 +92,15 @@ export default function IGCSECommunityNotesPage() {
     async function fetchNotes() {
       setLoading(true);
       setError(null);
-      // Get subject id for this subject
+      // Get subject id for {subjectName} IGCSE
       const { data: subjectData, error: subjectError } = await supabase
         .from('subjects')
         .select('id')
-        .eq('name', subjectName)
-        .eq('syllabus_type', syllabusType)
+        .eq('name', '{subjectName}')
+        .eq('syllabus_type', 'IGCSE')
         .single();
       if (subjectError || !subjectData) {
-        setError(subjectError || new Error(`Subject "${subjectName}" not found.`));
+        setError(subjectError || new Error('Subject "{subjectName}" not found.'));
         setLoading(false);
         return;
       }
@@ -135,7 +145,7 @@ export default function IGCSECommunityNotesPage() {
           className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#000000] mb-8 text-left tracking-[-0.035em]"
           style={{ fontFamily: "Poppins, sans-serif" }}
         >
-          {syllabusType} <span className="bg-[#1A69FA] px-2 py-1 -rotate-1 inline-block"><span className="text-[#FFFFFF]">{subjectName}</span></span> Community Notes
+          IGCSE <span className="bg-[#1A69FA] px-2 py-1 -rotate-1 inline-block"><span className="text-[#FFFFFF]">{subjectName}</span></span> Community Notes
         </h1>
 
         <div
@@ -154,7 +164,7 @@ export default function IGCSECommunityNotesPage() {
           className="text-sm sm:text-md lg:text-lg font-[500] leading-6 text-[#707070] mb-8 text-left tracking-[-0.015em]"
           style={{ fontFamily: "Poppins, sans-serif" }}
         >
-          Explore our collection of Edexcel {syllabusType} {subjectName} community-contributed resources, including detailed notes, explanations, and revision tips. These resources are perfect for deepening your understanding, clarifying tricky concepts, and supporting your study alongside past papers.
+          Explore our collection of Edexcel IGCSE {subjectName} community-contributed resources, including detailed notes, explanations, and revision tips. These resources are perfect for deepening your understanding, clarifying tricky concepts, and supporting your study alongside past papers.
         </h3>
 
         <div className="w-full mb-8">
@@ -162,7 +172,6 @@ export default function IGCSECommunityNotesPage() {
             Subjects
           </h2>
           <SubjectButtons />
-          <div className="flex flex-wrap gap-2"></div>
         </div>
 
         <div className="w-full space-y-10">
