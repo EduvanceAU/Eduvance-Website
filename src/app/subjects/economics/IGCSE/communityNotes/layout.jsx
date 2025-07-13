@@ -11,7 +11,7 @@ export const viewport = {
 export const metadata = {
   title: `${refsyllabusType} ${refName}`,
   description:
-    `A growing collection of clear, concise notes and study guides for ${refsyllabusType} ${refName}, created entirely by students and teachers who understand what truly helps. Whether you're revising for exams or catching up on topics, these will always be useful`,
+    `Discover clear, concise notes and study guides for ${refsyllabusType} ${refName}, created by students and teachers who get what works. Ideal for exam preparation or topic review, these resources are made to support your learning every step of the way!`,
   icons: {
     icon: "/BlueSolo.svg",
     shortcut: "/BlueSolo.svg",
@@ -20,14 +20,14 @@ export const metadata = {
   openGraph: {
     title: `${refsyllabusType} ${refName}`,
     description:
-      `A growing collection of clear, concise notes and study guides for ${refsyllabusType} ${refName}, created entirely by students and teachers who understand what truly helps. Whether you're revising for exams or catching up on topics, these will always be useful`,
+      `Discover clear, concise notes and study guides for ${refsyllabusType} ${refName}, created by students and teachers who get what works. Ideal for exam preparation or topic review, these resources are made to support your learning every step of the way!`,
     url: `https://eduvance-website-copy.vercel.app/subjects/${refName}`,
     type: "website",
     images: [
       {
-        url: "https://eduvance-website-copy.vercel.app/SmallLogo.svg",
-        width: 40,
-        height: 40,
+        url: "https://eduvance-website-copy.vercel.app/tempbg.png",
+        width: 1200,
+        height: 630,
         alt: "Eduvance Image",
       },
     ],
@@ -36,8 +36,8 @@ export const metadata = {
     card: "summary_large_image",
     title: `${refsyllabusType} ${refName}`,
     description:
-      `A growing collection of clear, concise notes and study guides for ${refsyllabusType} ${refName}, created entirely by students and teachers who understand what truly helps. Whether you're revising for exams or catching up on topics, these will always be useful`,
-    images: ["https://eduvance-website-copy.vercel.app/SmallLogo.svg"],
+      `Discover clear, concise notes and study guides for ${refsyllabusType} ${refName}, created by students and teachers who get what works. Ideal for exam preparation or topic review, these resources are made to support your learning every step of the way!`,
+    images: ["https://eduvance-website-copy.vercel.app/tempbg.png"],
   },
 };
 
