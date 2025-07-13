@@ -6,23 +6,54 @@ import { supabase } from "../lib/supabaseClient";
 import { useSupabaseAuth } from "@/components/client/SupabaseAuthContext";
 import { Auth } from '@supabase/auth-ui-react';
 import { ThemeSupa } from '@supabase/auth-ui-shared';
-import { useRouter } from 'next/router';
+// Remove: import { useRouter } from 'next/router';
 
 // At the top, define variables for subjectName, syllabusType, and examCode
 const subjectName = '{subjectName}';
 const subjectSlug = subjectName.toLowerCase().replace(/\s+/g, '-');
-const syllabusType = '{syllabusType}';
 const examCode = '{examCode}';
+
+// Add SubjectButtons component that fetches subjects dynamically
+const SubjectButtons = () => {
+  const [subjects, setSubjects] = useState([]);
+
+  useEffect(() => {
+    async function fetchSubjects() {
+      const { data, error } = await supabase
+        .from('subjects')
+        .select('name')
+        .eq('syllabus_type', 'IGCSE');
+      if (!error && data) {
+        setSubjects(data.map(subj => subj.name));
+      }
+    }
+    fetchSubjects();
+  }, []);
+
+  return (
+    <div className="flex flex-wrap gap-2 mb-6">
+      {subjects.map((name, index) => {
+        const slug = name.toLowerCase().replace(/\s+/g, '-');
+        return (
+          <Link key={index} href={`/subjects/${slug}/IGCSE/resources`}>
+            <button className="px-4 py-2 cursor-pointer bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition">
+              {name}
+            </button>
+          </Link>
+        );
+      })}
+    </div>
+  );
+};
 
 export default function IGCSEResources() {
   const { session, user, loading: authLoading } = useSupabaseAuth();
-  // This state will hold your links data, structured by unit
   const [units, setUnits] = useState([]);
   const [expandedUnits, setExpandedUnits] = useState({});
+  const [unitResources, setUnitResources] = useState({});
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showLoginPopup, setShowLoginPopup] = useState(false);
-  const [unitResources, setUnitResources] = useState({});
 
   const toggleUnit = (unit) => {
     setExpandedUnits(prev => ({
@@ -31,17 +62,6 @@ export default function IGCSEResources() {
     }));
   };
 
-  useEffect(() => {
-    if (session) setShowLoginPopup(true);
-  }, [session]);
-
-  useEffect(() => {
-    if (showLoginPopup) {
-      const timer = setTimeout(() => setShowLoginPopup(false), 2500);
-      return () => clearTimeout(timer);
-    }
-  }, [showLoginPopup]);
-
   // Fetch units from subject table
   useEffect(() => {
     const fetchUnits = async () => {
@@ -49,10 +69,10 @@ export default function IGCSEResources() {
         .from('subjects')
         .select('units')
         .eq('name', subjectName)
-        .eq('syllabus_type', syllabusType)
+        .eq('syllabus_type', 'IGCSE')
         .single();
       if (subjectError || !subjectData) {
-        setError(subjectError || new Error(`Subject "${subjectName}" not found.`));
+        setError(subjectError || new Error('Subject "Physics" not found.'));
         return;
       }
       let fetchedUnits = subjectData.units || [];
@@ -68,7 +88,6 @@ export default function IGCSEResources() {
         return (a.name || '').localeCompare(b.name || '');
       });
       setUnits(fetchedUnits);
-      // Set all units expanded by default
       setExpandedUnits(fetchedUnits.reduce((acc, unit) => {
         acc[unit.unit] = true;
         return acc;
@@ -86,11 +105,11 @@ export default function IGCSEResources() {
           .from('subjects')
           .select('id')
           .eq('name', subjectName)
-          .eq('syllabus_type', syllabusType)
+          .eq('syllabus_type', 'IGCSE')
           .single();
 
         if (subjectError || !subjectData) {
-          setError(subjectError || new Error(`Subject "${subjectName}" not found.`));
+          setError(subjectError || new Error('Subject "Physics" not found.'));
           setLoading(false);
           return;
         }
@@ -132,52 +151,15 @@ export default function IGCSEResources() {
             last: resource.updated_at
           });
         });
-        // Debug log to verify grouping
-        console.log('Grouped Resources:', groupedResources);
         setUnitResources(groupedResources);
         setLoading(false);
       } catch (error) {
-        console.error("Error fetching resources:", error);
         setError(error);
         setLoading(false);
       }
     };
-
     fetchResources();
   }, [session]);
-
-  // Add SubjectButtons component that fetches subjects dynamically
-  const SubjectButtons = () => {
-    const [subjects, setSubjects] = useState([]);
-    const router = useRouter();
-
-    useEffect(() => {
-      async function fetchSubjects() {
-        const { data, error } = await supabase
-          .from('subjects')
-          .select('name')
-          .eq('syllabus_type', syllabusType);
-        if (!error && data) {
-          setSubjects(data.map(subj => subj.name));
-        }
-      }
-      fetchSubjects();
-    }, []);
-
-    return (
-      <div className="flex flex-wrap gap-2 mb-6">
-        {subjects.map((name, index) => (
-          <button
-            key={index}
-            className="px-4 py-2 cursor-pointer bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition"
-            onClick={() => router.push(`/subjects/${name}/${syllabusType}/resources`)}
-          >
-            {name}
-          </button>
-        ))}
-      </div>
-    );
-  };
 
   if (error) {
     return (
@@ -186,11 +168,12 @@ export default function IGCSEResources() {
       </main>
     );
   }
+
   return (
     <main className="min-h-screen bg-white flex flex-col items-center justify-start py-10 m-10">
       <div className="w-full max-w-5xl px-4">
         <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#000000] mb-8 text-left tracking-[-0.035em]" style={{ fontFamily: "Poppins, sans-serif" }}>
-          {subjectName} <span className="bg-[#1A69FA] px-2 py-1 -rotate-1 inline-block"><span className="text-[#FFFFFF]">Resources</span></span>
+          IGCSE <span className="bg-[#1A69FA] px-2 py-1 -rotate-1 inline-block"><span className="text-[#FFFFFF]">{subjectName}</span></span> Resources
         </h1>
 
         <div className="inline-flex items-center justify-center px-4 py-2 mb-8 rounded-md" style={{ border: "1.5px solid #DBDBDB", fontFamily: "Poppins, sans-serif" }}>
@@ -200,8 +183,15 @@ export default function IGCSEResources() {
         </div>
 
         <h3 className="text-sm sm:text-md lg:text-lg font-[500] leading-6 text-[#707070] mb-8 text-left max-w-4xl tracking-[-0.015em]" style={{ fontFamily: "Poppins, sans-serif" }}>
-          Access a wide range of Edexcel {subjectName} resources—all in one place. Whether you're brushing up on concepts or aiming to master exam strategies, these materials are designed to support your revision and boost your performance
+          Access a wide range of Edexcel IGCSE {subjectName} resources—all in one place. Whether you're brushing up on concepts or aiming to master exam strategies, these materials are designed to support your revision and boost your performance
         </h3>
+
+        <div className="w-full mb-8">
+          <h2 className="text-xl font-[550] tracking-tight text-[#000000] mb-4 text-left">
+            Subjects
+          </h2>
+          <SubjectButtons />
+        </div>
 
         {/* General Resources */}
         {unitResources["General"] && (
@@ -272,7 +262,6 @@ export default function IGCSEResources() {
             )}
           </div>
         ))}
-        <SubjectButtons />
       </div>
     </main>
   );
