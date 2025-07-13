@@ -8,7 +8,7 @@ export const viewport = {
 export const metadata = {
   title: subjectName,
   description:
-    `Explore a complete collection of learning tools tailored for ${refName} — including curated revision resources, official past papers, and student-shared notes. Whether you're brushing up on key concepts, preparing for upcoming exams, or looking for simplified explanations from peers, this page brings everything together in one place to help you study smarter and stay ahead.`,
+    `Explore all-in-one study tools for ${refName} — from curated revision guides and official past papers to peer-shared notes. Perfect for reviewing concepts, preparing for exams, or finding simplified explanations, everything you need is right here to boost your learning and help you stay ahead!`,
   icons: {
     icon: "/BlueSolo.svg",
     shortcut: "/BlueSolo.svg",
@@ -17,14 +17,14 @@ export const metadata = {
   openGraph: {
     title: subjectName,
     description:
-      `Explore a complete collection of learning tools tailored for ${refName} — including curated revision resources, official past papers, and student-shared notes. Whether you're brushing up on key concepts, preparing for upcoming exams, or looking for simplified explanations from peers, this page brings everything together in one place to help you study smarter and stay ahead.`,
+      `Explore all-in-one study tools for ${refName} — from curated revision guides and official past papers to peer-shared notes. Perfect for reviewing concepts, preparing for exams, or finding simplified explanations, everything you need is right here to boost your learning and help you stay ahead!`,
     url: `https://eduvance-website-copy.vercel.app/subjects/${refName}`,
     type: "website",
     images: [
       {
-        url: "https://eduvance-website-copy.vercel.app/SmallLogo.svg",
-        width: 40,
-        height: 40,
+        url: "https://eduvance-website-copy.vercel.app/tempbg.png",
+        width: 1200,
+        height: 630,
         alt: "Eduvance Image",
       },
     ],
@@ -33,8 +33,8 @@ export const metadata = {
     card: "summary_large_image",
     title: subjectName,
     description:
-      `Explore a complete collection of learning tools tailored for ${refName} — including curated revision resources, official past papers, and student-shared notes. Whether you're brushing up on key concepts, preparing for upcoming exams, or looking for simplified explanations from peers, this page brings everything together in one place to help you study smarter and stay ahead.`,
-    images: ["https://eduvance-website-copy.vercel.app/SmallLogo.svg"],
+      `Explore all-in-one study tools for ${refName} — from curated revision guides and official past papers to peer-shared notes. Perfect for reviewing concepts, preparing for exams, or finding simplified explanations, everything you need is right here to boost your learning and help you stay ahead!`,
+    images: ["https://eduvance-website-copy.vercel.app/tempbg.png"],
   },
 };
 

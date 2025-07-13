@@ -11,7 +11,7 @@ export const viewport = {
 export const metadata = {
   title: `${refsyllabusType} ${refName}`,
   description:
-    `Access a vast repository of past papers for ${refsyllabusType} ${refName}, organized by year and session for easy browsing. Whether practicing under timed conditions or reviewing marking schemes, this is your one-stop destination for exam preparation — streamlined, reliable, and always up to date`,
+    `Browse a complete repository of ${refsyllabusType} ${refName} past papers, sorted by year and session. Perfect for timed practice or marking scheme review — your go-to resource for efficient, up-to-date exam preparation!`,
   icons: {
     icon: "/BlueSolo.svg",
     shortcut: "/BlueSolo.svg",
@@ -20,14 +20,14 @@ export const metadata = {
   openGraph: {
     title: `${refsyllabusType} ${refName}`,
     description:
-      `Access a vast repository of past papers for ${refsyllabusType} ${refName}, organized by year and session for easy browsing. Whether practicing under timed conditions or reviewing marking schemes, this is your one-stop destination for exam preparation — streamlined, reliable, and always up to date`,
+      `Browse a complete repository of ${refsyllabusType} ${refName} past papers, sorted by year and session. Perfect for timed practice or marking scheme review — your go-to resource for efficient, up-to-date exam preparation!`,
     url: `https://eduvance-website-copy.vercel.app/subjects/${refName}`,
     type: "website",
     images: [
       {
-        url: "https://eduvance-website-copy.vercel.app/SmallLogo.svg",
-        width: 40,
-        height: 40,
+        url: "https://eduvance-website-copy.vercel.app/tempbg.png",
+        width: 1200,
+        height: 630,
         alt: "Eduvance Image",
       },
     ],
@@ -36,8 +36,8 @@ export const metadata = {
     card: "summary_large_image",
     title: `${refsyllabusType} ${refName}`,
     description:
-      `Access a vast repository of past papers for ${refsyllabusType} ${refName}, organized by year and session for easy browsing. Whether practicing under timed conditions or reviewing marking schemes, this is your one-stop destination for exam preparation — streamlined, reliable, and always up to date`,
-    images: ["https://eduvance-website-copy.vercel.app/SmallLogo.svg"],
+      `Browse a complete repository of ${refsyllabusType} ${refName} past papers, sorted by year and session. Perfect for timed practice or marking scheme review — your go-to resource for efficient, up-to-date exam preparation!`,
+    images: ["https://eduvance-website-copy.vercel.app/tempbg.png"],
   },
 };
 
