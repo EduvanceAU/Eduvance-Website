@@ -36,6 +36,7 @@ const NavDropdown = ({ labelMain, labelSmall, items }) => {
   return (
     <div className="relative" ref={dropdownRef}>
       <button
+        aria-label='access-dropdown'
         onClick={() => setIsOpen(!isOpen)}
         className="cursor-pointer text-[#555555] text-sm sm:text-base lg:text-lg font-semibold hover:text-black transition tracking-[-1px] flex items-center gap-1"
       >
@@ -183,6 +184,7 @@ function Home(props) {
         {/* 👈 Left Side: Sidebar Button + Logo in one group */}
         <div className="flex items-center gap-2">
           <button
+            aria-label='sidebar-adjustment'
             className="cursor-pointer flex items-center justify-center w-10 h-10 rounded-full hover:bg-[#BAD1FD] transition-colors duration-200"
             onClick={() => setSidebarOpen(true)}
           >
