@@ -298,9 +298,9 @@ export default function Main() {
       </section>
       
       {/* Footer Section */}
-      <footer className="w-full bg-[#357BFD] pt-24 pb-8">
+      <footer className="w-full bg-[#357BFD] pt-15 sm:pt-24 pb-8">
         <div className="container mx-auto px-4 relative">
-          <Image src={EduvanceFooter} alt="Footer" className="h-auto w-[1900px] mx-auto transform -translate-y-5" />
+          <Image src={EduvanceFooter} alt="Footer" className="h-auto w-[1900px] mx-auto transform sm:-translate-y-5 -translate-y-[31px]" />
 
           <div className="rounded-2xl p-6 max-w-[1850px] mx-auto h-[920px] sm:h-[920px] lg:h-[520px] bg-gradient-to-b from-[#FFFFFF] via-[#FAFCFF] to-[#357BFD] flex flex-col lg:flex-row gap-8 shadow-[0px_-10px_30px_#357BFD40] translate-y-[-40px]">
             {/* Left Column */}
