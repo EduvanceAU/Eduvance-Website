@@ -15,7 +15,7 @@ export const metadata = {
     title: "Contribute",
     description:
       "Browse a diverse library of shared resources — including notes, study guides, slides, and question banks — contributed by both students and teachers. These materials are here to support your learning and foster a more open, collaborative approach to education!",
-    url: `https://eduvance-website-copy.vercel.app/subjects/${refName}`,
+    url: `https://eduvance-website-copy.vercel.app/resources`,
     type: "website",
     images: [
       {
