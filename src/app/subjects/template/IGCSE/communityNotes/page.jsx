@@ -46,6 +46,7 @@ export default function IGCSECommunityNotesPage() {
   const [unitNotes, setUnitNotes] = useState({});
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
+  const subjectName = '{subjectName}';
 
   const toggleUnit = (unit) => {
     setExpandedUnits(prev => ({
@@ -60,11 +61,11 @@ export default function IGCSECommunityNotesPage() {
       const { data: subjectData, error: subjectError } = await supabase
         .from('subjects')
         .select('units')
-        .eq('name', '{subjectName}')
+        .eq('name', subjectName)
         .eq('syllabus_type', 'IGCSE')
         .single();
       if (subjectError || !subjectData) {
-        setError(subjectError || new Error('Subject "{subjectName}" not found.'));
+        setError(subjectError || new Error('Subject "' + subjectName + '" not found.'));
         return;
       }
       let fetchedUnits = subjectData.units || [];
@@ -96,11 +97,11 @@ export default function IGCSECommunityNotesPage() {
       const { data: subjectData, error: subjectError } = await supabase
         .from('subjects')
         .select('id')
-        .eq('name', '{subjectName}')
+        .eq('name', subjectName)
         .eq('syllabus_type', 'IGCSE')
         .single();
       if (subjectError || !subjectData) {
-        setError(subjectError || new Error('Subject "{subjectName}" not found.'));
+        setError(subjectError || new Error('Subject "' + subjectName + '" not found.'));
         setLoading(false);
         return;
       }
