@@ -22,9 +22,6 @@ const DISPLAY_END_YEAR = 2024;
 const years = Array.from({ length: DISPLAY_END_YEAR - DISPLAY_START_YEAR + 1 }, (_, i) => DISPLAY_START_YEAR + i);
 
 
-const [units, setUnits] = useState([]);
-const [expandedUnits, setExpandedUnits] = useState({});
-
 
 // Remove the static subjects array
 // const subjects = [
@@ -95,6 +92,8 @@ const specs = [
 ];
 
 export default function IGCSEPastPapersPage() {
+  const [units, setUnits] = useState([]);
+  const [expandedUnits, setExpandedUnits] = useState({});
   // Replace all instances of 'Physics' with subjectName, 'IGCSE' with syllabusType, and '4PH1' with examCode
   const subjectName = '{subjectName}';
   const subjectSlug = subjectName.toLowerCase().replace(/\s+/g, '-');

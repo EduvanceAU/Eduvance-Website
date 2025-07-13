@@ -6,7 +6,7 @@ import { supabase } from "../lib/supabaseClient";
 import { useSupabaseAuth } from "@/components/client/SupabaseAuthContext";
 import { Auth } from '@supabase/auth-ui-react';
 import { ThemeSupa } from '@supabase/auth-ui-shared';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 
 // At the top, define variables for subjectName, syllabusType, and examCode
 const subjectName = '{subjectName}';
