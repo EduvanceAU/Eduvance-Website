@@ -3,7 +3,7 @@ export const viewport = {
 }
 
 export const metadata = {
-  title: "Contribute",
+  title: "Resources",
   description:
     "Browse a diverse library of shared resources — including notes, study guides, slides, and question banks — contributed by both students and teachers. These materials are here to support your learning and foster a more open, collaborative approach to education!",
   icons: {
@@ -12,7 +12,7 @@ export const metadata = {
     apple: "/BlueSolo.svg",
   },
   openGraph: {
-    title: "Contribute",
+    title: "Resources",
     description:
       "Browse a diverse library of shared resources — including notes, study guides, slides, and question banks — contributed by both students and teachers. These materials are here to support your learning and foster a more open, collaborative approach to education!",
     url: `https://eduvance-website-copy.vercel.app/resources`,
@@ -28,7 +28,7 @@ export const metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Contribute",
+    title: "Resources",
     description:
       "Browse a diverse library of shared resources — including notes, study guides, slides, and question banks — contributed by both students and teachers. These materials are here to support your learning and foster a more open, collaborative approach to education!",
     images: ["https://eduvance-website-copy.vercel.app/tempbg.png"],
