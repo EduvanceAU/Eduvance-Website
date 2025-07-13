@@ -1,5 +1,5 @@
-import dotenv from 'dotenv';
-dotenv.config();
+// import dotenv from 'dotenv';
+// dotenv.config();
 
 import { createClient } from '@supabase/supabase-js';
 // Pasted from staffAccess
@@ -75,6 +75,28 @@ async function data() {
   }
 }
 
-export default function sitemap() {
-    return data();
+
+export async function GET() {
+  const urls = await data();
+
+  return new Response(
+    `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${urls
+  .map(
+    (url) => `<url>
+  <loc>${url.url}</loc>
+  <lastmod>${url.lastModified}</lastmod>
+  <changefreq>${url.changeFrequency}</changefreq>
+  <priority>${url.priority}</priority>
+</url>`
+  )
+  .join("\n")}
+</urlset>`,
+    {
+      headers: {
+        "Content-Type": "application/xml",
+      },
+    }
+  );
 }
