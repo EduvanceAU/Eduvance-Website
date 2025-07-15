@@ -96,6 +96,10 @@ Other TODO:
    - Become a tutor/Match with a tutor : People could sign up to teach/study with tutors
    ✔ Collect testimonials from community members for the website @done(25-07-12 16:17)
 
+   ☐ Design a new modular small footer for other website pages (Resources, Notes and Past Papers)
+   ☐ Make a UI component for the modular footer for website pages
+   ☐ Add modular footer to other website pages (Resources, Notes and Past Papers)
+
 Community Feedback :
    ✔ Update member counts on all pages to 18k @done(25-07-04 16:34)
    ☐ Footer image spacing with the main div
@@ -116,3 +120,8 @@ Systems Todo:
    ✔ Updated Community Contributor Page for new unit field dropdown @done(25-07-09 12:06)
    ✔ Updated Staff Console for using community notes table from DB @done(25-07-09 12:06)
    ✔ Update new subject files addition system for modular and robust workflow @done(25-07-13 04:22)
+
+   ☐ Update Staff console for more detailed overview of resources instances
+   ☐ Add backend watermark function for watermarking and downloading approved resources
+   ☐ Update staff console resource cards with a watermark/approve button for backend watermark function
+   ☐ Add resource editing and saving function to staff console resources instances
