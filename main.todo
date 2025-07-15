@@ -112,6 +112,11 @@ Community Feedback :
    ☐ Update discord invite links
    ✔ Pointer Icon/Cursor on Buttons (Stig) @done(25-07-05 16:42)
 
+   ☐ Add modular UI design for main resources page to accomodate more subjects
+   ☐ Choose your exam board should only have IGCSE and IAL
+   ☐ Add a simple page for exam boards with links to other pages
+   ☐ Choose your exam board should be changed to -> Choose your exam qualification
+
 Systems Todo:
    ✔ Update Admin Console UI for extra information (revert) @done(25-07-09 12:05)
    ✔ Update Subject Addition form for extra unit and other information on Admin Console @done(25-07-09 12:05)
