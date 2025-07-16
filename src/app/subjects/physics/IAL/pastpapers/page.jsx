@@ -5,6 +5,7 @@ import { useState, useEffect, useRef } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { useSupabaseAuth } from "@/components/client/SupabaseAuthContext";
 import { useRouter } from 'next/navigation';
+import SmallFoot from '@/components/smallFoot.jsx';
 
 const sessions = [
   { label: "January", value: "January" },
@@ -284,274 +285,280 @@ export default function IALPastPapersPage() {
   }, {});
 
   return error ? (
-    <main className="min-h-screen bg-white flex items-center justify-center">
-      <p className="text-xl text-red-600">Error loading past papers: {error.message}</p>
-    </main>
+    <>
+      <main className="min-h-screen bg-white flex items-center justify-center">
+        <p className="text-xl text-red-600">Error loading past papers: {error.message}</p>
+      </main>
+      <SmallFoot />
+    </>
   ) : (
-    <main className="min-h-screen bg-white flex flex-col items-center justify-start py-10 m-10">
-      <div className="w-full max-w-5xl px-4">
-        <h1
-          className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#000000] mb-8 text-left tracking-[-0.035em]"
-          style={{ fontFamily: "Poppins, sans-serif" }}
-        >
-          IAL <span className="bg-[#1A69FA] px-2 py-1 -rotate-1 inline-block"><span className="text-[#FFFFFF]">Physics</span></span> Past Papers
-        </h1>
+    <>
+      <main className="min-h-screen bg-white flex flex-col items-center justify-start py-10 m-10">
+        <div className="w-full max-w-5xl px-4">
+          <h1
+            className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#000000] mb-8 text-left tracking-[-0.035em]"
+            style={{ fontFamily: "Poppins, sans-serif" }}
+          >
+            IAL <span className="bg-[#1A69FA] px-2 py-1 -rotate-1 inline-block"><span className="text-[#FFFFFF]">Physics</span></span> Past Papers
+          </h1>
 
-        <div
-          className="inline-flex items-center justify-center px-4 py-2 mb-8 rounded-md shadow-xl"
-          style={{
-            border: "1.5px solid #DBDBDB",
-            fontFamily: "Poppins, sans-serif",
-          }}
-        >
-          <span className="text-md font-medium text-black tracking-tight">
-            <span className="font-[501]">Exam code:</span> PHY
-          </span>
-        </div>
+          <div
+            className="inline-flex items-center justify-center px-4 py-2 mb-8 rounded-md shadow-xl"
+            style={{
+              border: "1.5px solid #DBDBDB",
+              fontFamily: "Poppins, sans-serif",
+            }}
+          >
+            <span className="text-md font-medium text-black tracking-tight">
+              <span className="font-[501]">Exam code:</span> PHY
+            </span>
+          </div>
 
-        <h3
-          className="text-sm sm:text-md lg:text-lg font-[500] leading-6 text-[#707070] mb-8 text-left tracking-[-0.015em]"
-          style={{ fontFamily: "Poppins, sans-serif" }}
-        >
-          Explore our collection of Edexcel IAL Physics Past Papers and Mark Schemes below. Practicing with IAL Physics past papers is one of the most effective ways to pinpoint the topics that need more focus—helping you revise smarter and prepare confidently for your upcoming exam
-        </h3>
+          <h3
+            className="text-sm sm:text-md lg:text-lg font-[500] leading-6 text-[#707070] mb-8 text-left tracking-[-0.015em]"
+            style={{ fontFamily: "Poppins, sans-serif" }}
+          >
+            Explore our collection of Edexcel IAL Physics Past Papers and Mark Schemes below. Practicing with IAL Physics past papers is one of the most effective ways to pinpoint the topics that need more focus—helping you revise smarter and prepare confidently for your upcoming exam
+          </h3>
 
-        <div className="w-full mb-8">
-          <h2 className="text-xl font-[550] tracking-tight text-[#000000] mb-4 text-left">
-            Subjects
-          </h2>
-          <SubjectButtons />
-        </div>
+          <div className="w-full mb-8">
+            <h2 className="text-xl font-[550] tracking-tight text-[#000000] mb-4 text-left">
+              Subjects
+            </h2>
+            <SubjectButtons />
+          </div>
 
-        <div className="w-full mb-8">
-          <h2 className="text-xl font-[550] tracking-tight text-[#000000] mb-4 text-left">
-            Filters
-          </h2>
-          <div className="flex flex-wrap gap-2">
+          <div className="w-full mb-8">
+            <h2 className="text-xl font-[550] tracking-tight text-[#000000] mb-4 text-left">
+              Filters
+            </h2>
+            <div className="flex flex-wrap gap-2">
 
-            {/* Years Filter Button & Dropdown */}
-            <div className="relative" ref={yearDropdownRef}>
-              <button
-                onClick={handleToggleYearDropdown}
-                className="px-4 py-2 rounded-lg border cursor-pointer border-gray-400 text-sm font-[501] text-[#153064] hover:bg-gray-50 transition-colors flex items-center"
-                style={{ fontFamily: "Poppins, sans-serif" }}
-              >
-                Years
-                {selectedYears.length > 0 && (
-                  <span className="ml-2 text-xs bg-[#153064] text-white px-1.5 py-0.5 rounded-full">
-                    {selectedYears.length}
-                  </span>
+              {/* Years Filter Button & Dropdown */}
+              <div className="relative" ref={yearDropdownRef}>
+                <button
+                  onClick={handleToggleYearDropdown}
+                  className="px-4 py-2 rounded-lg border cursor-pointer border-gray-400 text-sm font-[501] text-[#153064] hover:bg-gray-50 transition-colors flex items-center"
+                  style={{ fontFamily: "Poppins, sans-serif" }}
+                >
+                  Years
+                  {selectedYears.length > 0 && (
+                    <span className="ml-2 text-xs bg-[#153064] text-white px-1.5 py-0.5 rounded-full">
+                      {selectedYears.length}
+                    </span>
+                  )}
+                </button>
+                {showYearDropdown && (
+                  <div className="absolute z-10 bg-white shadow-lg rounded-lg mt-2 py-2 w-48 max-h-60 overflow-y-auto border border-gray-200">
+                      {years.sort((a, b) => b - a).map((year, index) => (
+                        <div
+                          key={year}
+                          onClick={() => toggleYear(year)}
+                          className={`cursor-pointer px-4 py-2 text-sm flex items-center transition-colors
+                            ${selectedYears.includes(year) ? 'bg-blue-50 text-blue-700' : 'hover:bg-gray-100 text-gray-900'}`}
+                          style={{ fontFamily: "Poppins, sans-serif" }}
+                        >
+                          {/* Square Checkbox */}
+                          <input
+                            type="checkbox"
+                            checked={selectedYears.includes(year)}
+                            onChange={() => {}} // onChange is required but we handle click on div
+                            className="form-checkbox h-4 w-4 text-blue-600 rounded mr-2"
+                          />
+                          {/* Colored Pill for Year */}
+                          <span className={`mr-2 px-2 py-0.5 rounded-full text-xs font-semibold ${getColorClass(index)}`}>
+                            {year}
+                          </span>
+                        </div>
+                      ))}
+                  </div>
                 )}
-              </button>
-              {showYearDropdown && (
-                <div className="absolute z-10 bg-white shadow-lg rounded-lg mt-2 py-2 w-48 max-h-60 overflow-y-auto border border-gray-200">
-                    {years.sort((a, b) => b - a).map((year, index) => (
+              </div>
+
+              {/* Units Filter Button & Dropdown */}
+              <div className="relative" ref={unitDropdownRef}>
+                <button
+                  onClick={handleToggleUnitDropdown}
+                  className="px-4 py-2 rounded-lg border cursor-pointer border-gray-400 text-sm font-[501] text-[#153064] hover:bg-gray-50 transition-colors flex items-center"
+                  style={{ fontFamily: "Poppins, sans-serif" }}
+                >
+                  Units
+                  {selectedUnits.length > 0 && (
+                    <span className="ml-2 text-xs bg-[#153064] text-white px-1.5 py-0.5 rounded-full">
+                      {selectedUnits.length}
+                    </span>
+                  )}
+                </button>
+                {showUnitDropdown && (
+                  <div className="absolute z-10 bg-white shadow-lg rounded-lg mt-2 py-2 w-max max-h-60 overflow-y-auto border border-gray-200">
+                    {units.map((unit, index) => (
                       <div
-                        key={year}
-                        onClick={() => toggleYear(year)}
+                        key={unit.unit}
+                        onClick={() => toggleUnit(unit.unit)}
                         className={`cursor-pointer px-4 py-2 text-sm flex items-center transition-colors
-                          ${selectedYears.includes(year) ? 'bg-blue-50 text-blue-700' : 'hover:bg-gray-100 text-gray-900'}`}
+                          ${selectedUnits.includes(unit.unit) ? 'bg-blue-50 text-blue-700' : 'hover:bg-gray-100 text-gray-900'}`}
                         style={{ fontFamily: "Poppins, sans-serif" }}
                       >
                         {/* Square Checkbox */}
                         <input
                           type="checkbox"
-                          checked={selectedYears.includes(year)}
+                          checked={selectedUnits.includes(unit.unit)}
                           onChange={() => {}} // onChange is required but we handle click on div
                           className="form-checkbox h-4 w-4 text-blue-600 rounded mr-2"
                         />
-                        {/* Colored Pill for Year */}
+                        {/* Colored Pill for Unit */}
                         <span className={`mr-2 px-2 py-0.5 rounded-full text-xs font-semibold ${getColorClass(index)}`}>
-                          {year}
+                          {unit.unit}
                         </span>
+                        <span>{unit.name}</span> {/* Full unit name */}
                       </div>
                     ))}
-                </div>
-              )}
-            </div>
-
-            {/* Units Filter Button & Dropdown */}
-            <div className="relative" ref={unitDropdownRef}>
-              <button
-                onClick={handleToggleUnitDropdown}
-                className="px-4 py-2 rounded-lg border cursor-pointer border-gray-400 text-sm font-[501] text-[#153064] hover:bg-gray-50 transition-colors flex items-center"
-                style={{ fontFamily: "Poppins, sans-serif" }}
-              >
-                Units
-                {selectedUnits.length > 0 && (
-                  <span className="ml-2 text-xs bg-[#153064] text-white px-1.5 py-0.5 rounded-full">
-                    {selectedUnits.length}
-                  </span>
+                  </div>
                 )}
-              </button>
-              {showUnitDropdown && (
-                <div className="absolute z-10 bg-white shadow-lg rounded-lg mt-2 py-2 w-max max-h-60 overflow-y-auto border border-gray-200">
-                  {units.map((unit, index) => (
-                    <div
-                      key={unit.unit}
-                      onClick={() => toggleUnit(unit.unit)}
-                      className={`cursor-pointer px-4 py-2 text-sm flex items-center transition-colors
-                        ${selectedUnits.includes(unit.unit) ? 'bg-blue-50 text-blue-700' : 'hover:bg-gray-100 text-gray-900'}`}
-                      style={{ fontFamily: "Poppins, sans-serif" }}
-                    >
-                      {/* Square Checkbox */}
-                      <input
-                        type="checkbox"
-                        checked={selectedUnits.includes(unit.unit)}
-                        onChange={() => {}} // onChange is required but we handle click on div
-                        className="form-checkbox h-4 w-4 text-blue-600 rounded mr-2"
-                      />
-                      {/* Colored Pill for Unit */}
-                      <span className={`mr-2 px-2 py-0.5 rounded-full text-xs font-semibold ${getColorClass(index)}`}>
-                        {unit.unit}
-                      </span>
-                      <span>{unit.name}</span> {/* Full unit name */}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
+              </div>
 
-            {/* NEW SPEC FILTER BUTTON & DROPDOWN */}
-            <div className="relative" ref={specDropdownRef}>
-              <button
-                onClick={handleToggleSpecDropdown}
-                className="px-4 py-2 rounded-lg cursor-pointer border border-gray-400 text-sm font-[501] text-[#000000] hover:bg-gray-50 transition-colors flex items-center"
-                style={{ fontFamily: "Poppins, sans-serif" }}
-              >
-                Spec
-                {selectedSpec && (
-                  <span className="ml-2 text-xs bg-[#000000] text-white px-1.5 py-0.5 rounded-full">
-                    {selectedSpec === 'new' ? 'New' : 'Old'}
-                  </span>
-                )}
-              </button>
-              {showSpecDropdown && (
-                <div className="absolute z-10 bg-white shadow-lg rounded-lg mt-2 py-2 w-48 max-h-60 overflow-y-auto border border-gray-200">
-                  {specs.map((specOption) => (
-                    <div
-                      key={specOption.value}
-                      onClick={() => toggleSpec(specOption.value)}
-                      className={`cursor-pointer px-4 py-2 text-sm flex items-center transition-colors
-                        ${selectedSpec === specOption.value ? 'bg-blue-50 text-blue-700 font-semibold' : 'hover:bg-gray-100 text-gray-900'}`}
-                      style={{ fontFamily: "Poppins, sans-serif" }}
-                    >
-                      {/* Checkbox (visual only, logic is single-select via click) */}
-                      <input
-                        type="checkbox"
-                        checked={selectedSpec === specOption.value}
-                        onChange={() => {}} // onChange is required but click handler on div manages state
-                        className="form-checkbox h-4 w-4 text-blue-600 rounded mr-2"
-                      />
-                      <span>{specOption.label}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-            {/* END NEW SPEC FILTER */}
-
-          </div>
-        </div>
-
-        <div className="w-full space-y-10">
-          {/*
-              The rendering logic for years now iterates over the keys of groupedPapers (which are filtered years).
-              It also sorts them in descending order for display.
-          */}
-          {Object.keys(groupedPapers)
-            .sort((a, b) => b - a) // Sort years descending for display
-            .map((year) => (
-              <div key={year}>
-                <h2
-                  className="text-2xl font-semibold text-[#153064] mb-4 text-left tracking-tight"
+              {/* NEW SPEC FILTER BUTTON & DROPDOWN */}
+              <div className="relative" ref={specDropdownRef}>
+                <button
+                  onClick={handleToggleSpecDropdown}
+                  className="px-4 py-2 rounded-lg cursor-pointer border border-gray-400 text-sm font-[501] text-[#000000] hover:bg-gray-50 transition-colors flex items-center"
                   style={{ fontFamily: "Poppins, sans-serif" }}
                 >
-                  {year}
-                </h2>
-
-                {/* Outer Card for Each Session */}
-                {sessions.map((session) => (
-                  // Only render session card if there are papers for it in the grouped data
-                  groupedPapers[year][session.value] && Object.keys(groupedPapers[year][session.value]).length > 0 ? (
-                    <div
-                      key={`${year}-${session.label}-session-card`}
-                      className="bg-white rounded-lg shadow-md mb-8 border border-gray-200 overflow-hidden" // Session Card styling, added overflow-hidden
-                    >
-                      {/* Blue Header for the Session Card */}
-                      <div className="bg-[#2871F9] text-white tracking-tight p-4 text-left font-bold text-xl sm:text-2xl"
-                          style={{ fontFamily: "Poppins, sans-serif" }}>
-                        {session.label} Session {year} {/* Added year here for clarity */}
+                  Spec
+                  {selectedSpec && (
+                    <span className="ml-2 text-xs bg-[#000000] text-white px-1.5 py-0.5 rounded-full">
+                      {selectedSpec === 'new' ? 'New' : 'Old'}
+                    </span>
+                  )}
+                </button>
+                {showSpecDropdown && (
+                  <div className="absolute z-10 bg-white shadow-lg rounded-lg mt-2 py-2 w-48 max-h-60 overflow-y-auto border border-gray-200">
+                    {specs.map((specOption) => (
+                      <div
+                        key={specOption.value}
+                        onClick={() => toggleSpec(specOption.value)}
+                        className={`cursor-pointer px-4 py-2 text-sm flex items-center transition-colors
+                          ${selectedSpec === specOption.value ? 'bg-blue-50 text-blue-700 font-semibold' : 'hover:bg-gray-100 text-gray-900'}`}
+                        style={{ fontFamily: "Poppins, sans-serif" }}
+                      >
+                        {/* Checkbox (visual only, logic is single-select via click) */}
+                        <input
+                          type="checkbox"
+                          checked={selectedSpec === specOption.value}
+                          onChange={() => {}} // onChange is required but click handler on div manages state
+                          className="form-checkbox h-4 w-4 text-blue-600 rounded mr-2"
+                        />
+                        <span>{specOption.label}</span>
                       </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+              {/* END NEW SPEC FILTER */}
 
-                      {/* Content area of the Session Card */}
-                      <div className="p-6"> {/* Padding for the content inside the card */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"> {/* Grid for Unit Cards */}
-                          {/* Iterate over the units from the 'units' array, but only display if paper data exists */}
-                          {units
-                            .map((unit) => {
-                              const paperData = groupedPapers?.[year]?.[session.value]?.[unit.code];
+            </div>
+          </div>
 
-                              // Only render unit card if paper data exists for this unit in this session/year
-                              if (paperData) {
-                                return (
-                                  <div
-                                    key={`${year}-${session.label}-${unit.unit}-unit-card`}
-                                    className="bg-gray-50 rounded-lg p-4 border border-gray-100 flex flex-col justify-between" // Unit Card styling
-                                    style={{ fontFamily: "Poppins, sans-serif" }}
-                                  >
-                                    <h4 className="text-md font-semibold tracking-tight text-[#333333] mb-3 text-left">
-                                      {`${unit.unit}: ${unit.name}`}
-                                    </h4>
-                                    <div className="space-y-2"> {/* Links container */}
-                                      <Link
-                                        href={paperData.question_paper_link || "#"}
-                                        className={`block text-blue-600 font-medium hover:underline text-left text-sm
-                                          ${!paperData.question_paper_link ? 'text-gray-500 tracking-tight cursor-not-allowed opacity-75' : ''}`}
-                                        target="_blank"
-                                        aria-disabled={!paperData.question_paper_link}
-                                        onClick={(e) => !paperData.question_paper_link && e.preventDefault()}
-                                      >
-                                        Question Paper
-                                      </Link>
+          <div className="w-full space-y-10">
+            {/*
+                The rendering logic for years now iterates over the keys of groupedPapers (which are filtered years).
+                It also sorts them in descending order for display.
+            */}
+            {Object.keys(groupedPapers)
+              .sort((a, b) => b - a) // Sort years descending for display
+              .map((year) => (
+                <div key={year}>
+                  <h2
+                    className="text-2xl font-semibold text-[#153064] mb-4 text-left tracking-tight"
+                    style={{ fontFamily: "Poppins, sans-serif" }}
+                  >
+                    {year}
+                  </h2>
 
-                                      <Link
-                                        href={paperData.mark_scheme_link || "#"}
-                                        className={`block text-blue-600 font-medium hover:underline text-left text-sm
-                                          ${!paperData.mark_scheme_link ? 'text-gray-500 tracking-tight cursor-not-allowed opacity-75' : ''}`}
-                                        target="_blank"
-                                        aria-disabled={!paperData.mark_scheme_link}
-                                        onClick={(e) => !paperData.mark_scheme_link && e.preventDefault()}
-                                      >
-                                        Marking Scheme
-                                      </Link>
+                  {/* Outer Card for Each Session */}
+                  {sessions.map((session) => (
+                    // Only render session card if there are papers for it in the grouped data
+                    groupedPapers[year][session.value] && Object.keys(groupedPapers[year][session.value]).length > 0 ? (
+                      <div
+                        key={`${year}-${session.label}-session-card`}
+                        className="bg-white rounded-lg shadow-md mb-8 border border-gray-200 overflow-hidden" // Session Card styling, added overflow-hidden
+                      >
+                        {/* Blue Header for the Session Card */}
+                        <div className="bg-[#2871F9] text-white tracking-tight p-4 text-left font-bold text-xl sm:text-2xl"
+                            style={{ fontFamily: "Poppins, sans-serif" }}>
+                          {session.label} Session {year} {/* Added year here for clarity */}
+                        </div>
 
-                                      {/* Examiner's Report Link */}
-                                      <Link
-                                        href={paperData.examiner_report_link || "#"}
-                                        className={`block text-blue-600 font-medium hover:underline text-left text-sm
-                                          ${!paperData.examiner_report_link ? 'text-gray-500 tracking-tight cursor-not-allowed opacity-75' : ''}`}
-                                        target="_blank"
-                                        aria-disabled={!paperData.examiner_report_link}
-                                        onClick={(e) => !paperData.examiner_report_link && e.preventDefault()}
-                                      >
-                                        Examiner's Report
-                                      </Link>
+                        {/* Content area of the Session Card */}
+                        <div className="p-6"> {/* Padding for the content inside the card */}
+                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"> {/* Grid for Unit Cards */}
+                            {/* Iterate over the units from the 'units' array, but only display if paper data exists */}
+                            {units
+                              .map((unit) => {
+                                const paperData = groupedPapers?.[year]?.[session.value]?.[unit.code];
+
+                                // Only render unit card if paper data exists for this unit in this session/year
+                                if (paperData) {
+                                  return (
+                                    <div
+                                      key={`${year}-${session.label}-${unit.unit}-unit-card`}
+                                      className="bg-gray-50 rounded-lg p-4 border border-gray-100 flex flex-col justify-between" // Unit Card styling
+                                      style={{ fontFamily: "Poppins, sans-serif" }}
+                                    >
+                                      <h4 className="text-md font-semibold tracking-tight text-[#333333] mb-3 text-left">
+                                        {`${unit.unit}: ${unit.name}`}
+                                      </h4>
+                                      <div className="space-y-2"> {/* Links container */}
+                                        <Link
+                                          href={paperData.question_paper_link || "#"}
+                                          className={`block text-blue-600 font-medium hover:underline text-left text-sm
+                                            ${!paperData.question_paper_link ? 'text-gray-500 tracking-tight cursor-not-allowed opacity-75' : ''}`}
+                                          target="_blank"
+                                          aria-disabled={!paperData.question_paper_link}
+                                          onClick={(e) => !paperData.question_paper_link && e.preventDefault()}
+                                        >
+                                          Question Paper
+                                        </Link>
+
+                                        <Link
+                                          href={paperData.mark_scheme_link || "#"}
+                                          className={`block text-blue-600 font-medium hover:underline text-left text-sm
+                                            ${!paperData.mark_scheme_link ? 'text-gray-500 tracking-tight cursor-not-allowed opacity-75' : ''}`}
+                                          target="_blank"
+                                          aria-disabled={!paperData.mark_scheme_link}
+                                          onClick={(e) => !paperData.mark_scheme_link && e.preventDefault()}
+                                        >
+                                          Marking Scheme
+                                        </Link>
+
+                                        {/* Examiner's Report Link */}
+                                        <Link
+                                          href={paperData.examiner_report_link || "#"}
+                                          className={`block text-blue-600 font-medium hover:underline text-left text-sm
+                                            ${!paperData.examiner_report_link ? 'text-gray-500 tracking-tight cursor-not-allowed opacity-75' : ''}`}
+                                          target="_blank"
+                                          aria-disabled={!paperData.examiner_report_link}
+                                          onClick={(e) => !paperData.examiner_report_link && e.preventDefault()}
+                                        >
+                                          Examiner's Report
+                                        </Link>
+                                      </div>
                                     </div>
-                                  </div>
-                                );
-                              }
-                              return null;
-                            })}
+                                  );
+                                }
+                                return null;
+                              })}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ) : null // Don't render session div if no papers exist for it
-                ))}
-              </div>
-            ))}
+                    ) : null // Don't render session div if no papers exist for it
+                  ))}
+                </div>
+              ))}
+          </div>
         </div>
-      </div>
-    </main>
+      </main>
+      <SmallFoot />
+    </>
   );
 }
