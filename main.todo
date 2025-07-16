@@ -95,9 +95,9 @@ Other TODO:
    - Become a tutor/Match with a tutor : People could sign up to teach/study with tutors
    ✔ Collect testimonials from community members for the website @done(25-07-12 16:17)
 
-   ☐ Design a new modular small footer for other website pages (Resources, Notes and Past Papers)
-   ☐ Make a UI component for the modular footer for website pages
-   ☐ Add modular footer to other website pages (Resources, Notes and Past Papers)
+   ✔ Design a new modular small footer for other website pages (Resources, Notes and Past Papers) @done(25-07-16 17:56)
+   ✔ Make a UI component for the modular footer for website pages @done(25-07-16 17:56)
+   ✔ Add modular footer to other website pages (Resources, Notes and Past Papers) @done(25-07-16 17:56)
 
 Community Feedback :
    ✔ Update member counts on all pages to 18k @done(25-07-04 16:34)
