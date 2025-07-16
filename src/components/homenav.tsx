@@ -400,6 +400,10 @@ function Home(props) {
             }`}
             onMouseEnter={() => setHoveredSidebarItem('igcse')}
             onMouseLeave={() => setHoveredSidebarItem(null)}
+            onClick={() => {
+              setSidebarOpen(false);
+              window.location.href = '/subjects/template/IGCSE';
+            }}
           >
             <div className="flex items-center justify-between">
               <span className="text-[#000000] tracking-[-0.5px] font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
@@ -416,28 +420,16 @@ function Home(props) {
             }`}
             onMouseEnter={() => setHoveredSidebarItem('as')}
             onMouseLeave={() => setHoveredSidebarItem(null)}
+            onClick={() => {
+              setSidebarOpen(false);
+              window.location.href = '/subjects/template/IAL';
+            }}
           >
             <div className="flex items-center justify-between">
               <span className="text-[#000000] tracking-[-0.5px] font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                AS Levels
+                IAL
               </span>
               {hoveredSidebarItem === 'as' && (
-                <ChevronRight size={16} className="text-[#000000]" />
-              )}
-            </div>
-          </div>
-          <div
-            className={`relative px-4 py-3 rounded-lg cursor-pointer transition-all duration-200 ${
-              hoveredSidebarItem === 'a2' ? 'bg-[#BAD1FD]' : ''
-            }`}
-            onMouseEnter={() => setHoveredSidebarItem('a2')}
-            onMouseLeave={() => setHoveredSidebarItem(null)}
-          >
-            <div className="flex items-center justify-between">
-              <span className="text-[#000000] tracking-[-0.5px] font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                A2 Levels
-              </span>
-              {hoveredSidebarItem === 'a2' && (
                 <ChevronRight size={16} className="text-[#000000]" />
               )}
             </div>
