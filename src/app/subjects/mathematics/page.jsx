@@ -1,10 +1,18 @@
 "use client";
-import { useState, useEffect } from 'react';
+import { useState, useEffect, use } from 'react';
 import Link from 'next/link';
 
-export default function Subject() {
+export default function Subject({ searchParams }) {
   const subjectName = 'Mathematics';
   const [selected, setSelected] = useState('option1');
+  const params = use(searchParams);
+  const choice = params.choice;
+  const regExp = /option[1-2]/g;
+  useEffect(() => {
+    if (regExp.test(choice)) {
+      setSelected(choice);
+    }
+  }, [choice]);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
