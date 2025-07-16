@@ -22,20 +22,37 @@ async function fetchPdfFromDrive(fileId) {
   return Buffer.from(await res.arrayBuffer());
 }
 
-// Helper to apply watermark to a PDF buffer
-async function watermarkPdf(pdfBuffer, watermarkBuffer) {
+// Helper to apply header and footer images as overlays on a PDF buffer (no page height manipulation)
+async function watermarkPdf(pdfBuffer, headerBuffer, footerBuffer) {
   const pdfDoc = await PDFDocument.load(pdfBuffer);
-  const watermarkImg = await pdfDoc.embedPng(watermarkBuffer);
-  const { width, height } = watermarkImg;
+  const headerImg = await pdfDoc.embedPng(headerBuffer);
+  const footerImg = await pdfDoc.embedPng(footerBuffer);
   const pages = pdfDoc.getPages();
   for (const page of pages) {
     const { width: pw, height: ph } = page.getSize();
-    page.drawImage(watermarkImg, {
-      x: (pw - width) / 2,
-      y: (ph - height) / 2,
-      width,
-      height,
-      opacity: 0.3,
+    // Header image: scale to fit width, keep aspect ratio, place at top with margin
+    let headerScale = Math.min(pw * 0.5 / headerImg.width, 1); // max 50% page width
+    let headerWidth = headerImg.width * headerScale;
+    let headerHeight = headerImg.height * headerScale;
+    let headerY = ph - headerHeight - 20; // 20pt margin from top
+    page.drawImage(headerImg, {
+      x: (pw - headerWidth) / 2,
+      y: headerY,
+      width: headerWidth,
+      height: headerHeight,
+      opacity: 0.7,
+    });
+    // Footer image: scale to fit width, keep aspect ratio, place at bottom with margin
+    let footerScale = Math.min(pw * 0.5 / footerImg.width, 1); // max 50% page width
+    let footerWidth = footerImg.width * footerScale;
+    let footerHeight = footerImg.height * footerScale;
+    let footerY = 20; // 20pt margin from bottom
+    page.drawImage(footerImg, {
+      x: (pw - footerWidth) / 2,
+      y: footerY,
+      width: footerWidth,
+      height: footerHeight,
+      opacity: 0.7,
     });
   }
   return await pdfDoc.save();
@@ -43,9 +60,14 @@ async function watermarkPdf(pdfBuffer, watermarkBuffer) {
 
 // Helper to fetch all PDF file IDs in a Google Drive folder (publicly shared, using Google Drive API)
 async function fetchFolderPdfIds(folderId) {
-  // This requires an API key or OAuth, so for now, return empty (user must provide direct file links)
-  // TODO: Implement Google Drive API integration if needed
-  return [];
+  // Requires Google Drive API key
+  const apiKey = process.env.GOOGLE_DRIVE_API_KEY;
+  if (!apiKey) throw new Error('Google Drive API key not set');
+  const url = `https://www.googleapis.com/drive/v3/files?q='${folderId}'+in+parents+and+mimeType='application/pdf'&fields=files(id%2Cname)&key=${apiKey}`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('Failed to fetch folder contents from Google Drive');
+  const data = await res.json();
+  return data.files || [];
 }
 
 export async function POST(req) {
@@ -54,12 +76,14 @@ export async function POST(req) {
     if (!url) return NextResponse.json({ error: 'Missing Google Drive URL' }, { status: 400 });
     const driveInfo = extractDriveId(url);
     if (!driveInfo) return NextResponse.json({ error: 'Invalid Google Drive URL' }, { status: 400 });
-    // Load watermark image
-    const watermarkPath = path.join(process.cwd(), 'public', 'watermark.png');
-    const watermarkBuffer = await fs.readFile(watermarkPath);
+    // Load header and footer images
+    const headerPath = path.join(process.cwd(), 'public', 'Headermark.png');
+    const footerPath = path.join(process.cwd(), 'public', 'Footermark.png');
+    const headerBuffer = await fs.readFile(headerPath);
+    const footerBuffer = await fs.readFile(footerPath);
     if (driveInfo.type === 'file') {
       const pdfBuffer = await fetchPdfFromDrive(driveInfo.id);
-      const watermarked = await watermarkPdf(pdfBuffer, watermarkBuffer);
+      const watermarked = await watermarkPdf(pdfBuffer, headerBuffer, footerBuffer);
       return new NextResponse(watermarked, {
         status: 200,
         headers: {
@@ -68,9 +92,32 @@ export async function POST(req) {
         },
       });
     } else if (driveInfo.type === 'folder') {
-      // Not implemented: would require Google Drive API key
-      // For now, return error
-      return NextResponse.json({ error: 'Folder watermarking requires Google Drive API integration. Please provide direct file links.' }, { status: 501 });
+      // Fetch all PDF files in the folder
+      const pdfFiles = await fetchFolderPdfIds(driveInfo.id);
+      if (!pdfFiles.length) return NextResponse.json({ error: 'No PDF files found in folder.' }, { status: 404 });
+      // Create a zip archive in memory
+      const archive = archiver('zip', { zlib: { level: 9 } });
+      const chunks = [];
+      archive.on('data', chunk => chunks.push(chunk));
+      // For each PDF, fetch, watermark, and append to zip
+      for (const file of pdfFiles) {
+        try {
+          const pdfBuffer = await fetchPdfFromDrive(file.id);
+          const watermarked = await watermarkPdf(pdfBuffer, headerBuffer, footerBuffer);
+          archive.append(Buffer.from(watermarked), { name: `watermarked_${file.name}` });
+        } catch (err) {
+          // Optionally skip or log errors for individual files
+        }
+      }
+      await archive.finalize();
+      const zipBuffer = Buffer.concat(chunks);
+      return new NextResponse(zipBuffer, {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/zip',
+          'Content-Disposition': 'attachment; filename="watermarked_pdfs.zip"',
+        },
+      });
     }
     return NextResponse.json({ error: 'Unknown error' }, { status: 500 });
   } catch (err) {
