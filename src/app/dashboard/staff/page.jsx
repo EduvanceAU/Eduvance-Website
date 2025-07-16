@@ -26,6 +26,7 @@ export default function UploadResource() {
   const [activeTab, setActiveTab] = useState('upload');
   const [pendingResources, setPendingResources] = useState([]);
   const [rejectionReasons, setRejectionReasons] = useState({});
+  const [watermarkLoading, setWatermarkLoading] = useState({});
 
   const resourceCategories = [
     { value: 'note', label: 'Note' },
@@ -245,6 +246,39 @@ export default function UploadResource() {
     }
   };
 
+  const handleWatermark = async (resource) => {
+    setWatermarkLoading((prev) => ({ ...prev, [resource.id]: true }));
+    try {
+      const res = await fetch('/api/watermark', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: resource.link }),
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        setMessage(`Watermark failed: ${err.error || res.statusText}`);
+        setMessageType('error');
+        return;
+      }
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'watermarked.pdf';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+      setMessage('Watermarked PDF downloaded!');
+      setMessageType('success');
+    } catch (err) {
+      setMessage('Watermark error: ' + err.message);
+      setMessageType('error');
+    } finally {
+      setWatermarkLoading((prev) => ({ ...prev, [resource.id]: false }));
+    }
+  };
+
   return (
     <div className={`pt-20 ${!staffUser ? "h-screen":"min-h-screen h-fit "} bg-blue-100 p-6 flex justify-center items-center`} style={{ fontFamily: 'Poppins, sans-serif' }}>      
       <div className="h-fit bg-white rounded-xl shadow-lg w-full max-w-3xl mx-auto p-4 sm:p-6">
@@ -342,6 +376,10 @@ export default function UploadResource() {
                       </div>
                       <div className="flex mt-2 flex-wrap flex-col sm:flex-row gap-2">
                         <button onClick={() => approveResource(res.id)} className="cursor-pointer bg-green-500 hover:bg-green-600 transition text-white px-3 py-1 rounded-md flex items-center gap-1"><svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>Approve</button>
+                        <button onClick={() => handleWatermark(res)} disabled={watermarkLoading[res.id]} className={`cursor-pointer bg-blue-500 hover:bg-blue-600 transition text-white px-3 py-1 rounded-md flex items-center gap-1 ${watermarkLoading[res.id] ? 'opacity-50 cursor-not-allowed' : ''}`}>
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" /></svg>
+                          {watermarkLoading[res.id] ? 'Watermarking...' : 'Watermark'}
+                        </button>
                         <input
                           type="text"
                           placeholder="Rejection reason"

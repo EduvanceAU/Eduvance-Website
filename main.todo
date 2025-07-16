@@ -125,7 +125,8 @@ Systems Todo:
    ✔ Updated Staff Console for using community notes table from DB @done(25-07-09 12:06)
    ✔ Update new subject files addition system for modular and robust workflow @done(25-07-13 04:22)
 
-   ☐ Update Staff console for more detailed overview of resources instances
-   ☐ Add backend watermark function for watermarking and downloading approved resources
-   ☐ Update staff console resource cards with a watermark/approve button for backend watermark function
+   ✔ Update Staff console for more detailed overview of resources instances @done(25-07-16 06:03)
+   ✔ Add backend watermark function for watermarking and downloading approved resources @done(25-07-16 06:03)
+   ☐ Update backend watermark function for watermarking folders
+   ✔ Update staff console resource cards with a watermark/approve button for backend watermark function @done(25-07-16 06:03)
    ☐ Add resource editing and saving function to staff console resources instances
