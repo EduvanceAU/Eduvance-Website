@@ -80,12 +80,12 @@
 
 .font-grand-local-header {
   font-family: 'GrandstanderLocal', cursive;
-  letter-spacing: -3.5px;
+  letter-spacing: -0.3px;
 }
 
 .font-grand-local {
   font-family: 'GrandstanderLocal', cursive;
-  letter-spacing: -2px;
+  letter-spacing: -0.4px;
 }
 
 @keyframes scroll-up {

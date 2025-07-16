@@ -64,18 +64,17 @@ New Resources Pages Update :
 Other Pages:
    ☐ Other miscellaneous pages for the website (About Eduvance, IGCSE/A Levels, Grading System Explained, FAQs and more)
       - More (Header)
+         - Examination FAQ (Exam Structure, Grading System)
+         - what else?
+      - About Eduvance (Header)
+         - About
          - Contact Us
-         - FAQ
          - Privacy Policy
          - Terms of Service
-      - About Edexcel (Header)
-         - About Edexcel
-         - Exam Structure
-         - Grading System
       - Navigation (Footer)
          - Past Papers (like resources page)
          - Match with a Tutor
-         - About
+         - About (links to one above)
          - Community
       - Legal Info (Footer)
          - Community Guidelines
@@ -96,6 +95,10 @@ Other TODO:
    - Become a tutor/Match with a tutor : People could sign up to teach/study with tutors
    ✔ Collect testimonials from community members for the website @done(25-07-12 16:17)
 
+   ✔ Design a new modular small footer for other website pages (Resources, Notes and Past Papers) @done(25-07-16 17:56)
+   ✔ Make a UI component for the modular footer for website pages @done(25-07-16 17:56)
+   ✔ Add modular footer to other website pages (Resources, Notes and Past Papers) @done(25-07-16 17:56)
+
 Community Feedback :
    ✔ Update member counts on all pages to 18k @done(25-07-04 16:34)
    ☐ Footer image spacing with the main div
@@ -108,6 +111,12 @@ Community Feedback :
    ☐ Update discord invite links
    ✔ Pointer Icon/Cursor on Buttons (Stig) @done(25-07-05 16:42)
 
+   ☐ Add modular UI design for main resources page to accomodate more subjects
+   ✔ Choose your exam board should only have IGCSE and IAL @done(25-07-16 14:49)
+   ✔ Add a simple page for exam boards with links to other pages @done(25-07-16 14:56)
+   ✔ Choose your exam board should be changed to -> Choose your exam qualification @done(25-07-16 14:50)
+   ☐ Add a like/dislike system for the eduvance resources and community notes
+
 Systems Todo:
    ✔ Update Admin Console UI for extra information (revert) @done(25-07-09 12:05)
    ✔ Update Subject Addition form for extra unit and other information on Admin Console @done(25-07-09 12:05)
@@ -116,3 +125,9 @@ Systems Todo:
    ✔ Updated Community Contributor Page for new unit field dropdown @done(25-07-09 12:06)
    ✔ Updated Staff Console for using community notes table from DB @done(25-07-09 12:06)
    ✔ Update new subject files addition system for modular and robust workflow @done(25-07-13 04:22)
+
+   ✔ Update Staff console for more detailed overview of resources instances @done(25-07-16 06:03)
+   ✔ Add backend watermark function for watermarking and downloading approved resources @done(25-07-16 06:03)
+   ✔ Update backend watermark function for watermarking folders @done(25-07-16 14:46)
+   ✔ Update staff console resource cards with a watermark/approve button for backend watermark function @done(25-07-16 06:03)
+   ✔ Add resource editing and saving function to staff console resources instances @done(25-07-16 14:46)

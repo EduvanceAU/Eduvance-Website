@@ -49,7 +49,7 @@ export default function Subject() {
         <main className="flex flex-col w-full pb-5 relative">
           <div className={`flex flex-col items-center w-full pt-12 md:pt-9 relative transition-all duration-300 px-4 sm:px-6 md:px-8 lg:px-16 xl:px-24}`}>
             <h3 className="self-start font-semibold text-xl md:text-2xl text-[#0C58E4] tracking-[-1px] mb-4" style={{ fontFamily: 'Poppins, sans-serif' }}>
-              Choose Your Exam Board
+              Choose Your Exam Qualification
             </h3>
             {/* Selection Bar - Responsive width */}
             <div className="flex rounded-[15px] bg-[#F2F6FF] border-[#0C58E4] border-2 p-1 w-full h-[65px] justify-between mb-10">
