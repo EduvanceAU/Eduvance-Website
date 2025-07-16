@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
 export default function Subject() {
-  const subjectName = '{subjectName}';
+  const subjectName = 'Accounting';
   const [selected, setSelected] = useState('option1');
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -43,7 +43,7 @@ export default function Subject() {
           style={{ backgroundImage: "url('/Banner.svg')" }}
         >
           <h1 className="text-white font-grand-local text-xl md:text-7xl ml-17 tracking-[-1px]">
-            {subjectName}
+            Accounting
           </h1>
         </div>
         <main className="flex flex-col w-full pb-5 relative">
@@ -73,26 +73,26 @@ export default function Subject() {
               {selected === "option1" ? (
                 <>
                   <h3 className="font-semibold text-xl md:text-2xl text-[#0C58E4] tracking-[-1px] mb-6" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                    IAL {subjectName} Resources
+                    IAL Accounting Resources
                   </h3>
                   {/* Resource Cards - CSS Grid for single-line layout (IAL) and 2x2 layout for mobile */}
                   <div className="text-base grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8 sm:px-1 w-full">
                     <Link
-                      href={`/subjects/${subjectName}/IAL/communityNotes`}
+                      href={`/subjects/accounting/IAL/communityNotes`}
                       className="transition-all duration-300 h-40 rounded-xl font-[550] tracking-[-0.5px] border-[1.5px] border-[#0C58E4] flex items-end justify-start pl-4 pb-4 text-black hover:text-[#0C58E4] hover:bg-[#CEE0FF] bg-blend-multiply cursor-pointer"
                       style={{ backgroundImage: "url('/Notes Background.svg')", backgroundSize: 'cover', backgroundPosition: 'center' }}
                     >
                       Community Notes
                     </Link>
                     <Link
-                      href={`/subjects/${subjectName}/IAL/resources`}
+                      href={`/subjects/accounting/IAL/resources`}
                       className="transition-all duration-300 h-40 rounded-xl font-[550] tracking-[-0.5px] border-[1.5px] border-[#0C58E4] flex items-end justify-start pl-4 pb-4 text-black hover:text-[#0C58E4] hover:bg-[#CEE0FF] bg-blend-multiply cursor-pointer"
                       style={{ backgroundImage: "url('/PPQ Background.svg')", backgroundSize: 'cover', backgroundPosition: 'center' }}
                     >
                       Eduvance Resources
                     </Link>
                     <Link
-                      href={`/subjects/${subjectName}/IAL/pastpapers`}
+                      href={`/subjects/accounting/IAL/pastpapers`}
                       className="transition-all duration-300 h-40 rounded-xl font-[550] tracking-[-0.5px] border-[1.5px] border-[#0C58E4] flex items-end justify-start pl-4 pb-4 text-black hover:text-[#0C58E4] hover:bg-[#CEE0FF] bg-blend-multiply cursor-pointer"
                       style={{ backgroundImage: "url('/Papers Background.svg')", backgroundSize: 'cover', backgroundPosition: 'center' }}
                     >
@@ -110,26 +110,26 @@ export default function Subject() {
               ) : (
                 <>
                   <h3 className="font-semibold text-xl md:text-2xl text-[#0C58E4] tracking-[-1px] mb-6" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                    IGCSE {subjectName} Resources
+                    IGCSE Accounting Resources
                   </h3>
                   {/* Resource Cards - CSS Grid for single-line layout (IGCSE) and 2x2 layout for mobile */}
                   <div className="text-base grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8 sm:px-1 w-full">
                     <Link
-                      href={`/subjects/${subjectName}/IGCSE/communityNotes`}
+                      href={`/subjects/accounting/IGCSE/communityNotes`}
                       className="transition-all duration-300 h-40 rounded-xl font-[550] tracking-[-0.5px] border-[1.5px] border-[#0C58E4] flex items-end justify-start pl-4 pb-4 text-black hover:text-[#0C58E4] hover:bg-[#CEE0FF] bg-blend-multiply cursor-pointer"
                       style={{ backgroundImage: "url('/Notes Background.svg')", backgroundSize: 'cover', backgroundPosition: 'center' }}
                     >
                       Community Notes
                     </Link>
                     <Link
-                      href={`/subjects/${subjectName}/IGCSE/resources`}
+                      href={`/subjects/accounting/IGCSE/resources`}
                       className="transition-all duration-300 h-40 rounded-xl font-[550] tracking-[-0.5px] border-[1.5px] border-[#0C58E4] flex items-end justify-start pl-4 pb-4 text-black hover:text-[#0C58E4] hover:bg-[#CEE0FF] bg-blend-multiply cursor-pointer"
                       style={{ backgroundImage: "url('/PPQ Background.svg')", backgroundSize: 'cover', backgroundPosition: 'center' }}
                     >
                       Eduvance Resources
                     </Link>
                     <Link
-                      href={`/subjects/${subjectName}/IGCSE/pastpapers`}
+                      href={`/subjects/accounting/IGCSE/pastpapers`}
                       className="transition-all duration-300 h-40 rounded-xl font-[550] tracking-[-0.5px] border-[1.5px] border-[#0C58E4] flex items-end justify-start pl-4 pb-4 text-black hover:text-[#0C58E4] hover:bg-[#CEE0FF] bg-blend-multiply cursor-pointer"
                       style={{ backgroundImage: "url('/Papers Background.svg')", backgroundSize: 'cover', backgroundPosition: 'center' }}
                     >

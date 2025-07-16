@@ -112,9 +112,9 @@ Community Feedback :
    ✔ Pointer Icon/Cursor on Buttons (Stig) @done(25-07-05 16:42)
 
    ☐ Add modular UI design for main resources page to accomodate more subjects
-   ☐ Choose your exam board should only have IGCSE and IAL
-   ☐ Add a simple page for exam boards with links to other pages
-   ☐ Choose your exam board should be changed to -> Choose your exam qualification
+   ✔ Choose your exam board should only have IGCSE and IAL @done(25-07-16 14:49)
+   ✔ Add a simple page for exam boards with links to other pages @done(25-07-16 14:56)
+   ✔ Choose your exam board should be changed to -> Choose your exam qualification @done(25-07-16 14:50)
 
 Systems Todo:
    ✔ Update Admin Console UI for extra information (revert) @done(25-07-09 12:05)
@@ -127,6 +127,6 @@ Systems Todo:
 
    ✔ Update Staff console for more detailed overview of resources instances @done(25-07-16 06:03)
    ✔ Add backend watermark function for watermarking and downloading approved resources @done(25-07-16 06:03)
-   ☐ Update backend watermark function for watermarking folders
+   ✔ Update backend watermark function for watermarking folders @done(25-07-16 14:46)
    ✔ Update staff console resource cards with a watermark/approve button for backend watermark function @done(25-07-16 06:03)
-   ☐ Add resource editing and saving function to staff console resources instances
+   ✔ Add resource editing and saving function to staff console resources instances @done(25-07-16 14:46)
