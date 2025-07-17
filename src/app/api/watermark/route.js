@@ -41,7 +41,7 @@ async function watermarkPdf(pdfBuffer, headerBuffer, footerBuffer) {
       y: -extraHeight/2,
       width: width,  
       height: extraHeight/2, 
-      color: rgb(78/255, 140/255, 255/255), 
+      color: rgb(78/255, 140/255, 255/255),
     });
 
     const footerText = "Eduvance.au doesn't claim copyright to this resource. It belongs to the respective copyright holders.";
