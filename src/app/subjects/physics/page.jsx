@@ -77,7 +77,7 @@ export default function Subject({ searchParams }) {
               </button>
             </div>
             {/* Conditional content */}
-            <div className={`w-full ${sidebarOpen ? 'max-w-[1200px]' : 'max-w-[1440px]'} transition-all duration-500 ease-in-out`}>
+            <div className="w-full transition-all duration-500 ease-in-out">
               {selected === "option1" ? (
                 <>
                   <h3 className="font-semibold text-xl md:text-2xl text-[#0C58E4] tracking-[-1px] mb-6" style={{ fontFamily: 'Poppins, sans-serif' }}>
