@@ -4,7 +4,7 @@ import fetch from 'node-fetch';
 import fs from 'fs/promises';
 import path from 'path';
 import archiver from 'archiver';
-
+import fontkit from '@pdf-lib/fontkit';
 // Helper to get Google Drive file/folder ID from URL
 function extractDriveId(url) {
   const fileMatch = url.match(/\/d\/(.*?)(\/|$)/);
@@ -22,40 +22,52 @@ async function fetchPdfFromDrive(fileId) {
   return Buffer.from(await res.arrayBuffer());
 }
 
-// Helper to apply header and footer images as overlays on a PDF buffer (no page height manipulation)
 async function watermarkPdf(pdfBuffer, headerBuffer, footerBuffer) {
-  const pdfDoc = await PDFDocument.load(pdfBuffer);
-  const headerImg = await pdfDoc.embedPng(headerBuffer);
-  const footerImg = await pdfDoc.embedPng(footerBuffer);
-  const pages = pdfDoc.getPages();
-  for (const page of pages) {
-    const { width: pw, height: ph } = page.getSize();
-    // Header image: scale to fit width, keep aspect ratio, place at top with margin
-    let headerScale = Math.min(pw * 0.5 / headerImg.width, 1); // max 50% page width
-    let headerWidth = headerImg.width * headerScale;
-    let headerHeight = headerImg.height * headerScale;
-    let headerY = ph - headerHeight - 20; // 20pt margin from top
-    page.drawImage(headerImg, {
-      x: (pw - headerWidth) / 2,
-      y: headerY,
-      width: headerWidth,
-      height: headerHeight,
-      opacity: 0.7,
+  const srcPdfDoc = await PDFDocument.load(pdfBuffer);
+  srcPdfDoc.registerFontkit(fontkit);
+  const totalPages = srcPdfDoc.getPageCount();
+  const extraHeight = 40;
+  const fontUrl = 'http://localhost:3000/fonts/poppins.ttf';
+  const response = await fetch(fontUrl);
+  const fontBytes = await response.arrayBuffer();
+  const FONT = await srcPdfDoc.embedFont(fontBytes);
+  for (let i = 0; i < totalPages; i++) {
+    const originalPage = srcPdfDoc.getPage(i);
+    const { width, height } = originalPage.getSize();    
+    originalPage.setSize(width, height+extraHeight)
+    originalPage.translateContent(0, extraHeight/2)
+    originalPage.drawRectangle({
+      x: 0,
+      y: -extraHeight/2,
+      width: width,  
+      height: extraHeight/2, 
+      color: rgb(78/255, 140/255, 255/255),
     });
-    // Footer image: scale to fit width, keep aspect ratio, place at bottom with margin
-    let footerScale = Math.min(pw * 0.5 / footerImg.width, 1); // max 50% page width
-    let footerWidth = footerImg.width * footerScale;
-    let footerHeight = footerImg.height * footerScale;
-    let footerY = 20; // 20pt margin from bottom
-    page.drawImage(footerImg, {
-      x: (pw - footerWidth) / 2,
-      y: footerY,
-      width: footerWidth,
-      height: footerHeight,
-      opacity: 0.7,
+
+    const footerText = "Eduvance.au doesn't claim copyright to this resource. It belongs to the respective copyright holders.";
+    const footerFontSize = 11;
+    originalPage.drawText(footerText, { 
+      x: (width - FONT.widthOfTextAtSize(footerText, footerFontSize)) / 2, 
+      y: -extraHeight/2+5, 
+      font: FONT,
+      size: footerFontSize
+    });
+    // originalPage.drawRectangle({
+    //   x: 0,
+    //   y: height, 
+    //   width: width,  
+    //   height: extraHeight/2, 
+    //   color: rgb(78/255, 140/255, 255/255), 
+    // });
+    originalPage.drawText("Distributed by www.eduvance.au for educational use only", { 
+      x: (width - FONT.widthOfTextAtSize("Distributed by www.eduvance.au for educational use only", 12))/2, 
+      y: height+5, 
+      font: FONT,
+      size: 12
     });
   }
-  return await pdfDoc.save();
+
+  return await srcPdfDoc.save();
 }
 
 // Helper to fetch all PDF file IDs in a Google Drive folder (publicly shared, using Google Drive API)

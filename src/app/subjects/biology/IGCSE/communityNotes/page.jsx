@@ -39,7 +39,40 @@ const SubjectButtons = () => {
   );
 };
 
+// Helper to clamp counts to >= 0
+function clamp(n) { return n < 0 ? 0 : n; }
+
+// LikeDislikeButtons is a stateless component
+function LikeDislikeButtons({ noteId, likeCount = 0, dislikeCount = 0, userVote, onVote }) {
+  return (
+    <div className="flex items-center gap-3 mt-3">
+      <button
+        className={`flex items-center px-2 py-1 rounded hover:bg-blue-100 transition ${userVote === 'like' ? 'bg-blue-200' : ''}`}
+        onClick={() => onVote(userVote === 'like' ? null : 'like')}
+        aria-label="Like"
+      >
+        <span role="img" aria-label="thumbs up" className="mr-1">👍</span> {likeCount}
+      </button>
+      <button
+        className={`flex items-center px-2 py-1 rounded hover:bg-red-100 transition ${userVote === 'dislike' ? 'bg-red-200' : ''}`}
+        onClick={() => onVote(userVote === 'dislike' ? null : 'dislike')}
+        aria-label="Dislike"
+      >
+        <span role="img" aria-label="thumbs down" className="mr-1">👎</span> {dislikeCount}
+      </button>
+    </div>
+  );
+}
+
 export default function IGCSECommunityNotesPage() {
+  // Track user votes per note (noteId: 'like' | 'dislike' | null)
+  const [userVotes, setUserVotes] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const votes = localStorage.getItem('community_note_votes');
+      return votes ? JSON.parse(votes) : {};
+    }
+    return {};
+  });
   const examCode = 'BIO';
   const { session, user, loading: authLoading } = useSupabaseAuth();
   const [units, setUnits] = useState([]);
@@ -110,7 +143,7 @@ export default function IGCSECommunityNotesPage() {
       // Fetch approved community notes for this subject
       const { data: notes, error: notesError } = await supabase
         .from('community_resource_requests')
-        .select('*')
+        .select('*, like_count, dislike_count')
         .eq('subject_id', subjectId)
         .eq('is_approved', true)
         .order('submitted_at', { ascending: false });
@@ -127,6 +160,19 @@ export default function IGCSECommunityNotesPage() {
         grouped[unit].push(note);
       });
       setUnitNotes(grouped);
+      // Optionally, update userVotes from localStorage again (in case of SSR)
+      setUserVotes((prev) => {
+        const updated = { ...prev };
+        notes.forEach(note => {
+          if (updated[note.id] === undefined) {
+            updated[note.id] = null; // Initialize with null if not found
+          }
+        });
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('community_note_votes', JSON.stringify(updated));
+        }
+        return updated;
+      });
       setLoading(false);
     }
     fetchNotes();
@@ -207,6 +253,68 @@ export default function IGCSECommunityNotesPage() {
                             <p className="text-xs text-gray-600 mt-1 text-right">Shared by {note.contributor_name || 'Anonymous'}{note.contributor_email ? ` (${note.contributor_email})` : ''}</p>
                             {note.submitted_at && <p className="text-xs text-gray-600 mt-1 text-right">Shared On {new Date(note.submitted_at).toLocaleString(undefined, {year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'})}</p>}
                           </div>
+                          {/* Like/Dislike System */}
+                          <LikeDislikeButtons
+                            noteId={note.id}
+                            likeCount={note.like_count}
+                            dislikeCount={note.dislike_count}
+                            userVote={userVotes[note.id] || null}
+                            onVote={async (type) => {
+                              // type: 'like', 'dislike', or null (for unvote)
+                              const prevVote = userVotes[note.id] || null;
+                              let newLikeCount = note.like_count || 0;
+                              let newDislikeCount = note.dislike_count || 0;
+                              if (type === null) {
+                                // Unvote: decrement the previous vote
+                                if (prevVote === 'like') newLikeCount = clamp(newLikeCount - 1);
+                                if (prevVote === 'dislike') newDislikeCount = clamp(newDislikeCount - 1);
+                              } else if (type === 'like') {
+                                if (prevVote === 'like') {
+                                  // Toggle off like
+                                  newLikeCount = clamp(newLikeCount - 1);
+                                  type = null;
+                                } else {
+                                  // Like (and remove dislike if present)
+                                  newLikeCount = newLikeCount + 1;
+                                  if (prevVote === 'dislike') newDislikeCount = clamp(newDislikeCount - 1);
+                                }
+                              } else if (type === 'dislike') {
+                                if (prevVote === 'dislike') {
+                                  // Toggle off dislike
+                                  newDislikeCount = clamp(newDislikeCount - 1);
+                                  type = null;
+                                } else {
+                                  // Dislike (and remove like if present)
+                                  newDislikeCount = newDislikeCount + 1;
+                                  if (prevVote === 'like') newLikeCount = clamp(newLikeCount - 1);
+                                }
+                              }
+                              // Update Supabase
+                              await supabase
+                                .from('community_resource_requests')
+                                .update({ like_count: newLikeCount, dislike_count: newDislikeCount })
+                                .eq('id', note.id);
+                              // Update local state
+                              setUnitNotes((prev) => {
+                                const updated = { ...prev };
+                                updated[unit.unit] = updated[unit.unit].map((n) =>
+                                  n.id === note.id
+                                    ? { ...n, like_count: newLikeCount, dislike_count: newDislikeCount }
+                                    : n
+                                );
+                                return updated;
+                              });
+                              // Update userVotes
+                              setUserVotes((prev) => {
+                                const updated = { ...prev, [note.id]: type };
+                                if (!type) delete updated[note.id];
+                                if (typeof window !== 'undefined') {
+                                  localStorage.setItem('community_note_votes', JSON.stringify(updated));
+                                }
+                                return updated;
+                              });
+                            }}
+                          />
                           <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                             <svg width="22" height="22" fill="none" stroke="#1A69FA" strokeWidth="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                           </div>

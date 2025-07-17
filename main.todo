@@ -86,7 +86,6 @@ Other Pages:
    ☐ Add links to all miscellaneous pages and side bars
 
 Other TODO:
-   ☐ Update Past Papers for Further Mathematics
    ✔ Update Community Notes pages for all subjects and update logic for DB @done(25-07-02 17:38)
    ✔ Add user authentication for eduvance and collection of users logged email list (for marketing purposes) @done(25-06-29 06:45)
    ✔ Plan site pages and plans for : @done(25-06-27 15:44)
@@ -131,3 +130,4 @@ Systems Todo:
    ✔ Update backend watermark function for watermarking folders @done(25-07-16 14:46)
    ✔ Update staff console resource cards with a watermark/approve button for backend watermark function @done(25-07-16 06:03)
    ✔ Add resource editing and saving function to staff console resources instances @done(25-07-16 14:46)
+   ☐ Admin Console Resource Removal Section + Moderation Settings

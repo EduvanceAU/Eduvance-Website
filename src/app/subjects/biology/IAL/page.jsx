@@ -21,13 +21,13 @@ export default function IALSubjectsPage() {
   }, []);
 
   return (
-    <main className="min-h-screen bg-white p-8">
+    <main className="min-h-screen bg-white p-8 pt-16">
       <h1 className="text-2xl font-bold mb-6 text-[#0C58E4]">IAL Subjects</h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
         {subjects.map(subject => (
           <Link
             key={subject}
-            href={`/subjects/${subject.toLowerCase()}`}
+            href={`/subjects/${subject.toLowerCase()}?choice=option1`}
             className="block px-4 py-3 bg-[#BAD1FD] rounded-lg text-black font-semibold hover:bg-[#0C58E4] hover:text-white transition-colors duration-200"
           >
             {subject}
