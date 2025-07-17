@@ -44,11 +44,13 @@ async function watermarkPdf(pdfBuffer, headerBuffer, footerBuffer) {
       color: rgb(78/255, 140/255, 255/255), 
     });
 
-    originalPage.drawText("Eduvance.au doesn't claim copyright to this resource. It belongs to the respective copyright holders.", { 
-      x: 2, 
+    const footerText = "Eduvance.au doesn't claim copyright to this resource. It belongs to the respective copyright holders.";
+    const footerFontSize = 11;
+    originalPage.drawText(footerText, { 
+      x: (width - FONT.widthOfTextAtSize(footerText, footerFontSize)) / 2, 
       y: -extraHeight/2+5, 
       font: FONT,
-      size: 11
+      size: footerFontSize
     });
     // originalPage.drawRectangle({
     //   x: 0,
