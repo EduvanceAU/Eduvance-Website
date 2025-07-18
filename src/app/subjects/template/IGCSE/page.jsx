@@ -21,18 +21,31 @@ export default function IGCSESubjectsPage() {
   }, []);
 
   return (
-    <main className="min-h-screen bg-white p-8 pt-16">
-      <h1 className="text-2xl font-bold mb-6 text-[#0C58E4]">IGCSE Subjects</h1>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-        {subjects.map(subject => (
-          <Link
-            key={subject}
-            href={`/subjects/${subject.toLowerCase()}?choice=option2`}
-            className="block px-4 py-3 bg-[#BAD1FD] rounded-lg text-black font-semibold hover:bg-[#0C58E4] hover:text-white transition-colors duration-200"
-          >
-            {subject}
-          </Link>
-        ))}
+    <main className="flex items-center justify-center pt-5">      
+      <div className="w-full lg:w-1/2 flex flex-col items-center justify-center gap-6 px-10 py-5 lg:py-16">
+        <h1 className="text-4xl font-semibold leading-[40px] tracking-tighter" style={{ fontFamily: 'Poppins, sans-serif' }}>
+          Our <span className="bg-[#0C58E4] text-white py-[1.5] px-1 -rotate-1 inline-block">IGCSE</span> Subject List
+        </h1>
+
+        <div className="flex flex-col items-start gap-y-3">
+          {subjects.map((subject) => (
+            <a key={subject.name} href={`/subjects/${subject.toLowerCase()}?choice=option2`}>
+              <button className="cursor-pointer flex items-center justify-between w-[90vw] max-w-[550px] px-6 py-4 bg-[#BAD1FD] rounded-[12px] group hover:bg-[#A8C6FF] transition-all duration-200 border-[#153064] border-1">
+                <p
+                  className="text-xl font-[550] text-[#153064]"
+                  style={{ fontFamily: "Poppins, sans-serif" }}
+                >
+                  {subject}
+                </p>
+                <img
+                  src="/BArrowR.svg"
+                  alt="Arrow Right"
+                  className="w-6 h-auto group-hover:translate-x-1 transition-transform duration-200"
+                />
+              </button>
+            </a>
+          ))}
+        </div>
       </div>
     </main>
   );
