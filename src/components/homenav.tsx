@@ -377,12 +377,13 @@ function Home(props) {
       <div data-sidebar={sidebarOpen ? 'open' : 'closed'} className={`sidebarWheel overflow-y-scroll overscroll-none fixed top-0 left-0 h-full bg-white z-50 flex flex-col shadow-lg transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 ease-in-out`} style={{ width: '300px', minWidth: '300px' }}>
         <div className="flex justify-between items-center p-4">
           {/* Logo/Image */}
-        
-          <Image
-            src={BlueSolo}
-            alt="Eduvance Logo"
-            className="w-11 h-11 object-contain"
-          />
+          <Link href="/">
+            <Image
+              src={BlueSolo}
+              alt="Eduvance Logo"
+              className="w-11 h-11 object-contain"
+            />
+          </Link>
           {/* Close Button */}
           <button onClick={() => setSidebarOpen(false)} className="cursor-pointer w-8 h-8 flex items-center justify-center rounded-full hover:bg-[#BAD1FD]">
             <svg className="w-6 h-6 text-[#153064]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">

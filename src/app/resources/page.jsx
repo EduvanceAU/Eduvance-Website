@@ -38,7 +38,7 @@ export default function Resources() {
   return (
     <>
     <Home showExtra/>
-    <main className="flex flex-col lg:flex-row w-full min-h-screen px-4 py-4 mt-10 min-[1024px]:mt-0">
+    <main className="flex flex-col w-full min-h-screen px-4 py-4 mt-10 min-[1024px]:mt-0">
       {/* Left Side */}
       <div className="w-full lg:w-1/2 flex flex-col items-center lg:items-start justify-center gap-6 px-10 py-5 lg:py-16 relative">
         <div className="flex flex-col">
