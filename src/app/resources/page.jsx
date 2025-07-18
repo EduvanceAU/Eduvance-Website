@@ -68,7 +68,7 @@ export default function Resources() {
       {/* Right Side */}
       <div className="w-full lg:w-1/2 flex flex-col items-center lg:items-start justify-center gap-6 px-10 py-5 lg:py-16">
         <h1 className="text-4xl font-semibold leading-[40px] tracking-tighter" style={{ fontFamily: 'Poppins, sans-serif' }}>
-          Browse Resources by Subject
+          Browse <span className="bg-[#B8D0FD] py-[1.5] px-1 -rotate-1 inline-block">Resources</span> by Subject
         </h1>
 
         <div className="flex flex-col items-start gap-y-3">
