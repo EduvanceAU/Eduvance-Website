@@ -95,7 +95,7 @@ export default function Subject() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 w-full">
                     {IALsubjects.map((subject) => (
                       <a key={subject.name} href={`/subjects/${subject.toLowerCase()}/IAL/pastpapers`}>
-                        <div className="cursor-pointer flex items-center justify-between px-6 w-full py-4 bg-[#BAD1FD] rounded-[12px] group hover:bg-[#A8C6FF] transition-all duration-200 border-[#153064] border-1">
+                        <div className={`${sidebarOpen ? "px-2" : "px-6"} cursor-pointer flex items-center justify-between w-full py-4 bg-[#BAD1FD] rounded-[12px] group hover:bg-[#A8C6FF] transition-all duration-200 border-[#153064] border-1`}>
                           <p
                             className="text-xl font-[550] text-[#153064]"
                             style={{ fontFamily: "Poppins, sans-serif" }}
@@ -105,7 +105,7 @@ export default function Subject() {
                           <img
                             src="/BArrowR.svg"
                             alt="Arrow Right"
-                            className="w-6 h-auto group-hover:translate-x-1 transition-transform duration-200"
+                            className={`${sidebarOpen ? "opacity-0 w-0":"opacity-100 w-6"} h-auto group-hover:translate-x-1 transition-all duration-100`}
                           />
                         </div>
                       </a>
@@ -121,7 +121,7 @@ export default function Subject() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 w-full">
                     {IGCSEsubjects.map((subject) => (
                       <a key={subject.name} href={`/subjects/${subject.toLowerCase()}/IGCSE/pastpapers`}>
-                        <div className="cursor-pointer flex items-center justify-between px-6 w-full py-4 bg-[#BAD1FD] rounded-[12px] group hover:bg-[#A8C6FF] transition-all duration-200 border-[#153064] border-1">
+                        <div className={`${sidebarOpen ? "px-2" : "px-6"} cursor-pointer flex items-center justify-between w-full py-4 bg-[#BAD1FD] rounded-[12px] group hover:bg-[#A8C6FF] transition-all duration-200 border-[#153064] border-1`}>
                           <p
                             className="text-xl font-[550] text-[#153064]"
                             style={{ fontFamily: "Poppins, sans-serif" }}
@@ -131,7 +131,7 @@ export default function Subject() {
                           <img
                             src="/BArrowR.svg"
                             alt="Arrow Right"
-                            className="w-6 h-auto group-hover:translate-x-1 transition-transform duration-200"
+                            className={`${sidebarOpen ? "opacity-0 w-0":"opacity-100 w-6"} h-auto group-hover:translate-x-1 transition-all duration-100`}
                           />
                         </div>
                       </a>
