@@ -14,9 +14,9 @@ const sessions = [
 ];
 
 // At the top, define variables for subjectName, syllabusType, and examCode
-const subjectName = 'Biology';
+const subjectName = 'Accounting';
 const subjectSlug = subjectName.toLowerCase().replace(/\s+/g, '-');
-const examCode = 'BIO';
+const examCode = 'ACC';
 
 const DISPLAY_START_YEAR = 2020;
 const DISPLAY_END_YEAR = 2024;
@@ -174,7 +174,7 @@ export default function IALPastPapersPage() {
         .single();
 
       if (subjectError || !subjectData) {
-        setError(subjectError || new Error(`Subject "biology" not found.`));
+        setError(subjectError || new Error(`Subject "accounting" not found.`));
         return;
       }
 
@@ -214,7 +214,7 @@ export default function IALPastPapersPage() {
         .eq('syllabus_type', 'IAL')
         .single();
       if (subjectError || !subjectData) {
-        setError(subjectError || new Error(`Subject "biology" not found.`));
+        setError(subjectError || new Error(`Subject "accounting" not found.`));
         return;
       }
       let fetchedUnits = subjectData.units || [];
@@ -300,26 +300,16 @@ export default function IALPastPapersPage() {
             className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#000000] mb-8 text-left tracking-[-0.035em]"
             style={{ fontFamily: "Poppins, sans-serif" }}
           >
-            IAL <span className="bg-[#1A69FA] px-2 py-1 -rotate-1 inline-block"><span className="text-[#FFFFFF]">Biology</span></span> Past Papers
+            IAL <span className="bg-[#1A69FA] px-2 py-1 -rotate-1 inline-block"><span className="text-[#FFFFFF]">Edexcel</span></span> Past Papers
           </h1>
 
-          <div
-            className="inline-flex items-center justify-center px-4 py-2 mb-8 rounded-md shadow-xl"
-            style={{
-              border: "1.5px solid #DBDBDB",
-              fontFamily: "Poppins, sans-serif",
-            }}
-          >
-            <span className="text-md font-medium text-black tracking-tight">
-              <span className="font-[501]">Exam code:</span> BIO
-            </span>
-          </div>
+          
 
           <h3
             className="text-sm sm:text-md lg:text-lg font-[500] leading-6 text-[#707070] mb-8 text-left tracking-[-0.015em]"
             style={{ fontFamily: "Poppins, sans-serif" }}
           >
-            Explore our collection of Edexcel IAL Biology Past Papers and Mark Schemes below. Practicing with IAL Biology past papers is one of the most effective ways to pinpoint the topics that need more focus—helping you revise smarter and prepare confidently for your upcoming exam
+            Explore our collection of Edexcel IAL Past Papers and Mark Schemes below. Practicing with IAL Accounting past papers is one of the most effective ways to pinpoint the topics that need more focus—helping you revise smarter and prepare confidently for your upcoming exam
           </h3>
 
           <div className="w-full mb-8">
