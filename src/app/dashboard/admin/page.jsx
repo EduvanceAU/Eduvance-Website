@@ -247,24 +247,31 @@ export default function AdminDashboard() {
     setMessageType('success');
   };
 
+  const [submitLoading, setSubmitLoading] = useState(false);
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('handleSubmit called');
+    setSubmitLoading(true);
     if (!supabaseClient) {
       setMessage('Error: Supabase client not initialized. Please refresh the page or check your connection.');
       setMessageType('error');
-      console.error('Supabase client is null in handleSubmit');
+      setSubmitLoading(false);
       return;
     }
     if (!title || !link || !selectedSubjectId || !resourceType) {
       setMessage("Fill all required fields");
       setMessageType('error');
+      setSubmitLoading(false);
       return;
+    }
+    // Ensure link starts with http:// or https://
+    let safeLink = link.trim();
+    if (!/^https?:\/\//i.test(safeLink)) {
+      safeLink = 'https://' + safeLink;
     }
     const unitValue = unitChapter.trim() === '' ? 'General' : unitChapter.trim();
     const { data, error } = await supabaseClient.from('resources').insert({
       title,
-      link,
+      link: safeLink,
       description,
       resource_type: resourceType,
       subject_id: selectedSubjectId,
@@ -272,15 +279,22 @@ export default function AdminDashboard() {
       uploaded_by_username: staffUsername,
       approved: false
     }).select();
-    console.log('Insert data:', data, 'Insert error:', error);
     if (error) {
       setMessage(`Submission failed: ${error.message}`);
       setMessageType('error');
-      console.error('Resource submission error:', error);
+      setTimeout(() => {
+        setMessage("");
+        setMessageType(null);
+        setSubmitLoading(false);
+      }, 3000);
     } else if (!data || data.length === 0) {
       setMessage('Submission did not return a new resource. Please check your database constraints.');
       setMessageType('error');
-      console.warn('No data returned from insert:', data);
+      setTimeout(() => {
+        setMessage("");
+        setMessageType(null);
+        setSubmitLoading(false);
+      }, 3000);
     } else {
       setMessage("✅ Resource added successfully");
       setMessageType('success');
@@ -289,6 +303,11 @@ export default function AdminDashboard() {
       setDescription('');
       fetchUnapprovedResources();
       fetchLatestResources();
+      setTimeout(() => {
+        setMessage("");
+        setMessageType(null);
+        setSubmitLoading(false);
+      }, 3000);
     }
   };
 
@@ -566,7 +585,14 @@ export default function AdminDashboard() {
                       </optgroup>
                     </select>
                   </div>
-                    <button type="submit" className="cursor-pointer w-full bg-blue-600 hover:bg-blue-700 transition text-white py-2 rounded-lg flex items-center justify-center gap-2"><svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M7 10l5 5m0 0l5-5m-5 5V4" /></svg>Submit Resource</button>
+                    <button type="submit" className="cursor-pointer w-full bg-blue-600 hover:bg-blue-700 transition text-white py-2 rounded-lg flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed" disabled={submitLoading}>
+                      {submitLoading ? (
+                        <svg className="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" /></svg>
+                      ) : (
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M7 10l5 5m0 0l5-5m-5 5V4" /></svg>
+                      )}
+                      {submitLoading ? 'Submitting...' : 'Submit Resource'}
+                    </button>
                 </form>
               </>
             )}
