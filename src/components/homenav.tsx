@@ -98,10 +98,10 @@ function Home(props) {
         </h3>
         <div className="space-y-1">
           {[
-            { name: 'Past Paper Finder', href: '/tools/formula-sheet' },
-            { name: 'Community Notes', href: '/tools/unit-converter' },
-            { name: 'Eduvance Resources', href: '/tools/topic-tracker' },
-            { name: 'Share Your Notes!', href: '/tools/mock-paper' },
+            { name: 'Past Papers', href: '/pastPapers' },
+            { name: 'Community Notes', href: '/communityNotes' },
+            { name: 'Eduvance Resources', href: '/resources' },
+            { name: 'Share Your Notes!', href: '/contributor' },
           ].map((tool) => (
             <Link
               key={tool.name}
