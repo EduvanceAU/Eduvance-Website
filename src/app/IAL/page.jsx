@@ -1,6 +1,6 @@
 "use client"
 
-import { supabase } from './lib/supabaseClient';
+import { supabase } from '../subjects/template/IAL/lib/supabaseClient';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
