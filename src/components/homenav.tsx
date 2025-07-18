@@ -372,7 +372,7 @@ function Home(props) {
       )} */}
       {/* Custom Sidebar - Slide-in from left */}
       {/* Scroll Ability */}
-      <div data-sidebar={sidebarOpen ? 'open' : 'closed'} className={`sidebarWheel overflow-y-scroll overscroll-none fixed top-0 left-0 h-full bg-white z-50 flex flex-col shadow-lg transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 ease-in-out`} style={{ width: '280px', minWidth: '280px' }}>
+      <div data-sidebar={sidebarOpen ? 'open' : 'closed'} className={`sidebarWheel overflow-y-scroll overscroll-none fixed top-0 left-0 h-full bg-white z-50 flex flex-col shadow-lg transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 ease-in-out`} style={{ width: '300px', minWidth: '300px' }}>
         <div className="flex justify-between items-center p-4">
           {/* Logo/Image */}
         
