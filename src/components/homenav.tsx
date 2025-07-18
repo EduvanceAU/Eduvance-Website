@@ -390,7 +390,7 @@ function Home(props) {
         </div>
         {/* Choose your exam board header */}
         <h2 className="text-lg font-semibold tracking-[-1px] text-[#0C58E4] mb-6 px-6" style={{ fontFamily: 'Poppins, sans-serif' }}>
-          Choose your exam board
+          Choose your exam qualification
         </h2>
         {/* Sidebar Navigation */}
         <div className="flex flex-col px-4 space-y-2">
