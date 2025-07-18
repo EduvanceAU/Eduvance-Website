@@ -38,23 +38,24 @@ export default function Resources() {
   return (
     <>
     <Home showExtra/>
-    <main className="flex flex-col lg:flex-row w-full min-h-screen px-4 py-4">
+    <main className="flex flex-col lg:flex-row w-full min-h-screen px-4 py-4 mt-10 min-[1024px]:mt-0">
       {/* Left Side */}
-      <div className="w-full lg:w-1/2 flex flex-col items-start justify-center gap-6 px-10 py-5 lg:py-16 relative">
-        <div className="relative w-full h-[250px] sm:h-[200px] md:h-[180px] lg:h-[150px]">
+      <div className="w-full lg:w-1/2 flex flex-col items-center lg:items-start justify-center gap-6 px-10 py-5 lg:py-16 relative">
+        <div className="flex flex-col">
+        <div className="relative w-full h-[150px]">
           {/* PagesWidget at 5% from top, 0% from left */}
           <img
             src="PagesWidget.svg"
             alt="Pages Widget"
-            className="absolute top-[5%] left-0 w-80 h-auto"
+            className="absolute left-0 w-80 h-auto"
           />
         </div>
 
         <h1 className="text-4xl font-semibold text-left leading-[40px] tracking-tighter z-10 max-w-[520px]" style={{ fontFamily: 'Poppins, sans-serif' }}>
           Study materials to level up your exam prep and <span className="underline decoration-6 decoration-[#246dfd] underline-offset-8">stay on track</span>
         </h1>
-
-        <h3 className="text-xl font-[550] text-left text-stone-500 leading-[25px] tracking-[-0.015em] z-10 max-w-[640px]" style={{ fontFamily: 'Poppins, sans-serif' }}>
+        </div>
+        <h3 className="text-xl font-[550] text-left text-stone-500 leading-[25px] tracking-[-0.015em] z-10 max-w-[520px] lg:max-w-[640px]" style={{ fontFamily: 'Poppins, sans-serif' }}>
           Our revision resources follow your exam specs closely and cover each topic with clarity. From bite-sized explanations and real exam tips to helpful visuals and examples, everything is built to make your revision smoother and more focused.
         </h3>
 
@@ -66,7 +67,7 @@ export default function Resources() {
       </div>
 
       {/* Right Side */}
-      <div className="w-full lg:w-1/2 flex flex-col items-center lg:items-start justify-center gap-6 px-10 py-5 lg:py-16">
+      <div className="w-full lg:w-1/2 flex flex-col items-center justify-center gap-6 px-10 py-5 lg:py-16">
         <h1 className="text-4xl font-semibold leading-[40px] tracking-tighter" style={{ fontFamily: 'Poppins, sans-serif' }}>
           Browse <span className="bg-[#B8D0FD] py-[1.5] px-1 -rotate-1 inline-block">Resources</span> by Subject
         </h1>
