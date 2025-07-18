@@ -402,7 +402,7 @@ function Home(props) {
             onMouseLeave={() => setHoveredSidebarItem(null)}
             onClick={() => {
               setSidebarOpen(false);
-              window.location.href = '/subjects/template/IGCSE';
+              window.location.href = '/IGCSE';
             }}
           >
             <div className="flex items-center justify-between">
@@ -422,7 +422,7 @@ function Home(props) {
             onMouseLeave={() => setHoveredSidebarItem(null)}
             onClick={() => {
               setSidebarOpen(false);
-              window.location.href = '/subjects/template/IAL';
+              window.location.href = '/IAL';
             }}
           >
             <div className="flex items-center justify-between">
