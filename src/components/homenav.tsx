@@ -98,6 +98,7 @@ function Home(props) {
         </h3>
         <div className="space-y-1">
           {[
+            { name: 'Study Tools', href: '/studyTools' },
             { name: 'Past Papers', href: '/pastPapers' },
             { name: 'Community Notes', href: '/communityNotes' },
             { name: 'Eduvance Resources', href: '/resources' },

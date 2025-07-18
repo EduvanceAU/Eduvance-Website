@@ -23,6 +23,7 @@ const SubjectButtons = () => {
       const { data, error } = await supabase
         .from('subjects')
         .select('name')
+        .order('name', { ascending: true })
         .eq('syllabus_type', 'IGCSE');
       if (!error && data) {
         setSubjects(data.map(subj => subj.name));
