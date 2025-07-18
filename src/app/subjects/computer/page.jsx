@@ -44,7 +44,7 @@ export default function Subject({ searchParams }) {
   return (
     <>
       {/* Main Content */}
-      <div className={`transition-all duration-300 ${sidebarOpen ? 'sm:ml-64' : 'ml-0'}`}>
+      <div className={`transition-all duration-300 ${sidebarOpen ? 'sm:ml-70' : 'ml-0'}`}>
         {/* Custom Banner Header */}
         <div
           className="w-full h-[250px] relative flex items-center bg-cover bg-right lg:bg-center bg-no-repeat transition-all duration-300"
