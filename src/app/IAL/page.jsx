@@ -22,15 +22,14 @@ export default function IALSubjectsPage() {
 
   return (
     <main className="flex items-center justify-center pt-5">      
-      <div className="w-full lg:w-1/2 flex flex-col items-center justify-center gap-6 px-10 py-5 lg:py-16">
+      <div className="w-full flex flex-col items-center justify-center gap-6 px-10 py-5 lg:py-16">
         <h1 className="text-4xl font-semibold leading-[40px] tracking-tighter" style={{ fontFamily: 'Poppins, sans-serif' }}>
           Our <span className="bg-[#0C58E4] text-white py-[1.5] px-1 -rotate-1 inline-block">IAL</span> Subject List
         </h1>
-
-        <div className="flex flex-col items-start gap-y-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           {subjects.map((subject) => (
-            <a key={subject.name} href={`/subjects/${subject.toLowerCase()}?choice=option2`}>
-              <button className="cursor-pointer flex items-center justify-between w-[90vw] max-w-[550px] px-6 py-4 bg-[#BAD1FD] rounded-[12px] group hover:bg-[#A8C6FF] transition-all duration-200 border-[#153064] border-1">
+            <a key={subject.name} href={`/subjects/${subject.toLowerCase()}?choice=option1`}>
+              <div className="cursor-pointer flex items-center justify-between px-6 w-[350px] py-4 bg-[#BAD1FD] rounded-[12px] group hover:bg-[#A8C6FF] transition-all duration-200 border-[#153064] border-1">
                 <p
                   className="text-xl font-[550] text-[#153064]"
                   style={{ fontFamily: "Poppins, sans-serif" }}
@@ -42,7 +41,7 @@ export default function IALSubjectsPage() {
                   alt="Arrow Right"
                   className="w-6 h-auto group-hover:translate-x-1 transition-transform duration-200"
                 />
-              </button>
+              </div>
             </a>
           ))}
         </div>

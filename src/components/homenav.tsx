@@ -203,9 +203,10 @@ function Home(props) {
         {/* Center Links - Hidden on sm */}
         <div className="hidden sm:flex flex-wrap gap-3 sm:gap-4 md:gap-5 justify-center items-center">
           <NavDropdown
-            labelMain="About Edexcel"
+            labelMain="About"
             labelSmall="About"
             items={[
+              { label: "About Eduvance", href: "/about/eduvance" },
               { label: "About Edexcel", href: "/about/edexcel" },
               { label: "Exam Structure", href: "/about/exam-structure" },
               { label: "Grading System", href: "/about/grading" },
@@ -233,6 +234,7 @@ function Home(props) {
             items={[
               { label: "Contact Us", href: "/contact" },
               { label: "FAQ", href: "/faq" },
+              { label: "Community Guidelines", href: "/guidelines" },
               { label: "Privacy Policy", href: "/privacy" },
               { label: "Terms of Service", href: "/terms" },
             ]}
