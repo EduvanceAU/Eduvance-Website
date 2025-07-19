@@ -250,7 +250,7 @@ export default function Main() {
         <div className="container mx-auto px-4 relative">
           <Image src={EduvanceFooter} alt="Footer" className="h-auto w-[1900px] mx-auto transform sm:-translate-y-5 -translate-y-[31px]" />
 
-          <div className="rounded-2xl p-6 max-w-[1850px] mx-auto h-[920px] sm:h-[920px] lg:h-[520px] bg-gradient-to-b from-[#FFFFFF] via-[#FAFCFF] to-[#357BFD] flex flex-col lg:flex-row gap-8 shadow-[0px_-10px_30px_#357BFD40] translate-y-[-40px]">
+          <div className="rounded-2xl p-6 max-w-[1850px] mx-auto h-[920px] sm:h-[920px] lg:h-[520px] bg-gradient-to-b from-[#FFFFFF] via-[#FAFCFF] to-[#357BFD] flex flex-col lg:flex-row sm:gap-8 shadow-[0px_-10px_30px_#357BFD40] translate-y-[-40px]">
             {/* Left Column */}
             <div className="w-full lg:w-1/3 flex flex-col items-start mt-[6px]">
               <Image src={BiggerLogo} alt="Bigger logo" className="w-auto h-15 object-contain mb-4" />
