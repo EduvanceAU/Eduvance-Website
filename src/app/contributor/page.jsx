@@ -1,12 +1,10 @@
 // This page allows anyone to add resources to the Supabase DB (no login required)
 "use client";
 import React, { useState, useEffect } from 'react';
-import {Home} from '@/components/homenav'
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+import { Home } from '@/components/homenav';
+import { supabase } from '@/lib/supabaseClient';
 
 export default function ContributorUploadResource() {
-  const [supabaseClient, setSupabaseClient] = useState(null);
   const [subjects, setSubjects] = useState([]);
   const [loadingSubjects, setLoadingSubjects] = useState(true);
   const [message, setMessage] = useState('');
@@ -25,18 +23,11 @@ export default function ContributorUploadResource() {
     { value: 'solved_papers', label: 'Solved Past Paper Questions' },
   ];
 
-  useEffect(() => {
-    if (window.supabase && !supabaseClient) {
-      const client = window.supabase.createClient(supabaseUrl, supabaseKey);
-      setSupabaseClient(client);
-    }
-    // eslint-disable-next-line
-  }, []);
   // Fetch subjects
   useEffect(() => {
-    if (!supabaseClient) return;
     setLoadingSubjects(true);
-    supabaseClient.from('subjects')
+    supabase
+      .from('subjects')
       .select('id, name, code, syllabus_type, units')
       .order('name', { ascending: true })
       .then(({ data, error }) => {
@@ -64,7 +55,7 @@ export default function ContributorUploadResource() {
         }
         setLoadingSubjects(false);
       });
-  }, [supabaseClient]);
+  }, []);
 
   // Resource upload handler
   const handleSubmit = async (e) => {
@@ -74,15 +65,10 @@ export default function ContributorUploadResource() {
       setMessageType('error');
       return;
     }
-    if (!supabaseClient) {
-      setMessage("Not ready to submit");
-      setMessageType('error');
-      return;
-    }
   
     const unitValue = unitChapter.trim() === '' ? 'General' : unitChapter.trim();
   
-    const { error } = await supabaseClient
+    const { error } = await supabase
       .from('community_resource_requests')
       .insert({
         contributor_name: "Anonymous Contributor", // You can make this dynamic

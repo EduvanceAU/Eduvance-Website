@@ -5,6 +5,7 @@ import fs from 'fs/promises';
 import path from 'path';
 import archiver from 'archiver';
 import fontkit from '@pdf-lib/fontkit';
+import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 // Helper to get Google Drive file/folder ID from URL
 function extractDriveId(url) {
   const fileMatch = url.match(/\/d\/(.*?)(\/|$)/);
@@ -83,6 +84,11 @@ async function fetchFolderPdfIds(folderId) {
 }
 
 export async function POST(req) {
+  const supabase = createRouteHandlerClient({ cookies: () => req.cookies });
+  const { data: { user }, error } = await supabase.auth.getUser();
+  if (!user) {
+    return new NextResponse(JSON.stringify({ error: 'Unauthorized' }), { status: 401 });
+  }
   try {
     const { url } = await req.json();
     if (!url) return NextResponse.json({ error: 'Missing Google Drive URL' }, { status: 400 });

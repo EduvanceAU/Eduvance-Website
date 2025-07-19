@@ -2,10 +2,12 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { supabase } from "../lib/supabaseClient";
-import { useSupabaseAuth } from "@/components/client/SupabaseAuthContext";
-import { Auth } from '@supabase/auth-ui-react';
-import { ThemeSupa } from '@supabase/auth-ui-shared';
+import { createClient } from '@supabase/supabase-js';
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+);
 // Remove: import { useRouter } from 'next/router';
 import SmallFoot from '@/components/smallFoot.jsx';
 
@@ -23,6 +25,7 @@ const SubjectButtons = () => {
       const { data, error } = await supabase
         .from('subjects')
         .select('name')
+        .order('name', { ascending: true })
         .eq('syllabus_type', 'IGCSE');
       if (!error && data) {
         setSubjects(data.map(subj => subj.name));
@@ -48,13 +51,11 @@ const SubjectButtons = () => {
 };
 
 export default function IGCSEResources() {
-  const { session, user, loading: authLoading } = useSupabaseAuth();
   const [units, setUnits] = useState([]);
   const [expandedUnits, setExpandedUnits] = useState({});
   const [unitResources, setUnitResources] = useState({});
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [showLoginPopup, setShowLoginPopup] = useState(false);
 
   const toggleUnit = (unit) => {
     setExpandedUnits(prev => ({
@@ -98,7 +99,6 @@ export default function IGCSEResources() {
   }, []);
 
   useEffect(() => {
-    if (!session) return;
     setLoading(true);
     const fetchResources = async () => {
       try {
@@ -121,6 +121,7 @@ export default function IGCSEResources() {
           .from('resources')
           .select('*')
           .eq('subject_id', subjectId)
+          .eq('approved', true)
           .order('created_at', { ascending: false });
 
         if (resourcesError) {
@@ -160,7 +161,7 @@ export default function IGCSEResources() {
       }
     };
     fetchResources();
-  }, [session]);
+  }, []);
 
   if (error) {
     return (

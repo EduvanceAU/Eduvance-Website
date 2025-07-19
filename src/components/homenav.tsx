@@ -3,7 +3,7 @@ import Image from 'next/image';
 import Link from "next/link";
 import { useState, useRef, useEffect } from 'react';
 import { ChevronRight } from 'lucide-react';
-import { supabase } from './client/supabaseClient';
+import { supabase } from '@/lib/supabaseClient';
 import { Auth } from '@supabase/auth-ui-react';
 import { ThemeSupa } from '@supabase/auth-ui-shared';
 import BlueSolo from '@/assets/png/BlueSolo.png'
@@ -16,6 +16,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+import { useSupabaseAuth } from '@/components/client/SupabaseAuthContext';
 
 // Dropdown component
 const NavDropdown = ({ labelMain, labelSmall, items }) => {
@@ -98,10 +99,11 @@ function Home(props) {
         </h3>
         <div className="space-y-1">
           {[
-            { name: 'Past Paper Finder', href: '/tools/formula-sheet' },
-            { name: 'Community Notes', href: '/tools/unit-converter' },
-            { name: 'Eduvance Resources', href: '/tools/topic-tracker' },
-            { name: 'Share Your Notes!', href: '/tools/mock-paper' },
+            { name: 'Study Tools', href: '/studyTools' },
+            { name: 'Past Papers', href: '/pastPapers' },
+            { name: 'Community Notes', href: '/communityNotes' },
+            { name: 'Eduvance Resources', href: '/resources' },
+            { name: 'Share Your Notes!', href: '/contributor' },
           ].map((tool) => (
             <Link
               key={tool.name}
@@ -115,39 +117,29 @@ function Home(props) {
         </div>
       </div>)
   }
+  const { session } = useSupabaseAuth();
   const [selected, setSelected] = useState('option1');
   const [hoveredSidebarItem, setHoveredSidebarItem] = useState(null);
   const [isHeaderHovered, setIsHeaderHovered] = useState(false);
   const [isSidebarHovered, setIsSidebarHovered] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [session, setSession] = useState(null);
-  const [loading, setLoading] = useState(true);
   const [showLoginPopup, setShowLoginPopup] = useState(false);
-  // const [showLogoutPopup, setShowLogoutPopup] = useState(false);
+  const [showLogoutPopup, setShowLogoutPopup] = useState(false);
+  const prevSessionRef = useRef(null);
+  const loginPopupShownRef = useRef(false);
 
   useEffect(() => {
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setLoading(false);
-      if (session) setShowLoginPopup(true);
-    });
-
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, _session) => {
-      const { data: { session } } = await supabase.auth.getSession();
-      setSession(session);
-      setLoading(false);
-      if (session) {
-        setShowLoginPopup(true);
-      }
-      // else{
-      //   setShowLogoutPopup(true);
-      // }
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
+    // Only show login popup if previous session was null and new session is not null, and popup hasn't been shown yet in sessionStorage
+    if (!prevSessionRef.current && session && !sessionStorage.getItem('loginPopupShown')) {
+      setShowLoginPopup(true);
+      sessionStorage.setItem('loginPopupShown', 'true');
+    }
+    // Reset the flag if the user logs out
+    if (!session) {
+      sessionStorage.removeItem('loginPopupShown');
+    }
+    prevSessionRef.current = session;
+  }, [session]);
 
   // Handle login popup auto-hide
   useEffect(() => {
@@ -157,12 +149,12 @@ function Home(props) {
     }
   }, [showLoginPopup]);
   // Handle logout popup auto-hide
-  // useEffect(() => {
-  //   if (showLogoutPopup) {
-  //     const timer = setTimeout(() => setShowLogoutPopup(false), 1500);
-  //     return () => clearTimeout(timer);
-  //   }
-  // }, [showLogoutPopup]);
+  useEffect(() => {
+    if (showLogoutPopup) {
+      const timer = setTimeout(() => setShowLogoutPopup(false), 1500);
+      return () => clearTimeout(timer);
+    }
+  }, [showLogoutPopup]);
 
   const handleLogout = async () => {
     const { error } = await supabase.auth.signOut();
@@ -172,9 +164,11 @@ function Home(props) {
     }
   
     // Clear session manually
-    setSession(null);
-    // setShowLogoutPopup(true);
+    // setSession(null); // This line is removed as session is now managed by useSupabaseAuth
+    // setShowLogoutPopup(true); // This line is removed as showLogoutPopup is removed
     setShowLoginPopup(false);  
+    setShowLogoutPopup(true);
+    sessionStorage.removeItem('loginPopupShown');
   };
 
   return (
@@ -203,9 +197,10 @@ function Home(props) {
         {/* Center Links - Hidden on sm */}
         <div className="hidden sm:flex flex-wrap gap-3 sm:gap-4 md:gap-5 justify-center items-center">
           <NavDropdown
-            labelMain="About Edexcel"
+            labelMain="About"
             labelSmall="About"
             items={[
+              { label: "About Eduvance", href: "/about/eduvance" },
               { label: "About Edexcel", href: "/about/edexcel" },
               { label: "Exam Structure", href: "/about/exam-structure" },
               { label: "Grading System", href: "/about/grading" },
@@ -233,6 +228,7 @@ function Home(props) {
             items={[
               { label: "Contact Us", href: "/contact" },
               { label: "FAQ", href: "/faq" },
+              { label: "Community Guidelines", href: "/guidelines" },
               { label: "Privacy Policy", href: "/privacy" },
               { label: "Terms of Service", href: "/terms" },
             ]}
@@ -352,10 +348,10 @@ function Home(props) {
         </div>
       )}
       {/* Logout Success Popup */}
-      {/* {showLogoutPopup && (
+      {showLogoutPopup && (
         <div className="fixed top-6 left-1/2 transform -translate-x-1/2 z-50">
-          <div className="bg-red-800 text-white px-6 py-3 rounded-lg shadow-lg animate-slide-in-fade-out">
-            You are not logged in!
+          <div className="bg-red-600 text-white px-6 py-3 rounded-lg shadow-lg animate-slide-in-fade-out">
+            Successfully logged out!
           </div>
           <style jsx>{`
             .animate-slide-in-fade-out {
@@ -369,18 +365,19 @@ function Home(props) {
             }
           `}</style>
         </div>
-      )} */}
+      )}
       {/* Custom Sidebar - Slide-in from left */}
       {/* Scroll Ability */}
-      <div data-sidebar={sidebarOpen ? 'open' : 'closed'} className={`sidebarWheel overflow-y-scroll overscroll-none fixed top-0 left-0 h-full bg-white z-50 flex flex-col shadow-lg transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 ease-in-out`} style={{ width: '280px', minWidth: '280px' }}>
+      <div data-sidebar={sidebarOpen ? 'open' : 'closed'} className={`sidebarWheel overflow-y-scroll overscroll-none fixed top-0 left-0 h-full bg-white z-50 flex flex-col shadow-lg transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 ease-in-out`} style={{ width: '300px', minWidth: '300px' }}>
         <div className="flex justify-between items-center p-4">
           {/* Logo/Image */}
-        
-          <Image
-            src={BlueSolo}
-            alt="Eduvance Logo"
-            className="w-11 h-11 object-contain"
-          />
+          <Link href="/">
+            <Image
+              src={BlueSolo}
+              alt="Eduvance Logo"
+              className="w-11 h-11 object-contain"
+            />
+          </Link>
           {/* Close Button */}
           <button onClick={() => setSidebarOpen(false)} className="cursor-pointer w-8 h-8 flex items-center justify-center rounded-full hover:bg-[#BAD1FD]">
             <svg className="w-6 h-6 text-[#153064]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -390,7 +387,7 @@ function Home(props) {
         </div>
         {/* Choose your exam board header */}
         <h2 className="text-lg font-semibold tracking-[-1px] text-[#0C58E4] mb-6 px-6" style={{ fontFamily: 'Poppins, sans-serif' }}>
-          Choose your exam board
+          Choose your exam qualification
         </h2>
         {/* Sidebar Navigation */}
         <div className="flex flex-col px-4 space-y-2">
@@ -402,7 +399,7 @@ function Home(props) {
             onMouseLeave={() => setHoveredSidebarItem(null)}
             onClick={() => {
               setSidebarOpen(false);
-              window.location.href = '/subjects/template/IGCSE';
+              window.location.href = '/IGCSE';
             }}
           >
             <div className="flex items-center justify-between">
@@ -422,7 +419,7 @@ function Home(props) {
             onMouseLeave={() => setHoveredSidebarItem(null)}
             onClick={() => {
               setSidebarOpen(false);
-              window.location.href = '/subjects/template/IAL';
+              window.location.href = '/IAL';
             }}
           >
             <div className="flex items-center justify-between">

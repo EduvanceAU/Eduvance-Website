@@ -1,4 +1,11 @@
+import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
+
 export async function GET(request) {
+    const supabase = createRouteHandlerClient({ cookies: () => request.cookies });
+    const { data: { user }, error } = await supabase.auth.getUser();
+    if (!user) {
+        return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 });
+    }
     const bot_token = process.env.BOT_TOKEN
     const guild_id = process.env.GUILD_ID
     const response = await fetch(`https://discord.com/api/v10/guilds/${guild_id}?with_counts=true`, {
