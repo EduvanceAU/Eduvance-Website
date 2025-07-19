@@ -203,12 +203,41 @@ export default function AdminDashboard() {
 
   const approveResource = async (id) => {
     if (!supabaseClient) return;
-    const { error } = await supabaseClient.from('resources').update({ approved: true }).eq('id', id);
+    const currentTime = new Date().toISOString();
+    
+    // Optimistically update the local state first
+    setUnapprovedResources((prev) => 
+      prev.map((res) => 
+        res.id === id 
+          ? { ...res, approved: true, updated_at: currentTime }
+          : res
+      )
+    );
+    
+    const { error } = await supabaseClient.from('resources').update({ 
+      approved: true,
+      updated_at: currentTime
+    }).eq('id', id);
+    
     if (!error) {
-      setUnapprovedResources((prev) => prev.filter((res) => res.id !== id));
+      // Remove from unapproved list after successful update
+      setTimeout(() => {
+        setUnapprovedResources((prev) => prev.filter((res) => res.id !== id));
+      }, 1000); // Show the approved status for 1 second before removing
       fetchLatestResources();
       setMessage("✅ Resource approved successfully");
       setMessageType("success");
+    } else {
+      // Revert the optimistic update if there was an error
+      setUnapprovedResources((prev) => 
+        prev.map((res) => 
+          res.id === id 
+            ? { ...res, approved: false, updated_at: res.updated_at }
+            : res
+        )
+      );
+      setMessage(`Failed to approve resource: ${error.message}`);
+      setMessageType("error");
     }
   };
 
@@ -266,6 +295,10 @@ export default function AdminDashboard() {
     // Ensure link starts with http:// or https://
     let safeLink = link.trim();
     if (!/^https?:\/\//i.test(safeLink)) {
+      // If it doesn't start with www., add it
+      if (!/^www\./i.test(safeLink)) {
+        safeLink = 'www.' + safeLink;
+      }
       safeLink = 'https://' + safeLink;
     }
     const unitValue = unitChapter.trim() === '' ? 'General' : unitChapter.trim();
@@ -553,8 +586,8 @@ export default function AdminDashboard() {
                         );
                       }
                     })()}
-                    <span className="text-xs text-gray-500">Paste a valid URL (Google Drive, Dropbox, etc.):</span>
-                    <input type="url" value={link} onChange={(e) => setLink(e.target.value)} placeholder="Link *" className="w-full border p-2 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 transition" required />
+                    <span className="text-xs text-gray-500">Paste any URL format (www.abc.com, abc.com, https://www.abc.com, etc.):</span>
+                    <input type="text" value={link} onChange={(e) => setLink(e.target.value)} placeholder="Link *" className="w-full border p-2 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 transition" required />
                     <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Description (optional)" className="min-h-[100px] w-full border p-2 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 transition"></textarea>
                   </div>
                   <div className="flex flex-col md:flex-row gap-2">
@@ -612,8 +645,8 @@ export default function AdminDashboard() {
                             <div><span className="font-semibold">Added by:</span> {res.uploaded_by_username || 'Unknown'}</div>
                             <div><span className="font-semibold">Subject:</span> {subject ? `${subject.name} (${subject.code}) - ${subject.syllabus_type}` : 'Unknown'}</div>
                             <div><span className="font-semibold">Suggested on:</span> {res.created_at ? new Date(res.created_at).toLocaleString() : 'Unknown'}</div>
-                            <div><span className="font-semibold">Reviewed by:</span> <span className="italic text-gray-400">Not reviewed yet</span></div>
-                            <div><span className="font-semibold">Reviewed at:</span> <span className="italic text-gray-400">Not reviewed yet</span></div>
+                            <div><span className="font-semibold">Status:</span> {res.approved ? <span className="text-green-600 font-semibold">Approved</span> : <span className="text-orange-600 font-semibold">Pending</span>}</div>
+                            <div><span className="font-semibold">Last updated:</span> {res.updated_at ? new Date(res.updated_at).toLocaleString() : 'Unknown'}</div>
                           </div>
                           <div className='flex justify-start gap-2 text-xs'>
                             <div className="cursor-pointer w-fit px-4 py-0.5 text-green-400 ring ring-green-400 rounded-md hover:bg-green-400 hover:text-white transition-colors">{res.unit_chapter_name}</div>
@@ -848,8 +881,8 @@ export default function AdminDashboard() {
                             <div><span className="font-semibold">Added by:</span> {res.uploaded_by_username || 'Unknown'}</div>
                             <div><span className="font-semibold">Subject:</span> {subject ? `${subject.name} (${subject.code}) - ${subject.syllabus_type}` : 'Unknown'}</div>
                             <div><span className="font-semibold">Suggested on:</span> {res.created_at ? new Date(res.created_at).toLocaleString() : 'Unknown'}</div>
-                            <div><span className="font-semibold">Reviewed by:</span> <span className="italic text-gray-400">Not tracked</span></div>
-                            <div><span className="font-semibold">Reviewed at:</span> <span className="italic text-gray-400">Not tracked</span></div>
+                            <div><span className="font-semibold">Status:</span> {res.approved ? <span className="text-green-600 font-semibold">Approved</span> : <span className="text-orange-600 font-semibold">Pending</span>}</div>
+                            <div><span className="font-semibold">Last updated:</span> {res.updated_at ? new Date(res.updated_at).toLocaleString() : 'Unknown'}</div>
                           </div>
                           <div className='flex justify-start gap-2 text-xs'>
                             <div className="cursor-pointer w-fit px-4 py-0.5 text-green-400 ring ring-green-400 rounded-md hover:bg-green-400 hover:text-white transition-colors">{res.unit_chapter_name}</div>
