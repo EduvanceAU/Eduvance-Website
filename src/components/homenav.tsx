@@ -16,6 +16,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+import { useSupabaseAuth } from '@/components/client/SupabaseAuthContext';
 
 // Dropdown component
 const NavDropdown = ({ labelMain, labelSmall, items }) => {
@@ -116,39 +117,29 @@ function Home(props) {
         </div>
       </div>)
   }
+  const { session } = useSupabaseAuth();
   const [selected, setSelected] = useState('option1');
   const [hoveredSidebarItem, setHoveredSidebarItem] = useState(null);
   const [isHeaderHovered, setIsHeaderHovered] = useState(false);
   const [isSidebarHovered, setIsSidebarHovered] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [session, setSession] = useState(null);
-  const [loading, setLoading] = useState(true);
   const [showLoginPopup, setShowLoginPopup] = useState(false);
   // const [showLogoutPopup, setShowLogoutPopup] = useState(false);
   const prevSessionRef = useRef(null);
+  const loginPopupShownRef = useRef(false);
 
   useEffect(() => {
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setLoading(false);
-      prevSessionRef.current = session; // Set initial previous session
-    });
-
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, _session) => {
-      const { data: { session } } = await supabase.auth.getSession();
-      setSession(session);
-      setLoading(false);
-      // Only show login popup if previous session was null and new session is not null
-      if (!prevSessionRef.current && session) {
-        setShowLoginPopup(true);
-      }
-      prevSessionRef.current = session;
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
+    // Only show login popup if previous session was null and new session is not null, and popup hasn't been shown yet in sessionStorage
+    if (!prevSessionRef.current && session && !sessionStorage.getItem('loginPopupShown')) {
+      setShowLoginPopup(true);
+      sessionStorage.setItem('loginPopupShown', 'true');
+    }
+    // Reset the flag if the user logs out
+    if (!session) {
+      sessionStorage.removeItem('loginPopupShown');
+    }
+    prevSessionRef.current = session;
+  }, [session]);
 
   // Handle login popup auto-hide
   useEffect(() => {
@@ -173,9 +164,10 @@ function Home(props) {
     }
   
     // Clear session manually
-    setSession(null);
-    // setShowLogoutPopup(true);
+    // setSession(null); // This line is removed as session is now managed by useSupabaseAuth
+    // setShowLogoutPopup(true); // This line is removed as showLogoutPopup is removed
     setShowLoginPopup(false);  
+    sessionStorage.removeItem('loginPopupShown');
   };
 
   return (
