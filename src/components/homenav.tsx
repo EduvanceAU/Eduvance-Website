@@ -127,8 +127,15 @@ function Home(props) {
   const [showLogoutPopup, setShowLogoutPopup] = useState(false);
   const prevSessionRef = useRef(null);
   const loginPopupShownRef = useRef(false);
+  const hasMountedRef = useRef(false);
 
   useEffect(() => {
+    // On first mount, just set prevSessionRef and mark as mounted
+    if (!hasMountedRef.current) {
+      prevSessionRef.current = session;
+      hasMountedRef.current = true;
+      return;
+    }
     // Only show login popup if previous session was null and new session is not null, and popup hasn't been shown yet in sessionStorage
     if (!prevSessionRef.current && session && !sessionStorage.getItem('loginPopupShown')) {
       setShowLoginPopup(true);
