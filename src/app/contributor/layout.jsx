@@ -15,11 +15,11 @@ export const metadata = {
     title: "Contribute",
     description:
       "Whether a student, or teacher, your notes, guides, slides, question banks, or original content can help others succeed. By contributing, you are not just uploading files — but making education more accessible, collaborative, and powerful!",
-    url: `https://eduvance-website-copy.vercel.app/contributor`,
+    url: `https://www.eduvance-org.vercel.app/contributor`,
     type: "website",
     images: [
       {
-        url: "https://eduvance-website-copy.vercel.app/tempbg.png",
+        url: "https://www.eduvance-org.vercel.app/tempbg.png",
         width: 1200,
         height: 630,
         alt: "Eduvance Image",
@@ -31,7 +31,7 @@ export const metadata = {
     title: "Contribute",
     description:
       "Whether a student, or teacher, your notes, guides, slides, question banks, or original content can help others succeed. By contributing, you are not just uploading files — but making education more accessible, collaborative, and powerful!",
-    images: ["https://eduvance-website-copy.vercel.app/tempbg.png"],
+    images: ["https://www.eduvance-org.vercel.app/tempbg.png"],
   },
 };
 

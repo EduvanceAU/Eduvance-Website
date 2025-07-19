@@ -21,11 +21,11 @@ export const metadata = {
     title: `${refsyllabusType} ${refName}`,
     description:
       `Discover original Eduvance resources for ${refsyllabusType} ${refName}, crafted to simplify tough topics and support your revision. Designed with care and clarity to help you study smarter!`,
-    url: `https://eduvance-website-copy.vercel.app/subjects/${refName}`,
+    url: `https://www.eduvance-org.vercel.app/subjects/${refName}`,
     type: "website",
     images: [
       {
-        url: "https://eduvance-website-copy.vercel.app/tempbg.png",
+        url: "https://www.eduvance-org.vercel.app/tempbg.png",
         width: 1200,
         height: 630,
         alt: "Eduvance Image",
@@ -37,7 +37,7 @@ export const metadata = {
     title: `${refsyllabusType} ${refName}`,
     description:
       `Discover original Eduvance resources for ${refsyllabusType} ${refName}, crafted to simplify tough topics and support your revision. Designed with care and clarity to help you study smarter!`,
-    images: ["https://eduvance-website-copy.vercel.app/tempbg.png"],
+    images: ["https://www.eduvance-org.vercel.app/tempbg.png"],
   },
 };
 
