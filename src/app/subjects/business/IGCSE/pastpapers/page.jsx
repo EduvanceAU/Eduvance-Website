@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
-import { supabase } from "../lib/supabaseClient";
+import { supabase } from "../../client/supabaseClient";
 import { useSupabaseAuth } from "@/components/client/SupabaseAuthContext";
 // Remove: import { useRouter } from 'next/router';
 import SmallFoot from '@/components/smallFoot.jsx';
