@@ -21,7 +21,7 @@ export default function IALSubjectsPage() {
   }, []);
 
   return (
-    <main className="flex items-center justify-center pt-5">      
+    <main className="flex items-center justify-center pt-10 sm:pt-5">      
       <div className="w-full flex flex-col items-center justify-center gap-6 px-10 py-5 lg:py-16">
         <h1 className="text-4xl font-semibold leading-[40px] tracking-tighter" style={{ fontFamily: 'Poppins, sans-serif' }}>
           Our <span className="bg-[#0C58E4] text-white py-[1.5] px-1 -rotate-1 inline-block">IAL</span> Subject List
