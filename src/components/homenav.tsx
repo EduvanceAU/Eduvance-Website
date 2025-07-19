@@ -124,7 +124,7 @@ function Home(props) {
   const [isSidebarHovered, setIsSidebarHovered] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showLoginPopup, setShowLoginPopup] = useState(false);
-  // const [showLogoutPopup, setShowLogoutPopup] = useState(false);
+  const [showLogoutPopup, setShowLogoutPopup] = useState(false);
   const prevSessionRef = useRef(null);
   const loginPopupShownRef = useRef(false);
 
@@ -149,12 +149,12 @@ function Home(props) {
     }
   }, [showLoginPopup]);
   // Handle logout popup auto-hide
-  // useEffect(() => {
-  //   if (showLogoutPopup) {
-  //     const timer = setTimeout(() => setShowLogoutPopup(false), 1500);
-  //     return () => clearTimeout(timer);
-  //   }
-  // }, [showLogoutPopup]);
+  useEffect(() => {
+    if (showLogoutPopup) {
+      const timer = setTimeout(() => setShowLogoutPopup(false), 1500);
+      return () => clearTimeout(timer);
+    }
+  }, [showLogoutPopup]);
 
   const handleLogout = async () => {
     const { error } = await supabase.auth.signOut();
@@ -167,6 +167,7 @@ function Home(props) {
     // setSession(null); // This line is removed as session is now managed by useSupabaseAuth
     // setShowLogoutPopup(true); // This line is removed as showLogoutPopup is removed
     setShowLoginPopup(false);  
+    setShowLogoutPopup(true);
     sessionStorage.removeItem('loginPopupShown');
   };
 
@@ -347,10 +348,10 @@ function Home(props) {
         </div>
       )}
       {/* Logout Success Popup */}
-      {/* {showLogoutPopup && (
+      {showLogoutPopup && (
         <div className="fixed top-6 left-1/2 transform -translate-x-1/2 z-50">
-          <div className="bg-red-800 text-white px-6 py-3 rounded-lg shadow-lg animate-slide-in-fade-out">
-            You are not logged in!
+          <div className="bg-red-600 text-white px-6 py-3 rounded-lg shadow-lg animate-slide-in-fade-out">
+            Successfully logged out!
           </div>
           <style jsx>{`
             .animate-slide-in-fade-out {
@@ -364,7 +365,7 @@ function Home(props) {
             }
           `}</style>
         </div>
-      )} */}
+      )}
       {/* Custom Sidebar - Slide-in from left */}
       {/* Scroll Ability */}
       <div data-sidebar={sidebarOpen ? 'open' : 'closed'} className={`sidebarWheel overflow-y-scroll overscroll-none fixed top-0 left-0 h-full bg-white z-50 flex flex-col shadow-lg transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 ease-in-out`} style={{ width: '300px', minWidth: '300px' }}>
