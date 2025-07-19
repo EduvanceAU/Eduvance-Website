@@ -92,7 +92,7 @@ export default function Subject() {
                       Eduvance Resources
                     </Link>
                     <Link
-                      href={`/pastpapers/IAL`}
+                      href={`/pastPapers/IAL`}
                       className="transition-all duration-300 h-40 rounded-xl font-[550] tracking-[-0.5px] border-[1.5px] border-[#0C58E4] flex items-end justify-start pl-4 pb-4 text-black hover:text-[#0C58E4] hover:bg-[#CEE0FF] bg-blend-multiply cursor-pointer"
                       style={{ backgroundImage: "url('/Papers Background.svg')", backgroundSize: 'cover', backgroundPosition: 'center' }}
                     >
@@ -129,7 +129,7 @@ export default function Subject() {
                       Eduvance Resources
                     </Link>
                     <Link
-                      href={`/pastpapers/IGCSE`}
+                      href={`/pastPapers/IGCSE`}
                       className="transition-all duration-300 h-40 rounded-xl font-[550] tracking-[-0.5px] border-[1.5px] border-[#0C58E4] flex items-end justify-start pl-4 pb-4 text-black hover:text-[#0C58E4] hover:bg-[#CEE0FF] bg-blend-multiply cursor-pointer"
                       style={{ backgroundImage: "url('/Papers Background.svg')", backgroundSize: 'cover', backgroundPosition: 'center' }}
                     >

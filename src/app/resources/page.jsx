@@ -38,7 +38,7 @@ export default function Resources() {
   return (
     <>
     <Home showExtra/>
-    <main className="flex flex-col items-center justify-center w-full min-h-screen px-4 py-4 mt-10 min-[1024px]:mt-0">
+    <main className="flex flex-col items-center justify-center w-full min-h-screen px-4 md:px-25 lg:px-60 py-4 mt-10 min-[1024px]:mt-0">
       {/* Left Side */}
       <div className="w-full flex flex-col items-start justify-center gap-6 px-10 pt-5 lg:pt-16 relative">
         <div className="flex flex-col">
@@ -59,7 +59,7 @@ export default function Resources() {
           Our revision resources follow your exam specs closely and cover each topic with clarity. From bite-sized explanations and real exam tips to helpful visuals and examples, everything is built to make your revision smoother and more focused.
         </h3>
 
-        <div className="flex flex-col items-start gap-y-2 z-10">
+        <div className="flex flex-col items-start gap-y-2 z-10 mb-6">
           <p className="text-xl font-[550] text-stone-600" style={{ fontFamily: 'Poppins, sans-serif' }}>✅ ‎‎Clear and concise for faster understanding</p>
           <p className="text-xl font-[550] text-stone-600" style={{ fontFamily: 'Poppins, sans-serif' }}>✅ ‎‎Matches your exam board topics</p>
           <p className="text-xl font-[550] text-stone-600" style={{ fontFamily: 'Poppins, sans-serif' }}>✅ ‎‎Helps you revise what really matters</p>
