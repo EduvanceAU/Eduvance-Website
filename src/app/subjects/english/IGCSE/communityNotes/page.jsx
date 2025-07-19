@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { supabase } from "../lib/supabaseClient";
+import { supabase } from "../../client/supabaseClient";
 import { useSupabaseAuth } from "@/components/client/SupabaseAuthContext";
 import SmallFoot from '@/components/smallFoot.jsx';
 
@@ -91,6 +91,7 @@ export default function IGCSECommunityNotesPage() {
 
   // Fetch units from subject table
   useEffect(() => {
+    if (authLoading) return;
     const fetchUnits = async () => {
       const { data: subjectData, error: subjectError } = await supabase
         .from('subjects')
@@ -121,9 +122,10 @@ export default function IGCSECommunityNotesPage() {
       }, {}));
     };
     fetchUnits();
-  }, []);
+  }, [authLoading]);
 
   useEffect(() => {
+    if (authLoading) return;
     async function fetchNotes() {
       setLoading(true);
       setError(null);
@@ -176,7 +178,15 @@ export default function IGCSECommunityNotesPage() {
       setLoading(false);
     }
     fetchNotes();
-  }, [session]);
+  }, [session, authLoading]);
+
+  if (authLoading) {
+    return (
+      <main className="min-h-screen bg-white flex items-center justify-center">
+        <p className="text-xl text-gray-600">Loading...</p>
+      </main>
+    );
+  }
 
   if (error) {
     return (
