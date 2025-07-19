@@ -30,11 +30,11 @@ export const metadata = {
     title: "Eduvance",
     description:
       "Education drives progress. Eduvance helps you learn, revise, and stay ahead in your academic journey.",
-    url: "https://eduvance-website-copy.vercel.app/",
+    url: "https://www.eduvance-org.vercel.app/",
     type: "website",
     images: [
       {
-        url: "https://eduvance-website-copy.vercel.app/tempbg.png",
+        url: "https://www.eduvance-org.vercel.app/tempbg.png",
         width: 1200,
         height: 630,
         alt: "Eduvance Image",
@@ -46,7 +46,7 @@ export const metadata = {
     title: "Eduvance",
     description:
       "Education drives progress. Eduvance helps you learn, revise, and stay ahead in your academic journey.",
-    images: ["https://eduvance-website-copy.vercel.app/tempbg.png"],
+    images: ["https://www.eduvance-org.vercel.app/tempbg.png"],
   },
 };
 
@@ -62,13 +62,13 @@ export default function RootLayout({ children }) {
         />
         {/* <link rel="icon" href="/BlueSolo.svg" />
         <meta property="theme-color" content="#4e8cff"/>
-        <meta property="og:url" content="https://eduvance-website-copy.vercel.app/"/>
+        <meta property="og:url" content="https://www.eduvance-org.vercel.app/"/>
         <meta property="og:type" content="website"/>
-        <meta property="og:image" content="https://eduvance-website-copy.vercel.app/SmallLogo.svg"/>
+        <meta property="og:image" content="https://www.eduvance-org.vercel.app/SmallLogo.svg"/>
         <meta name="twitter:card" content="summary_large_image"/>
         <meta property="twitter:domain" content="eduvance.au"/>
-        <meta property="twitter:url" content="https://eduvance-website-copy.vercel.app/"/>
-        <meta name="twitter:image" content="https://eduvance-website-copy.vercel.app/SmallLogo.svg"/> */}
+        <meta property="twitter:url" content="https://www.eduvance-org.vercel.app/"/>
+        <meta name="twitter:image" content="https://www.eduvance-org.vercel.app/SmallLogo.svg"/> */}
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}

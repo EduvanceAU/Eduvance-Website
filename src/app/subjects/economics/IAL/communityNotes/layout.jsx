@@ -21,11 +21,11 @@ export const metadata = {
     title: `${refsyllabusType} ${refName}`,
     description:
       `Discover clear, concise notes and study guides for ${refsyllabusType} ${refName}, created by students and teachers who get what works. Ideal for exam preparation or topic review, these resources are made to support your learning every step of the way!`,
-    url: `https://eduvance-website-copy.vercel.app/subjects/${refName}`,
+    url: `https://www.eduvance-org.vercel.app/subjects/${refName}`,
     type: "website",
     images: [
       {
-        url: "https://eduvance-website-copy.vercel.app/tempbg.png",
+        url: "https://www.eduvance-org.vercel.app/tempbg.png",
         width: 1200,
         height: 630,
         alt: "Eduvance Image",
@@ -37,7 +37,7 @@ export const metadata = {
     title: `${refsyllabusType} ${refName}`,
     description:
       `Discover clear, concise notes and study guides for ${refsyllabusType} ${refName}, created by students and teachers who get what works. Ideal for exam preparation or topic review, these resources are made to support your learning every step of the way!`,
-    images: ["https://eduvance-website-copy.vercel.app/tempbg.png"],
+    images: ["https://www.eduvance-org.vercel.app/tempbg.png"],
   },
 };
 
