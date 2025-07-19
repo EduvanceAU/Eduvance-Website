@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect, use } from 'react';
 import Link from 'next/link';
-import { supabase } from '../subjects/template/IAL/lib/supabaseClient';
+import { supabase } from '@/lib/supabaseClient';
 export default function Subject() {
   const [selected, setSelected] = useState('IGCSE');
   const [sidebarOpen, setSidebarOpen] = useState(false);

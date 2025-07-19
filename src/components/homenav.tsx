@@ -3,7 +3,7 @@ import Image from 'next/image';
 import Link from "next/link";
 import { useState, useRef, useEffect } from 'react';
 import { ChevronRight } from 'lucide-react';
-import { supabase } from './client/supabaseClient';
+import { supabase } from '@/lib/supabaseClient';
 import { Auth } from '@supabase/auth-ui-react';
 import { ThemeSupa } from '@supabase/auth-ui-shared';
 import BlueSolo from '@/assets/png/BlueSolo.png'
@@ -125,13 +125,14 @@ function Home(props) {
   const [loading, setLoading] = useState(true);
   const [showLoginPopup, setShowLoginPopup] = useState(false);
   // const [showLogoutPopup, setShowLogoutPopup] = useState(false);
+  const prevSessionRef = useRef(null);
 
   useEffect(() => {
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setLoading(false);
-      if (session) setShowLoginPopup(true);
+      prevSessionRef.current = session; // Set initial previous session
     });
 
     // Listen for auth changes
@@ -139,12 +140,11 @@ function Home(props) {
       const { data: { session } } = await supabase.auth.getSession();
       setSession(session);
       setLoading(false);
-      if (session) {
+      // Only show login popup if previous session was null and new session is not null
+      if (!prevSessionRef.current && session) {
         setShowLoginPopup(true);
       }
-      // else{
-      //   setShowLogoutPopup(true);
-      // }
+      prevSessionRef.current = session;
     });
 
     return () => subscription.unsubscribe();

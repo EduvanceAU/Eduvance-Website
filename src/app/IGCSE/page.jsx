@@ -1,6 +1,6 @@
 "use client"
 
-import { supabase } from '../subjects/template/IGCSE/lib/supabaseClient';
+import { supabase } from '@/lib/supabaseClient';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
