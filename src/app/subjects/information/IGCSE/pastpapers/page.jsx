@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
-import { supabase } from "../lib/supabaseClient";
+import { supabase } from "../../client/supabaseClient";
 import { useSupabaseAuth } from "@/components/client/SupabaseAuthContext";
 // Remove: import { useRouter } from 'next/router';
 import SmallFoot from '@/components/smallFoot.jsx';
@@ -32,6 +32,7 @@ const SubjectButtons = () => {
       const { data, error } = await supabase
         .from('subjects')
         .select('name')
+        .order('name', { ascending: true })
         .eq('syllabus_type', 'IGCSE');
       if (!error && data) {
         setSubjects(data.map(subj => subj.name));

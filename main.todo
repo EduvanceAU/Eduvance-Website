@@ -28,6 +28,7 @@ User Authentication :
    ✔ Setup discord developer app and sync with supabase for auth page @done(25-07-04 15:34)
    ☐ Add email list collection system for marketing purposes
    ✔ Modify resources page to ask for authentication or user sign in verification for access @done(25-06-29 06:24)
+   ☐ Ensure log out system works and is up-to-date
 
 New Resources Pages Update :
    ✔ Update UI to make the subject resource selection better @done(25-06-29 06:20)
@@ -42,8 +43,8 @@ New Resources Pages Update :
    ✔ Add transition logic and responsive design for the side bar @done(25-07-02 16:54)
    ✔ Update side menu bar UI and options for better navigation @done(25-07-02 16:54)
    ✔ Update subject pages for button updates and user profile showcase @done(25-07-02 16:54)
-   ☐ Update session log out logic for top bar user showcase display
-   ☐ Ensure logged in session is checked for resource page
+   ✔ Update session log out logic for top bar user showcase display @done(25-07-18 14:39)
+   ✔ Ensure logged in session is checked for resource page @done(25-07-18 14:39)
    ✔ Scrollable side bar @done(25-07-05 16:40)
    ✔ Breakpoints for mobile responsive design @done(25-07-05 16:48)
    ✔ Consistent top/side bar updates for overall website (Made a homenav.tsx component) @done(25-07-05 10:35)
@@ -114,7 +115,7 @@ Community Feedback :
    ✔ Choose your exam board should only have IGCSE and IAL @done(25-07-16 14:49)
    ✔ Add a simple page for exam boards with links to other pages @done(25-07-16 14:56)
    ✔ Choose your exam board should be changed to -> Choose your exam qualification @done(25-07-16 14:50)
-   ☐ Add a like/dislike system for the eduvance resources and community notes
+   ✔ Add a like/dislike system for the eduvance resources and community notes @done(25-07-17 12:26)
 
 Systems Todo:
    ✔ Update Admin Console UI for extra information (revert) @done(25-07-09 12:05)
@@ -130,4 +131,9 @@ Systems Todo:
    ✔ Update backend watermark function for watermarking folders @done(25-07-16 14:46)
    ✔ Update staff console resource cards with a watermark/approve button for backend watermark function @done(25-07-16 06:03)
    ✔ Add resource editing and saving function to staff console resources instances @done(25-07-16 14:46)
-   ☐ Admin Console Resource Removal Section + Moderation Settings
+   ✔ Admin Console Resource Removal Section + Moderation Settings @done(25-07-18 14:39)
+
+   ☐ Auth System Update globally for session persistency
+   ☐ Logged in session maintenance through-out different tabs
+   ☐ Persistent log in message -> annoying feature
+   ☐ Log Out button doesn't properly terminate the session

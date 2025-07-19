@@ -51,6 +51,13 @@ async function data() {
     urls.push({url:`${base_url}/`, lastModified: date.toISOString().split('T')[0], changeFrequency: 'monthly', priority: 1});
     urls.push({url:`${base_url}/resources`, lastModified: date.toISOString().split('T')[0], changeFrequency: 'monthly', priority: 1});
     urls.push({url:`${base_url}/contributor`, lastModified: date.toISOString().split('T')[0], changeFrequency: 'monthly', priority: 0.9});
+    urls.push({url:`${base_url}/studyTools`, lastModified: date.toISOString().split('T')[0], changeFrequency: 'monthly', priority: 0.9});
+    urls.push({url:`${base_url}/communityNotes/IAL`, lastModified: date.toISOString().split('T')[0], changeFrequency: 'monthly', priority: 0.9});
+    urls.push({url:`${base_url}/communityNotes/IGCSE`, lastModified: date.toISOString().split('T')[0], changeFrequency: 'monthly', priority: 0.9});
+    urls.push({url:`${base_url}/pastPapers/IAL`, lastModified: date.toISOString().split('T')[0], changeFrequency: 'monthly', priority: 0.9});
+    urls.push({url:`${base_url}/pastPapers/IGCSE`, lastModified: date.toISOString().split('T')[0], changeFrequency: 'monthly', priority: 0.9});
+    urls.push({url:`${base_url}/terms`, lastModified: date.toISOString().split('T')[0], changeFrequency: 'monthly', priority: 0.9});
+    urls.push({url:`${base_url}/privacy`, lastModified: date.toISOString().split('T')[0], changeFrequency: 'monthly', priority: 0.9});
     for (let subject of subject_list) {
         const one_timer = {url:`${base_url}/subjects/${subject.name.toLowerCase()}`, lastModified: date.toISOString().split('T')[0], changeFrequency: 'monthly', priority: 0.9}
         if (!urls.some(entry => entry.url === one_timer.url)){
