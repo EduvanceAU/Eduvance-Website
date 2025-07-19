@@ -7,7 +7,7 @@ export default function SmallFoot() {
   return (
     <footer className="w-full bg-white pt-10 pb-0 border-t border-[#e5e7eb]">
       <div className="container mx-auto px-4 relative">
-        <div className="rounded-2xl p-6 max-w-[1850px] mx-auto flex flex-col lg:flex-row gap-8">
+        <div className="rounded-2xl p-6 max-w-[1850px] mx-auto flex flex-col lg:flex-row sm:gap-8">
           {/* Left Column */}
           <div className="w-full lg:w-1/3 flex flex-col items-start mt-[6px]">
             <Image src={BiggerLogo} alt="Bigger logo" className="w-auto h-15 object-contain mb-4" />
