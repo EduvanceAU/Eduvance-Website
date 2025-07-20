@@ -55,7 +55,7 @@ export default function Guidelines() {
                   By joining/staying in our <a href={discord} className="text-[#1A69FA] underline">Discord Server</a> or using our <a href="https://eduvance.au" className="text-[#1A69FA] underline">website</a>, you hereby acknowledge and adhere to the <a href="https://discord.com/terms" className="text-[#1A69FA] underline">Discord Terms of Service</a>, <a href="https://discord.com/guidelines" className="text-[#1A69FA] underline">Discord Community Guidelines</a>, as well as our own. Non-compliance may result in either a ban or a temporary suspension.
                 </p>
                 <hr className='my-4'></hr>
-                <div className='inline-flex items-center justify-center gap-2'> <a href='https://discord.gg/r9xcHANsSg'><Cross className='fill-[#3a3a3a] stroke-0 inline'/></a> <p>Click the icon to join the Appeal Server in order to appeal a ban or a punishment</p></div>
+                <a href='https://discord.gg/r9xcHANsSg' className='inline-flex items-center justify-center gap-2'><Cross className='fill-[#1a69fa] stroke-0 inline'/><p>Join the Appeal Server in order to appeal a ban or a punishment</p></a>
               </>
             }
           />
