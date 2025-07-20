@@ -100,10 +100,9 @@ function Home(props) {
         <div className="space-y-1">
           {[
             { name: 'Study Tools', href: '/studyTools' },
-            { name: 'Past Papers', href: '/pastPapers' },
-            { name: 'Community Notes', href: '/communityNotes' },
-            { name: 'Eduvance Resources', href: '/resources' },
-            { name: 'Share Your Notes!', href: '/contributor' },
+            { name: 'Edexcel FAQs', href: '/faq' },
+            { name: 'Edexcel Exam Structure', href: '/about/edexcel/examStructure' },
+            { name: 'Edexcel Grading System', href: '/about/edexcel/grading' },
           ].map((tool) => (
             <Link
               key={tool.name}
