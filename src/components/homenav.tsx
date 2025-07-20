@@ -100,10 +100,9 @@ function Home(props) {
         <div className="space-y-1">
           {[
             { name: 'Study Tools', href: '/studyTools' },
-            { name: 'Past Papers', href: '/pastPapers' },
-            { name: 'Community Notes', href: '/communityNotes' },
-            { name: 'Eduvance Resources', href: '/resources' },
-            { name: 'Share Your Notes!', href: '/contributor' },
+            { name: 'Edexcel FAQs', href: '/faq' },
+            { name: 'Edexcel Exam Structure', href: '/about/edexcel/examStructure' },
+            { name: 'Edexcel Grading System', href: '/about/edexcel/grading' },
           ].map((tool) => (
             <Link
               key={tool.name}
@@ -208,9 +207,8 @@ function Home(props) {
             labelSmall="About"
             items={[
               { label: "About Eduvance", href: "/about/eduvance" },
-              { label: "About Edexcel", href: "/about/edexcel" },
-              { label: "Exam Structure", href: "/about/exam-structure" },
-              { label: "Grading System", href: "/about/grading" },
+              { label: "Exam Structure", href: "/about/edexcel/examStructure" },
+              { label: "Grading System", href: "/about/edexcel/grading" },
             ]}
           />
           <NavDropdown
@@ -233,7 +231,7 @@ function Home(props) {
             labelMain="More"
             labelSmall="More"
             items={[
-              { label: "Contact Us", href: "/contact" },
+              { label: "Contact Us", href: "/about/eduvance/#contact" },
               { label: "FAQ", href: "/faq" },
               { label: "Community Guidelines", href: "/guidelines" },
               { label: "Privacy Policy", href: "/privacy" },

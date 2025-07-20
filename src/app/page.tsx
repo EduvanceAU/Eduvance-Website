@@ -255,7 +255,7 @@ export default function Main() {
             <div className="w-full lg:w-1/3 flex flex-col items-start mt-[6px]">
               <Image src={BiggerLogo} alt="Bigger logo" className="w-auto h-15 object-contain mb-4" />
               <p className="text-[#757575] text-base leading-5 tracking-tight font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                A thriving student-led community built for learners across IGCSE and IALs (AS+ A2). From revision and learning resources to solving your doubts, we're here to make education easier, smarter, and more connected
+                A thriving student-led community built for learners across IGCSE and IALs (AS + A2). From revision and learning resources to solving your doubts, we're here to make education easier, smarter, and more connected
               </p>
             </div>
 
@@ -269,7 +269,7 @@ export default function Main() {
                 <Link href="/pastPapers" className="text-[#757575] tracking-[-0.5px] font-medium hover:text-slate-950" style={{ fontFamily: 'Poppins, sans-serif' }}>Past Papers</Link>
                 <Link href="#" className="hidden text-[#757575] tracking-[-0.5px] font-medium hover:text-slate-950" style={{ fontFamily: 'Poppins, sans-serif' }}>Match with a Tutor</Link>
                 <Link href='/staffAccess' className="text-[#757575] tracking-[-0.5px] font-medium hover:text-slate-950" style={{ fontFamily: 'Poppins, sans-serif' }}> Staff Page</Link>
-                <Link href="#" className="text-[#757575] tracking-[-0.5px] font-medium hover:text-slate-950" style={{ fontFamily: 'Poppins, sans-serif' }}>About Eduvance</Link>
+                <Link href="/about/eduvance" className="text-[#757575] tracking-[-0.5px] font-medium hover:text-slate-950" style={{ fontFamily: 'Poppins, sans-serif' }}>About Eduvance</Link>
               </div>
 
               {/* Column 2 */}
