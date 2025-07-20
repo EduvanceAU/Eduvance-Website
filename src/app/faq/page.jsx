@@ -23,7 +23,7 @@ function Guideline({ title, content }) {
     <div className="bg-white rounded-lg shadow-md mb-8 border border-gray-200 overflow-hidden">
       <div
         data-title={`${title}header`}
-        className="bg-[#2871F9] cursor-pointer text-white tracking-tight p-4 text-left font-bold text-xl sm:text-2xl"
+        className="bg-[#2871F9] cursor-pointer text-white tracking-tight p-4 text-left font-bold  text-xl sm:text-2xl"
         style={{ fontFamily: "Poppins, sans-serif" }}
       >
         {title}
@@ -61,7 +61,7 @@ export default function FAQ() {
             }
           />
           <Guideline title="What are the Requirements to get an A* In International A level Mathematics (YMA01)?" content={<><p className='mb-2'>There are 2 Requirements to achieve an A* in A Level Mathematics:</p> <ol className="list-decimal ml-6 space-y-2 text-left"><li>You need an Overall 480+/600 UMS for both AS and A2 combined.</li><li>Obtain at least 180+/200 UMS in P3 & P4 combined.</li></ol></>}/> 
-          <Guideline title="What are the Requirements to get an A* In International A level Sciences (Physics/Chemistry/Biology)?" content={<><p className='mb-2'>There are 2 Requirements to achieve an A* in A Level Sciences (Physics/Biology/Chemistry):</p> <ol className="list-decimal ml-6 space-y-2 text-left"><li>You need an Overall 480+/600 UMS for both AS and A2 combined.</li><li>You need to obtain 270+/300 UMS in A2 level (U4+U5+U6).</li></ol></>}/> 
+          <Guideline title="What are the Requirements to get an A* In International A level Sciences?" content={<><p className='mb-2'>There are 2 Requirements to achieve an A* in A Level Sciences (Physics/Biology/Chemistry):</p> <ol className="list-decimal ml-6 space-y-2 text-left"><li>You need an Overall 480+/600 UMS for both AS and A2 combined.</li><li>You need to obtain 270+/300 UMS in A2 level (U4+U5+U6).</li></ol></>}/> 
           <Guideline title="When do Grade Boundaries release for a particular session?" content={<p>It is released 1 or 2 hours before the online results release time.</p>}/> 
           <Guideline title="What is the difference between UMS and Raw Marks?" content={<p>Raw Marks are your actual real marks in an exams. So if the exam out of 75 and you got 51/75 then 51/75 is your raw marks. UMS stands for Uniform Mark Scale and It’s the mark examiners use by multiplying your “raw mark” which is your exam paper mark by a factor that is different every session. Therefore examiners use it to determine your grade for a specific unit.</p>}/> 
           <Guideline title="What does UCI that appears on my Statement of Entry mean?" content={<p>It stands for Unique candidate identifier (UCI). <br/> This is a 13-character code and is used mainly to link a candidate's unit results across series (and across different centres) for all their entries so they can be certificated. It's given for all candidates since there's modular system. When you register for an Edexcel exam, it will be given automatically in the Statement of Entry and later in the Statement of Results and Certificates.</p>}/> 
