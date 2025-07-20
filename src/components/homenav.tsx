@@ -208,9 +208,8 @@ function Home(props) {
             labelSmall="About"
             items={[
               { label: "About Eduvance", href: "/about/eduvance" },
-              { label: "About Edexcel", href: "/about/edexcel" },
-              { label: "Exam Structure", href: "/about/exam-structure" },
-              { label: "Grading System", href: "/about/grading" },
+              { label: "Exam Structure", href: "/about/edexcel/examStructure" },
+              { label: "Grading System", href: "/about/edexcel/grading" },
             ]}
           />
           <NavDropdown
@@ -233,7 +232,7 @@ function Home(props) {
             labelMain="More"
             labelSmall="More"
             items={[
-              { label: "Contact Us", href: "/contact" },
+              { label: "Contact Us", href: "/about/eduvance/#contact" },
               { label: "FAQ", href: "/faq" },
               { label: "Community Guidelines", href: "/guidelines" },
               { label: "Privacy Policy", href: "/privacy" },
