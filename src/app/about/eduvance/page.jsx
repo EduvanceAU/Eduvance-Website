@@ -2,7 +2,6 @@
 import { Home } from '@/components/homenav';
 import SmallFoot from '@/components/smallFoot.jsx';
 import { useEffect } from "react";
-import Image from 'next/image';
 import {Shield, FilePen, BookCheck, Bot, Globe} from 'lucide-react'
 function Guideline({ id, title, content }) {
   useEffect(() => {
@@ -78,10 +77,10 @@ export default function Eduvance() {
             </ul>}/> 
           <Guideline title="Contact Us" id="contact" content={
             <div className='flex gap-2'>
-              <a href="https://discord.com/invite/eduvance-community-983670206889099264"><Image width={48} height={48} src="https://skillicons.dev/icons?i=discord"/></a>
-              <a href="https://www.instagram.com/eduvance.au/"><Image width={48} height={48} src="https://skillicons.dev/icons?i=instagram"/></a>
-              <a href="https://github.com/EduvanceAU"><Image width={48} height={48} src="https://skillicons.dev/icons?i=github"/></a>
-              <a href="https://www.linkedin.com/company/eduvance-au"><Image width={48} height={48} src="https://skillicons.dev/icons?i=linkedin"/></a>
+              <a href="https://discord.com/invite/eduvance-community-983670206889099264"><img src="https://skillicons.dev/icons?i=discord"/></a>
+              <a href="https://www.instagram.com/eduvance.au/"><img src="https://skillicons.dev/icons?i=instagram"/></a>
+              <a href="https://github.com/EduvanceAU"><img src="https://skillicons.dev/icons?i=github"/></a>
+              <a href="https://www.linkedin.com/company/eduvance-au"><img src="https://skillicons.dev/icons?i=linkedin"/></a>
             </div>}/> 
         </div>
       </main>
