@@ -133,7 +133,7 @@ Systems Todo:
    ✔ Add resource editing and saving function to staff console resources instances @done(25-07-16 14:46)
    ✔ Admin Console Resource Removal Section + Moderation Settings @done(25-07-18 14:39)
 
-   ☐ Auth System Update globally for session persistency
-   ☐ Logged in session maintenance through-out different tabs
-   ☐ Persistent log in message -> annoying feature
-   ☐ Log Out button doesn't properly terminate the session
+   ✔ Auth System Update globally for session persistency @done(25-07-21 11:36)
+   ✔ Logged in session maintenance through-out different tabs @done(25-07-21 11:36)
+   ✔ Persistent log in message -> annoying feature @done(25-07-21 11:36)
+   ✔ Log Out button doesn't properly terminate the session @done(25-07-21 11:36)
