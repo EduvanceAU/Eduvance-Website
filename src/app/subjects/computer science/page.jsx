@@ -4,7 +4,7 @@ import Link from 'next/link';
 
 export default function Subject({ searchParams }) {
   const subjectName = 'Computer';
-  const [selected, setSelected] = useState('option1');
+  const [selected, setSelected] = useState('option2');
   const params = use(searchParams);
   const choice = params.choice;
   const regExp = /option[1-2]/g;
@@ -63,7 +63,7 @@ export default function Subject({ searchParams }) {
             <div className="flex rounded-[15px] bg-[#F2F6FF] border-[#0C58E4] border-2 p-1 w-full h-[65px] justify-between mb-10">
               <button
                 onClick={() => setSelected('option1')}
-                className={`cursor-pointer w-1/2 py-2 text-center rounded-[10px] transition-all ease-in-out duration-500 text-sm md:text-base lg:text-xl ${selected === 'option1' ? 'bg-[#D0E0FF] shadow-md font-semibold tracking-[-0.75px]' : ''}`}
+                className={`cursor-pointer w-1/2 py-2 text-center rounded-[10px] transition-all ease-in-out duration-500 text-sm md:text-base lg:text-xl ${selected === 'option1' ? 'bg-[#D0E0FF] shadow-md font-semibold tracking-[-0.75px]' : 'bg-gray-400 shadow-md font-semibold tracking-[-0.75px]'}`}
                 style={{ fontFamily: 'Poppins, sans-serif' }}
               >
                 IALs
