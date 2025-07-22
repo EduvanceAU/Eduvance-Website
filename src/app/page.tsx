@@ -150,16 +150,16 @@ export default function Main() {
               className="text-2xl w-[250px] sm:text-4xl font-semibold tracking-[-0.05em] text-black text-center"
               style={{ fontFamily: 'Poppins, sans-serif' }}
             >
-              Study Materials to level up your revision
+              Study Tools to level up your revision
             </h1>
 
             <h3 className="mt-4 font-[600] text-[#878787] tracking-[-0.5px] text-m sm:text-xl text-center w-[250px] leading-tight sm:w-[550px]" style={{ fontFamily: 'Poppins, sans-serif' }}>
-              Find revision resources for your Exam Board and Subject
+              Find materials and tools for your Exam Board and Subject
             </h3>
 
-            <Link href="/resources" className="inline-block mt-6">
+            <Link href="/studyTools" className="inline-block mt-6">
               <button className="cursor-pointer bg-[#2D74F8] hover:bg-[#143166] text-[#FFFFFF] px-6 py-2 rounded-[50px] text-xl poppins-semibold shadow-lg flex items-center gap-2">
-                Explore Resources
+                Explore Study Tools
                 <Image src={ArrowR} alt="Arrow Right" className="w-6 h-auto" />
               </button>
             </Link>
