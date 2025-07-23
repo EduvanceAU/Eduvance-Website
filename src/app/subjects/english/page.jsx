@@ -87,17 +87,17 @@ export default function Subject({ searchParams }) {
                   <div className="text-base grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8 sm:px-1 w-full">
                     <Link
                       href={`/subjects/english/IAL/communityNotes`}
-                      className="transition-all duration-300 h-40 rounded-xl font-[550] tracking-[-0.5px] border-[1.5px] border-[#0C58E4] flex items-end justify-start pl-4 pb-4 text-black hover:text-[#0C58E4] hover:bg-[#CEE0FF] bg-blend-multiply cursor-pointer"
-                      style={{ backgroundImage: "url('/Notes Background.svg')", backgroundSize: 'cover', backgroundPosition: 'center' }}
+                      className="transition-all duration-300 h-40 rounded-xl font-[550] tracking-[-0.5px] border-[1.5px] border-[#B0B0B0] flex items-end justify-start pl-4 pb-4 text-gray-400 bg-gray-200 cursor-pointer hover:text-gray-500 hover:bg-gray-300 bg-blend-multiply"
+                      style={{ backgroundImage: "url('/Notes Background.svg')", backgroundSize: 'cover', backgroundPosition: 'center', opacity: 0.7 }}
                     >
-                      Community Notes
+                      Eduvance Notes
                     </Link>
                     <Link
                       href={`/subjects/english/IAL/resources`}
                       className="transition-all duration-300 h-40 rounded-xl font-[550] tracking-[-0.5px] border-[1.5px] border-[#0C58E4] flex items-end justify-start pl-4 pb-4 text-black hover:text-[#0C58E4] hover:bg-[#CEE0FF] bg-blend-multiply cursor-pointer"
                       style={{ backgroundImage: "url('/PPQ Background.svg')", backgroundSize: 'cover', backgroundPosition: 'center' }}
                     >
-                      Eduvance Resources
+                      Community Resources
                     </Link>
                     <Link
                       href={`/subjects/english/IAL/pastpapers`}
@@ -124,17 +124,17 @@ export default function Subject({ searchParams }) {
                   <div className="text-base grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8 sm:px-1 w-full">
                     <Link
                       href={`/subjects/english/IGCSE/communityNotes`}
-                      className="transition-all duration-300 h-40 rounded-xl font-[550] tracking-[-0.5px] border-[1.5px] border-[#0C58E4] flex items-end justify-start pl-4 pb-4 text-black hover:text-[#0C58E4] hover:bg-[#CEE0FF] bg-blend-multiply cursor-pointer"
-                      style={{ backgroundImage: "url('/Notes Background.svg')", backgroundSize: 'cover', backgroundPosition: 'center' }}
+                      className="transition-all duration-300 h-40 rounded-xl font-[550] tracking-[-0.5px] border-[1.5px] border-[#B0B0B0] flex items-end justify-start pl-4 pb-4 text-gray-400 bg-gray-200 cursor-pointer hover:text-gray-500 hover:bg-gray-300 bg-blend-multiply"
+                      style={{ backgroundImage: "url('/Notes Background.svg')", backgroundSize: 'cover', backgroundPosition: 'center', opacity: 0.7 }}
                     >
-                      Community Notes
+                      Eduvance Notes
                     </Link>
                     <Link
                       href={`/subjects/english/IGCSE/resources`}
                       className="transition-all duration-300 h-40 rounded-xl font-[550] tracking-[-0.5px] border-[1.5px] border-[#0C58E4] flex items-end justify-start pl-4 pb-4 text-black hover:text-[#0C58E4] hover:bg-[#CEE0FF] bg-blend-multiply cursor-pointer"
                       style={{ backgroundImage: "url('/PPQ Background.svg')", backgroundSize: 'cover', backgroundPosition: 'center' }}
                     >
-                      Eduvance Resources
+                      Community Resources
                     </Link>
                     <Link
                       href={`/subjects/english/IGCSE/pastpapers`}
