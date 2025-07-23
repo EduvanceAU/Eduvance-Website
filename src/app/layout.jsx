@@ -34,7 +34,7 @@ export const metadata = {
     type: "website",
     images: [
       {
-        url: "https://www.eduvance-org.vercel.app/tempbg.png",
+        url: "https://www.eduvance.org.vercel.app/tempbg.png",
         width: 1200,
         height: 630,
         alt: "Eduvance Image",
@@ -46,7 +46,7 @@ export const metadata = {
     title: "Eduvance",
     description:
       "Education drives progress. Eduvance helps you learn, revise, and stay ahead in your academic journey.",
-    images: ["https://www.eduvance-org.vercel.app/tempbg.png"],
+    images: ["https://www.eduvance.org.vercel.app/tempbg.png"],
   },
 };
 
