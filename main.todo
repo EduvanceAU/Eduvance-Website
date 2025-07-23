@@ -28,7 +28,7 @@ User Authentication :
    ✔ Setup discord developer app and sync with supabase for auth page @done(25-07-04 15:34)
    ☐ Add email list collection system for marketing purposes
    ✔ Modify resources page to ask for authentication or user sign in verification for access @done(25-06-29 06:24)
-   ☐ Ensure log out system works and is up-to-date
+   ✔ Ensure log out system works and is up-to-date @done(25-07-21 11:37)
 
 New Resources Pages Update :
    ✔ Update UI to make the subject resource selection better @done(25-06-29 06:20)
@@ -63,7 +63,7 @@ New Resources Pages Update :
    ✔ Added universal auth system for easy user experience @done(25-07-12 16:16)
 
 Other Pages:
-   ☐ Other miscellaneous pages for the website (About Eduvance, IGCSE/A Levels, Grading System Explained, FAQs and more)
+   ✔ Other miscellaneous pages for the website (About Eduvance, IGCSE/A Levels, Grading System Explained, FAQs and more) @done(25-07-21 11:37)
       - More (Header)
          - Examination FAQ (Exam Structure, Grading System)
          - what else?
@@ -82,9 +82,9 @@ Other Pages:
          - Terms Of Services
          - Privacy Policy
 
-   ☐ Update UI for all miscellaneous pages and add the relevant content
-   ☐ Update the code for all miscellaneous pages on the website
-   ☐ Add links to all miscellaneous pages and side bars
+   ✔ Update UI for all miscellaneous pages and add the relevant content @done(25-07-21 11:37)
+   ✔ Update the code for all miscellaneous pages on the website @done(25-07-21 11:37)
+   ✔ Add links to all miscellaneous pages and side bars @done(25-07-21 11:37)
 
 Other TODO:
    ✔ Update Community Notes pages for all subjects and update logic for DB @done(25-07-02 17:38)
@@ -101,17 +101,17 @@ Other TODO:
 
 Community Feedback :
    ✔ Update member counts on all pages to 18k @done(25-07-04 16:34)
-   ☐ Footer image spacing with the main div
+   ✔ Footer image spacing with the main div @done(25-07-21 11:37)
    ✔ Adding placeholder for the community section (Biomeac, Maryam, Map) @done(25-07-13 04:22)
    ✔ Staff Page name changed to Staff Access @done(25-07-04 16:34)
    ✔ Footer page links to be updated @done(25-07-04 16:34)
    ✔ Update all subject pages to have the right UI and responsive design @done(25-07-04 16:34)
    ✔ Update links for the top bar in the website @done(25-07-13 04:22)
    ✔ Chemistry Page Typo @done(25-07-07 14:59)
-   ☐ Update discord invite links
+   ✔ Update discord invite links @done(25-07-21 11:37)
    ✔ Pointer Icon/Cursor on Buttons (Stig) @done(25-07-05 16:42)
 
-   ☐ Add modular UI design for main resources page to accomodate more subjects
+   ✔ Add modular UI design for main resources page to accomodate more subjects @done(25-07-21 11:37)
    ✔ Choose your exam board should only have IGCSE and IAL @done(25-07-16 14:49)
    ✔ Add a simple page for exam boards with links to other pages @done(25-07-16 14:56)
    ✔ Choose your exam board should be changed to -> Choose your exam qualification @done(25-07-16 14:50)
@@ -133,7 +133,7 @@ Systems Todo:
    ✔ Add resource editing and saving function to staff console resources instances @done(25-07-16 14:46)
    ✔ Admin Console Resource Removal Section + Moderation Settings @done(25-07-18 14:39)
 
-   ☐ Auth System Update globally for session persistency
-   ☐ Logged in session maintenance through-out different tabs
-   ☐ Persistent log in message -> annoying feature
-   ☐ Log Out button doesn't properly terminate the session
+   ✔ Auth System Update globally for session persistency @done(25-07-21 11:36)
+   ✔ Logged in session maintenance through-out different tabs @done(25-07-21 11:36)
+   ✔ Persistent log in message -> annoying feature @done(25-07-21 11:36)
+   ✔ Log Out button doesn't properly terminate the session @done(25-07-21 11:36)

@@ -212,19 +212,19 @@ function Home(props) {
             ]}
           />
           <NavDropdown
-            labelMain="IAL Edexcel Resources"
+            labelMain="IAL Edexcel Subjects"
             labelSmall="IAL"
             items={NonUniqueSubjects
                     .filter((subject) => subject.syllabus_type === "IAL")
-                    .map((subject) => ({label: subject.name, href: `/subjects/${subject.name.toLowerCase()}/IAL/resources`,
+                    .map((subject) => ({label: subject.name, href: `/subjects/${subject.name.toLowerCase()}?choice=option1`,
                     }))
                   }/>
           <NavDropdown
-            labelMain="IGCSE Edexcel Resources"
+            labelMain="IGCSE Edexcel Subjects"
             labelSmall="IGCSE"
             items={NonUniqueSubjects
                     .filter((subject) => subject.syllabus_type === "IGCSE")
-                    .map((subject) => ({label: subject.name, href: `/subjects/${subject.name.toLowerCase()}/IGCSE/resources`,
+                    .map((subject) => ({label: subject.name, href: `/subjects/${subject.name.toLowerCase()}?choice=option2`,
                     }))
                   }/>
           <NavDropdown
