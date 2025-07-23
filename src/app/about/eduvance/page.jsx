@@ -79,7 +79,6 @@ export default function Eduvance() {
             <div className='flex gap-2'>
               <a href="https://discord.com/invite/eduvance-community-983670206889099264"><img src="https://skillicons.dev/icons?i=discord"/></a>
               <a href="https://www.instagram.com/eduvance.au/"><img src="https://skillicons.dev/icons?i=instagram"/></a>
-              <a href="https://github.com/EduvanceAU"><img src="https://skillicons.dev/icons?i=github"/></a>
               <a href="https://www.linkedin.com/company/eduvance-au"><img src="https://skillicons.dev/icons?i=linkedin"/></a>
             </div>}/> 
         </div>
