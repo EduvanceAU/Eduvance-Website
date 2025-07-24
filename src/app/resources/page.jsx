@@ -75,9 +75,9 @@ export default function Resources() {
         <div className="grid grid-cols-1 min-[849px]:grid-cols-2 gap-4 w-full">
           {subjects.map((subject) => (
             <a key={subject.name} href={generatePath(subject.name)}>
-              <button className="cursor-pointer flex items-center justify-between w-full px-2 py-4 bg-[#BAD1FD] rounded-[12px] group hover:bg-[#A8C6FF] transition-all duration-200 border-[#153064] border-1">
+              <button className="cursor-pointer flex items-center justify-between w-full px-3 py-3 bg-[#BAD1FD] rounded-[12px] group hover:bg-[#A8C6FF] transition-all duration-200 border-[#153064] border-1">
                 <p
-                  className="text-xl font-[550] text-[#153064]"
+                  className="text-xl font-[550] text-[#153064] text-left"
                   style={{ fontFamily: "Poppins, sans-serif" }}
                 >
                   {subject.name} <span className="hidden sm:inline">Revision Resources</span>

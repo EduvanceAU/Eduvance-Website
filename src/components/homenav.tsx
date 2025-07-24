@@ -77,21 +77,62 @@ const NavDropdown = ({ labelMain, labelSmall, items }) => {
 function Home(props) {
   const [subjects, setSubjects] = useState([]);
   const [NonUniqueSubjects, setNQSubjects] = useState([]);
+  const subjectsDivRef = useRef(null); // Ref for the subjects div
+
+  const fetchSubjects = async () => {
+    console.debug('Attempting to fetch subjects from Supabase...');
+    try {
+      const { data, error } = await supabase
+        .from('subjects')
+        .select('name, syllabus_type')
+        .order('name', { ascending: true });
+
+      if (error) {
+        console.error('Error fetching subjects:', error.message);
+        return;
+      }
+
+      if (data) {
+        console.debug('Successfully fetched subjects:', data);
+        setNQSubjects(data);
+        const subject_list = [...new Set(data.map(item => item.name))];
+        setSubjects(subject_list.sort());
+        console.debug('Processed unique subjects:', subject_list.sort());
+      } else {
+        console.warn('No data received when fetching subjects.');
+      }
+    } catch (err) {
+      console.error('An unexpected error occurred during subject fetch:', err);
+    }
+  };
+
   useEffect(() => {
-    // Dynamically generating subject list for sidebar
-      supabase
-      .from('subjects')
-      .select('name, syllabus_type')
-      .order('name', { ascending: true })
-      .then(({ data, error }) => {
-        if (!error) {
-          setNQSubjects(data);
-          const subject_list = [...new Set(data.map(item => item.name))];
-          setSubjects(subject_list.sort());
+    fetchSubjects(); // Initial fetch
+  }, []);
+
+  // Check if subjects are rendered and re-fetch if not
+  useEffect(() => {
+    const checkAndRefetchSubjects = () => {
+      console.debug('Checking if subjects are rendered in the sidebar...');
+      if (subjectsDivRef.current) {
+        const subjectLinks = subjectsDivRef.current.querySelectorAll('a');
+        if (subjectLinks.length === 0 && subjects.length === 0) {
+          console.warn('No subject links found in the sidebar. Re-fetching subjects...');
+          fetchSubjects();
+        } else if (subjectLinks.length > 0) {
+          console.debug(`${subjectLinks.length} subject links found in the sidebar.`);
         }
-      });
-    }, []);
-  let extra: React.ReactNode = null;
+      } else {
+        console.debug('Subjects div reference not available yet.');
+      }
+    };
+
+    const timer = setTimeout(checkAndRefetchSubjects, 1000); // Check after a short delay to allow rendering
+    return () => clearTimeout(timer);
+  }, [subjects]); // Rerun when subjects state changes
+
+  let extra = null;
+
   if (props.showExtra){
     extra = (<div className="mt-8 px-4">
         <h3 className="text-lg font-semibold tracking-[-1px] text-[#0C58E4] mb-4 px-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
@@ -117,31 +158,35 @@ function Home(props) {
       </div>)
   }
   const { session } = useSupabaseAuth();
-  const [selected, setSelected] = useState('option1');
+  const [selected, setSelected] = useState('option1'); // This state doesn't seem to be used.
   const [hoveredSidebarItem, setHoveredSidebarItem] = useState(null);
-  const [isHeaderHovered, setIsHeaderHovered] = useState(false);
-  const [isSidebarHovered, setIsSidebarHovered] = useState(false);
+  const [isHeaderHovered, setIsHeaderHovered] = useState(false); // This state doesn't seem to be used.
+  const [isSidebarHovered, setIsSidebarHovered] = useState(false); // This state doesn't seem to be used.
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showLoginPopup, setShowLoginPopup] = useState(false);
   const [showLogoutPopup, setShowLogoutPopup] = useState(false);
   const prevSessionRef = useRef(null);
-  const loginPopupShownRef = useRef(false);
+  const loginPopupShownRef = useRef(false); // This ref is declared but not used.
   const hasMountedRef = useRef(false);
 
   useEffect(() => {
+    console.debug('Session effect triggered. Current session:', session);
     // On first mount, just set prevSessionRef and mark as mounted
     if (!hasMountedRef.current) {
       prevSessionRef.current = session;
       hasMountedRef.current = true;
+      console.debug('Component mounted. Initial session:', session);
       return;
     }
     // Only show login popup if previous session was null and new session is not null, and popup hasn't been shown yet in sessionStorage
     if (!prevSessionRef.current && session && !sessionStorage.getItem('loginPopupShown')) {
+      console.info('Login detected! Showing login success popup.');
       setShowLoginPopup(true);
       sessionStorage.setItem('loginPopupShown', 'true');
     }
     // Reset the flag if the user logs out
-    if (!session) {
+    if (!session && prevSessionRef.current) { // Added prevSessionRef.current check to ensure it was previously logged in
+      console.info('Logout detected. Clearing login popup flag.');
       sessionStorage.removeItem('loginPopupShown');
     }
     prevSessionRef.current = session;
@@ -150,29 +195,35 @@ function Home(props) {
   // Handle login popup auto-hide
   useEffect(() => {
     if (showLoginPopup) {
-      const timer = setTimeout(() => setShowLoginPopup(false), 1500);
+      console.debug('Login popup visible. Setting auto-hide timer.');
+      const timer = setTimeout(() => {
+        setShowLoginPopup(false);
+        console.debug('Login popup auto-hidden.');
+      }, 1500);
       return () => clearTimeout(timer);
     }
   }, [showLoginPopup]);
   // Handle logout popup auto-hide
   useEffect(() => {
     if (showLogoutPopup) {
-      const timer = setTimeout(() => setShowLogoutPopup(false), 1500);
+      console.debug('Logout popup visible. Setting auto-hide timer.');
+      const timer = setTimeout(() => {
+        setShowLogoutPopup(false);
+        console.debug('Logout popup auto-hidden.');
+      }, 1500);
       return () => clearTimeout(timer);
     }
   }, [showLogoutPopup]);
 
   const handleLogout = async () => {
+    console.debug('Attempting to log out...');
     const { error } = await supabase.auth.signOut();
     if (error) {
       console.error('Logout failed:', error.message);
       return;
     }
-  
-    // Clear session manually
-    // setSession(null); // This line is removed as session is now managed by useSupabaseAuth
-    // setShowLogoutPopup(true); // This line is removed as showLogoutPopup is removed
-    setShowLoginPopup(false);  
+    console.info('Successfully logged out!');
+    setShowLoginPopup(false);      
     setShowLogoutPopup(true);
     sessionStorage.removeItem('loginPopupShown');
   };
@@ -186,7 +237,10 @@ function Home(props) {
           <button
             aria-label='sidebar-adjustment'
             className="cursor-pointer flex items-center justify-center w-10 h-10 rounded-full hover:bg-[#BAD1FD] transition-colors duration-200"
-            onClick={() => setSidebarOpen(true)}
+            onClick={() => {
+              setSidebarOpen(true);
+              console.debug('Sidebar opened.');
+            }}
           >
             <svg className="w-6 h-6 text-[#0C58E4]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
@@ -249,6 +303,7 @@ function Home(props) {
                   <button
                     className="text-[#0C58E4] cursor-pointer tracking-[-0.5px] font-semibold px-3 py-1 rounded transition hover:underline"
                     style={{ fontFamily: 'Poppins, sans-serif' }}
+                    onClick={() => console.debug('Login button clicked.')}
                   >
                     Log In  
                   </button>
@@ -284,7 +339,9 @@ function Home(props) {
                 <DialogTrigger asChild>
                   <button 
                     style={{ fontFamily: 'Poppins, sans-serif' }}
-                    className="bg-[#1871F2] cursor-pointer text-white border-2 border-white px-4 py-1 rounded-[10px] hover:bg-blue-700 transition text-sm sm:text-base poppins-semibold shadow-lg">
+                    className="bg-[#1871F2] cursor-pointer text-white border-2 border-white px-4 py-1 rounded-[10px] hover:bg-blue-700 transition text-sm sm:text-base poppins-semibold shadow-lg"
+                    onClick={() => console.debug('Join Now button clicked.')}
+                  >
                     Join Now
                   </button>
                 </DialogTrigger>
@@ -293,7 +350,7 @@ function Home(props) {
                     <DialogTitle className="text-2xl font-bold text-[#0C58E4]" style={{ fontFamily: 'Poppins, sans-serif' }}>
                       Welcome to Eduvance
                     </DialogTitle>
-                    <DialogDescription className="text-gray-600" style={{ fontFamily: 'Poppins, sans-serif' }}>                      
+                    <DialogDescription className="text-gray-600" style={{ fontFamily: 'Poppins, sans-serif' }}>           
                       Sign up now to access all corresponding resources
                     </DialogDescription>
                     <Auth 
@@ -314,7 +371,7 @@ function Home(props) {
                       />
                   </DialogHeader>
                 </DialogContent>
-              </Dialog>   
+              </Dialog>    
             </>
           ) : (
             <>
@@ -332,7 +389,7 @@ function Home(props) {
           )}
         </div>
       </nav>
-    
+      
       {/* Login Success Popup */}
       {showLoginPopup && (
         <div className="fixed top-6 left-1/2 transform -translate-x-1/2 z-50">
@@ -371,6 +428,7 @@ function Home(props) {
           `}</style>
         </div>
       )}
+      
       {/* Custom Sidebar - Slide-in from left */}
       {/* Scroll Ability */}
       <div data-sidebar={sidebarOpen ? 'open' : 'closed'} className={`sidebarWheel overflow-y-scroll overscroll-none fixed top-0 left-0 h-full bg-white z-50 flex flex-col shadow-lg transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 ease-in-out`} style={{ width: '300px', minWidth: '300px' }}>
@@ -384,7 +442,10 @@ function Home(props) {
             />
           </Link>
           {/* Close Button */}
-          <button onClick={() => setSidebarOpen(false)} className="cursor-pointer w-8 h-8 flex items-center justify-center rounded-full hover:bg-[#BAD1FD]">
+          <button onClick={() => {
+            setSidebarOpen(false);
+            console.debug('Sidebar closed.');
+          }} className="cursor-pointer w-8 h-8 flex items-center justify-center rounded-full hover:bg-[#BAD1FD]">
             <svg className="w-6 h-6 text-[#153064]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -405,6 +466,7 @@ function Home(props) {
             onClick={() => {
               setSidebarOpen(false);
               window.location.href = '/IGCSE';
+              console.debug('IGCSE sidebar item clicked. Navigating to /IGCSE.');
             }}
           >
             <div className="flex items-center justify-between">
@@ -425,6 +487,7 @@ function Home(props) {
             onClick={() => {
               setSidebarOpen(false);
               window.location.href = '/IAL';
+              console.debug('IAL sidebar item clicked. Navigating to /IAL.');
             }}
           >
             <div className="flex items-center justify-between">
@@ -442,18 +505,25 @@ function Home(props) {
           <h3 className="text-lg font-semibold tracking-[-1px] text-[#0C58E4] mb-4 px-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
             Subjects
           </h3>
-          <div className="space-y-1">
-            {subjects.map((subject) => (
-              <Link
-                key={subject}
-                href={`/subjects/${subject.toLowerCase()}`}
-                className="block px-4 py-2 text-[#000000] tracking-[-0.5px] cursor-pointer hover:bg-[#BAD1FD] rounded transition-colors duration-200"
-                style={{ fontFamily: 'Poppins, sans-serif' }}
-                onClick={() => setSidebarOpen(false)}
-              >
-                {subject}
-              </Link>
-            ))}
+          <div className="space-y-1" ref={subjectsDivRef}> {/* Assign ref here */}
+            {subjects.length > 0 ? (
+              subjects.map((subject) => (
+                <Link
+                  key={subject}
+                  href={`/subjects/${subject.toLowerCase()}`}
+                  className="block px-4 py-2 text-[#000000] tracking-[-0.5px] cursor-pointer hover:bg-[#BAD1FD] rounded transition-colors duration-200"
+                  style={{ fontFamily: 'Poppins, sans-serif' }}
+                  onClick={() => {
+                    setSidebarOpen(false);
+                    console.debug(`Subject link clicked: ${subject}`);
+                  }}
+                >
+                  {subject}
+                </Link>
+              ))
+            ) : (
+              <p className="px-4 py-2 text-gray-500">Loading subjects or no subjects available...</p>
+            )}
           </div>
         </div>
         {extra}

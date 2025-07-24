@@ -93,15 +93,15 @@ export default function Main() {
               rel="noopener noreferrer"
               className="z-20"
             >
-            <button className="group cursor-pointer bg-white hover:bg-[#143166] hover:text-white text-[#428CF9] border-5 border-[#639afe] px-9 py-4 rounded-[16px] text-xl poppins-semibold shadow-lg flex items-center gap-5">
-              <div className="relative w-9 h-9">
-                <Image src={discordLogo} alt="Discord" fill className="object-contain opacity-100 group-hover:opacity-0 transition-opacity duration-20"/>
-                <Image src={WhiteDiscordLogo} alt="Discord Hover" fill className="object-contain opacity-0 group-hover:opacity-100 transition-opacity duration-20"/>
-              </div>
-              Join our Discord Server
-            </button>
-
+              <button className="group cursor-pointer bg-white hover:bg-[#143166] hover:text-white text-[#428CF9] border-5 border-[#639afe] px-9 py-4 rounded-[16px] text-xl poppins-semibold shadow-lg flex items-center gap-5 transition-all duration-500 ease-in-out hover:shadow-[inset_0_0_20px_rgba(100,154,254,0.4)] shadow-[inset_0_0_10px_rgba(66,140,249,0.2)]">
+                <div className="relative w-9 h-9">
+                  <Image src={discordLogo} alt="Discord" fill className="object-contain opacity-100 group-hover:opacity-0 transition-opacity duration-500"/>
+                  <Image src={WhiteDiscordLogo} alt="Discord Hover" fill className="object-contain opacity-0 group-hover:opacity-100 transition-opacity duration-500"/>
+                </div>
+                Join our Discord Server
+              </button>
             </a>
+
             {/* Decorative Images (Positioned with absolute so they don't mess layout) */}
             <Image
               src={bgCrypto}
@@ -206,7 +206,7 @@ export default function Main() {
               className="inline-block mt-15 "
             >
               <button
-                className="cursor-pointer bg-[#3F82FD] hover:bg-[#143166] text-white border-5 border-[#B1CCFF] border-opacity-50 px-9 py-3 rounded-full text-xl poppins-semibold flex items-center gap-5"
+                className="cursor-pointer bg-[#3F82FD] hover:bg-[#143166] text-white border-5 border-[#B1CCFF] border-opacity-50 px-9 py-3 rounded-full text-xl poppins-semibold flex items-center gap-5 transition-all duration-500 ease-in-out shadow-[inset_0_0_30px_rgba(255,255,255,0.4),inset_0_0_60px_rgba(63,130,253,0.6)] hover:shadow-[inset_0_0_40px_rgba(255,255,255,0.3),inset_0_0_80px_rgba(20,49,102,0.8)]"
                 style={{ fontFamily: 'Poppins, sans-serif' }}
               >
                 <Image src={WhiteDiscordLogo} alt="Discord" className="w-9 h-auto" />
