@@ -117,6 +117,11 @@ Community Feedback :
    ✔ Choose your exam board should be changed to -> Choose your exam qualification @done(25-07-16 14:50)
    ✔ Add a like/dislike system for the eduvance resources and community notes @done(25-07-17 12:26)
 
+   ✔ Update the supabase client scripts for bug fixes (side bar subjects + past paper fetch) @done(25-07-24 12:34)
+   ☐ Update study tools general pages for subject navigation
+   ✔ Update dscord button transition animations @done(25-07-24 12:02)
+   ☐ Change in landing page headline (Advancing in Education with Eduvance)
+
 Systems Todo:
    ✔ Update Admin Console UI for extra information (revert) @done(25-07-09 12:05)
    ✔ Update Subject Addition form for extra unit and other information on Admin Console @done(25-07-09 12:05)
