@@ -10,7 +10,7 @@ import SmallFoot from '@/components/smallFoot.jsx';
 const sessions = [
   { label: "January", value: "January" },
   { label: "May/June", value: "May/June" },
-  { label: "Oct/Nov", value: "Oct/Nov" }, 
+  { label: "Oct/Nov", value: "Oct/Nov" },
 ];
 
 // At the top, define variables for subjectName, syllabusType, and examCode
@@ -29,6 +29,7 @@ const SubjectButtons = () => {
 
   useEffect(() => {
     async function fetchSubjects() {
+      console.debug('SubjectButtons: Attempting to fetch subjects for IAL.');
       const { data, error } = await supabase
         .from('subjects')
         .select('name')
@@ -36,6 +37,11 @@ const SubjectButtons = () => {
         .eq('syllabus_type', 'IAL');
       if (!error && data) {
         setSubjects(data.map(subj => subj.name));
+        console.debug('SubjectButtons: Successfully fetched subjects:', data.map(subj => subj.name));
+      } else if (error) {
+        console.error('SubjectButtons: Error fetching subjects:', error.message);
+      } else {
+        console.warn('SubjectButtons: No data returned for subjects.');
       }
     }
     fetchSubjects();
@@ -85,7 +91,6 @@ const specs = [
 ];
 
 export default function IALPastPapersPage() {
-  // Replace all instances of 'Physics' with subjectName, 'IAL' with syllabusType, and '8PH0' with examCode
   const [selectedUnits, setSelectedUnits] = useState([]);
   const [papers, setPapers] = useState([]);
   const [selectedYears, setSelectedYears] = useState([]);
@@ -96,76 +101,20 @@ export default function IALPastPapersPage() {
 
   const [showYearDropdown, setShowYearDropdown] = useState(false);
   const [showUnitDropdown, setShowUnitDropdown] = useState(false);
-  // NEW STATE FOR SPEC FILTER
   const [selectedSpec, setSelectedSpec] = useState(null);
   const [showSpecDropdown, setShowSpecDropdown] = useState(false);
 
   const yearDropdownRef = useRef(null);
   const unitDropdownRef = useRef(null);
-  // NEW REF FOR SPEC FILTER
   const specDropdownRef = useRef(null);
+  const pastPaperLinksContainerRef = useRef(null); // Ref for the main container of past paper links
 
+  // Function to fetch papers
+  const fetchPapers = async () => {
+    console.debug('fetchPapers: Attempting to fetch past papers...');
+    setError(null); // Clear any previous errors
 
-  // Effect to handle clicks outside the dropdowns to close them
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (yearDropdownRef.current && !yearDropdownRef.current.contains(event.target)) {
-        setShowYearDropdown(false);
-      }
-      if (unitDropdownRef.current && !unitDropdownRef.current.contains(event.target)) {
-        setShowUnitDropdown(false);
-      }
-      // NEW: Close spec dropdown if click outside
-      if (specDropdownRef.current && !specDropdownRef.current.contains(event.target)) {
-        setShowSpecDropdown(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []); // Empty dependency array means this runs once on mount
-
-  // Toggle functions for the main filter buttons, also closing the other dropdowns
-  const handleToggleYearDropdown = () => {
-    setShowYearDropdown(prev => !prev);
-    setShowUnitDropdown(false); // Close unit dropdown
-    setShowSpecDropdown(false); // NEW: Close spec dropdown
-  };
-
-  const handleToggleUnitDropdown = () => {
-    setShowUnitDropdown(prev => !prev);
-    setShowYearDropdown(false); // Close year dropdown
-    setShowSpecDropdown(false); // NEW: Close spec dropdown
-  };
-
-  // NEW HANDLER FOR SPEC FILTER
-  const handleToggleSpecDropdown = () => {
-    setShowSpecDropdown(prev => !prev);
-    setShowYearDropdown(false); // Close other dropdowns
-    setShowUnitDropdown(false);
-  };
-
-  // NEW TOGGLE FUNCTION FOR SPEC (single-select behavior)
-  const toggleSpec = (specValue) => {
-    setSelectedSpec(prev => (prev === specValue ? null : specValue)); // Toggle selection
-  };
-
-  const toggleUnit = (unit) => {
-    setSelectedUnits((prev) =>
-      prev.includes(unit) ? prev.filter((u) => u !== unit) : [...prev, unit]
-    );
-  };
-
-  const toggleYear = (year) => {
-    setSelectedYears((prev) =>
-      prev.includes(year) ? prev.filter((y) => y !== year) : [...prev, year]
-    );
-  };
-
-  useEffect(() => {
-    async function fetchPapers() {
+    try {
       const { data: subjectData, error: subjectError } = await supabase
         .from('subjects')
         .select('id')
@@ -174,11 +123,14 @@ export default function IALPastPapersPage() {
         .single();
 
       if (subjectError || !subjectData) {
-        setError(subjectError || new Error(`Subject "psychology" not found.`));
+        const errMsg = subjectError ? subjectError.message : `Subject "psychology" not found.`;
+        setError(new Error(errMsg));
+        console.error('fetchPapers: Error fetching subject ID:', errMsg);
         return;
       }
 
       const subjectId = subjectData.id;
+      console.debug('fetchPapers: Subject ID found:', subjectId);
 
       const { data, error: papersError } = await supabase
         .from('papers')
@@ -195,30 +147,38 @@ export default function IALPastPapersPage() {
 
       if (papersError) {
         setError(papersError);
-        console.error('Error fetching papers:', papersError.message);
-      } else {
+        console.error('fetchPapers: Error fetching papers data:', papersError.message);
+      } else if (data && data.length > 0) {
         setPapers(data);
+        console.debug('fetchPapers: Successfully fetched papers:', data);
+      } else {
+        setPapers([]); // Ensure papers array is empty if no data
+        console.warn('fetchPapers: No past papers found for the selected subject.');
       }
+    } catch (err) {
+      console.error('fetchPapers: An unexpected error occurred during paper fetch:', err);
+      setError(new Error('An unexpected error occurred while fetching papers.'));
     }
+  };
 
-    fetchPapers();
-  }, []);
-
-  // Fetch units from subject table
-  useEffect(() => {
-    const fetchUnits = async () => {
+  // Function to fetch units
+  const fetchUnits = async () => {
+    console.debug('fetchUnits: Attempting to fetch units...');
+    try {
       const { data: subjectData, error: subjectError } = await supabase
         .from('subjects')
         .select('units')
         .eq('name', subjectName)
         .eq('syllabus_type', 'IAL')
         .single();
+
       if (subjectError || !subjectData) {
-        setError(subjectError || new Error(`Subject "psychology" not found.`));
+        const errMsg = subjectError ? subjectError.message : `Subject "psychology" not found for units.`;
+        setError(new Error(errMsg));
+        console.error('fetchUnits: Error fetching subject units:', errMsg);
         return;
       }
       let fetchedUnits = subjectData.units || [];
-      // Sort by unit number if possible, fallback to name
       fetchedUnits.sort((a, b) => {
         const getUnitNum = (u) => {
           const match = (u.unit || '').match(/Unit\s*(\d+)/i);
@@ -234,9 +194,109 @@ export default function IALPastPapersPage() {
         acc[unit.unit] = true;
         return acc;
       }, {}));
-    };
+      console.debug('fetchUnits: Successfully fetched and processed units:', fetchedUnits);
+    } catch (err) {
+      console.error('fetchUnits: An unexpected error occurred during unit fetch:', err);
+      setError(new Error('An unexpected error occurred while fetching units.'));
+    }
+  };
+
+  // Initial data fetch for papers and units
+  useEffect(() => {
+    fetchPapers();
     fetchUnits();
+  }, []); // Run once on mount
+
+  // Effect to handle clicks outside the dropdowns to close them
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (yearDropdownRef.current && !yearDropdownRef.current.contains(event.target)) {
+        setShowYearDropdown(false);
+      }
+      if (unitDropdownRef.current && !unitDropdownRef.current.contains(event.target)) {
+        setShowUnitDropdown(false);
+      }
+      if (specDropdownRef.current && !specDropdownRef.current.contains(event.target)) {
+        setShowSpecDropdown(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
   }, []);
+
+  // Check if past paper links are displayed and re-fetch if not
+  useEffect(() => {
+    const checkAndRefetchPastPapers = () => {
+      console.debug('checkAndRefetchPastPapers: Checking for past paper links in the DOM...');
+      if (pastPaperLinksContainerRef.current) {
+        // Look for any 'a' tags within the specified container that are children of a div with class 'space-y-2'
+        // This targets the specific links for question paper, mark scheme, and examiner report.
+        const paperLinks = pastPaperLinksContainerRef.current.querySelectorAll('.space-y-2 a');
+        console.debug(`checkAndRefetchPastPapers: Found ${paperLinks.length} potential past paper links.`);
+
+        // If no links are found AND we have no papers in state (meaning the fetch might have failed or returned empty)
+        if (paperLinks.length === 0 && papers.length === 0 && !error) {
+          console.warn('checkAndRefetchPastPapers: No past paper links found in the DOM and no papers in state. Re-fetching papers...');
+          fetchPapers(); // Trigger re-fetch
+        } else if (paperLinks.length > 0) {
+          console.debug('checkAndRefetchPastPapers: Past paper links are displayed.');
+        } else if (error) {
+          console.debug('checkAndRefetchPastPapers: An error has prevented papers from loading, no re-fetch triggered.');
+        }
+      } else {
+        console.debug('checkAndRefetchPastPapers: Past paper links container ref not yet available.');
+      }
+    };
+
+    // Set a timeout to check after the initial render and data processing
+    const timer = setTimeout(checkAndRefetchPastPapers, 1500); // 1.5 seconds delay
+
+    return () => clearTimeout(timer); // Clean up the timer
+  }, [papers, error]); // Re-run this effect when `papers` or `error` state changes
+
+  // Toggle functions for the main filter buttons, also closing the other dropdowns
+  const handleToggleYearDropdown = () => {
+    console.debug('Toggle Year Dropdown button clicked.');
+    setShowYearDropdown(prev => !prev);
+    setShowUnitDropdown(false); // Close unit dropdown
+    setShowSpecDropdown(false); // Close spec dropdown
+  };
+
+  const handleToggleUnitDropdown = () => {
+    console.debug('Toggle Unit Dropdown button clicked.');
+    setShowUnitDropdown(prev => !prev);
+    setShowYearDropdown(false); // Close year dropdown
+    setShowSpecDropdown(false); // Close spec dropdown
+  };
+
+  const handleToggleSpecDropdown = () => {
+    console.debug('Toggle Spec Dropdown button clicked.');
+    setShowSpecDropdown(prev => !prev);
+    setShowYearDropdown(false); // Close other dropdowns
+    setShowUnitDropdown(false);
+  };
+
+  const toggleSpec = (specValue) => {
+    console.debug(`Toggling spec to: ${specValue}. Current selected spec: ${selectedSpec}`);
+    setSelectedSpec(prev => (prev === specValue ? null : specValue)); // Toggle selection
+  };
+
+  const toggleUnit = (unit) => {
+    console.debug(`Toggling unit: ${unit}. Current selected units:`, selectedUnits);
+    setSelectedUnits((prev) =>
+      prev.includes(unit) ? prev.filter((u) => u !== unit) : [...prev, unit]
+    );
+  };
+
+  const toggleYear = (year) => {
+    console.debug(`Toggling year: ${year}. Current selected years:`, selectedYears);
+    setSelectedYears((prev) =>
+      prev.includes(year) ? prev.filter((y) => y !== year) : [...prev, year]
+    );
+  };
 
   // Filter papers based on selected filters
   const filteredPapers = papers && papers.filter(paper => {
@@ -267,7 +327,7 @@ export default function IALPastPapersPage() {
         includePaper = false;
       }
     }
-
+    console.debug(`Paper ${paper.id} (Unit: ${paper.unit_code}, Year: ${paper.exam_sessions?.year}, Session: ${paper.exam_sessions?.session}) filter result: ${includePaper}`);
     return includePaper;
   });
 
@@ -284,6 +344,7 @@ export default function IALPastPapersPage() {
     acc[year][session][unitCode] = paper;
     return acc;
   }, {});
+  console.debug('Grouped papers:', groupedPapers);
 
   return error ? (
     <>
@@ -460,7 +521,7 @@ export default function IALPastPapersPage() {
             </div>
           </div>
 
-          <div className="w-full space-y-10">
+          <div className="w-full space-y-10" ref={pastPaperLinksContainerRef}> {/* Assign ref here */}
             {/*
                 The rendering logic for years now iterates over the keys of groupedPapers (which are filtered years).
                 It also sorts them in descending order for display.
@@ -502,7 +563,8 @@ export default function IALPastPapersPage() {
                                 if (paperData) {
                                   return (
                                     <div
-                                      key={`${year}-${session.label}-${unit.unit}-unit-card`}
+                                      // Updated key to use paperData.id for uniqueness
+                                      key={paperData.id}
                                       className="bg-gray-50 rounded-lg p-4 border border-gray-100 flex flex-col justify-between" // Unit Card styling
                                       style={{ fontFamily: "Poppins, sans-serif" }}
                                     >
@@ -516,7 +578,14 @@ export default function IALPastPapersPage() {
                                             ${!paperData.question_paper_link ? 'text-gray-500 tracking-tight cursor-not-allowed opacity-75' : ''}`}
                                           target="_blank"
                                           aria-disabled={!paperData.question_paper_link}
-                                          onClick={(e) => !paperData.question_paper_link && e.preventDefault()}
+                                          onClick={(e) => {
+                                            if (!paperData.question_paper_link) {
+                                              e.preventDefault();
+                                              console.warn(`Question Paper link for ${unit.unit} - ${year} ${session.label} is missing.`);
+                                            } else {
+                                              console.debug(`Question Paper link clicked for ${unit.unit} - ${year} ${session.label}`);
+                                            }
+                                          }}
                                         >
                                           Question Paper
                                         </Link>
@@ -527,7 +596,14 @@ export default function IALPastPapersPage() {
                                             ${!paperData.mark_scheme_link ? 'text-gray-500 tracking-tight cursor-not-allowed opacity-75' : ''}`}
                                           target="_blank"
                                           aria-disabled={!paperData.mark_scheme_link}
-                                          onClick={(e) => !paperData.mark_scheme_link && e.preventDefault()}
+                                          onClick={(e) => {
+                                            if (!paperData.mark_scheme_link) {
+                                              e.preventDefault();
+                                              console.warn(`Marking Scheme link for ${unit.unit} - ${year} ${session.label} is missing.`);
+                                            } else {
+                                              console.debug(`Marking Scheme link clicked for ${unit.unit} - ${year} ${session.label}`);
+                                            }
+                                          }}
                                         >
                                           Marking Scheme
                                         </Link>
@@ -539,7 +615,14 @@ export default function IALPastPapersPage() {
                                             ${!paperData.examiner_report_link ? 'text-gray-500 tracking-tight cursor-not-allowed opacity-75' : ''}`}
                                           target="_blank"
                                           aria-disabled={!paperData.examiner_report_link}
-                                          onClick={(e) => !paperData.examiner_report_link && e.preventDefault()}
+                                          onClick={(e) => {
+                                            if (!paperData.examiner_report_link) {
+                                              e.preventDefault();
+                                              console.warn(`Examiner's Report link for ${unit.unit} - ${year} ${session.label} is missing.`);
+                                            } else {
+                                              console.debug(`Examiner's Report link clicked for ${unit.unit} - ${year} ${session.label}`);
+                                            }
+                                          }}
                                         >
                                           Examiner's Report
                                         </Link>
@@ -554,8 +637,19 @@ export default function IALPastPapersPage() {
                       </div>
                     ) : null // Don't render session div if no papers exist for it
                   ))}
+                  {/* Provide feedback if no papers found after filtering for a year */}
+                  {Object.keys(groupedPapers[year]).length === 0 && (
+                    <p className="text-gray-500 text-center py-4">No papers found for {year} with current filters.</p>
+                  )}
                 </div>
               ))}
+            {/* Provide feedback if no papers found at all after all filters */}
+            {Object.keys(groupedPapers).length === 0 && !error && papers.length > 0 && (
+                <p className="text-gray-500 text-center py-4">No papers match the selected filters. Try adjusting your selections.</p>
+            )}
+            {Object.keys(groupedPapers).length === 0 && !error && papers.length === 0 && (
+                <p className="text-gray-500 text-center py-4">No past papers available for this subject yet.</p>
+            )}
           </div>
         </div>
       </main>

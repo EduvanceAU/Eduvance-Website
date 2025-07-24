@@ -85,7 +85,7 @@
 
 .font-grand-local {
   font-family: 'GrandstanderLocal', cursive;
-  letter-spacing: -0.4px;
+  letter-spacing: -2px;
 }
 
 @keyframes scroll-up {
