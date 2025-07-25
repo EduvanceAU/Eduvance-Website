@@ -1,52 +1,125 @@
-"use client"
+"use client";
 
-import { supabase } from '@/lib/supabaseClient';
-import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import Link from "next/link";
+import { useState, useEffect } from "react";
+// REMOVED: import { createClient } from '@supabase/supabase-js'; // Removed this line
+import { supabase } from '@/lib/supabaseClient'; // Use the shared browser client
+import SmallFoot from '@/components/smallFoot.jsx';
 
-export default function IGCSESubjectsPage() {
-  const [subjects, setSubjects] = useState([]);
+// --- Utility Function: toKebabCase ---
+// Place this function either here at the top, or in a shared utility file (e.g., utils/string.js)
+const toKebabCase = (str) => {
+  if (typeof str !== 'string') {
+    console.warn('toKebabCase received non-string input:', str);
+    return ''; // Return empty string or handle error as appropriate
+  }
+  return str
+    .toLowerCase()
+    .replace(/\s+/g, '-')   // Replace spaces with hyphens
+    .replace(/[^\w-]+/g, '') // Remove all non-word chars except hyphens
+    .replace(/--+/g, '-')   // Replace multiple hyphens with a single one
+    .trim();                // Trim leading/trailing whitespace
+};
 
+// This component now simply receives subjects and renders buttons.
+// The fetching logic is moved to the parent (IGCSEResources).
+const SubjectButtons = ({ subjects }) => {
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 w-full">
+      {subjects.map((name, index) => {
+        const slug = toKebabCase(name); // Ensure slug is kebab-cased
+        return (
+          <Link key={index} href={`/subjects/${slug}/`}>
+            <div className="cursor-pointer flex items-center justify-between px-6 w-full py-4 bg-[#BAD1FD] rounded-[12px] group hover:bg-[#A8C6FF] transition-all duration-200 border-[#153064] border-1">
+              <p
+                className="text-xl font-[550] text-[#153064]"
+                style={{ fontFamily: "Poppins, sans-serif" }}
+              >
+                {name}
+              </p>
+              <img
+                src="/BArrowR.svg"
+                alt="Arrow Right"
+                className="w-6 h-auto group-hover:translate-x-1 transition-transform duration-200"
+              />
+            </div>
+          </Link>
+        );
+      })}
+    </div>
+  );
+};
+
+export default function IGCSEResources() {
+  const [subjects, setSubjects] = useState([]); // Moved here from SubjectButtons
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true); // Controls loading for the main subject list
+
+  // Fetch subjects for IGCSE qualification
   useEffect(() => {
-    supabase
-      .from('subjects')
-      .select('name')
-      .eq('syllabus_type', 'IGCSE')
-      .order('name', { ascending: true })
-      .then(({ data, error }) => {
-        if (!error) {
-          setSubjects([...new Set(data.map(item => item.name))]);
-        }
-      });
-  }, []);
+    async function fetchSubjectsData() {
+      setLoading(true); // Start loading
+      const { data, error: fetchError } = await supabase
+        .from('subjects')
+        .select('name')
+        .order('name', { ascending: true })
+        .eq('syllabus_type', 'IGCSE'); // Filter by IGCSE syllabus type
+
+      if (fetchError) {
+        console.error("Error fetching IGCSE subjects:", fetchError.message);
+        setError(fetchError);
+      } else if (data) {
+        setSubjects(data.map(subj => subj.name));
+      }
+      setLoading(false); // End loading regardless of success/failure
+    }
+    fetchSubjectsData();
+  }, []); // Empty dependency array means this runs once on mount
+
+  if (error) {
+    return (
+      <main className="min-h-screen bg-white flex items-center justify-center">
+        <p className="text-xl text-red-600">Error loading IGCSE subjects: {error.message}</p>
+      </main>
+    );
+  }
+
+  if (loading) {
+    return (
+      <main className="min-h-screen bg-white flex items-center justify-center">
+        <p className="text-xl text-gray-700">Loading IGCSE subjects...</p>
+      </main>
+    );
+  }
 
   return (
-    <main className="flex items-center justify-center pt-10 sm:pt-5">      
-      <div className="w-full flex flex-col items-center justify-center gap-6 px-10 py-5 lg:py-16">
-        <h1 className="text-4xl font-semibold leading-[40px] tracking-tighter" style={{ fontFamily: 'Poppins, sans-serif' }}>
-          Our <span className="bg-[#0C58E4] text-white py-[1.5] px-1 -rotate-1 inline-block">IGCSE</span> Subject List
-        </h1>
+    <>
+      <main className="min-h-screen bg-white flex flex-col items-center justify-start py-10 m-10">
+        <div className="w-full max-w-5xl px-4">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#000000] mb-8 text-left tracking-[-0.035em]" style={{ fontFamily: "Poppins, sans-serif" }}>
+            Explore Edexcel <span className="bg-[#1A69FA] px-2 py-1 -rotate-1 inline-block"><span className="text-[#FFFFFF]">IGCSE</span></span> Subjects
+          </h1>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 w-full">
-          {subjects.map((subject) => (
-            <a key={subject.name} href={`/subjects/${subject.toLowerCase()}?choice=option2`}>
-              <div className="cursor-pointer flex items-center justify-between px-6 w-full py-4 bg-[#BAD1FD] rounded-[12px] group hover:bg-[#A8C6FF] transition-all duration-200 border-[#153064] border-1">
-                <p
-                  className="text-xl font-[550] text-[#153064]"
-                  style={{ fontFamily: "Poppins, sans-serif" }}
-                >
-                  {subject}
-                </p>
-                <img
-                  src="/BArrowR.svg"
-                  alt="Arrow Right"
-                  className="w-6 h-auto group-hover:translate-x-1 transition-transform duration-200"
-                />
-              </div>
-            </a>
-          ))}
+          <div className="inline-flex items-center justify-center px-4 py-2 mb-8 rounded-md" style={{ border: "1.5px solid #DBDBDB", fontFamily: "Poppins, sans-serif" }}>
+            <span className="text-md font-medium text-black tracking-[-0px]">
+              <span className="font-[501]">Qualification:</span> IGCSE
+            </span>
+          </div>
+
+          <h3 className="text-sm sm:text-md lg:text-lg font-[500] leading-6 text-[#707070] mb-8 text-left max-w-4xl tracking-[-0.020em]" style={{ fontFamily: "Poppins, sans-serif" }}>
+            Access a wide range of Edexcel IGCSE resources—all in one place. Whether you're brushing up on concepts or aiming to master exam strategies, these materials are designed to support your revision and boost your performance
+          </h3>
+
+          {/* This component will now receive and display the IGCSE subject buttons */}
+          {subjects.length > 0 ? (
+            <SubjectButtons subjects={subjects} />
+          ) : (
+            <p className="text-lg text-gray-600">No IGCSE subjects found.</p>
+          )}
+
         </div>
-      </div>
-    </main>
+      </main>
+      <SmallFoot />
+    </>
   );
-} 
+}
