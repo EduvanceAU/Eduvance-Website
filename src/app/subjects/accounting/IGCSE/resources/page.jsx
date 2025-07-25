@@ -216,8 +216,7 @@ export default function IGCSEResources() {
                           )}
                           <div className="flex flex-col justify-end items-end">
                             {resourceGroup.heading && (<div className="cursor-pointer mt-1 text-xs font-semibold tracking-tight uppercase w-fit px-2 py-0.5 text-green-400 ring ring-green-400 rounded-md hover:bg-green-400 hover:text-white transition-colors">{resourceGroup.heading}</div>)}
-                            {link.contributor && (<p className="text-xs text-gray-600 mt-1 text-right">Shared by {link.contributor}</p>)}
-                            {link.last && (<p className="text-xs text-gray-600 mt-1 text-right">{link.contributor ? "On ": "Shared On "}{new Date(link.last).toLocaleString(undefined, {year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'})}</p>)}
+                            {link.last && (<p className="text-xs text-gray-600 mt-1 text-right">{link.contributor ? "Shared On ": "Shared On "}{new Date(link.last).toLocaleString(undefined, {year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'})}</p>)}
                           </div>
                         <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                           <svg width="22" height="22" fill="none" stroke="#1A69FA" strokeWidth="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>

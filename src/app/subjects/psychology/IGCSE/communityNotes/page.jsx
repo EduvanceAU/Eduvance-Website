@@ -282,7 +282,6 @@ export default function IGCSECommunityNotesPage() {
                             {note.description && <p className="text-sm text-gray-600 mt-2 border-l-4 mb-2 border-blue-600 pl-2">{note.description}</p>}
                             <div className="flex flex-col justify-end items-end mt-2">
                               <div className="cursor-pointer mt-1 text-xs font-semibold tracking-tight uppercase w-fit px-2 py-0.5 text-green-400 ring ring-green-400 rounded-md hover:bg-green-400 hover:text-white transition-colors">{note.resource_type}</div>
-                              <p className="text-xs text-gray-600 mt-1 text-right">Shared by {note.contributor_name || 'Anonymous'}{note.contributor_email ? ` (${note.contributor_email})` : ''}</p>
                               {note.submitted_at && <p className="text-xs text-gray-600 mt-1 text-right">Shared On {new Date(note.submitted_at).toLocaleString(undefined, {year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'})}</p>}
                             </div>
                             {/* Like/Dislike System */}
