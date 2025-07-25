@@ -69,7 +69,7 @@ export default function RootLayout({ children }) {
         <meta property="twitter:domain" content="eduvance.au"/>
         <meta property="twitter:url" content="https://www.eduvance-org.vercel.app/"/>
         <meta name="twitter:image" content="https://www.eduvance-org.vercel.app/SmallLogo.svg"/> */}
-        <link rel="preload" href="/fonts/Grandstander-Medium.ttf" as="font" type="font/ttf" crossorigin="anonymous"/>
+        <link rel="preload" href="/fonts/Grandstander-Medium.ttf" as="font" type="font/ttf" crossOrigin="anonymous"/>
 
       </head>
       <body
