@@ -218,7 +218,7 @@ export default function IALCommunityNotesPage() {
           {/* AVAILABILITY SIGN - UNBLURRED */}
           <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-xs animate-fade-in bg-black/10">
             <div className="flex items-center flex-col justify-center bg-white rounded-xl mx-5 p-10 text-center">
-              <span className="flex items-center justify-center gap-2 flex-wrap sm:flex-nowrap"><Frown className="stroke-[#1A69FA]"/> <p>Eduvance Resources are unavailable at the moment</p></span>
+              <span className="flex items-center justify-center gap-2 flex-wrap sm:flex-nowrap"><Frown className="stroke-[#1A69FA]"/> <p>Eduvance Notes are unavailable at the moment</p></span>
               <p>Keep an eye out on our Discord Server for the release date!</p>
             </div>
           </div>          
