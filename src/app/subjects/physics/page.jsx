@@ -51,7 +51,7 @@ export default function Subject({ searchParams }) {
           className="w-full h-[250px] relative flex items-center bg-cover bg-right lg:bg-center bg-no-repeat transition-all duration-300"
           style={{ backgroundImage: "url('/Banner.svg')" }}
         >
-          <h1 className="text-white font-grand-local text-xl md:text-7xl ml-17 tracking-[-1px]">
+          <h1 className="text-white font-grand-local text-4xl md:text-7xl ml-17 tracking-[-1px]">
             Physics
           </h1>
         </div>
