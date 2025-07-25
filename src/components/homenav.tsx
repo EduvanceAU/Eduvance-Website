@@ -3,7 +3,7 @@ import Image from 'next/image';
 import Link from "next/link";
 import { useState, useRef, useEffect } from 'react';
 import { ChevronRight } from 'lucide-react';
-import { supabase } from '@/lib/supabaseClient';
+import { supabase } from '@/lib/supabaseClient'; // This is your createBrowserClient
 import { Auth } from '@supabase/auth-ui-react';
 import { ThemeSupa } from '@supabase/auth-ui-shared';
 import BlueSolo from '@/assets/png/BlueSolo.png'
@@ -17,6 +17,21 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { useSupabaseAuth } from '@/components/client/SupabaseAuthContext';
+
+// --- Utility Function: toKebabCase ---
+// Place this function either here at the top, or in a shared utility file (e.g., utils/string.js)
+const toKebabCase = (str) => {
+  if (typeof str !== 'string') {
+    console.warn('toKebabCase received non-string input:', str);
+    return ''; // Return empty string or handle error as appropriate
+  }
+  return str
+    .toLowerCase()
+    .replace(/\s+/g, '-')   // Replace spaces with hyphens
+    .replace(/[^\w-]+/g, '') // Remove all non-word chars except hyphens
+    .replace(/--+/g, '-')   // Replace multiple hyphens with a single one
+    .trim();                // Trim leading/trailing whitespace
+};
 
 // Dropdown component
 const NavDropdown = ({ labelMain, labelSmall, items }) => {
@@ -33,7 +48,7 @@ const NavDropdown = ({ labelMain, labelSmall, items }) => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
-  
+
   return (
     <div className="relative" ref={dropdownRef}>
       <button
@@ -52,7 +67,7 @@ const NavDropdown = ({ labelMain, labelSmall, items }) => {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
         </svg>
       </button>
-      
+
       {isOpen && (
         <div className="absolute z-50 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
           <div className="py-1" role="menu" aria-orientation="vertical">
@@ -133,29 +148,29 @@ function Home(props) {
 
   let extra = null;
 
-  if (props.showExtra){
+  if (props.showExtra) {
     extra = (<div className="mt-8 px-4">
-        <h3 className="text-lg font-semibold tracking-[-1px] text-[#0C58E4] mb-4 px-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
-          Eduvance Services
-        </h3>
-        <div className="space-y-1">
-          {[
-            { name: 'Study Tools', href: '/studyTools' },
-            { name: 'Edexcel FAQs', href: '/faq' },
-            { name: 'Edexcel Exam Structure', href: '/about/edexcel/examStructure' },
-            { name: 'Edexcel Grading System', href: '/about/edexcel/grading' },
-          ].map((tool) => (
-            <Link
-              key={tool.name}
-              href={tool.href}
-              className="block px-4 py-2 text-[#000000] tracking-[-0.5px] cursor-pointer hover:bg-[#BAD1FD] rounded transition-colors duration-200"
-              style={{ fontFamily: 'Poppins, sans-serif' }}
-            >
-              {tool.name}
-            </Link>
-          ))}
-        </div>
-      </div>)
+      <h3 className="text-lg font-semibold tracking-[-1px] text-[#0C58E4] mb-4 px-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
+        Eduvance Services
+      </h3>
+      <div className="space-y-1">
+        {[
+          { name: 'Study Tools', href: '/studyTools' },
+          { name: 'Edexcel FAQs', href: '/faq' },
+          { name: 'Edexcel Exam Structure', href: '/about/edexcel/examStructure' },
+          { name: 'Edexcel Grading System', href: '/about/edexcel/grading' },
+        ].map((tool) => (
+          <Link
+            key={tool.name}
+            href={tool.href}
+            className="block px-4 py-2 text-[#000000] tracking-[-0.5px] cursor-pointer hover:bg-[#BAD1FD] rounded transition-colors duration-200"
+            style={{ fontFamily: 'Poppins, sans-serif' }}
+          >
+            {tool.name}
+          </Link>
+        ))}
+      </div>
+    </div>)
   }
   const { session } = useSupabaseAuth();
   const [selected, setSelected] = useState('option1'); // This state doesn't seem to be used.
@@ -223,14 +238,14 @@ function Home(props) {
       return;
     }
     console.info('Successfully logged out!');
-    setShowLoginPopup(false);      
+    setShowLoginPopup(false);
     setShowLogoutPopup(true);
     sessionStorage.removeItem('loginPopupShown');
   };
 
   return (
     <main className="bg-white relative overflow-x-hidden">
-      
+
       <nav className="w-full h-[60px] flex justify-between items-center px-4 md:px-6 py-4 z-50 fixed top-0 left-0 bg-white bg-opacity-95">
         {/* 👈 Left Side: Sidebar Button + Logo in one group */}
         <div className="flex items-center gap-2">
@@ -269,18 +284,24 @@ function Home(props) {
             labelMain="IAL Edexcel Subjects"
             labelSmall="IAL"
             items={NonUniqueSubjects
-                    .filter((subject) => subject.syllabus_type === "IAL")
-                    .map((subject) => ({label: subject.name, href: `/subjects/${subject.name.toLowerCase()}?choice=option1`,
-                    }))
-                  }/>
+              .filter((subject) => subject.syllabus_type === "IAL")
+              .map((subject) => ({
+                label: subject.name,
+                // Apply toKebabCase here for dropdown items
+                href: `/subjects/${toKebabCase(subject.name)}?choice=option1`,
+              }))
+            } />
           <NavDropdown
             labelMain="IGCSE Edexcel Subjects"
             labelSmall="IGCSE"
             items={NonUniqueSubjects
-                    .filter((subject) => subject.syllabus_type === "IGCSE")
-                    .map((subject) => ({label: subject.name, href: `/subjects/${subject.name.toLowerCase()}?choice=option2`,
-                    }))
-                  }/>
+              .filter((subject) => subject.syllabus_type === "IGCSE")
+              .map((subject) => ({
+                label: subject.name,
+                // Apply toKebabCase here for dropdown items
+                href: `/subjects/${toKebabCase(subject.name)}?choice=option2`,
+              }))
+            } />
           <NavDropdown
             labelMain="More"
             labelSmall="More"
@@ -305,39 +326,39 @@ function Home(props) {
                     style={{ fontFamily: 'Poppins, sans-serif' }}
                     onClick={() => console.debug('Login button clicked.')}
                   >
-                    Log In  
+                    Log In
                   </button>
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-md pl-8 pr-8 pt-6 pb-4 max-h-[95vh]">
                   <DialogHeader>
                     <DialogTitle className="text-2xl font-bold text-[#0C58E4]" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                        Welcome to Eduvance
+                      Welcome to Eduvance
                     </DialogTitle>
                     <DialogDescription className="text-gray-600" style={{ fontFamily: 'Poppins, sans-serif' }}>
                       Sign in to access all corresponding resources
                     </DialogDescription>
-                    <Auth 
-                        supabaseClient={supabase} 
-                        appearance={{ 
-                          theme: ThemeSupa,
-                          variables: {
-                            default: {
-                              colors: {
-                                brand: '#0C58E4',
-                                brandAccent: '#0846b8',
-                              }
+                    <Auth
+                      supabaseClient={supabase}
+                      appearance={{
+                        theme: ThemeSupa,
+                        variables: {
+                          default: {
+                            colors: {
+                              brand: '#0C58E4',
+                              brandAccent: '#0846b8',
                             }
                           }
-                        }} 
-                        providers={['google', 'discord']} 
-                        redirectTo={typeof window !== 'undefined' ? window.location.href : undefined}
-                      />
+                        }
+                      }}
+                      providers={['google', 'discord']}
+                      redirectTo={typeof window !== 'undefined' ? window.location.href : undefined}
+                    />
                   </DialogHeader>
                 </DialogContent>
               </Dialog>
               <Dialog>
                 <DialogTrigger asChild>
-                  <button 
+                  <button
                     style={{ fontFamily: 'Poppins, sans-serif' }}
                     className="bg-[#1871F2] cursor-pointer text-white border-2 border-white px-4 py-1 rounded-[10px] hover:bg-blue-700 transition text-sm sm:text-base poppins-semibold shadow-lg"
                     onClick={() => console.debug('Join Now button clicked.')}
@@ -350,34 +371,34 @@ function Home(props) {
                     <DialogTitle className="text-2xl font-bold text-[#0C58E4]" style={{ fontFamily: 'Poppins, sans-serif' }}>
                       Welcome to Eduvance
                     </DialogTitle>
-                    <DialogDescription className="text-gray-600" style={{ fontFamily: 'Poppins, sans-serif' }}>           
+                    <DialogDescription className="text-gray-600" style={{ fontFamily: 'Poppins, sans-serif' }}>
                       Sign up now to access all corresponding resources
                     </DialogDescription>
-                    <Auth 
-                        supabaseClient={supabase} 
-                        appearance={{ 
-                          theme: ThemeSupa,
-                          variables: {
-                            default: {
-                              colors: {
-                                brand: '#0C58E4',
-                                brandAccent: '#0846b8',
-                              }
+                    <Auth
+                      supabaseClient={supabase}
+                      appearance={{
+                        theme: ThemeSupa,
+                        variables: {
+                          default: {
+                            colors: {
+                              brand: '#0C58E4',
+                              brandAccent: '#0846b8',
                             }
                           }
-                        }} 
-                        providers={['google', 'discord']} 
-                        redirectTo={typeof window !== 'undefined' ? window.location.href : undefined}
-                      />
+                        }
+                      }}
+                      providers={['google', 'discord']}
+                      redirectTo={typeof window !== 'undefined' ? window.location.href : undefined}
+                    />
                   </DialogHeader>
                 </DialogContent>
-              </Dialog>    
+              </Dialog>
             </>
           ) : (
             <>
-              
-              {session.user?.user_metadata?.avatar_url ? <img className='border-[#1871F2] p-0.5 border-2 rounded-full w-10 h-10' src={session.user?.user_metadata?.avatar_url}/>: <span className="text-[#0C58E4] tracking-[-0.5px] font-semibold px-3 py-1 rounded hidden lg:block">{session.user?.email}</span>}
-              
+
+              {session.user?.user_metadata?.avatar_url ? <img className='border-[#1871F2] p-0.5 border-2 rounded-full w-10 h-10' src={session.user?.user_metadata?.avatar_url} alt="User Avatar" /> : <span className="text-[#0C58E4] tracking-[-0.5px] font-semibold px-3 py-1 rounded hidden lg:block">{session.user?.email}</span>}
+
               <button
                 className="text-[#0C58E4] cursor-pointer tracking-[-0.5px] font-semibold px-3 py-1 rounded transition hover:underline"
                 onClick={handleLogout}
@@ -389,7 +410,7 @@ function Home(props) {
           )}
         </div>
       </nav>
-      
+
       {/* Login Success Popup */}
       {showLoginPopup && (
         <div className="fixed top-6 left-1/2 transform -translate-x-1/2 z-50">
@@ -428,7 +449,7 @@ function Home(props) {
           `}</style>
         </div>
       )}
-      
+
       {/* Custom Sidebar - Slide-in from left */}
       {/* Scroll Ability */}
       <div data-sidebar={sidebarOpen ? 'open' : 'closed'} className={`sidebarWheel overflow-y-scroll overscroll-none fixed top-0 left-0 h-full bg-white z-50 flex flex-col shadow-lg transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 ease-in-out`} style={{ width: '300px', minWidth: '300px' }}>
@@ -449,7 +470,7 @@ function Home(props) {
             <svg className="w-6 h-6 text-[#153064]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
-          </button>          
+          </button>
         </div>
         {/* Choose your exam board header */}
         <h2 className="text-lg font-semibold tracking-[-1px] text-[#0C58E4] mb-6 px-6" style={{ fontFamily: 'Poppins, sans-serif' }}>
@@ -510,7 +531,8 @@ function Home(props) {
               subjects.map((subject) => (
                 <Link
                   key={subject}
-                  href={`/subjects/${subject.toLowerCase()}`}
+                  // Apply toKebabCase here for sidebar subjects
+                  href={`/subjects/${toKebabCase(subject)}`}
                   className="block px-4 py-2 text-[#000000] tracking-[-0.5px] cursor-pointer hover:bg-[#BAD1FD] rounded transition-colors duration-200"
                   style={{ fontFamily: 'Poppins, sans-serif' }}
                   onClick={() => {
@@ -531,4 +553,4 @@ function Home(props) {
     </main>
   );
 };
-export {Home}
+export { Home }

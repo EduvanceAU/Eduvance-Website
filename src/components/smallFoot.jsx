@@ -53,13 +53,13 @@ export default function SmallFoot() {
       </div>
       {/* Blue strip at the bottom */}
       <div className="w-full bg-[#357BFD] text-white text-center py-3 mt-8 text-sm font-medium flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 px-4" style={{ fontFamily: 'Poppins, sans-serif' }}>
-        <span className="block text-left font-grand-local">
+        <span className="block text-left font-grand-small">
           Eduvance.au is a student-led initiative non-commercial organisation and not yet a registered business entity.
         </span>
         <span className="flex flex-col sm:flex-row gap-2 sm:gap-4 justify-center items-center">
-          <Link href="/guidelines" className="hover:underline font-grand-local text-white">Community Guidelines</Link>
-          <Link href="/terms" className="hover:underline font-grand-local text-white">Terms of Service</Link>
-          <Link href="/privacy" className="hover:underline font-grand-local text-white">Privacy Policy</Link>
+          <Link href="/guidelines" className="hover:underline font-grand-small text-white">Community Guidelines</Link>
+          <Link href="/terms" className="hover:underline font-grand-small text-white">Terms of Service</Link>
+          <Link href="/privacy" className="hover:underline font-grand-small text-white">Privacy Policy</Link>
         </span>
       </div>
     </footer>

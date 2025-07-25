@@ -118,9 +118,15 @@ Community Feedback :
    ✔ Add a like/dislike system for the eduvance resources and community notes @done(25-07-17 12:26)
 
    ✔ Update the supabase client scripts for bug fixes (side bar subjects + past paper fetch) @done(25-07-24 12:34)
-   ☐ Update study tools general pages for subject navigation
+   ✔ Update study tools general pages for subject navigation @done(25-07-25 15:47)
    ✔ Update dscord button transition animations @done(25-07-24 12:02)
    ☐ Change in landing page headline (Advancing in Education with Eduvance)
+
+   ✔ Update code for eduvance notes fetch and fix error @done(25-07-25 15:47)
+   ✔ Revert back to old resources page navigation @done(25-07-25 14:42)
+   ✔ Update design for IAL and IGCSE subject pages @done(25-07-25 15:47)
+   ✔ Update links to use kebab case and ensure working subject links @done(25-07-25 14:46)
+   ✔ Add footer to all subject pages @done(25-07-25 14:42)
 
 Systems Todo:
    ✔ Update Admin Console UI for extra information (revert) @done(25-07-09 12:05)

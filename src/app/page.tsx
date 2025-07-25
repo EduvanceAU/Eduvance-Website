@@ -157,9 +157,9 @@ export default function Main() {
               Find materials and tools for your Exam Board and Subject
             </h3>
 
-            <Link href="/studyTools" className="inline-block mt-6">
+            <Link href="/resources" className="inline-block mt-6">
               <button className="cursor-pointer bg-[#2D74F8] hover:bg-[#143166] text-[#FFFFFF] px-6 py-2 rounded-[50px] text-xl poppins-semibold shadow-lg flex items-center gap-2">
-                Explore Study Tools
+                Explore Eduvance Resources
                 <Image src={ArrowR} alt="Arrow Right" className="w-6 h-auto" />
               </button>
             </Link>

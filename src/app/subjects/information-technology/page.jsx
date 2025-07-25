@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect, use } from 'react';
 import Link from 'next/link';
+import SmallFoot from '@/components/smallFoot.jsx';
 
 export default function Subject({ searchParams }) {
   const subjectName = 'Information Technology';
@@ -168,6 +169,7 @@ export default function Subject({ searchParams }) {
           </div>
         </main>
       </div>
+      <SmallFoot />
     </>
   );
 }
