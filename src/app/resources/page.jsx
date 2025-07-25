@@ -69,7 +69,7 @@ export default function Resources() {
       {/* Right Side */}
       <div className="w-full flex flex-col items-start justify-center gap-6 px-10 py-4">
         <h1 className="text-4xl font-semibold leading-[40px] tracking-tighter" style={{ fontFamily: 'Poppins, sans-serif' }}>
-          Browse <span className="bg-[#B8D0FD] py-[1.5] px-1 -rotate-1 inline-block">Resources</span> by Subject
+          Browse Revision <span className="bg-[#B8D0FD] py-[1.5] px-1 -rotate-1 inline-block">Resources</span> by Subject
         </h1>
 
         <div className="grid grid-cols-1 min-[849px]:grid-cols-2 gap-4 w-full">
@@ -80,7 +80,7 @@ export default function Resources() {
                   className="text-xl font-[550] text-[#153064] text-left"
                   style={{ fontFamily: "Poppins, sans-serif" }}
                 >
-                  {subject.name} <span className="hidden sm:inline">Revision Resources</span>
+                  {subject.name} <span className="hidden sm:inline"></span>
                 </p>
                 <img
                   src="/BArrowR.svg"

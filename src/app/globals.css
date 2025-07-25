@@ -88,6 +88,11 @@
   letter-spacing: -2px;
 }
 
+.font-grand-small {
+  font-family: 'GrandstanderLocal', cursive;
+  letter-spacing: -0.5px;
+}
+
 @keyframes scroll-up {
   0% {
     transform: translateY(0%);
