@@ -1,5 +1,5 @@
 const subjectName = 'Information Technology';
-const examCode = 'INF';
+const examCode = '4IT1';
 const syllabusType = 'IGCSE';
 const refName = subjectName;
 const refsyllabusType = syllabusType;
