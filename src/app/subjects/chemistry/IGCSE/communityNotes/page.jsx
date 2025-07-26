@@ -216,9 +216,12 @@ export default function IGCSECommunityNotesPage() {
       <main className="min-h-screen bg-white flex flex-col items-center justify-start py-10 m-10">
         <div className="w-full max-w-5xl px-4">
           {/* AVAILABILITY SIGN - UNBLURRED */}
-          <div className="w-full mb-6 p-4 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 rounded relative z-10">
-            <strong>Notice:</strong> Notes are not currently available.
-          </div>
+          <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-xs animate-fade-in bg-black/10">
+            <div className="flex items-center flex-col justify-center bg-white rounded-xl mx-5 p-10 text-center">
+              <span className="flex items-center justify-center gap-2 flex-wrap sm:flex-nowrap"><Frown className="stroke-[#1A69FA]"/> <p>Eduvance Notes are unavailable at the moment</p></span>
+              <p>Keep an eye out on our Discord Server for the release date!</p>
+            </div>
+          </div>  
           
           {/* BLURRED CONTENT WRAPPER */}
           <div className="blur-sm pointer-events-none select-none">
