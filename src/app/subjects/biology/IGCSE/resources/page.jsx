@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { createClient } from '@supabase/supabase-js';
-import { useRouter } from 'next/router'; // Import useRouter for dynamic routes
+import { useParams } from 'next/navigation';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -25,6 +25,8 @@ const SubjectButtons = () => {
         .eq('syllabus_type', 'IGCSE');
       if (!error && data) {
         setSubjects(data.map(subj => subj.name));
+      } else if (error) {
+        console.error('SubjectButtons: Error fetching subjects:', error.message);
       }
     }
     fetchSubjects();
@@ -47,18 +49,19 @@ const SubjectButtons = () => {
 };
 
 export default function IGCSEResources() {
-  const router = useRouter();
-  const { slug } = router.query; // Get the slug from the URL
+  const params = useParams();
+  const { slug } = params;
 
   // State for dynamically fetched subject name and exam code
   const [subjectName, setSubjectName] = useState(null);
-  const [examCode, setExamCode] = useState(null);
+  const [examCode, setExamCode] = useState(null); // State to hold the dynamically fetched exam code
 
   const [units, setUnits] = useState([]);
   const [expandedUnits, setExpandedUnits] = useState({});
   const [unitResources, setUnitResources] = useState({});
   const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loadingSubject, setLoadingSubject] = useState(true);
+  const [loadingResources, setLoadingResources] = useState(false);
 
   const toggleUnit = (unit) => {
     setExpandedUnits(prev => ({
@@ -69,34 +72,40 @@ export default function IGCSEResources() {
 
   // --- NEW useEffect for fetching subjectName and examCode ---
   useEffect(() => {
-    // Only fetch if slug is available from the router
-    if (!slug) return;
+    if (!slug) {
+      setLoadingSubject(true);
+      return;
+    }
 
-    // Convert slug back to approximate subject name for fetching
-    // This assumes your subject names are just space-separated words
-    const decodedSubjectName = slug.replace(/-/g, ' ').split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+    const decodedSlug = Array.isArray(slug) ? slug[0] : slug;
+    const decodedSubjectName = decodedSlug.replace(/-/g, ' ').split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+
+    console.debug('fetchSubjectDetails: Decoded subject name from slug:', decodedSubjectName);
 
     async function fetchSubjectDetails() {
+      setLoadingSubject(true);
+      setError(null);
       try {
-        const { data, error } = await supabase
+        const { data, error: subjectError } = await supabase
           .from('subjects')
-          .select('name, code, units') // Select name, code, and units in one go
+          .select('name, code, units') // Select name, code, and units
           .eq('name', decodedSubjectName)
           .eq('syllabus_type', 'IGCSE')
           .single();
 
-        if (error) {
-          console.error('Error fetching subject details:', error.message);
-          setError(error);
+        if (subjectError) {
+          console.error('Error fetching subject details:', subjectError.message);
+          setError(subjectError);
           setSubjectName('N/A');
           setExamCode('N/A');
+          setUnits([]);
+          setLoadingSubject(false);
           return;
         }
 
         if (data) {
           setSubjectName(data.name);
           setExamCode(data.code || 'N/A'); // Set exam code, fallback to N/A
-          // Also set units here to avoid a duplicate fetch
           let fetchedUnits = data.units || [];
           fetchedUnits.sort((a, b) => {
             const getUnitNum = (u) => {
@@ -113,27 +122,33 @@ export default function IGCSEResources() {
             acc[unit.unit] = true;
             return acc;
           }, {}));
+          setLoadingSubject(false);
         } else {
           setError(new Error(`Subject "${decodedSubjectName}" not found.`));
           setSubjectName('N/A');
           setExamCode('N/A');
+          setUnits([]);
+          setLoadingSubject(false);
         }
       } catch (err) {
         console.error('An unexpected error occurred while fetching subject details:', err);
         setError(new Error('Failed to load subject details.'));
         setSubjectName('N/A');
         setExamCode('N/A');
+        setUnits([]);
+        setLoadingSubject(false);
       }
     }
     fetchSubjectDetails();
-  }, [slug]); // Re-run when the slug changes
+  }, [slug]);
 
-  // Fetch resources based on the fetched subjectName
   useEffect(() => {
-    // Only proceed if subjectName is available (meaning details have been fetched)
-    if (!subjectName || !examCode) return; // Wait for both subjectName and examCode to be set
+    if (!subjectName || error || loadingSubject) {
+      if (!loadingSubject) setLoadingResources(false);
+      return;
+    }
 
-    setLoading(true);
+    setLoadingResources(true);
     const fetchResources = async () => {
       try {
         const { data: subjectData, error: subjectError } = await supabase
@@ -145,7 +160,7 @@ export default function IGCSEResources() {
 
         if (subjectError || !subjectData) {
           setError(subjectError || new Error(`Subject "biology" not found for resource fetching.`));
-          setLoading(false);
+          setLoadingResources(false);
           return;
         }
 
@@ -160,7 +175,7 @@ export default function IGCSEResources() {
 
         if (resourcesError) {
           setError(resourcesError);
-          setLoading(false);
+          setLoadingResources(false);
           return;
         }
 
@@ -188,18 +203,16 @@ export default function IGCSEResources() {
           });
         });
         setUnitResources(groupedResources);
-        setLoading(false);
-      } catch (error) {
-        setError(error);
-        setLoading(false);
+        setLoadingResources(false);
+      } catch (resourceFetchError) {
+        setError(resourceFetchError);
+        setLoadingResources(false);
       }
     };
     fetchResources();
-  }, [subjectName, examCode]); // Depend on subjectName and examCode to ensure they are fetched
+  }, [subjectName, error, loadingSubject]);
 
-  // --- Loading State for the entire page ---
-  // We are loading if subjectName or examCode are still null, or if resources are being fetched
-  if (!subjectName || !examCode || loading) {
+  if (loadingSubject || loadingResources) {
     return (
       <main className="min-h-screen bg-white flex items-center justify-center">
         <p className="text-xl text-gray-600">Loading resources...</p>
@@ -207,7 +220,6 @@ export default function IGCSEResources() {
     );
   }
 
-  // --- Error State for the entire page ---
   if (error) {
     return (
       <main className="min-h-screen bg-white flex items-center justify-center">
@@ -242,7 +254,7 @@ export default function IGCSEResources() {
           </div>
 
           {/* General Resources */}
-          {unitResources["General"] && (
+          {unitResources["General"] && Object.keys(unitResources["General"]).length > 0 && (
             <div className="cursor-pointer bg-white rounded-lg shadow-md mb-8 border border-gray-200 overflow-hidden">
               <div className="bg-gray-200 text-black tracking-tight p-4 text-left font-bold text-xl sm:text-2xl"
                   style={{ fontFamily: "Poppins, sans-serif" }}>
@@ -251,7 +263,7 @@ export default function IGCSEResources() {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
                 {unitResources["General"].map((resourceGroup, groupIndex) => (
                   resourceGroup.links.map((link, linkIndex) => (
-                    <Link key={groupIndex + '-' + linkIndex} href={link.url} style={{ fontFamily: 'Poppins, sans-serif' }}>
+                    <Link key={groupIndex + '-' + linkIndex} href={link.url} target="_blank" rel="noopener noreferrer" style={{ fontFamily: 'Poppins, sans-serif' }}>
                       <div className="cursor-pointer flex flex-col p-5 border h-fit border-gray-200 rounded-2xl shadow-md bg-white hover:shadow-xl transition-shadow duration-200 group sm:min-h-[120px] sm:min-w-[300px]" style={{ position: 'relative' }}>
                         {link.name && (<p className="text-xl font-bold text-[#153064]">{link.name}</p>)}
                         {link.description && (
@@ -259,7 +271,7 @@ export default function IGCSEResources() {
                         )}
                         <div className="flex flex-col justify-end items-end">
                           {resourceGroup.heading && (<div className="cursor-pointer mt-1 text-xs font-semibold tracking-tight uppercase w-fit px-2 py-0.5 text-green-400 ring ring-green-400 rounded-md hover:bg-green-400 hover:text-white transition-colors">{resourceGroup.heading}</div>)}
-                          {link.last && (<p className="text-xs text-gray-600 mt-1 text-right">{link.contributor ? "Shared On ": "Shared On "}{new Date(link.last).toLocaleString(undefined, {year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'})}</p>)}
+                          {link.last && (<p className="text-xs text-gray-600 mt-1 text-right">{link.contributor ? `Shared by ${link.contributor} on `: "Shared on "}{new Date(link.last).toLocaleString(undefined, {year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'})}</p>)}
                         </div>
                         <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                           <svg width="22" height="22" fill="none" stroke="#1A69FA" strokeWidth="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
@@ -273,36 +285,41 @@ export default function IGCSEResources() {
 
           {/* Unit-Based Resources */}
           {units.map((unitData) => (
-            <div key={unitData.unit} className="bg-white rounded-lg shadow-md mb-8 border border-gray-200 overflow-hidden">
-              <div className="bg-[#2871F9] cursor-pointer text-white tracking-tight p-4 text-left font-bold text-xl sm:text-2xl"
-                  style={{ fontFamily: "Poppins, sans-serif" }}
-                  onClick={() => toggleUnit(unitData.unit)}>
-                {unitData.name}
-              </div>
-              {expandedUnits[unitData.unit] && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 p-6">
-                  {(unitResources[unitData.unit] || []).map((resourceGroup, groupIndex) => (
-                    resourceGroup.links.map((link, linkIndex) => (
-                      <Link key={groupIndex + '-' + linkIndex} href={link.url} style={{ fontFamily: 'Poppins, sans-serif' }}>
-                      <div className="cursor-pointer flex flex-col p-5 border h-fit border-gray-200 rounded-2xl shadow-md bg-white hover:shadow-xl transition-shadow duration-200 group sm:min-h-[120px] sm:min-w-[300px]" style={{ position: 'relative' }}>
-                        {link.name && (<p className="text-xl font-bold text-[#153064]">{link.name}</p>)}
-                        {link.description && (
-                          <p className="text-sm text-gray-600 mt-2 border-l-4 mb-2 border-blue-600 pl-2">{link.description}</p>
-                        )}
-                        <div className="flex flex-col justify-end items-end">
-                          {resourceGroup.heading && (<div className="cursor-pointer mt-1 text-xs font-semibold tracking-tight uppercase w-fit px-2 py-0.5 text-green-400 ring ring-green-400 rounded-md hover:bg-green-400 hover:text-white transition-colors">{resourceGroup.heading}</div>)}
-                          {link.last && (<p className="text-xs text-gray-600 mt-1 text-right">{link.contributor ? "Shared On ": "Shared On "}{new Date(link.last).toLocaleString(undefined, {year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'})}</p>)}
-                        </div>
-                        <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                          <svg width="22" height="22" fill="none" stroke="#1A69FA" strokeWidth="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                        </div>
-                      </div>
-                    </Link>))
-                  ))}
+            unitResources[unitData.unit] && Object.keys(unitResources[unitData.unit]).length > 0 && (
+              <div key={unitData.unit} className="bg-white rounded-lg shadow-md mb-8 border border-gray-200 overflow-hidden">
+                <div className="bg-[#2871F9] cursor-pointer text-white tracking-tight p-4 text-left font-bold text-xl sm:text-2xl"
+                    style={{ fontFamily: "Poppins, sans-serif" }}
+                    onClick={() => toggleUnit(unitData.unit)}>
+                  {unitData.name}
                 </div>
-              )}
-            </div>
+                {expandedUnits[unitData.unit] && (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 p-6">
+                    {(unitResources[unitData.unit] || []).map((resourceGroup, groupIndex) => (
+                      resourceGroup.links.map((link, linkIndex) => (
+                        <Link key={groupIndex + '-' + linkIndex} href={link.url} target="_blank" rel="noopener noreferrer" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                        <div className="cursor-pointer flex flex-col p-5 border h-fit border-gray-200 rounded-2xl shadow-md bg-white hover:shadow-xl transition-shadow duration-200 group sm:min-h-[120px] sm:min-w-[300px]" style={{ position: 'relative' }}>
+                          {link.name && (<p className="text-xl font-bold text-[#153064]">{link.name}</p>)}
+                          {link.description && (
+                            <p className="text-sm text-gray-600 mt-2 border-l-4 mb-2 border-blue-600 pl-2">{link.description}</p>
+                          )}
+                          <div className="flex flex-col justify-end items-end">
+                            {resourceGroup.heading && (<div className="cursor-pointer mt-1 text-xs font-semibold tracking-tight uppercase w-fit px-2 py-0.5 text-green-400 ring ring-green-400 rounded-md hover:bg-green-400 hover:text-white transition-colors">{resourceGroup.heading}</div>)}
+                            {link.last && (<p className="text-xs text-gray-600 mt-1 text-right">{link.contributor ? `Shared by ${link.contributor} on `: "Shared on "}{new Date(link.last).toLocaleString(undefined, {year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'})}</p>)}
+                          </div>
+                          <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                            <svg width="22" height="22" fill="none" stroke="#1A69FA" strokeWidth="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                          </div>
+                        </div>
+                      </Link>))
+                    ))}
+                  </div>
+                )}
+              </div>
+            )
           ))}
+          {Object.keys(unitResources).length === 0 && !loadingSubject && !loadingResources && !error && (
+            <p className="text-gray-500 text-center py-4">No resources available for this subject yet.</p>
+          )}
         </div>
       </main>
       <SmallFoot />

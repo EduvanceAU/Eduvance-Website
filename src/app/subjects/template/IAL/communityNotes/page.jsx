@@ -8,9 +8,7 @@ import SmallFoot from '@/components/smallFoot.jsx';
 import { Auth } from '@supabase/auth-ui-react';
 import { ThemeSupa } from '@supabase/auth-ui-shared';
 import {Frown} from 'lucide-react'
-
-// You might need useRouter to get the subjectName dynamically from the URL
-// import { useRouter } from 'next/router';
+import { useParams } from 'next/navigation'; // Import useParams
 
 const SubjectButtons = () => {
   const [subjects, setSubjects] = useState([]);
@@ -71,19 +69,17 @@ function LikeDislikeButtons({ noteId, likeCount = 0, dislikeCount = 0, userVote,
 function clamp(n) { return n < 0 ? 0 : n; }
 
 export default function IALCommunityNotesPage() {
-  // IMPORTANT: This 'subjectName' should ideally come from Next.js dynamic routes or props
-  // For example, if your file is `pages/subjects/[slug]/IAL/communityNotes.js`:
-  // const router = useRouter();
-  // const { slug } = router.query;
-  // const subjectName = slug ? slug.replace(/-/g, ' ').split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ') : null;
-  // For now, it's a static placeholder:
-  const subjectName = '{subjectName}'; // <<< CHANGE THIS TO BE DYNAMIC BASED ON YOUR ROUTING
+  const params = useParams(); // Get params from the URL
+  const { slug } = params; // Extract the slug
+
+  // Derive subjectName from slug
+  const [subjectName, setSubjectName] = useState(null); // Initialize as null
+  const [examCode, setExamCode] = useState(null); // State to hold the fetched exam code
 
   const { session, user, loading: authLoading } = useSupabaseAuth();
   const [units, setUnits] = useState([]);
   const [expandedUnits, setExpandedUnits] = useState({});
   const [unitNotes, setUnitNotes] = useState({});
-  // Track user votes per note (noteId: 'like' | 'dislike' | null)
   const [userVotes, setUserVotes] = useState(() => {
     if (typeof window !== 'undefined') {
       const votes = localStorage.getItem('community_note_votes');
@@ -93,7 +89,7 @@ export default function IALCommunityNotesPage() {
   });
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [examCode, setExamCode] = useState(null); // State to hold the fetched exam code
+
 
   const toggleUnit = (unit) => {
     setExpandedUnits(prev => ({
@@ -102,48 +98,57 @@ export default function IALCommunityNotesPage() {
     }));
   };
 
-  // --- NEW useEffect for fetching examCode ---
+  // Effect to derive subjectName from slug and then fetch examCode
   useEffect(() => {
-    // Only fetch if subjectName is defined and auth is not loading
-    if (!subjectName || authLoading) return;
+    if (!slug) {
+      setLoading(true); // Still loading if no slug yet
+      return;
+    }
 
-    async function fetchExamCode() {
+    // Convert slug back to approximate subject name for fetching
+    const decodedSlug = Array.isArray(slug) ? slug[0] : slug;
+    const derivedSubjectName = decodedSlug.replace(/-/g, ' ').split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+    setSubjectName(derivedSubjectName); // Set the subject name state
+
+    async function fetchExamCodeForSubject() {
+      setLoading(true); // Set loading while fetching subject details and exam code
+      setError(null);
       try {
         const { data, error } = await supabase
           .from('subjects')
           .select('code') // Select only the 'code' column
-          .eq('name', subjectName) // Filter by the subject's name
+          .eq('name', derivedSubjectName) // Filter by the derived subject's name
           .eq('syllabus_type', 'IAL') // And syllabus type
           .single(); // Expecting only one row
 
         if (error) {
           console.error('Error fetching exam code:', error.message);
-          setError(error); // Propagate error to component state
-          setExamCode('N/A'); // Fallback for display if error occurs
+          setError(error);
+          setExamCode('N/A');
+          setLoading(false);
           return;
         }
 
         if (data && data.code) {
-          setExamCode(data.code); // Set the fetched code
+          setExamCode(data.code);
         } else {
-          // Subject found but no code, or no subject found
           setExamCode('N/A');
-          console.warn(`Subject "${subjectName}" not found or has no associated exam code.`);
+          console.warn(`Subject "${derivedSubjectName}" not found or has no associated exam code.`);
         }
+        setLoading(false); // Finished loading subject details and exam code
       } catch (err) {
         console.error('An unexpected error occurred while fetching exam code:', err);
         setError(new Error('Failed to load exam code.'));
         setExamCode('N/A');
+        setLoading(false);
       }
     }
-    fetchExamCode();
-  }, [subjectName, authLoading]); // Re-run when subjectName or authLoading changes
+    fetchExamCodeForSubject();
+  }, [slug]); // Re-run when the slug changes
 
-
-  // Fetch units from subject table
+  // Fetch units from subject table (now depends on subjectName being set)
   useEffect(() => {
-    // Wait for auth to finish loading and examCode to be set (implies subject data is ready)
-    if (authLoading || !examCode) return;
+    if (!subjectName || authLoading) return; // Wait for subjectName to be set and auth to load
 
     const fetchUnits = async () => {
       const { data: subjectData, error: subjectError } = await supabase
@@ -153,11 +158,10 @@ export default function IALCommunityNotesPage() {
         .eq('syllabus_type', 'IAL')
         .single();
       if (subjectError || !subjectData) {
-        setError(subjectError || new Error('Subject "{subjectName}" not found.'));
+        setError(subjectError || new Error(`Subject "${subjectName}" not found for units.`));
         return;
       }
       let fetchedUnits = subjectData.units || [];
-      // Sort by unit number if possible, fallback to name
       fetchedUnits.sort((a, b) => {
         const getUnitNum = (u) => {
           const match = (u.unit || '').match(/Unit\s*(\d+)/i);
@@ -175,17 +179,16 @@ export default function IALCommunityNotesPage() {
       }, {}));
     };
     fetchUnits();
-  }, [authLoading, subjectName, examCode]); // Added examCode and subjectName as dependencies
+  }, [authLoading, subjectName]); // Depend on subjectName
 
-
+  // Fetch notes (now depends on subjectName being set)
   useEffect(() => {
-    // Wait for auth to finish loading and examCode to be set
-    if (authLoading || !examCode) return;
+    if (!subjectName || authLoading) return; // Wait for subjectName to be set and auth to load
 
     async function fetchNotes() {
       setLoading(true);
       setError(null);
-      // Get subject id for {subjectName} IAL
+      // Get subject id for subjectName IAL
       const { data: subjectData, error: subjectError } = await supabase
         .from('subjects')
         .select('id')
@@ -193,7 +196,7 @@ export default function IALCommunityNotesPage() {
         .eq('syllabus_type', 'IAL')
         .single();
       if (subjectError || !subjectData) {
-        setError(subjectError || new Error('Subject "{subjectName}" not found.'));
+        setError(subjectError || new Error(`Subject "${subjectName}" not found for notes.`));
         setLoading(false);
         return;
       }
@@ -234,10 +237,11 @@ export default function IALCommunityNotesPage() {
       setLoading(false);
     }
     fetchNotes();
-  }, [session, authLoading, subjectName, examCode]); // Added subjectName and examCode as dependencies
+  }, [session, authLoading, subjectName]); // Depend on subjectName
+
 
   // Render loading state if auth is still loading, or if notes/examCode are not yet fetched
-  if (authLoading || loading || !examCode) { // Added !examCode to the loading condition
+  if (authLoading || loading || !subjectName || !examCode) { // Ensure subjectName and examCode are available
     return (
       <main className="min-h-screen bg-white flex items-center justify-center">
         <p className="text-xl text-gray-600">Loading Eduvance notes...</p>
@@ -301,7 +305,7 @@ export default function IALCommunityNotesPage() {
             </div>
 
             <h3
-              className="text-sm sm:text-md lg:text-lg font-[500] leading-6 text-[#707070] mb-8 text-left tracking-[-0.015em]"
+              className="text-sm sm:text-md lg:text-lg font-[500] leading-6 text-[#707070] mb-8 text-left max-w-4xl tracking-[-0.015em]"
               style={{ fontFamily: "Poppins, sans-serif" }}
             >
               Explore our collection of Edexcel A Level {subjectName} community-contributed resources, including detailed notes, explanations, and revision tips. These resources are perfect for deepening your understanding, clarifying tricky concepts, and supporting your study alongside past papers.

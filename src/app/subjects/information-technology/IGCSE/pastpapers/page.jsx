@@ -2,16 +2,10 @@
 
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
-import { createClient } from '@supabase/supabase-js'; // Use createClient here
-import { useRouter } from 'next/router'; // Use 'next/router' for useRouter in app directory components
-// Removed: import { useSupabaseAuth } from "@/components/client/SupabaseAuthContext"; // Not used in this specific component for authentication
+import { supabase } from "../../client/supabaseClient";
+import { useSupabaseAuth } from "@/components/client/SupabaseAuthContext";
+import { useRouter } from 'next/navigation';
 import SmallFoot from '@/components/smallFoot.jsx';
-
-// Initialize Supabase client
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-);
 
 const sessions = [
   { label: "January", value: "January" },
@@ -19,15 +13,16 @@ const sessions = [
   { label: "Oct/Nov", value: "Oct/Nov" },
 ];
 
-// Removed: const subjectName = 'Information Technology'; // Will be dynamic
-// Removed: const subjectSlug = subjectName.toLowerCase().replace(/\s+/g, '-'); // Will be derived from router
-// Removed: const examCode = '4IT1'; // Will be dynamic
+// At the top, define variables for subjectName and syllabusType
+const subjectName = 'Information Technology';
+// Remove subjectSlug as it's not needed for this approach
+// const subjectSlug = subjectName.toLowerCase().replace(/\s+/g, '-');
 
 const DISPLAY_START_YEAR = 2020;
 const DISPLAY_END_YEAR = 2024;
 const years = Array.from({ length: DISPLAY_END_YEAR - DISPLAY_START_YEAR + 1 }, (_, i) => DISPLAY_START_YEAR + i);
 
-// SubjectButtons component that fetches subjects dynamically
+// Add SubjectButtons component that fetches subjects dynamically
 const SubjectButtons = () => {
   const [subjects, setSubjects] = useState([]);
 
@@ -54,6 +49,8 @@ const SubjectButtons = () => {
   return (
     <div className="flex flex-wrap gap-2 mb-6">
       {subjects.map((name, index) => {
+        // Keep slug for the link for now, assuming your routing still uses it.
+        // If your folder system changes, you'll update this `href` accordingly.
         const slug = name.toLowerCase().replace(/\s+/g, '-');
         return (
           <Link key={index} href={`/subjects/${slug}/IGCSE/pastpapers`}>
@@ -95,20 +92,14 @@ const specs = [
 ];
 
 export default function IGCSEPastPapersPage() {
-  const router = useRouter();
-  const { slug } = router.query; // Get the slug from the URL
-
-  // State to hold dynamically fetched subjectName and examCode
-  const [subjectName, setSubjectName] = useState(null);
-  const [examCode, setExamCode] = useState(null);
-
   const [selectedUnits, setSelectedUnits] = useState([]);
   const [papers, setPapers] = useState([]);
   const [selectedYears, setSelectedYears] = useState([]);
   const [error, setError] = useState(null);
   const [units, setUnits] = useState([]);
   const [expandedUnits, setExpandedUnits] = useState({});
-  // const { session } = useSupabaseAuth(); // Commented out as session is not directly used here
+  const { session } = useSupabaseAuth();
+  const [examCode, setExamCode] = useState(''); // State to hold the dynamically fetched exam code
 
   const [showYearDropdown, setShowYearDropdown] = useState(false);
   const [showUnitDropdown, setShowUnitDropdown] = useState(false);
@@ -120,145 +111,105 @@ export default function IGCSEPastPapersPage() {
   const specDropdownRef = useRef(null);
   const pastPaperLinksContainerRef = useRef(null); // Ref for the main container of past paper links
 
-  // --- NEW useEffect for fetching subjectName, examCode, and units ---
-  useEffect(() => {
-    // Only fetch if slug is available from the router
-    if (!slug) return;
-
-    // Convert slug back to approximate subject name for fetching
-    // This assumes your subject names are just space-separated words (e.g., 'physics' -> 'Physics')
-    const decodedSubjectName = slug.replace(/-/g, ' ').split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
-    console.debug('fetchSubjectDetails: Decoded subject name from slug:', decodedSubjectName);
-
-    async function fetchSubjectDetails() {
-      setError(null); // Clear previous errors related to subject details
-      try {
-        const { data, error: subjectError } = await supabase
-          .from('subjects')
-          .select('name, code, units') // Select name, code, and units in one go
-          .eq('name', decodedSubjectName)
-          .eq('syllabus_type', 'IGCSE')
-          .single();
-
-        if (subjectError) {
-          console.error('Error fetching subject details:', subjectError.message);
-          setError(subjectError);
-          setSubjectName('N/A');
-          setExamCode('N/A');
-          setUnits([]);
-          return;
-        }
-
-        if (data) {
-          setSubjectName(data.name);
-          setExamCode(data.code || 'N/A'); // Set exam code, fallback to N/A
-          console.debug('fetchSubjectDetails: Successfully fetched subject name and exam code:', data.name, data.code);
-
-          // Process and set units
-          let fetchedUnits = data.units || [];
-          fetchedUnits.sort((a, b) => {
-            const getUnitNum = (u) => {
-              const match = (u.unit || '').match(/Unit\s*(\d+)/i);
-              return match ? parseInt(match[1], 10) : Number.MAX_SAFE_INTEGER;
-            };
-            const numA = getUnitNum(a);
-            const numB = getUnitNum(b);
-            if (numA !== numB) return numA - numB;
-            return (a.name || '').localeCompare(b.name || '');
-          });
-          setUnits(fetchedUnits);
-          setExpandedUnits(fetchedUnits.reduce((acc, unit) => {
-            acc[unit.unit] = true;
-            return acc;
-          }, {}));
-          console.debug('fetchSubjectDetails: Successfully processed units:', fetchedUnits);
-        } else {
-          setError(new Error(`Subject "${decodedSubjectName}" not found.`));
-          setSubjectName('N/A');
-          setExamCode('N/A');
-          setUnits([]);
-          console.warn(`fetchSubjectDetails: No data returned for subject "${decodedSubjectName}".`);
-        }
-      } catch (err) {
-        console.error('An unexpected error occurred while fetching subject details:', err);
-        setError(new Error('Failed to load subject details.'));
-        setSubjectName('N/A');
-        setExamCode('N/A');
-        setUnits([]);
-      }
-    }
-    fetchSubjectDetails();
-  }, [slug]); // Re-run when the slug changes
-
   // Function to fetch papers
-  useEffect(() => {
-    // Only fetch papers if subjectName has been successfully set (meaning subject details are loaded)
-    if (!subjectName || !examCode || !router.isReady) { // Add router.isReady to ensure query params are parsed
-      console.debug('fetchPapers: Skipping fetch because subjectName/examCode not ready or router not ready.');
-      return;
-    }
+  const fetchPapers = async () => {
+    console.debug('fetchPapers: Attempting to fetch past papers...');
+    setError(null); // Clear any previous errors
 
-    const fetchPapersData = async () => {
-      console.debug('fetchPapers: Attempting to fetch past papers...');
-      setError(null); // Clear any previous errors
+    try {
+      // Fetch subject ID and CODE
+      const { data: subjectData, error: subjectError } = await supabase
+        .from('subjects')
+        .select('id, code') // Make sure to select 'code' here
+        .eq('name', subjectName)
+        .eq('syllabus_type', 'IGCSE')
+        .single();
 
-      try {
-        // We already have subjectName, so we just need its ID for filtering papers
-        const { data: subjectData, error: subjectError } = await supabase
-          .from('subjects')
-          .select('id')
-          .eq('name', subjectName)
-          .eq('syllabus_type', 'IGCSE')
-          .single();
-
-        if (subjectError || !subjectData) {
-          const errMsg = subjectError ? subjectError.message : `Subject ID for "information-technology" not found for papers.`;
-          setError(new Error(errMsg));
-          console.error('fetchPapers: Error fetching subject ID:', errMsg);
-          setPapers([]);
-          return;
-        }
-
-        const subjectId = subjectData.id;
-        console.debug('fetchPapers: Subject ID found for papers:', subjectId);
-
-        const { data, error: papersError } = await supabase
-          .from('papers')
-          .select(`
-            id,
-            unit_code,
-            question_paper_link,
-            mark_scheme_link,
-            examiner_report_link,
-            exam_sessions!inner ( session, year )
-          `)
-          .eq('subject_id', subjectId)
-          .order('unit_code', { ascending: true });
-
-        if (papersError) {
-          setError(papersError);
-          console.error('fetchPapers: Error fetching papers data:', papersError.message);
-        } else if (data && data.length > 0) {
-          setPapers(data);
-          console.debug('fetchPapers: Successfully fetched papers:', data);
-        } else {
-          setPapers([]); // Ensure papers array is empty if no data
-          console.warn('fetchPapers: No past papers found for the selected subject.');
-        }
-      } catch (err) {
-        console.error('fetchPapers: An unexpected error occurred during paper fetch:', err);
-        setError(new Error('An unexpected error occurred while fetching papers.'));
-      } finally {
-        // Set loading to false after papers are fetched or an error occurs
-        // This is crucial to prevent the 'Loading' message from persisting
-        // if this was managed by a higher-level `loading` state.
-        // For simplicity, this `useEffect` directly manages its loading aspect if needed,
-        // but the main component's loading state (`!subjectName || !examCode || loading`) handles overall.
+      if (subjectError || !subjectData) {
+        const errMsg = subjectError ? subjectError.message : `Subject "information-technology" not found.`;
+        setError(new Error(errMsg));
+        console.error('fetchPapers: Error fetching subject ID and code:', errMsg);
+        return;
       }
-    };
-    fetchPapersData();
-  }, [subjectName, examCode, router.isReady]); // Depend on subjectName, examCode, and router.isReady
 
+      const subjectId = subjectData.id;
+      setExamCode(subjectData.code || 'N/A'); // Set the exam code from the fetched data
+      console.debug('fetchPapers: Subject ID found:', subjectId, 'Exam Code:', subjectData.code);
+
+      const { data, error: papersError } = await supabase
+        .from('papers')
+        .select(`
+          id,
+          unit_code,
+          question_paper_link,
+          mark_scheme_link,
+          examiner_report_link,
+          exam_sessions!inner ( session, year )
+        `)
+        .eq('subject_id', subjectId)
+        .order('unit_code', { ascending: true });
+
+      if (papersError) {
+        setError(papersError);
+        console.error('fetchPapers: Error fetching papers data:', papersError.message);
+      } else if (data && data.length > 0) {
+        setPapers(data);
+        console.debug('fetchPapers: Successfully fetched papers:', data);
+      } else {
+        setPapers([]); // Ensure papers array is empty if no data
+        console.warn('fetchPapers: No past papers found for the selected subject.');
+      }
+    } catch (err) {
+      console.error('fetchPapers: An unexpected error occurred during paper fetch:', err);
+      setError(new Error('An unexpected error occurred while fetching papers.'));
+    }
+  };
+
+  // Function to fetch units
+  const fetchUnits = async () => {
+    console.debug('fetchUnits: Attempting to fetch units...');
+    try {
+      const { data: subjectData, error: subjectError } = await supabase
+        .from('subjects')
+        .select('units')
+        .eq('name', subjectName)
+        .eq('syllabus_type', 'IGCSE')
+        .single();
+
+      if (subjectError || !subjectData) {
+        const errMsg = subjectError ? subjectError.message : `Subject "information-technology" not found for units.`;
+        setError(new Error(errMsg));
+        console.error('fetchUnits: Error fetching subject units:', errMsg);
+        return;
+      }
+      let fetchedUnits = subjectData.units || [];
+      fetchedUnits.sort((a, b) => {
+        const getUnitNum = (u) => {
+          const match = (u.unit || '').match(/Unit\s*(\d+)/i);
+          return match ? parseInt(match[1], 10) : Number.MAX_SAFE_INTEGER;
+        };
+        const numA = getUnitNum(a);
+        const numB = getUnitNum(b);
+        if (numA !== numB) return numA - numB;
+        return (a.name || '').localeCompare(b.name || '');
+      });
+      setUnits(fetchedUnits);
+      setExpandedUnits(fetchedUnits.reduce((acc, unit) => {
+        acc[unit.unit] = true;
+        return acc;
+      }, {}));
+      console.debug('fetchUnits: Successfully fetched and processed units:', fetchedUnits);
+    } catch (err) {
+      console.error('fetchUnits: An unexpected error occurred during unit fetch:', err);
+      setError(new Error('An unexpected error occurred while fetching units.'));
+    }
+  };
+
+  // Initial data fetch for papers and units (and exam code)
+  useEffect(() => {
+    fetchPapers();
+    fetchUnits();
+  }, []); // Run once on mount
 
   // Effect to handle clicks outside the dropdowns to close them
   useEffect(() => {
@@ -288,11 +239,9 @@ export default function IGCSEPastPapersPage() {
         const paperLinks = pastPaperLinksContainerRef.current.querySelectorAll('.space-y-2 a');
         console.debug(`checkAndRefetchPastPapers: Found ${paperLinks.length} potential past paper links.`);
 
-        if (paperLinks.length === 0 && papers.length === 0 && !error && subjectName && examCode) {
+        if (paperLinks.length === 0 && papers.length === 0 && !error) {
           console.warn('checkAndRefetchPastPapers: No past paper links found in the DOM and no papers in state. Re-fetching papers...');
-          // Trigger re-fetch for papers explicitly if nothing showed up and no error
-          // This calls the `useEffect` above which will re-run `fetchPapersData`
-          setPapers([]); // Reset papers to trigger a re-fetch of data if needed
+          fetchPapers(); // Trigger re-fetch
         } else if (paperLinks.length > 0) {
           console.debug('checkAndRefetchPastPapers: Past paper links are displayed.');
         } else if (error) {
@@ -304,9 +253,8 @@ export default function IGCSEPastPapersPage() {
     };
 
     const timer = setTimeout(checkAndRefetchPastPapers, 1500); // 1.5 seconds delay
-
     return () => clearTimeout(timer); // Clean up the timer
-  }, [papers, error, subjectName, examCode]); // Re-run this effect when `papers` or `error` state changes, or subject info is ready
+  }, [papers, error]); // Re-run this effect when `papers` or `error` state changes
 
   // Toggle functions for the main filter buttons, also closing the other dropdowns
   const handleToggleYearDropdown = () => {
@@ -355,12 +303,7 @@ export default function IGCSEPastPapersPage() {
 
     // Unit filter
     if (selectedUnits.length > 0) {
-      // Find the unit code from the 'units' state (which has full unit details)
-      const selectedUnitCodes = selectedUnits.map(unitLabel => {
-        const unitObj = units.find(u => u.unit === unitLabel);
-        return unitObj ? unitObj.code : null;
-      }).filter(Boolean); // Filter out any nulls if unit not found
-
+      const selectedUnitCodes = selectedUnits.map(unitLabel => units.find(u => u.unit === unitLabel)?.code);
       if (!selectedUnitCodes.includes(paper.unit_code)) {
         includePaper = false;
       }
@@ -393,7 +336,7 @@ export default function IGCSEPastPapersPage() {
     const session = paper.exam_sessions?.session;
     const unitCode = paper.unit_code;
 
-    if (!year || !session || !unitCode) return acc; // Ensure all necessary keys exist
+    if (!year || !session) return acc;
 
     if (!acc[year]) acc[year] = {};
     if (!acc[year][session]) acc[year][session] = {};
@@ -402,27 +345,14 @@ export default function IGCSEPastPapersPage() {
   }, {});
   console.debug('Grouped papers:', groupedPapers);
 
-
-  // Overall Loading State for the component
-  // We're loading if router isn't ready, or subjectName/examCode haven't been fetched yet, or an error occurred during subject fetch
-  if (!router.isReady || !subjectName || !examCode || error) {
-    // If an error occurred during initial subject details fetch, display it
-    if (error) {
-      return (
-        <main className="min-h-screen bg-white flex items-center justify-center">
-          <p className="text-xl text-red-600">Error loading subject details: {error.message}</p>
-        </main>
-      );
-    }
-    // Otherwise, show generic loading
-    return (
+  return error ? (
+    <>
       <main className="min-h-screen bg-white flex items-center justify-center">
-        <p className="text-xl text-gray-600">Loading resources...</p>
+        <p className="text-xl text-red-600">Error loading past papers: {error.message}</p>
       </main>
-    );
-  }
-
-  return (
+      <SmallFoot />
+    </>
+  ) : (
     <>
       <main className="min-h-screen bg-white flex flex-col items-center justify-start py-10 m-10">
         <div className="w-full max-w-5xl px-4">
@@ -441,7 +371,7 @@ export default function IGCSEPastPapersPage() {
             }}
           >
             <span className="text-md font-medium text-black tracking-tight">
-              <span className="font-[501]">Exam code:</span> 4IT1 {/* This now uses the state */}
+              <span className="font-[501]">Exam code:</span> 4IT1
             </span>
           </div>
 
