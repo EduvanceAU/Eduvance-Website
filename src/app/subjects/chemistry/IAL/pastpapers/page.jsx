@@ -488,7 +488,7 @@ export default function IALPastPapersPage() {
                 >
                   Spec
                   {selectedSpec && (
-                    <span className="ml-2 text-xs bg-[#000000] text-white px-1.5 py-0.5 rounded-full">
+                    <span className="ml-2 text-xs bg-[#153064] text-white px-1.5 py-0.5 rounded-full">
                       {selectedSpec === 'new' ? 'New' : 'Old'}
                     </span>
                   )}

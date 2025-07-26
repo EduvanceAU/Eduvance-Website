@@ -7,7 +7,7 @@ import { useSupabaseAuth } from "@/components/client/SupabaseAuthContext";
 import SmallFoot from '@/components/smallFoot.jsx';
 import { Auth } from '@supabase/auth-ui-react';
 import { ThemeSupa } from '@supabase/auth-ui-shared';
-import {Frown} from 'lucide-react'
+
 const SubjectButtons = () => {
   const [subjects, setSubjects] = useState([]);
 
@@ -221,7 +221,7 @@ export default function IGCSECommunityNotesPage() {
               <span className="flex items-center justify-center gap-2 flex-wrap sm:flex-nowrap"><Frown className="stroke-[#1A69FA]"/> <p>Eduvance Notes are unavailable at the moment</p></span>
               <p>Keep an eye out on our Discord Server for the release date!</p>
             </div>
-          </div> 
+          </div>  
           
           {/* BLURRED CONTENT WRAPPER */}
           <div className="blur-sm pointer-events-none select-none">
