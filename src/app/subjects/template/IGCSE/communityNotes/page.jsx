@@ -149,7 +149,7 @@ export default function IGCSECommunityNotesPage() {
         .from('community_resource_requests')
         .select('*, like_count, dislike_count')
         .eq('subject_id', subjectId)
-        .eq('is_approved', true)
+        .eq('approved', "Approved")
         .order('submitted_at', { ascending: false });
       if (notesError) {
         setError(notesError);
