@@ -52,6 +52,23 @@ export default function AdminDashboard() {
   const [modEditForm, setModEditForm] = useState({});
   const [modEditLoading, setModEditLoading] = useState(false);
 
+  // Helper function to get approval status display
+  const getApprovalStatus = (approved) => {
+    switch (approved) {
+      case 'Approved':
+        return { text: 'Approved', color: 'text-green-600', bgColor: 'bg-green-100' };
+      case 'Pending':
+        return { text: 'Pending', color: 'text-yellow-600', bgColor: 'bg-yellow-100' };
+      case 'Unapproved':
+        return { text: 'Unapproved', color: 'text-red-600', bgColor: 'bg-red-100' };
+      case null:
+      case undefined:
+        return { text: 'Not Set', color: 'text-gray-600', bgColor: 'bg-gray-100' };
+      default:
+        return { text: approved?.toString() || 'Unknown', color: 'text-gray-600', bgColor: 'bg-gray-100' };
+    }
+  };
+
   // Delete moderation item
   const handleModDelete = async (item) => {
     if (!supabaseClient) return;
@@ -197,7 +214,8 @@ export default function AdminDashboard() {
 
   const fetchUnapprovedResources = async () => {
     if (!supabaseClient) return;
-    const { data, error } = await supabaseClient.from('resources').select('*').eq('approved', false);
+    // Fetch resources with 'Pending' status for the approve section
+    const { data, error } = await supabaseClient.from('resources').select('*').eq('approved', "Pending");
     if (!error) setUnapprovedResources(data);
   };
 
@@ -209,13 +227,13 @@ export default function AdminDashboard() {
     setUnapprovedResources((prev) => 
       prev.map((res) => 
         res.id === id 
-          ? { ...res, approved: true, updated_at: currentTime }
+          ? { ...res, approved: "Approved", updated_at: currentTime }
           : res
       )
     );
     
     const { error } = await supabaseClient.from('resources').update({ 
-      approved: true,
+      approved: "Approved",
       updated_at: currentTime
     }).eq('id', id);
     
@@ -232,11 +250,51 @@ export default function AdminDashboard() {
       setUnapprovedResources((prev) => 
         prev.map((res) => 
           res.id === id 
-            ? { ...res, approved: false, updated_at: res.updated_at }
+            ? { ...res, approved: "Pending", updated_at: res.updated_at }
             : res
         )
       );
       setMessage(`Failed to approve resource: ${error.message}`);
+      setMessageType("error");
+    }
+  };
+
+  const rejectResource = async (id) => {
+    if (!supabaseClient) return;
+    const currentTime = new Date().toISOString();
+    
+    // Optimistically update the local state first
+    setUnapprovedResources((prev) => 
+      prev.map((res) => 
+        res.id === id 
+          ? { ...res, approved: "Unapproved", updated_at: currentTime }
+          : res
+      )
+    );
+    
+    const { error } = await supabaseClient.from('resources').update({ 
+      approved: "Unapproved",
+      updated_at: currentTime
+    }).eq('id', id);
+    
+    if (!error) {
+      // Remove from pending list after successful update
+      setTimeout(() => {
+        setUnapprovedResources((prev) => prev.filter((res) => res.id !== id));
+      }, 1000); // Show the rejected status for 1 second before removing
+      fetchLatestResources();
+      setMessage("❌ Resource rejected");
+      setMessageType("error");
+    } else {
+      // Revert the optimistic update if there was an error
+      setUnapprovedResources((prev) => 
+        prev.map((res) => 
+          res.id === id 
+            ? { ...res, approved: "Pending", updated_at: res.updated_at }
+            : res
+        )
+      );
+      setMessage(`Failed to reject resource: ${error.message}`);
       setMessageType("error");
     }
   };
@@ -310,7 +368,7 @@ export default function AdminDashboard() {
       subject_id: selectedSubjectId,
       unit_chapter_name: unitValue,
       uploaded_by_username: staffUsername,
-      approved: false
+      approved: "Approved" // Automatically set to Approved
     }).select();
     if (error) {
       setMessage(`Submission failed: ${error.message}`);
@@ -408,6 +466,7 @@ export default function AdminDashboard() {
       unit_chapter_name: resource.unit_chapter_name || '',
       resource_type: resource.resource_type || resource.resourceType || '',
       subject_id: resource.subject_id || '',
+      approved: resource.approved || 'Pending', // Add approved status to edit form
     });
     setShowEditModal(true);
   };
@@ -433,6 +492,7 @@ export default function AdminDashboard() {
       unit_chapter_name: editForm.unit_chapter_name,
       resource_type: editForm.resource_type,
       subject_id: editForm.subject_id,
+      approved: editForm.approved, // Include approved status in update
     }).eq('id', editResource.id);
     setEditLoading(false);
     if (error) {
@@ -484,7 +544,7 @@ export default function AdminDashboard() {
     // Count uploads and approvals per user
     const stats = staffUsers.map(user => {
       const uploads = resources.filter(r => r.uploaded_by_username === user.username);
-      const approved = uploads.filter(r => r.approved === true).length;
+      const approved = uploads.filter(r => r.approved === "Approved").length;
       return {
         username: user.username,
         email: user.email,
@@ -632,9 +692,10 @@ export default function AdminDashboard() {
             {activeTab === 'approve' && (
               <>
                 <div className="divide-y divide-blue-100">
-                  {unapprovedResources.length === 0 && <div className="text-gray-500 text-sm py-4">No unapproved resources 🎉</div>}
+                  {unapprovedResources.length === 0 && <div className="text-gray-500 text-sm py-4">No pending resources 🎉</div>}
                   {unapprovedResources.map((res) => {
                     const subject = subjects.find(sub => sub.id === res.subject_id);
+                    const approvalStatus = getApprovalStatus(res.approved);
                     return (
                       <div key={res.id} className="bg-gray-50 p-4 rounded-lg mb-3 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
                         <div className="w-full">
@@ -645,7 +706,7 @@ export default function AdminDashboard() {
                             <div><span className="font-semibold">Added by:</span> {res.uploaded_by_username || 'Unknown'}</div>
                             <div><span className="font-semibold">Subject:</span> {subject ? `${subject.name} (${subject.code}) - ${subject.syllabus_type}` : 'Unknown'}</div>
                             <div><span className="font-semibold">Suggested on:</span> {res.created_at ? new Date(res.created_at).toLocaleString() : 'Unknown'}</div>
-                            <div><span className="font-semibold">Status:</span> {res.approved ? <span className="text-green-600 font-semibold">Approved</span> : <span className="text-orange-600 font-semibold">Pending</span>}</div>
+                            <div><span className="font-semibold">Status:</span> <span className={`font-semibold px-2 py-1 rounded text-xs ${approvalStatus.bgColor} ${approvalStatus.color}`}>{approvalStatus.text}</span></div>
                             <div><span className="font-semibold">Last updated:</span> {res.updated_at ? new Date(res.updated_at).toLocaleString() : 'Unknown'}</div>
                           </div>
                           <div className='flex justify-start gap-2 text-xs'>
@@ -655,6 +716,7 @@ export default function AdminDashboard() {
                         </div>
                         <div className="flex space-x-2 sm:mt-2 md:mt-0">
                           <button onClick={() => approveResource(res.id)} className="cursor-pointer bg-green-500 hover:bg-green-600 transition text-white px-3 py-1 rounded-md flex items-center gap-1"><svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>Approve</button>
+                          <button onClick={() => rejectResource(res.id)} className="cursor-pointer bg-orange-500 hover:bg-orange-600 transition text-white px-3 py-1 rounded-md flex items-center gap-1"><svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>Reject</button>
                           <button onClick={() => openEditResource(res)} className="cursor-pointer bg-yellow-400 hover:bg-yellow-500 transition text-white px-3 py-1 rounded-md flex items-center gap-1"><svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#FFFFFF"><path d="M192-396v-72h288v72H192Zm0-150v-72h432v72H192Zm0-150v-72h432v72H192Zm336 504v-113l210-209q7.26-7.41 16.13-10.71Q763-528 771.76-528q9.55 0 18.31 3.5Q798.83-521 806-514l44 45q6.59 7.26 10.29 16.13Q864-444 864-435.24t-3.29 17.92q-3.3 9.15-10.71 16.32L641-192H528Zm288-243-45-45 45 45ZM576-240h45l115-115-22-23-22-22-116 115v45Zm138-138-22-22 44 45-22-23Z"/></svg>Edit</button>
                           <button onClick={() => deleteResource(res.id)} className="cursor-pointer bg-red-500 hover:bg-red-600 transition text-white px-3 py-1 rounded-md flex items-center gap-1"><svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>Delete</button>
                         </div>
@@ -754,6 +816,7 @@ export default function AdminDashboard() {
                     {modResults.length === 0 && <div className="text-gray-500 text-sm col-span-full">No results found.</div>}
                     {modResults.map((item) => {
                       const subject = subjects.find(sub => sub.id === item.subject_id);
+                      const approvalStatus = getApprovalStatus(item.approved);
                       return (
                         <div key={item.id} className="bg-blue-50 border border-blue-200 rounded-lg p-4 shadow-sm flex flex-col gap-2 relative">
                           <div className="font-bold text-blue-800 text-lg mb-1">{item.title}</div>
@@ -764,14 +827,18 @@ export default function AdminDashboard() {
                             <div><span className="font-semibold">Unit/Chapter:</span> {item.unit_chapter_name || 'General'}</div>
                             <div><span className="font-semibold">Type:</span> {item.resource_type}</div>
                             {modType === 'resource' ? (
-                              <><div><span className="font-semibold">Uploaded by:</span> {item.uploaded_by_username || 'Unknown'}</div>
-                              <div><span className="font-semibold">Created at:</span> {item.created_at ? new Date(item.created_at).toLocaleString() : 'Unknown'}</div></>
+                              <>
+                                <div><span className="font-semibold">Uploaded by:</span> {item.uploaded_by_username || 'Unknown'}</div>
+                                <div><span className="font-semibold">Created at:</span> {item.created_at ? new Date(item.created_at).toLocaleString() : 'Unknown'}</div>
+                                <div><span className="font-semibold">Status:</span> <span className={`font-semibold px-2 py-1 rounded text-xs ${approvalStatus.bgColor} ${approvalStatus.color}`}>{approvalStatus.text}</span></div>
+                              </>
                             ) : (
-                              <><div><span className="font-semibold">Contributor:</span> {item.contributor_name} ({item.contributor_email})</div>
-                              <div><span className="font-semibold">Submitted at:</span> {item.submitted_at ? new Date(item.submitted_at).toLocaleString() : 'Unknown'}</div>
-                              <div><span className="font-semibold">Likes:</span> {item.like_count || 0} &nbsp; <span className="font-semibold">Dislikes:</span> {item.dislike_count || 0}</div>
-                              <div><span className="font-semibold">Approved:</span> {item.is_approved ? 'Yes' : 'No'}</div>
-                              {item.rejection_reason && <div><span className="font-semibold">Rejection Reason:</span> {item.rejection_reason}</div>}
+                              <>
+                                <div><span className="font-semibold">Contributor:</span> {item.contributor_name} ({item.contributor_email})</div>
+                                <div><span className="font-semibold">Submitted at:</span> {item.submitted_at ? new Date(item.submitted_at).toLocaleString() : 'Unknown'}</div>
+                                <div><span className="font-semibold">Likes:</span> {item.like_count || 0} &nbsp; <span className="font-semibold">Dislikes:</span> {item.dislike_count || 0}</div>
+                                <div><span className="font-semibold">Approved:</span> {item.is_approved ? 'Yes' : 'No'}</div>
+                                {item.rejection_reason && <div><span className="font-semibold">Rejection Reason:</span> {item.rejection_reason}</div>}
                               </>
                             )}
                           </div>
@@ -826,6 +893,11 @@ export default function AdminDashboard() {
                         <option key={sub.id} value={sub.id}>{sub.name} ({sub.code}) - {sub.syllabus_type}</option>
                       ))}
                     </select>
+                    <select name="approved" value={editForm.approved} onChange={handleEditFormChange} className="cursor-pointer w-full p-2 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 transition">
+                      <option value="Approved">Approved</option>
+                      <option value="Pending">Pending</option>
+                      <option value="Unapproved">Unapproved</option>
+                    </select>
                       <button onClick={saveEditResource} disabled={editLoading} className="cursor-pointer w-full bg-blue-600 hover:bg-blue-700 transition text-white py-2 rounded-lg flex items-center justify-center gap-2 mt-2">{editLoading ? 'Saving...' : 'Save Changes'}</button> 
                   </div>
                 </div>
@@ -849,6 +921,16 @@ export default function AdminDashboard() {
                     <input name="unit_chapter_name" value={modEditForm.unit_chapter_name || ''} onChange={handleModEditFormChange} placeholder="Unit/Chapter" className="w-full border p-2 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 transition" />
                     <label className="block text-sm font-medium text-gray-700 mb-1 mt-2">Type</label>
                     <input name="resource_type" value={modEditForm.resource_type || ''} onChange={handleModEditFormChange} placeholder="Type" className="w-full border p-2 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 transition" />
+                    {modType === 'resource' && (
+                      <>
+                        <label className="block text-sm font-medium text-gray-700 mb-1 mt-2">Approval Status</label>
+                        <select name="approved" value={modEditForm.approved || 'Pending'} onChange={handleModEditFormChange} className="cursor-pointer w-full border p-2 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 transition">
+                          <option value="Approved">Approved</option>
+                          <option value="Pending">Pending</option>
+                          <option value="Unapproved">Unapproved</option>
+                        </select>
+                      </>
+                    )}
                     {modType === 'community' && (
                       <>
                         <h4 className="text-blue-600 font-semibold text-base mb-2 mt-4">Contributor Info</h4>
@@ -867,10 +949,11 @@ export default function AdminDashboard() {
             )}
             {latestResources.length > 0 && (
               <div className="mt-8">
-                <h2 className="text-xl font-semibold text-blue-700 mb-2 flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor"><path d="M263.72-96Q234-96 213-117.15T192-168v-384q0-29.7 21.15-50.85Q234.3-624 264-624h24v-96q0-79.68 56.23-135.84 56.22-56.16 136-56.16Q560-912 616-855.84q56 56.16 56 135.84v96h24q29.7 0 50.85 21.15Q768-581.7 768-552v384q0 29.7-21.16 50.85Q725.68-96 695.96-96H263.72Zm.28-72h432v-384H264v384Zm216.21-120Q510-288 531-309.21t21-51Q552-390 530.79-411t-51-21Q450-432 429-410.79t-21 51Q408-330 429.21-309t51 21ZM360-624h240v-96q0-50-35-85t-85-35q-50 0-85 35t-35 85v96Zm-96 456v-384 384Z"/></svg>Latest Approved Resources</h2>
+                <h2 className="text-xl font-semibold text-blue-700 mb-2 flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor"><path d="M263.72-96Q234-96 213-117.15T192-168v-384q0-29.7 21.15-50.85Q234.3-624 264-624h24v-96q0-79.68 56.23-135.84 56.22-56.16 136-56.16Q560-912 616-855.84q56 56.16 56 135.84v96h24q29.7 0 50.85 21.15Q768-581.7 768-552v384q0 29.7-21.16 50.85Q725.68-96 695.96-96H263.72Zm.28-72h432v-384H264v384Zm216.21-120Q510-288 531-309.21t21-51Q552-390 530.79-411t-51-21Q450-432 429-410.79t-21 51Q408-330 429.21-309t51 21ZM360-624h240v-96q0-50-35-85t-85-35q-50 0-85 35t-35 85v96Zm-96 456v-384 384Z"/></svg>Latest Resources</h2>
                 <div className="divide-y divide-blue-100">
                   {latestResources.map((res) => {
                     const subject = subjects.find(sub => sub.id === res.subject_id);
+                    const approvalStatus = getApprovalStatus(res.approved);
                     return (
                       <div key={res.id} className="bg-gray-50 p-4 rounded-lg mb-3 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
                         <div className="w-full">
@@ -881,7 +964,7 @@ export default function AdminDashboard() {
                             <div><span className="font-semibold">Added by:</span> {res.uploaded_by_username || 'Unknown'}</div>
                             <div><span className="font-semibold">Subject:</span> {subject ? `${subject.name} (${subject.code}) - ${subject.syllabus_type}` : 'Unknown'}</div>
                             <div><span className="font-semibold">Suggested on:</span> {res.created_at ? new Date(res.created_at).toLocaleString() : 'Unknown'}</div>
-                            <div><span className="font-semibold">Status:</span> {res.approved ? <span className="text-green-600 font-semibold">Approved</span> : <span className="text-orange-600 font-semibold">Pending</span>}</div>
+                            <div><span className="font-semibold">Status:</span> <span className={`font-semibold px-2 py-1 rounded text-xs ${approvalStatus.bgColor} ${approvalStatus.color}`}>{approvalStatus.text}</span></div>
                             <div><span className="font-semibold">Last updated:</span> {res.updated_at ? new Date(res.updated_at).toLocaleString() : 'Unknown'}</div>
                           </div>
                           <div className='flex justify-start gap-2 text-xs'>
