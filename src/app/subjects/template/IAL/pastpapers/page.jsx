@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
 import { createClient } from '@supabase/supabase-js'; // Use createClient here
-import { useRouter } from 'next/router'; // Use 'next/router' for useRouter in app directory components
+import { useRouter } from 'next/navigation';
 // Removed: import { useSupabaseAuth } from "@/components/client/SupabaseAuthContext"; // Not used in this specific component for authentication
 import SmallFoot from '@/components/smallFoot.jsx';
 
