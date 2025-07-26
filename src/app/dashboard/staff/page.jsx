@@ -191,7 +191,7 @@ export default function UploadResource() {
         subject_id: selectedSubjectId,
         unit_chapter_name: unitValue,
         uploaded_by_username: staffUsername,
-        approved: false
+        approved: "Pending"
       })
       .select();
     console.log('Insert data:', data, 'Insert error:', error);
@@ -223,7 +223,7 @@ export default function UploadResource() {
     const { data, error } = await supabaseClient
       .from('community_resource_requests')
       .select('*')
-      .eq('is_approved', false);
+      .eq('approved', "Unapproved");
     if (!error) setPendingResources(data);
   };
 
@@ -233,7 +233,7 @@ export default function UploadResource() {
     // Get the request
     const { data, error } = await supabaseClient
       .from('community_resource_requests')
-      .update({ is_approved: true, approved_at: new Date().toISOString(), approved_by: staffUsername })
+      .update({ approved: "Pending", approved_at: new Date().toISOString(), approved_by: staffUsername })
       .eq('id', id)
       .select()
       .single();
@@ -247,7 +247,7 @@ export default function UploadResource() {
         subject_id: data.subject_id,
         unit_chapter_name: data.unit_chapter_name,
         uploaded_by_username: data.contributor_name || data.contributor_email || 'Community',
-        approved: true
+        approved: "Pending"
       });
       // Remove from pending list
       setPendingResources((prev) => prev.filter((res) => res.id !== id));
