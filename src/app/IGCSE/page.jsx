@@ -29,7 +29,7 @@ const SubjectButtons = ({ subjects }) => {
       {subjects.map((name, index) => {
         const slug = toKebabCase(name); // Ensure slug is kebab-cased
         return (
-          <Link key={index} href={`/subjects/${slug}/`}>
+          <Link key={index} href={`/subjects/${slug}?choice=option2`}>
             <div className="cursor-pointer flex items-center justify-between px-6 w-full py-4 bg-[#BAD1FD] rounded-[12px] group hover:bg-[#A8C6FF] transition-all duration-200 border-[#153064] border-1">
               <p
                 className="text-xl font-[550] text-[#153064]"
