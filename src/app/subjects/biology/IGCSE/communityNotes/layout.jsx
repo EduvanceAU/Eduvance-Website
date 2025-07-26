@@ -1,5 +1,5 @@
 const subjectName = 'Biology';
-const examCode = 'BIO';
+const examCode = '4BI1';
 const syllabusType = 'IGCSE';
 const refName = subjectName;
 const refsyllabusType = syllabusType;

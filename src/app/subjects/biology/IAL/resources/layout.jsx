@@ -1,5 +1,5 @@
 const subjectName = 'Biology';
-const examCode = 'BIO';
+const examCode = 'OIB';
 const syllabusType = 'IAL';
 const refName = subjectName;
 const refsyllabusType = syllabusType;

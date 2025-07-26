@@ -1,5 +1,5 @@
 const subjectName = 'Computer Science';
-const examCode = 'COM';
+const examCode = '4CP0';
 const syllabusType = '';
 const refName = subjectName;
 const refsyllabusType = syllabusType;

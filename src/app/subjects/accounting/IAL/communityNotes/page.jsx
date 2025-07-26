@@ -2,12 +2,16 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { supabase } from "../lib/supabaseClient";
-import { useSupabaseAuth } from "@/components/client/SupabaseAuthContext";
+import { supabase } from "../lib/supabaseClient"; // Ensure this path is correct
+import { useSupabaseAuth } from "@/components/client/SupabaseAuthContext"; // Ensure this path is correct
 import SmallFoot from '@/components/smallFoot.jsx';
 import { Auth } from '@supabase/auth-ui-react';
 import { ThemeSupa } from '@supabase/auth-ui-shared';
 import {Frown} from 'lucide-react'
+
+// You might need useRouter to get the subjectName dynamically from the URL
+// import { useRouter } from 'next/router';
+
 const SubjectButtons = () => {
   const [subjects, setSubjects] = useState([]);
 
@@ -67,8 +71,14 @@ function LikeDislikeButtons({ noteId, likeCount = 0, dislikeCount = 0, userVote,
 function clamp(n) { return n < 0 ? 0 : n; }
 
 export default function IALCommunityNotesPage() {
-  const examCode = 'ACC';
-  const subjectName = 'Accounting';
+  // IMPORTANT: This 'subjectName' should ideally come from Next.js dynamic routes or props
+  // For example, if your file is `pages/subjects/[slug]/IAL/communityNotes.js`:
+  // const router = useRouter();
+  // const { slug } = router.query;
+  // const subjectName = slug ? slug.replace(/-/g, ' ').split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ') : null;
+  // For now, it's a static placeholder:
+  const subjectName = 'Accounting'; // <<< CHANGE THIS TO BE DYNAMIC BASED ON YOUR ROUTING
+
   const { session, user, loading: authLoading } = useSupabaseAuth();
   const [units, setUnits] = useState([]);
   const [expandedUnits, setExpandedUnits] = useState({});
@@ -83,6 +93,7 @@ export default function IALCommunityNotesPage() {
   });
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [examCode, setExamCode] = useState(null); // State to hold the fetched exam code
 
   const toggleUnit = (unit) => {
     setExpandedUnits(prev => ({
@@ -91,9 +102,49 @@ export default function IALCommunityNotesPage() {
     }));
   };
 
+  // --- NEW useEffect for fetching examCode ---
+  useEffect(() => {
+    // Only fetch if subjectName is defined and auth is not loading
+    if (!subjectName || authLoading) return;
+
+    async function fetchExamCode() {
+      try {
+        const { data, error } = await supabase
+          .from('subjects')
+          .select('code') // Select only the 'code' column
+          .eq('name', subjectName) // Filter by the subject's name
+          .eq('syllabus_type', 'IAL') // And syllabus type
+          .single(); // Expecting only one row
+
+        if (error) {
+          console.error('Error fetching exam code:', error.message);
+          setError(error); // Propagate error to component state
+          setExamCode('N/A'); // Fallback for display if error occurs
+          return;
+        }
+
+        if (data && data.code) {
+          setExamCode(data.code); // Set the fetched code
+        } else {
+          // Subject found but no code, or no subject found
+          setExamCode('N/A');
+          console.warn(`Subject "accounting" not found or has no associated exam code.`);
+        }
+      } catch (err) {
+        console.error('An unexpected error occurred while fetching exam code:', err);
+        setError(new Error('Failed to load exam code.'));
+        setExamCode('N/A');
+      }
+    }
+    fetchExamCode();
+  }, [subjectName, authLoading]); // Re-run when subjectName or authLoading changes
+
+
   // Fetch units from subject table
   useEffect(() => {
-    if (authLoading) return;
+    // Wait for auth to finish loading and examCode to be set (implies subject data is ready)
+    if (authLoading || !examCode) return;
+
     const fetchUnits = async () => {
       const { data: subjectData, error: subjectError } = await supabase
         .from('subjects')
@@ -124,10 +175,13 @@ export default function IALCommunityNotesPage() {
       }, {}));
     };
     fetchUnits();
-  }, [authLoading]);
+  }, [authLoading, subjectName, examCode]); // Added examCode and subjectName as dependencies
+
 
   useEffect(() => {
-    if (authLoading) return;
+    // Wait for auth to finish loading and examCode to be set
+    if (authLoading || !examCode) return;
+
     async function fetchNotes() {
       setLoading(true);
       setError(null);
@@ -180,29 +234,32 @@ export default function IALCommunityNotesPage() {
       setLoading(false);
     }
     fetchNotes();
-  }, [session, authLoading]);
+  }, [session, authLoading, subjectName, examCode]); // Added subjectName and examCode as dependencies
 
-  if (authLoading) {
+  // Render loading state if auth is still loading, or if notes/examCode are not yet fetched
+  if (authLoading || loading || !examCode) { // Added !examCode to the loading condition
     return (
       <main className="min-h-screen bg-white flex items-center justify-center">
-        <p className="text-xl text-gray-600">Loading...</p>
+        <p className="text-xl text-gray-600">Loading Eduvance notes...</p>
       </main>
     );
   }
 
+  // Handle authentication state
   if (!session) {
     return (
       <main className="min-h-screen bg-white flex flex-col items-center justify-center">
         <div className="w-full max-w-md p-8 bg-white rounded-lg shadow-md">
           <h2 className="text-2xl font-bold mb-4 text-center">Sign in to view Eduvance Notes</h2>
-          <Auth supabaseClient={supabase} appearance={{ theme: ThemeSupa }} providers={["google"]} 
-            redirectTo={typeof window !== 'undefined' ? window.location.href : undefined} 
+          <Auth supabaseClient={supabase} appearance={{ theme: ThemeSupa }} providers={["google"]}
+            redirectTo={typeof window !== 'undefined' ? window.location.href : undefined}
           />
         </div>
       </main>
     );
   }
 
+  // Handle error state
   if (error) {
     return (
       <main className="min-h-screen bg-white flex items-center justify-center">
@@ -221,7 +278,7 @@ export default function IALCommunityNotesPage() {
               <span className="flex items-center justify-center gap-2 flex-wrap sm:flex-nowrap"><Frown className="stroke-[#1A69FA]"/> <p>Eduvance Notes are unavailable at the moment</p></span>
               <p>Keep an eye out on our Discord Server for the release date!</p>
             </div>
-          </div>          
+          </div>
           {/* BLURRED CONTENT WRAPPER */}
           <div className="blur-sm pointer-events-none select-none">
             <h1
@@ -239,7 +296,7 @@ export default function IALCommunityNotesPage() {
               }}
             >
               <span className="text-md font-medium text-black tracking-tight">
-                <span className="font-[501]">Exam code:</span> ACC
+                <span className="font-[501]">Exam code:</span> ACC {/* This now uses the state */}
               </span>
             </div>
 
@@ -340,7 +397,7 @@ export default function IALCommunityNotesPage() {
                                 // Update userVotes
                                 setUserVotes((prev) => {
                                   const updated = { ...prev, [note.id]: type };
-                                  if (!type) delete updated[note.id];
+                                  if (!type) delete updated[note.id]; // Remove if unvoted
                                   if (typeof window !== 'undefined') {
                                     localStorage.setItem('community_note_votes', JSON.stringify(updated));
                                   }
