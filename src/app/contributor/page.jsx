@@ -3,6 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import { Home } from '@/components/homenav';
 import { supabase } from '@/lib/supabaseClient';
+import { Auth } from '@supabase/auth-ui-react'; // Import Auth UI
+import { ThemeSupa } from '@supabase/auth-ui-shared'; // Import ThemeSupa
 
 export default function ContributorUploadResource() {
   const [subjects, setSubjects] = useState([]);
@@ -17,11 +19,37 @@ export default function ContributorUploadResource() {
   const [resourceType, setResourceType] = useState('note');
   const [selectedSubjectId, setSelectedSubjectId] = useState('');
 
+  // State for user session and loading
+  const [session, setSession] = useState(null); // Changed to session to directly check login status
+  const [loadingUserSession, setLoadingUserSession] = useState(true); // Renamed for clarity
+
   const resourceCategories = [
     { value: 'note', label: 'Note' },
     { value: 'topic_question', label: 'Topic Questions' },
     { value: 'solved_papers', label: 'Solved Past Paper Questions' },
   ];
+
+  // Fetch current user session
+  useEffect(() => {
+    async function getSession() {
+      setLoadingUserSession(true);
+      const { data: { session } } = await supabase.auth.getSession();
+      setSession(session);
+      setLoadingUserSession(false);
+    }
+    getSession();
+
+    // Listen for auth state changes
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        setSession(session);
+      }
+    );
+
+    return () => {
+      authListener?.subscription.unsubscribe();
+    };
+  }, []);
 
   // Fetch subjects
   useEffect(() => {
@@ -51,36 +79,52 @@ export default function ContributorUploadResource() {
             return { ...sub, units };
           });
           setSubjects(sortedSubjects);
-          if (sortedSubjects?.[0]?.id) setSelectedSubjectId(sortedSubjects[0].id);
+          // Set initial selected subject if subjects are available and not already set
+          if (sortedSubjects.length > 0 && !selectedSubjectId) {
+            setSelectedSubjectId(sortedSubjects[0].id);
+          }
         }
         setLoadingSubjects(false);
       });
-  }, []);
+  }, [selectedSubjectId]); // Added selectedSubjectId as dependency to prevent re-selecting first subject
 
   // Resource upload handler
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Enforce login check here
+    if (!session || !session.user) {
+      setMessage("You must be logged in to submit a resource.");
+      setMessageType('error');
+      return;
+    }
+
     if (!title || !link || !selectedSubjectId || !resourceType) {
       setMessage("Fill all required fields");
       setMessageType('error');
       return;
     }
   
+    // Get contributor details from the session user
+    const currentUser = session.user; // Use session.user directly
+    const contributorName = currentUser?.user_metadata?.full_name || currentUser?.email;
+    const contributorEmail = currentUser?.email;
+
     const unitValue = unitChapter.trim() === '' ? 'General' : unitChapter.trim();
   
     const { error } = await supabase
       .from('community_resource_requests')
       .insert({
-        contributor_name: "Anonymous Contributor", // You can make this dynamic
-        contributor_email: "anonymous@example.com", // Optional input field can be added
+        contributor_name: contributorName,
+        contributor_email: contributorEmail,
         title,
         link,
         description,
         resource_type: resourceType,
         subject_id: selectedSubjectId,
         unit_chapter_name: unitValue,
-        is_approved: false,
-        submitter_ip: null, // can be handled via Supabase Edge Functions if needed
+        approved: "Unapproved",
+        submitted_at: new Date().toISOString(), // Add submitted_at timestamp
       });
   
     if (error) {
@@ -93,12 +137,48 @@ export default function ContributorUploadResource() {
     }
   };
 
+  // Show loading state if subjects or user session are still loading
+  if (loadingSubjects || loadingUserSession) {
+    return (
+      <div className="pt-20 pr-10 pl-10 pb-10 min-h-screen bg-blue-100 flex items-center justify-center" style={{ fontFamily: 'Poppins, sans-serif' }}>
+        <p className="text-xl text-gray-600">Loading...</p>
+      </div>
+    );
+  }
+
+  // If not logged in, show the Auth UI
+  if (!session) {
+    return (
+      <>
+        <Home showExtra/>
+        <div className="pt-20 pr-10 pl-10 pb-10 min-h-screen bg-blue-100 flex flex-col items-center justify-center" style={{ fontFamily: 'Poppins, sans-serif' }}>
+          <div className="bg-white rounded-xl shadow-lg max-w-md w-full p-8 tracking-[-0.025em] text-center">
+            <h2 className="text-2xl font-semibold text-gray-800 mb-6">You must be logged in to contribute.</h2>
+            <Auth
+              supabaseClient={supabase}
+              appearance={{ theme: ThemeSupa }}
+              providers={['google']}
+              redirectTo={typeof window !== 'undefined' ? window.location.href : undefined}
+            />
+          </div>
+        </div>
+      </>
+    );
+  }
+
   return (
     <>
       <Home showExtra/>
       <div className="pt-20 pr-10 pl-10 pb-10 min-h-screen bg-blue-100 flex items-center justify-center" style={{ fontFamily: 'Poppins, sans-serif' }}>
         <div className="bg-white rounded-xl shadow-lg max-w-md w-full p-8 tracking-[-0.025em]">
-          <h2 className="text-2xl font-semibold text-gray-800 text-center">Contribute with new resource</h2>
+          <h2 className="text-xl font-semibold text-gray-800 text-center">Contribute with new resource</h2>
+
+          {/* Display current user info */}
+          {session.user && (
+            <div className="mb-3 p-2 bg-blue-50 border border-blue-200 text-blue-800 rounded-md text-sm">
+              Logged in as: <strong>{session.user.user_metadata?.full_name || session.user.email}</strong>
+            </div>
+          )}
 
           {message && (
             <div className={`p-3 rounded-md text-sm ${
@@ -123,10 +203,46 @@ export default function ContributorUploadResource() {
               />
             </div>
             <div>
+              <label htmlFor="subject" className="block text-sm font-medium text-gray-700">Subject *</label>
+              <select
+                id="subject"
+                value={selectedSubjectId}
+                onChange={(e) => setSelectedSubjectId(e.target.value)}
+                className="cursor-pointer mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                required
+                disabled={loadingSubjects || subjects.length === 0}
+              >
+                {loadingSubjects ? (
+                  <option>Loading subjects...</option>
+                ) : (
+                  <>
+                    <optgroup label="IAL">
+                      {subjects
+                        .filter((subject) => subject.syllabus_type === "IAL")
+                        .map((subject) => (
+                          <option key={subject.id} value={subject.id}>
+                            {subject.name} ({subject.code}) - {subject.syllabus_type}
+                          </option>
+                        ))}
+                    </optgroup>
+
+                    <optgroup label="IGCSE">
+                      {subjects
+                        .filter((subject) => subject.syllabus_type === "IGCSE")
+                        .map((subject) => (
+                          <option key={subject.id} value={subject.id}>
+                            {subject.name} ({subject.code}) - {subject.syllabus_type}
+                          </option>
+                        ))}
+                    </optgroup>
+                  </>
+                )}
+              </select>
+            </div>
+            <div>
               <label htmlFor="unitChapter" className="block text-sm font-medium text-gray-700">
                 Unit/Chapter Name (Optional)
               </label>
-              {/* Unit/Chapter dropdown or input */}
               {(() => {
                 const selectedSubject = subjects.find(sub => sub.id === selectedSubjectId);
                 const units = selectedSubject?.units || [];
@@ -194,47 +310,10 @@ export default function ContributorUploadResource() {
                 ))}
               </select>
             </div>
-            <div>
-              <label htmlFor="subject" className="block text-sm font-medium text-gray-700">Subject *</label>
-              <select
-                id="subject"
-                value={selectedSubjectId}
-                onChange={(e) => setSelectedSubjectId(e.target.value)}
-                className="cursor-pointer mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                required
-                disabled={loadingSubjects || subjects.length === 0}
-              >
-                {loadingSubjects ? (
-                  <option>Loading subjects...</option>
-                ) : (
-                  <>
-                    <optgroup label="IAL">
-                      {subjects
-                        .filter((subject) => subject.syllabus_type === "IAL")
-                        .map((subject) => (
-                          <option key={subject.id} value={subject.id}>
-                            {subject.name} ({subject.code}) - {subject.syllabus_type}
-                          </option>
-                        ))}
-                    </optgroup>
-
-                    <optgroup label="IGCSE">
-                      {subjects
-                        .filter((subject) => subject.syllabus_type === "IGCSE")
-                        .map((subject) => (
-                          <option key={subject.id} value={subject.id}>
-                            {subject.name} ({subject.code}) - {subject.syllabus_type}
-                          </option>
-                        ))}
-                    </optgroup>
-                  </>
-                )}
-              </select>
-            </div>
             <button
               type="submit"
               className="cursor-pointer w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition"
-              disabled={loadingSubjects || subjects.length === 0}
+              disabled={loadingSubjects || subjects.length === 0 || loadingUserSession}
             >
               Submit Resource
             </button>
