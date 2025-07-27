@@ -46,11 +46,11 @@ async function watermarkPdf(pdfBuffer, headerBuffer, footerBuffer) {
     // }); 
     // Draws a blue rectangle for footer ^
 
-    const footerFontSize = 6;
-    const footerLine1 = "Disclaimer: Eduvance.au distributes notes for educational purposes only.";
-    const footerLine2 = "Some content may be subject to copyright. If you are a rights holder and believe your material has been used improperly, please contact us.";
+    const footerFontSize = 8;
+    const footerLine1 = "Disclaimer: Eduvance.au distributes notes for educational purposes only. Some content may be subject to copyright.";
+    const footerLine2 = "If you are a rights holder and believe your material has been used improperly, please contact us.";
 
-    const lineSpacing = 3;
+    const lineSpacing = 4;
     const baseY = -extraHeight / 2 + 4;
 
     originalPage.drawText(footerLine1, { 
@@ -79,7 +79,7 @@ async function watermarkPdf(pdfBuffer, headerBuffer, footerBuffer) {
       x: (width - FONT.widthOfTextAtSize(headerText, 12))/2, 
       y: height+5, 
       font: FONT,
-      size: 12
+      size: 14
     });
   }
 

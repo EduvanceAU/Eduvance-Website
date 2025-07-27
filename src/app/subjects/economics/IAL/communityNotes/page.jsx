@@ -300,7 +300,7 @@ export default function IALCommunityNotesPage() {
               }}
             >
               <span className="text-md font-medium text-black tracking-tight">
-                <span className="font-[501]">Exam code:</span> ECO {/* This now uses the state */}
+                <span className="font-[501]">Exam code:</span> WEC1/XEC11/YEC11 {/* This now uses the state */}
               </span>
             </div>
 

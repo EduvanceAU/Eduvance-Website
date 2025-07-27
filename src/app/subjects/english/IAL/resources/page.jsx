@@ -3,16 +3,21 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { createClient } from '@supabase/supabase-js';
-import { useParams } from 'next/navigation';
+import { useReloadOnStuckLoading } from '@/utils/reloadOnStuckLoading';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 );
-
+// Remove: import { useRouter } from 'next/router';
 import SmallFoot from '@/components/smallFoot.jsx';
 
-// SubjectButtons component remains largely the same, but its links are now '/subjects/${slug}/IAL/resources'
+// At the top, define variables for subjectName, syllabusType, and examCode
+const subjectName = 'English';
+const subjectSlug = subjectName.toLowerCase().replace(/\s+/g, '-');
+const examCode = 'ENG';
+
+// Add SubjectButtons component that fetches subjects dynamically
 const SubjectButtons = () => {
   const [subjects, setSubjects] = useState([]);
 
@@ -25,8 +30,6 @@ const SubjectButtons = () => {
         .eq('syllabus_type', 'IAL');
       if (!error && data) {
         setSubjects(data.map(subj => subj.name));
-      } else if (error) {
-        console.error('SubjectButtons: Error fetching subjects:', error.message);
       }
     }
     fetchSubjects();
@@ -37,7 +40,7 @@ const SubjectButtons = () => {
       {subjects.map((name, index) => {
         const slug = name.toLowerCase().replace(/\s+/g, '-');
         return (
-          <Link key={index} href={`/subjects/${slug}/IAL/resources`}> {/* Ensure this href is correct for your routing */}
+          <Link key={index} href={`/subjects/${slug}/IAL/resources`}>
             <button className="px-4 py-2 cursor-pointer bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition">
               {name}
             </button>
@@ -49,19 +52,13 @@ const SubjectButtons = () => {
 };
 
 export default function IALResources() {
-  const params = useParams();
-  const { slug } = params;
-
-  // State for dynamically fetched subject name and exam code
-  const [subjectName, setSubjectName] = useState(null);
-  const [examCode, setExamCode] = useState(null); // State to hold the dynamically fetched exam code
-
   const [units, setUnits] = useState([]);
   const [expandedUnits, setExpandedUnits] = useState({});
   const [unitResources, setUnitResources] = useState({});
   const [error, setError] = useState(null);
-  const [loadingSubject, setLoadingSubject] = useState(true);
-  const [loadingResources, setLoadingResources] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useReloadOnStuckLoading(loading);
 
   const toggleUnit = (unit) => {
     setExpandedUnits(prev => ({
@@ -70,85 +67,42 @@ export default function IALResources() {
     }));
   };
 
-  // --- NEW useEffect for fetching subjectName and examCode ---
+  // Fetch units from subject table
   useEffect(() => {
-    if (!slug) {
-      setLoadingSubject(true);
-      return;
-    }
-
-    const decodedSlug = Array.isArray(slug) ? slug[0] : slug;
-    const decodedSubjectName = decodedSlug.replace(/-/g, ' ').split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
-
-    console.debug('fetchSubjectDetails: Decoded subject name from slug:', decodedSubjectName);
-
-    async function fetchSubjectDetails() {
-      setLoadingSubject(true);
-      setError(null);
-      try {
-        const { data, error: subjectError } = await supabase
-          .from('subjects')
-          .select('name, code, units') // Select name, code, and units
-          .eq('name', decodedSubjectName)
-          .eq('syllabus_type', 'IAL')
-          .single();
-
-        if (subjectError) {
-          console.error('Error fetching subject details:', subjectError.message);
-          setError(subjectError);
-          setSubjectName('N/A');
-          setExamCode('N/A');
-          setUnits([]);
-          setLoadingSubject(false);
-          return;
-        }
-
-        if (data) {
-          setSubjectName(data.name);
-          setExamCode(data.code || 'N/A'); // Set exam code, fallback to N/A
-          let fetchedUnits = data.units || [];
-          fetchedUnits.sort((a, b) => {
-            const getUnitNum = (u) => {
-              const match = (u.unit || '').match(/Unit\s*(\d+)/i);
-              return match ? parseInt(match[1], 10) : Number.MAX_SAFE_INTEGER;
-            };
-            const numA = getUnitNum(a);
-            const numB = getUnitNum(b);
-            if (numA !== numB) return numA - numB;
-            return (a.name || '').localeCompare(b.name || '');
-          });
-          setUnits(fetchedUnits);
-          setExpandedUnits(fetchedUnits.reduce((acc, unit) => {
-            acc[unit.unit] = true;
-            return acc;
-          }, {}));
-          setLoadingSubject(false);
-        } else {
-          setError(new Error(`Subject "${decodedSubjectName}" not found.`));
-          setSubjectName('N/A');
-          setExamCode('N/A');
-          setUnits([]);
-          setLoadingSubject(false);
-        }
-      } catch (err) {
-        console.error('An unexpected error occurred while fetching subject details:', err);
-        setError(new Error('Failed to load subject details.'));
-        setSubjectName('N/A');
-        setExamCode('N/A');
-        setUnits([]);
-        setLoadingSubject(false);
+    const fetchUnits = async () => {
+      const { data: subjectData, error: subjectError } = await supabase
+        .from('subjects')
+        .select('units')
+        .eq('name', subjectName)
+        .eq('syllabus_type', 'IAL')
+        .single();
+      if (subjectError || !subjectData) {
+        setError(subjectError || new Error('Subject "Physics" not found.'));
+        return;
       }
-    }
-    fetchSubjectDetails();
-  }, [slug]);
+      let fetchedUnits = subjectData.units || [];
+      // Sort by unit number if possible, fallback to name
+      fetchedUnits.sort((a, b) => {
+        const getUnitNum = (u) => {
+          const match = (u.unit || '').match(/Unit\s*(\d+)/i);
+          return match ? parseInt(match[1], 10) : Number.MAX_SAFE_INTEGER;
+        };
+        const numA = getUnitNum(a);
+        const numB = getUnitNum(b);
+        if (numA !== numB) return numA - numB;
+        return (a.name || '').localeCompare(b.name || '');
+      });
+      setUnits(fetchedUnits);
+      setExpandedUnits(fetchedUnits.reduce((acc, unit) => {
+        acc[unit.unit] = true;
+        return acc;
+      }, {}));
+    };
+    fetchUnits();
+  }, []);
 
   useEffect(() => {
-    if (!subjectName || error || loadingSubject) {
-      if (!loadingSubject) setLoadingResources(false);
-      return;
-    }
-
-    setLoadingResources(true);
+    setLoading(true);
     const fetchResources = async () => {
       try {
         const { data: subjectData, error: subjectError } = await supabase
@@ -159,8 +113,8 @@ export default function IALResources() {
           .single();
 
         if (subjectError || !subjectData) {
-          setError(subjectError || new Error(`Subject "english" not found for resource fetching.`));
-          setLoadingResources(false);
+          setError(subjectError || new Error('Subject "Physics" not found.'));
+          setLoading(false);
           return;
         }
 
@@ -175,7 +129,7 @@ export default function IALResources() {
 
         if (resourcesError) {
           setError(resourcesError);
-          setLoadingResources(false);
+          setLoading(false);
           return;
         }
 
@@ -203,22 +157,14 @@ export default function IALResources() {
           });
         });
         setUnitResources(groupedResources);
-        setLoadingResources(false);
-      } catch (resourceFetchError) {
-        setError(resourceFetchError);
-        setLoadingResources(false);
+        setLoading(false);
+      } catch (error) {
+        setError(error);
+        setLoading(false);
       }
     };
     fetchResources();
-  }, [subjectName, error, loadingSubject]);
-
-  if (loadingSubject || loadingResources) {
-    return (
-      <main className="min-h-screen bg-white flex items-center justify-center">
-        <p className="text-xl text-gray-600">Loading resources...</p>
-      </main>
-    );
-  }
+  }, []);
 
   if (error) {
     return (
@@ -254,25 +200,27 @@ export default function IALResources() {
           </div>
 
           {/* General Resources */}
-          {unitResources["General"] && Object.keys(unitResources["General"]).length > 0 && (
+          {unitResources["General"] && (
             <div className="cursor-pointer bg-white rounded-lg shadow-md mb-8 border border-gray-200 overflow-hidden">
               <div className="bg-gray-200 text-black tracking-tight p-4 text-left font-bold text-xl sm:text-2xl"
-                  style={{ fontFamily: "Poppins, sans-serif" }}>
+                  style={{ fontFamily: "Poppins, sans-serif" }}>  
                 General Resources
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
                 {unitResources["General"].map((resourceGroup, groupIndex) => (
                   resourceGroup.links.map((link, linkIndex) => (
-                    <Link key={groupIndex + '-' + linkIndex} href={link.url} target="_blank" rel="noopener noreferrer" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                    <Link key={groupIndex + '-' + linkIndex} href={link.url} style={{ fontFamily: 'Poppins, sans-serif' }}>
                       <div className="cursor-pointer flex flex-col p-5 border h-fit border-gray-200 rounded-2xl shadow-md bg-white hover:shadow-xl transition-shadow duration-200 group sm:min-h-[120px] sm:min-w-[300px]" style={{ position: 'relative' }}>
-                        {link.name && (<p className="text-xl font-bold text-[#153064]">{link.name}</p>)}
-                        {link.description && (
-                          <p className="text-sm text-gray-600 mt-2 border-l-4 mb-2 border-blue-600 pl-2">{link.description}</p>
-                        )}
-                        <div className="flex flex-col justify-end items-end">
-                          {resourceGroup.heading && (<div className="cursor-pointer mt-1 text-xs font-semibold tracking-tight uppercase w-fit px-2 py-0.5 text-green-400 ring ring-green-400 rounded-md hover:bg-green-400 hover:text-white transition-colors">{resourceGroup.heading}</div>)}
-                          {link.last && (<p className="text-xs text-gray-600 mt-1 text-right">{link.contributor ? `Shared by ${link.contributor} on `: "Shared on "}{new Date(link.last).toLocaleString(undefined, {year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'})}</p>)}
-                        </div>
+                        {/* <span className="text-sm font-semibold text-[#1A69FA] mb-1 tracking-tight uppercase" style={{ fontFamily: 'Poppins, sans-serif', letterSpacing: '0.04em' }}>{resourceGroup.heading}</span> */}
+                        
+                          {link.name && (<p className="text-xl font-bold text-[#153064]">{link.name}</p>)}
+                          {link.description && (
+                            <p className="text-sm text-gray-600 mt-2 border-l-4 mb-2 border-blue-600 pl-2">{link.description}</p>
+                          )}
+                          <div className="flex flex-col justify-end items-end">
+                            {resourceGroup.heading && (<div className="cursor-pointer mt-1 text-xs font-semibold tracking-tight uppercase w-fit px-2 py-0.5 text-green-400 ring ring-green-400 rounded-md hover:bg-green-400 hover:text-white transition-colors">{resourceGroup.heading}</div>)}
+                            {link.last && (<p className="text-xs text-gray-600 mt-1 text-right">{link.contributor ? "Shared On ": "Shared On "}{new Date(link.last).toLocaleString(undefined, {year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'})}</p>)}
+                          </div>
                         <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                           <svg width="22" height="22" fill="none" stroke="#1A69FA" strokeWidth="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                         </div>
@@ -285,41 +233,39 @@ export default function IALResources() {
 
           {/* Unit-Based Resources */}
           {units.map((unitData) => (
-            unitResources[unitData.unit] && Object.keys(unitResources[unitData.unit]).length > 0 && (
-              <div key={unitData.unit} className="bg-white rounded-lg shadow-md mb-8 border border-gray-200 overflow-hidden">
-                <div className="bg-[#2871F9] cursor-pointer text-white tracking-tight p-4 text-left font-bold text-xl sm:text-2xl"
-                    style={{ fontFamily: "Poppins, sans-serif" }}
-                    onClick={() => toggleUnit(unitData.unit)}>
-                  {unitData.name}
-                </div>
-                {expandedUnits[unitData.unit] && (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 p-6">
-                    {(unitResources[unitData.unit] || []).map((resourceGroup, groupIndex) => (
-                      resourceGroup.links.map((link, linkIndex) => (
-                        <Link key={groupIndex + '-' + linkIndex} href={link.url} target="_blank" rel="noopener noreferrer" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                        <div className="cursor-pointer flex flex-col p-5 border h-fit border-gray-200 rounded-2xl shadow-md bg-white hover:shadow-xl transition-shadow duration-200 group sm:min-h-[120px] sm:min-w-[300px]" style={{ position: 'relative' }}>
+            <div key={unitData.unit} className="bg-white rounded-lg shadow-md mb-8 border border-gray-200 overflow-hidden">
+              {/* Session Card styling, added overflow-hidden */}
+              <div className="bg-[#2871F9] cursor-pointer text-white tracking-tight p-4 text-left font-bold text-xl sm:text-2xl"
+                  style={{ fontFamily: "Poppins, sans-serif" }}
+                  onClick={() => toggleUnit(unitData.unit)}>
+                {unitData.name}
+              </div>
+              {expandedUnits[unitData.unit] && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 p-6">
+                  {(unitResources[unitData.unit] || []).map((resourceGroup, groupIndex) => (
+                    resourceGroup.links.map((link, linkIndex) => (
+                      <Link key={groupIndex + '-' + linkIndex} href={link.url} style={{ fontFamily: 'Poppins, sans-serif' }}>
+                      <div className="cursor-pointer flex flex-col p-5 border h-fit border-gray-200 rounded-2xl shadow-md bg-white hover:shadow-xl transition-shadow duration-200 group sm:min-h-[120px] sm:min-w-[300px]" style={{ position: 'relative' }}>
+                        {/* <span className="text-sm font-semibold text-[#1A69FA] mb-1 tracking-tight uppercase" style={{ fontFamily: 'Poppins, sans-serif', letterSpacing: '0.04em' }}>{resourceGroup.heading}</span> */}
+                        
                           {link.name && (<p className="text-xl font-bold text-[#153064]">{link.name}</p>)}
                           {link.description && (
                             <p className="text-sm text-gray-600 mt-2 border-l-4 mb-2 border-blue-600 pl-2">{link.description}</p>
                           )}
                           <div className="flex flex-col justify-end items-end">
                             {resourceGroup.heading && (<div className="cursor-pointer mt-1 text-xs font-semibold tracking-tight uppercase w-fit px-2 py-0.5 text-green-400 ring ring-green-400 rounded-md hover:bg-green-400 hover:text-white transition-colors">{resourceGroup.heading}</div>)}
-                            {link.last && (<p className="text-xs text-gray-600 mt-1 text-right">{link.contributor ? `Shared by ${link.contributor} on `: "Shared on "}{new Date(link.last).toLocaleString(undefined, {year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'})}</p>)}
+                            {link.last && (<p className="text-xs text-gray-600 mt-1 text-right">{link.contributor ? "Shared On ": "Shared On "}{new Date(link.last).toLocaleString(undefined, {year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'})}</p>)}
                           </div>
-                          <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                            <svg width="22" height="22" fill="none" stroke="#1A69FA" strokeWidth="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                          </div>
+                        <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                          <svg width="22" height="22" fill="none" stroke="#1A69FA" strokeWidth="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                         </div>
-                      </Link>))
-                    ))}
-                  </div>
-                )}
-              </div>
-            )
+                      </div>
+                    </Link>))
+                  ))}
+                </div>
+              )}
+            </div>
           ))}
-          {Object.keys(unitResources).length === 0 && !loadingSubject && !loadingResources && !error && (
-            <p className="text-gray-500 text-center py-4">No resources available for this subject yet.</p>
-          )}
         </div>
       </main>
       <SmallFoot />

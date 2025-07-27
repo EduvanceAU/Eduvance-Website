@@ -1,19 +1,30 @@
 "use client";
-import { useState, useEffect, use } from 'react';
-import Link from 'next/link';
+
+import Link from "next/link";
+import { useState, useEffect } from "react";
+import { useSearchParams } from 'next/navigation'; // Corrected import for useSearchParams
 import SmallFoot from '@/components/smallFoot.jsx';
 
-export default function Subject({ searchParams }) {
+export default function Subject({ /* Removed searchParams prop, use useSearchParams hook directly */ }) {
   const subjectName = 'Computer Science';
-  const [selected, setSelected] = useState('option1');
-  const params = use(searchParams);
-  const choice = params.choice;
-  const regExp = /option[1-2]/g;
+  // Default to 'option2' (IGCSEs) since IALs is greyed out/disabled
+  const [selected, setSelected] = useState('option2');
+  const searchParams = useSearchParams(); // Use the hook directly
+  const choice = searchParams.get('choice'); // Get the 'choice' parameter
+
+  const regExp = /option[1-2]/g; // Regular expression to validate choice
+
   useEffect(() => {
     if (regExp.test(choice)) {
-      setSelected(choice);
+      // If choice is 'option1' (IALs), still force to 'option2' because IALs is disabled
+      if (choice === 'option1') {
+        setSelected('option2');
+      } else {
+        setSelected(choice);
+      }
     }
   }, [choice]);
+
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
@@ -27,10 +38,10 @@ export default function Subject({ searchParams }) {
           mutation.attributeName === 'data-sidebar'
         ) {
           const value = target.getAttribute('data-sidebar');
-          if(value === "open"){
+          if (value === "open") {
             setSidebarOpen(true)
           }
-          else{
+          else {
             setSidebarOpen(false)
           }
         }
@@ -51,7 +62,7 @@ export default function Subject({ searchParams }) {
           className="w-full h-[250px] relative flex items-center bg-cover bg-right lg:bg-center bg-no-repeat transition-all duration-300"
           style={{ backgroundImage: "url('/Banner.svg')" }}
         >
-          <h1 className="text-white font-grand-local text-4xl md:text-7xl ml-17 tracking-[-1px]">
+          <h1 className="text-white font-grand-local text-xl md:text-7xl ml-17 tracking-[-1px]">
             Computer Science
           </h1>
         </div>
@@ -63,8 +74,11 @@ export default function Subject({ searchParams }) {
             {/* Selection Bar - Responsive width */}
             <div className="flex rounded-[15px] bg-[#F2F6FF] border-[#0C58E4] border-2 p-1 w-full h-[65px] justify-between mb-10">
               <button
-                onClick={() => setSelected('option1')}
-                className={`cursor-pointer w-1/2 py-2 text-center rounded-[10px] transition-all ease-in-out duration-500 text-sm md:text-base lg:text-xl ${selected === 'option1' ? 'bg-[#D0E0FF] shadow-md font-semibold tracking-[-0.75px]' : ''}`}
+                // IALs button: Always disabled and greyed out
+                disabled // Make it non-clickable
+                // Removed onClick, as it's disabled
+                className={`cursor-not-allowed w-1/2 py-2 text-center rounded-[10px] transition-all ease-in-out duration-500 text-sm md:text-base lg:text-xl
+                            bg-gray-200 text-gray-400 font-semibold tracking-[-0.75px]`} // Always greyed out styles
                 style={{ fontFamily: 'Poppins, sans-serif' }}
               >
                 IALs
@@ -88,7 +102,7 @@ export default function Subject({ searchParams }) {
                   <div className="text-base grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8 sm:px-1 w-full">
                     <Link
                       href={`/subjects/computer-science/IAL/communityNotes`}
-                      className="transition-all duration-300 h-40 rounded-xl font-[550] tracking-[-0.5px] border-[1.5px] border-[#B0B0B0] flex items-end justify-start pl-4 pb-4 text-gray-400 bg-gray-200 cursor-pointer hover:text-gray-500 hover:bg-gray-300 bg-blend-multiply"
+                      className="transition-all duration-300 h-40 rounded-xl font-[550] tracking-[-0.5px] border-[1.5px] border-[#B0B0B0] flex items-end justify-start pl-4 pb-4 text-gray-400 bg-gray-200 cursor-not-allowed pointer-events-none bg-blend-multiply" // Added pointer-events-none and cursor-not-allowed
                       style={{ backgroundImage: "url('/Notes Background.svg')", backgroundSize: 'cover', backgroundPosition: 'center', opacity: 0.7 }}
                     >
                       Eduvance Notes
@@ -155,7 +169,7 @@ export default function Subject({ searchParams }) {
                 </>
               )}
 
-                {/* Always-visible slim buttons below the cards */}
+              {/* Always-visible slim buttons below the cards */}
               <div className="flex flex-wrap justify-between gap-4 w-full">
                 <a
                   href="https://discord.gg/eduvance-community-983670206889099264"

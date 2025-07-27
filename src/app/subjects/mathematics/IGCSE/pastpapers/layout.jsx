@@ -1,5 +1,5 @@
 const subjectName = 'Mathematics';
-const examCode = 'MAT';
+const examCode = '4MB1, 4PM1';
 const syllabusType = 'IGCSE';
 const refName = subjectName;
 const refsyllabusType = syllabusType;

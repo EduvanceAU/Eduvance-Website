@@ -1,5 +1,5 @@
 const subjectName = 'Chemistry';
-const examCode = 'WCH1';
+const examCode = 'WCH1/XCH11/YCH11';
 const syllabusType = 'IAL';
 const refName = subjectName;
 const refsyllabusType = syllabusType;
