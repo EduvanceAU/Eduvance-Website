@@ -1,5 +1,5 @@
 const subjectName = 'Business';
-const examCode = 'BUS';
+const examCode = '4BS1';
 const syllabusType = 'IGCSE';
 const refName = subjectName;
 const refsyllabusType = syllabusType;
