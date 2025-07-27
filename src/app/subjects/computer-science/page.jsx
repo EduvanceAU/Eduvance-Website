@@ -2,15 +2,58 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { useSearchParams } from 'next/navigation'; // Corrected import for useSearchParams
+// Removed: import { useSearchParams } from 'next/navigation'; // No longer needed
 import SmallFoot from '@/components/smallFoot.jsx';
 
-export default function Subject({ /* Removed searchParams prop, use useSearchParams hook directly */ }) {
+// --- Utility Function: toKebabCase ---
+const toKebabCase = (str) => {
+  if (typeof str !== 'string') {
+    console.warn('toKebabCase received non-string input:', str);
+    return '';
+  }
+  return str
+    .toLowerCase()
+    .replace(/\s+/g, '-')
+    .replace(/[^\w-]+/g, '')
+    .replace(/--+/g, '-')
+    .trim();
+};
+
+// This component now simply receives subjects and renders buttons.
+const SubjectButtons = ({ subjects }) => {
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 w-full">
+      {subjects.map((name, index) => {
+        const slug = toKebabCase(name);
+        return (
+          <Link key={index} href={`/subjects/${slug}/IAL/resources`}>
+            <div className="cursor-pointer flex items-center justify-between px-6 w-full py-4 bg-[#BAD1FD] rounded-[12px] group hover:bg-[#A8C6FF] transition-all duration-200 border-[#153064] border-1">
+              <p
+                className="text-xl font-[550] text-[#153064]"
+                style={{ fontFamily: "Poppins, sans-serif" }}
+              >
+                {name}
+              </p>
+              <img
+                src="/BArrowR.svg"
+                alt="Arrow Right"
+                className="w-6 h-auto group-hover:translate-x-1 transition-transform duration-200"
+              />
+            </div>
+          </Link>
+        );
+      })}
+    </div>
+  );
+};
+
+// Re-added searchParams as a prop
+export default function Subject({ searchParams }) {
   const subjectName = 'Computer Science';
   // Default to 'option2' (IGCSEs) since IALs is greyed out/disabled
   const [selected, setSelected] = useState('option2');
-  const searchParams = useSearchParams(); // Use the hook directly
-  const choice = searchParams.get('choice'); // Get the 'choice' parameter
+  // Access choice directly from the searchParams prop
+  const choice = searchParams.choice;
 
   const regExp = /option[1-2]/g; // Regular expression to validate choice
 
@@ -76,7 +119,6 @@ export default function Subject({ /* Removed searchParams prop, use useSearchPar
               <button
                 // IALs button: Always disabled and greyed out
                 disabled // Make it non-clickable
-                // Removed onClick, as it's disabled
                 className={`cursor-not-allowed w-1/2 py-2 text-center rounded-[10px] transition-all ease-in-out duration-500 text-sm md:text-base lg:text-xl
                             bg-gray-200 text-gray-400 font-semibold tracking-[-0.75px]`} // Always greyed out styles
                 style={{ fontFamily: 'Poppins, sans-serif' }}
@@ -102,7 +144,7 @@ export default function Subject({ /* Removed searchParams prop, use useSearchPar
                   <div className="text-base grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8 sm:px-1 w-full">
                     <Link
                       href={`/subjects/computer-science/IAL/communityNotes`}
-                      className="transition-all duration-300 h-40 rounded-xl font-[550] tracking-[-0.5px] border-[1.5px] border-[#B0B0B0] flex items-end justify-start pl-4 pb-4 text-gray-400 bg-gray-200 cursor-not-allowed pointer-events-none bg-blend-multiply" // Added pointer-events-none and cursor-not-allowed
+                      className="transition-all duration-300 h-40 rounded-xl font-[550] tracking-[-0.5px] border-[1.5px] border-[#B0B0B0] flex items-end justify-start pl-4 pb-4 text-gray-400 bg-gray-200 cursor-not-allowed pointer-events-none bg-blend-multiply"
                       style={{ backgroundImage: "url('/Notes Background.svg')", backgroundSize: 'cover', backgroundPosition: 'center', opacity: 0.7 }}
                     >
                       Eduvance Notes
