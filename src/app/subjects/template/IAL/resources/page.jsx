@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { createClient } from '@supabase/supabase-js';
+import { useReloadOnStuckLoading } from '@/utils/reloadOnStuckLoading';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -56,6 +57,8 @@ export default function IALResources() {
   const [unitResources, setUnitResources] = useState({});
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  useReloadOnStuckLoading(loading);
 
   const toggleUnit = (unit) => {
     setExpandedUnits(prev => ({

@@ -1,5 +1,5 @@
 const subjectName = 'Economics';
-const examCode = 'ECO';
+const examCode = '4EC1';
 const syllabusType = 'IGCSE';
 const refName = subjectName;
 const refsyllabusType = syllabusType;

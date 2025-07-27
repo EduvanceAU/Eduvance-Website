@@ -4,9 +4,13 @@ import Link from "next/link";
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import {Home} from '@/components/homenav'
+import { useReloadOnStuckLoading } from '@/utils/reloadOnStuckLoading';
+
 export default function Resources() {
   const [subjects, setSubjects] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  useReloadOnStuckLoading(loading);
 
   useEffect(() => {
     setLoading(true);

@@ -1,5 +1,5 @@
 const subjectName = 'Information Technology';
-const examCode = 'INF';
+const examCode = 'WIT1/XIT11/YIT11';
 const syllabusType = 'IAL';
 const refName = subjectName;
 const refsyllabusType = syllabusType;

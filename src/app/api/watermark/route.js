@@ -37,22 +37,36 @@ async function watermarkPdf(pdfBuffer, headerBuffer, footerBuffer) {
     const { width, height } = originalPage.getSize();    
     originalPage.setSize(width, height+extraHeight)
     originalPage.translateContent(0, extraHeight/2)
-    originalPage.drawRectangle({
-      x: 0,
-      y: -extraHeight/2,
-      width: width,  
-      height: extraHeight/2, 
-      color: rgb(78/255, 140/255, 255/255),
-    });
+    // originalPage.drawRectangle({
+    //   x: 0,
+    //   y: -extraHeight/2,
+    //   width: width,  
+    //   height: extraHeight/2, 
+    //   color: rgb(78/255, 140/255, 255/255),
+    // }); 
+    // Draws a blue rectangle for footer ^
 
-    const footerText = "Eduvance.au doesn't claim copyright to this resource. It belongs to the respective copyright holders.";
-    const footerFontSize = 11;
-    originalPage.drawText(footerText, { 
-      x: (width - FONT.widthOfTextAtSize(footerText, footerFontSize)) / 2, 
-      y: -extraHeight/2+5, 
+    const footerFontSize = 8;
+    const footerLine1 = "Disclaimer: Eduvance.au distributes notes for educational purposes only. Some content may be subject to copyright.";
+    const footerLine2 = "If you are a rights holder and believe your material has been used improperly, please contact us.";
+
+    const lineSpacing = 4;
+    const baseY = -extraHeight / 2 + 4;
+
+    originalPage.drawText(footerLine1, { 
+      x: (width - FONT.widthOfTextAtSize(footerLine1, footerFontSize)) / 2, 
+      y: baseY + footerFontSize + lineSpacing,
       font: FONT,
       size: footerFontSize
     });
+
+    originalPage.drawText(footerLine2, { 
+      x: (width - FONT.widthOfTextAtSize(footerLine2, footerFontSize)) / 2, 
+      y: baseY,
+      font: FONT,
+      size: footerFontSize
+    });
+
     // originalPage.drawRectangle({
     //   x: 0,
     //   y: height, 
@@ -60,11 +74,12 @@ async function watermarkPdf(pdfBuffer, headerBuffer, footerBuffer) {
     //   height: extraHeight/2, 
     //   color: rgb(78/255, 140/255, 255/255), 
     // });
-    originalPage.drawText("Distributed by www.eduvance.au for educational use only", { 
-      x: (width - FONT.widthOfTextAtSize("Distributed by www.eduvance.au for educational use only", 12))/2, 
+    const headerText = "Eduvance.au - Community Resource";
+    originalPage.drawText(headerText, { 
+      x: (width - FONT.widthOfTextAtSize(headerText, 12))/2, 
       y: height+5, 
       font: FONT,
-      size: 12
+      size: 14
     });
   }
 
@@ -84,11 +99,11 @@ async function fetchFolderPdfIds(folderId) {
 }
 
 export async function POST(req) {
-  const supabase = createRouteHandlerClient({ cookies: () => req.cookies });
-  const { data: { user }, error } = await supabase.auth.getUser();
-  if (!user) {
-    return new NextResponse(JSON.stringify({ error: 'Unauthorized' }), { status: 401 });
-  }
+  // const supabase = createRouteHandlerClient({ cookies: () => req.cookies });
+  // const { data: { user }, error } = await supabase.auth.getUser();
+  // if (!user) {
+  //   return new NextResponse(JSON.stringify({ error: 'Unauthorized' }), { status: 401 });
+  // } Mistakenly came here (?)
   try {
     const { url } = await req.json();
     if (!url) return NextResponse.json({ error: 'Missing Google Drive URL' }, { status: 400 });
