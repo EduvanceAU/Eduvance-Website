@@ -131,8 +131,8 @@ Community Feedback :
    ☐ Update the loading state for past paper pages and other resources pages for logo animation
    ☐ Update past paper page loading for top mini loading state animation
    ☐ Reorder community contributor form to move subject up
-   ☐ Update community contributor page to collect user email and information
-   ☐ Update watermark with new images and positioning
+   ✔ Update community contributor page to collect user email and information @done(25-07-27 13:28)
+   ✔ Update watermark with new images and positioning @done(25-07-27 13:10)
    ☐ Update resources and past paper page fetch logic
 
 Systems Todo:
