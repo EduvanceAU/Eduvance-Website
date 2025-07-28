@@ -112,7 +112,7 @@ export default function Main() {
               </button>
             </a>
 
-            <div className='break-all random w-full h-full absolute inset-0 place-content-around text-center z-[-2] text-white opacity-10 text-base tracking-[0.25rem]' style={{ fontFamily: 'Poppins, sans-serif' }}>
+            <div className='break-all random w-full h-full absolute inset-0 place-content-around text-center z-[-2] text-white opacity-10 text-base tracking-[0.25rem]' style={{ fontFamily: 'Poppins, sans-serif', maskImage: 'radial-gradient(circle, black 5%, transparent 100%)' }}>
 
             </div>
             {/* Decorative Images (Positioned with absolute so they don't mess layout) */}
