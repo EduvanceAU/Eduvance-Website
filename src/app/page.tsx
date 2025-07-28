@@ -62,6 +62,16 @@ const ScrollingColumn: React.FC<ScrollingColumnProps> = ({ direction, count = 15
 };
 
 export default function Main() {
+  useEffect(() => {
+    const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    const bg = document.querySelector(".random")
+    const randomChar = () => chars[Math.floor(Math.random() * (chars.length))],
+    randomString = (length) => Array.from(Array(length)).map(randomChar).join("");
+    bg.innerHTML = randomString(3000);    
+    setInterval(() => {
+      bg.innerHTML = randomString(3000);
+    }, 80);
+  }, [])
   const discord = "https://discord.gg/eduvance-community-983670206889099264"
   const[member_count, setmembercount] = useState("")
   useEffect(() =>{
@@ -93,7 +103,7 @@ export default function Main() {
               rel="noopener noreferrer"
               className="z-20"
             >
-              <button className="group cursor-pointer bg-white hover:bg-[#143166] hover:text-white text-[#428CF9] border-5 border-[#639afe] px-9 py-4 rounded-[16px] text-xl poppins-semibold shadow-lg flex items-center gap-5 transition-all duration-500 ease-in-out hover:shadow-[inset_0_0_20px_rgba(100,154,254,0.4)] shadow-[inset_0_0_10px_rgba(66,140,249,0.2)]">
+              <button className="group cursor-pointer bg-white hover:bg-[#143166] hover:text-white text-[#428CF9] border-5 border-[#639afe] px-9 py-4 rounded-[16px] text-xl poppins-semibold flex items-center gap-5 transition-all duration-500 ease-in-out hover:shadow-[inset_0_0_20px_rgba(100,154,254,0.4)] shadow-[inset_0_0_10px_rgba(66,140,249,0.2)]">
                 <div className="relative w-9 h-9">
                   <Image src={discordLogo} alt="Discord" fill className="object-contain opacity-100 group-hover:opacity-0 transition-opacity duration-500"/>
                   <Image src={WhiteDiscordLogo} alt="Discord Hover" fill className="object-contain opacity-0 group-hover:opacity-100 transition-opacity duration-500"/>
@@ -102,12 +112,10 @@ export default function Main() {
               </button>
             </a>
 
+            <div className='break-all random w-full h-full absolute inset-0 place-content-around text-center z-[-2] text-white opacity-10 text-base tracking-[0.25rem]' style={{ fontFamily: 'Poppins, sans-serif' }}>
+
+            </div>
             {/* Decorative Images (Positioned with absolute so they don't mess layout) */}
-            <Image
-              src={bgCrypto}
-              alt="Decorative Crypto"
-              className="absolute left-1/2 transform -translate-x-1/2 w-full h-auto z-10"
-            />
             <Image
               src={DocWidgets}
               alt="DocWidgets"
