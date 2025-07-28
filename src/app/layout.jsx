@@ -2,6 +2,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import Script from 'next/script';
 import "./globals.css";
 import SupabaseAuthProvider from "@/components/client/SupabaseAuthContext";
+import PopupManager from '@/components/ui/PopupNotification';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -75,9 +76,11 @@ export default function RootLayout({ children }) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <SupabaseAuthProvider>
-          {children}
-        </SupabaseAuthProvider>
+        <PopupManager asChild>
+          <SupabaseAuthProvider>
+            {children}
+          </SupabaseAuthProvider>
+        </PopupManager>
       </body>
     </html>
   );

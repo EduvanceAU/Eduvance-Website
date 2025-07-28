@@ -17,7 +17,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { useSupabaseAuth } from '@/components/client/SupabaseAuthContext';
-
+import { usePopup } from '@/components/ui/PopupNotification';
 // --- Utility Function: toKebabCase ---
 // Place this function either here at the top, or in a shared utility file (e.g., utils/string.js)
 const toKebabCase = (str) => {
@@ -90,6 +90,7 @@ const NavDropdown = ({ labelMain, labelSmall, items }) => {
 };
 
 function Home(props) {
+  const showPopup = usePopup();
   const [subjects, setSubjects] = useState([]);
   const [NonUniqueSubjects, setNQSubjects] = useState([]);
   const subjectsDivRef = useRef(null); // Ref for the subjects div
@@ -178,8 +179,8 @@ function Home(props) {
   const [isHeaderHovered, setIsHeaderHovered] = useState(false); // This state doesn't seem to be used.
   const [isSidebarHovered, setIsSidebarHovered] = useState(false); // This state doesn't seem to be used.
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [showLoginPopup, setShowLoginPopup] = useState(false);
-  const [showLogoutPopup, setShowLogoutPopup] = useState(false);
+  // const [showLoginPopup, setShowLoginPopup] = useState(false);
+  // const [showLogoutPopup, setShowLogoutPopup] = useState(false);
   const prevSessionRef = useRef(null);
   const loginPopupShownRef = useRef(false); // This ref is declared but not used.
   const hasMountedRef = useRef(false);
@@ -196,7 +197,7 @@ function Home(props) {
     // Only show login popup if previous session was null and new session is not null, and popup hasn't been shown yet in sessionStorage
     if (!prevSessionRef.current && session && !sessionStorage.getItem('loginPopupShown')) {
       console.info('Login detected! Showing login success popup.');
-      setShowLoginPopup(true);
+      showPopup({ type: 'loginSuccess', subText: 'Welcome to the community!' });
       sessionStorage.setItem('loginPopupShown', 'true');
     }
     // Reset the flag if the user logs out
@@ -208,27 +209,27 @@ function Home(props) {
   }, [session]);
 
   // Handle login popup auto-hide
-  useEffect(() => {
-    if (showLoginPopup) {
-      console.debug('Login popup visible. Setting auto-hide timer.');
-      const timer = setTimeout(() => {
-        setShowLoginPopup(false);
-        console.debug('Login popup auto-hidden.');
-      }, 1500);
-      return () => clearTimeout(timer);
-    }
-  }, [showLoginPopup]);
+  // useEffect(() => {
+  //   if (showLoginPopup) {
+  //     console.debug('Login popup visible. Setting auto-hide timer.');
+  //     const timer = setTimeout(() => {
+  //       setShowLoginPopup(false);
+  //       console.debug('Login popup auto-hidden.');
+  //     }, 1500);
+  //     return () => clearTimeout(timer);
+  //   }
+  // }, [showLoginPopup]);
   // Handle logout popup auto-hide
-  useEffect(() => {
-    if (showLogoutPopup) {
-      console.debug('Logout popup visible. Setting auto-hide timer.');
-      const timer = setTimeout(() => {
-        setShowLogoutPopup(false);
-        console.debug('Logout popup auto-hidden.');
-      }, 1500);
-      return () => clearTimeout(timer);
-    }
-  }, [showLogoutPopup]);
+  // useEffect(() => {
+  //   if (showLogoutPopup) {
+  //     console.debug('Logout popup visible. Setting auto-hide timer.');
+  //     const timer = setTimeout(() => {
+  //       setShowLogoutPopup(false);
+  //       console.debug('Logout popup auto-hidden.');
+  //     }, 1500);
+  //     return () => clearTimeout(timer);
+  //   }
+  // }, [showLogoutPopup]);
 
   const handleLogout = async () => {
     console.debug('Attempting to log out...');
@@ -238,8 +239,7 @@ function Home(props) {
       return;
     }
     console.info('Successfully logged out!');
-    setShowLoginPopup(false);
-    setShowLogoutPopup(true);
+    showPopup({ type: 'logoutSuccess', subText: 'Hoping you are back soon!' });
     sessionStorage.removeItem('loginPopupShown');
   };
 
@@ -410,9 +410,9 @@ function Home(props) {
           )}
         </div>
       </nav>
-
+      {/* Both below handled by new hook */}    
       {/* Login Success Popup */}
-      {showLoginPopup && (
+      {/* {showLoginPopup && (
         <div className="fixed top-6 left-1/2 transform -translate-x-1/2 z-50">
           <div className="bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg animate-slide-in-fade-out">
             Successfully logged in!
@@ -429,9 +429,9 @@ function Home(props) {
             }
           `}</style>
         </div>
-      )}
+      )} */}
       {/* Logout Success Popup */}
-      {showLogoutPopup && (
+      {/* {showLogoutPopup && (
         <div className="fixed top-6 left-1/2 transform -translate-x-1/2 z-50">
           <div className="bg-red-600 text-white px-6 py-3 rounded-lg shadow-lg animate-slide-in-fade-out">
             Successfully logged out!
@@ -448,7 +448,7 @@ function Home(props) {
             }
           `}</style>
         </div>
-      )}
+      )} */}
 
       {/* Custom Sidebar - Slide-in from left */}
       {/* Scroll Ability */}
