@@ -128,12 +128,11 @@ Community Feedback :
    ✔ Update links to use kebab case and ensure working subject links @done(25-07-25 14:46)
    ✔ Add footer to all subject pages @done(25-07-25 14:42)
 
-   ☐ Update the loading state for past paper pages and other resources pages for logo animation
    ☐ Update past paper page loading for top mini loading state animation
    ✔ Reorder community contributor form to move subject up @done(25-07-27 13:33)
    ✔ Update community contributor page to collect user email and information @done(25-07-27 13:28)
    ✔ Update watermark with new images and positioning @done(25-07-27 13:10)
-   ☐ Update resources and past paper page fetch logic
+   ✔ Update resources and past paper page fetch logic @done(25-07-28 12:07)
 
 Systems Todo:
    ✔ Update Admin Console UI for extra information (revert) @done(25-07-09 12:05)
