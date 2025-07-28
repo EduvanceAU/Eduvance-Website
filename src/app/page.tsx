@@ -63,14 +63,14 @@ const ScrollingColumn: React.FC<ScrollingColumnProps> = ({ direction, count = 15
 
 export default function Main() {
   useEffect(() => {
-    const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    const chars = "abcdefghijklmnopqrstuvwxyzαβγδεζηθικλμνξοπρστυφχψωABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!?%$*#";
     const bg = document.querySelector(".random")
     const randomChar = () => chars[Math.floor(Math.random() * (chars.length))],
     randomString = (length) => Array.from(Array(length)).map(randomChar).join("");
     bg.innerHTML = randomString(3000);    
     setInterval(() => {
       bg.innerHTML = randomString(3000);
-    }, 80);
+    }, 120);
   }, [])
   const discord = "https://discord.gg/eduvance-community-983670206889099264"
   const[member_count, setmembercount] = useState("")
@@ -112,7 +112,7 @@ export default function Main() {
               </button>
             </a>
 
-            <div className='break-all random w-full h-full absolute inset-0 place-content-around text-center z-[-2] text-white opacity-10 text-base tracking-[0.25rem]' style={{ fontFamily: 'Poppins, sans-serif', maskImage: 'radial-gradient(circle, black 5%, transparent 100%)' }}>
+            <div className='break-all random w-full h-full absolute inset-0 place-content-around text-center z-[-2] text-white opacity-20 text-base tracking-[1rem]' style={{ fontFamily: 'Poppins, sans-serif', maskImage: 'radial-gradient(circle, black 5%, transparent 100%)' }}>
 
             </div>
             {/* Decorative Images (Positioned with absolute so they don't mess layout) */}
