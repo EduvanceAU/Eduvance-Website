@@ -76,12 +76,10 @@ export default function RootLayout({ children }) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <SupabaseAuthProvider>
-          {children}
-        </SupabaseAuthProvider>
-
-        <PopupManager>
-          {children}
+        <PopupManager asChild>
+          <SupabaseAuthProvider>
+            {children}
+          </SupabaseAuthProvider>
         </PopupManager>
       </body>
     </html>

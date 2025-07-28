@@ -89,9 +89,9 @@ export default function Main() {
         <div className="flex text-center flex-col gap-4 items-center justify-center absolute w-[95vw] h-[85vh] bg-gradient-to-b from-[#4E8CFF] to-[#0C60FB] rounded-2xl shadow-xl z-0 left-1/2 transform -translate-x-1/2 mb-[-50px] overflow-hidden" >
           
 
-            <Image src={Headline} alt="Headline" className="w-[800px] h-auto z-10" />
+            <Image src={Headline} alt="Headline" className="pointer-events-none w-[800px] h-auto z-10" />
 
-            <h3 className="font-semibold text-white leading-[22px] text-xl max-w-[550px] z-10">
+            <h3 className="select-none font-semibold text-white leading-[22px] text-base sm:text-xl max-w-[550px] z-10">
               Education drives progress. Eduvance helps you learn, revise, and stay ahead in your academic journey
             </h3>
 
@@ -101,7 +101,7 @@ export default function Main() {
               href={discord}
               target="_blank"
               rel="noopener noreferrer"
-              className="z-20"
+              className="select-none z-20"
             >
               <button className="group cursor-pointer bg-white hover:bg-[#143166] hover:text-white text-[#428CF9] border-5 border-[#639afe] px-9 py-4 rounded-[16px] text-xl poppins-semibold flex items-center gap-5 transition-all duration-500 ease-in-out hover:shadow-[inset_0_0_20px_rgba(100,154,254,0.4)] shadow-[inset_0_0_10px_rgba(66,140,249,0.2)]">
                 <div className="relative w-9 h-9">
@@ -112,14 +112,14 @@ export default function Main() {
               </button>
             </a>
 
-            <div className='break-all random w-full h-full absolute inset-0 place-content-around text-center z-[-2] text-white opacity-20 text-base tracking-[1rem]' style={{ fontFamily: 'Poppins, sans-serif', maskImage: 'radial-gradient(circle, black 5%, transparent 100%)' }}>
+            <div className='select-none break-all random w-full h-full absolute inset-0 place-content-around text-center z-[-2] text-white opacity-20 text-xs sm:text-base tracking-[0.5rem] sm:tracking-[1rem]' style={{ fontFamily: 'Poppins, sans-serif', maskImage: 'radial-gradient(circle, black 5%, transparent 100%)' }}>
 
             </div>
             {/* Decorative Images (Positioned with absolute so they don't mess layout) */}
             <Image
               src={DocWidgets}
               alt="DocWidgets"
-              className="absolute top-[70%] sm:top-[90%] w-[300px] sm:w-[300px] h-auto transform sm:-translate-y-40 translate-y-10 left-[-20px] z-0"
+              className="pointer-events-none absolute top-[70%] sm:top-[90%] w-[300px] sm:w-[300px] h-auto transform sm:-translate-y-40 translate-y-10 left-[-20px] z-0"
             />
 
           
@@ -127,7 +127,7 @@ export default function Main() {
       </section>
 
       {/* Scrolling Papers Section */}
-      <section className="w-full overflow-hidden py-16 relative top-[-80px]">
+      <section className="pointer-events-none select-none w-full overflow-hidden py-16 relative top-[-80px]">
         <div className="overflow-hidden h-[800px] w-full flex justify-center relative"> {/* Added 'relative' here */}
           {/* Top Blur Overlay */}
           <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-white to-transparent z-10"></div> {/* Adjust 'from-white' to your background color if needed */}
