@@ -1,10 +1,11 @@
-import { Home } from '@/components/homenav'
+import { Home } from '@/components/homenav';
+import PopupManager from '@/components/ui/PopupNotification';
 
-export default function RootLayout({ children }) {
+export default function Layout({ children }) { 
   return (
-      <>
-        <Home showExtra/>
-        {children}
-      </>
+    <PopupManager>
+      <Home showExtra />
+      {children}
+    </PopupManager>
   );
 }

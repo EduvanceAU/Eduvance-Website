@@ -1,18 +1,25 @@
 "use client";
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+// Removed 'motion' import as we're replacing the custom message display
+// import { motion } from 'framer-motion'; 
+
+// Import the usePopup hook from your utility file
+import { usePopup } from '@/components/ui/PopupNotification';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
 export default function AdminDashboard() {
+  const showPopup = usePopup(); // Initialize the showPopup function
+
   const [supabaseClient, setSupabaseClient] = useState(null);
   const [staffUser, setStaffUser] = useState(null);
   const [isAuthReady, setIsAuthReady] = useState(false);
   const [subjects, setSubjects] = useState([]);
   const [loadingSubjects, setLoadingSubjects] = useState(true);
-  const [message, setMessage] = useState('');
-  const [messageType, setMessageType] = useState(null);
+  // Removed message and messageType states, as they are now handled by usePopup
+  // const [message, setMessage] = useState('');
+  // const [messageType, setMessageType] = useState(null);
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
   const [loginLoading, setLoginLoading] = useState(false);
@@ -28,7 +35,7 @@ export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('upload');
   const [newSubjectName, setNewSubjectName] = useState('');
   const [newSubjectCode, setNewSubjectCode] = useState('');
-  const [newSubjectType, setNewSubjectType] = useState('');
+  const [newSubjectType, setNewSubjectType] = '';
   // For adding units to a new subject
   const [newUnitName, setNewUnitName] = useState('');
   const [newUnitCode, setNewUnitCode] = useState('');
@@ -40,7 +47,7 @@ export default function AdminDashboard() {
   const [showEditModal, setShowEditModal] = useState(false);
   const [leaderboard, setLeaderboard] = useState([]);
   const [loadingLeaderboard, setLoadingLeaderboard] = useState(false);
-  
+
   // Moderation View State
   const [modType, setModType] = useState('resource'); // 'resource' or 'community'
   const [modSubject, setModSubject] = useState('');
@@ -74,10 +81,13 @@ export default function AdminDashboard() {
     if (!supabaseClient) return;
     if (!window.confirm('Are you sure you want to delete this item?')) return;
     const table = modType === 'resource' ? 'resources' : 'community_resource_requests';
-    await supabaseClient.from(table).delete().eq('id', item.id);
-    setModResults((prev) => prev.filter((r) => r.id !== item.id));
-    setMessage('❌ Item deleted');
-    setMessageType('error');
+    const { error } = await supabaseClient.from(table).delete().eq('id', item.id);
+    if (!error) {
+        setModResults((prev) => prev.filter((r) => r.id !== item.id));
+        showPopup({ type: 'rejectSuccess', subText: 'Item deleted.' }); // Using rejectSuccess for a delete type
+    } else {
+        showPopup({ type: 'fetchError', subText: `Failed to delete item: ${error.message}` });
+    }
   };
 
   // Open edit modal for moderation
@@ -105,11 +115,9 @@ export default function AdminDashboard() {
     const { error } = await supabaseClient.from(table).update(editableFields).eq(idField, modEditItem.id);
     setModEditLoading(false);
     if (error) {
-      setMessage(`Failed to update: ${error.message}`);
-      setMessageType('error');
+      showPopup({ type: 'fetchError', subText: `Failed to update: ${error.message}` });
     } else {
-      setMessage('✅ Item updated successfully');
-      setMessageType('success');
+      showPopup({ type: 'resourceEdited', subText: 'Item updated successfully.' });
       setModEditItem(null);
       setModEditForm({});
       // Refresh moderation results
@@ -196,8 +204,7 @@ export default function AdminDashboard() {
     setLoadingSubjects(true);
     supabaseClient.from('subjects').select('id, name, code, syllabus_type, units').order('name', { ascending: true }).then(({ data, error }) => {
       if (error) {
-        setMessage(`Subjects fetch failed: ${error.message}`);
-        setMessageType('error');
+        showPopup({ type: 'fetchError', subText: `Subjects fetch failed: ${error.message}` });
       } else {
         setSubjects(data || []);
         if (data?.[0]?.id) setSelectedSubjectId(data[0].id);
@@ -209,93 +216,99 @@ export default function AdminDashboard() {
   const fetchLatestResources = async () => {
     if (!supabaseClient) return;
     const { data, error } = await supabaseClient.from('resources').select('*').order('created_at', { ascending: false }).limit(5);
-    if (!error) setLatestResources(data);
+    if (error) {
+      // Not showing a popup for background fetches, only for user-initiated actions
+      console.error("Failed to fetch latest resources:", error.message);
+    } else {
+      setLatestResources(data);
+    }
   };
 
   const fetchUnapprovedResources = async () => {
     if (!supabaseClient) return;
     // Fetch resources with 'Pending' status for the approve section
     const { data, error } = await supabaseClient.from('resources').select('*').eq('approved', "Pending");
-    if (!error) setUnapprovedResources(data);
+    if (error) {
+      // Not showing a popup for background fetches
+      console.error("Failed to fetch unapproved resources:", error.message);
+    } else {
+      setUnapprovedResources(data);
+    }
   };
 
   const approveResource = async (id) => {
     if (!supabaseClient) return;
     const currentTime = new Date().toISOString();
-    
+
     // Optimistically update the local state first
-    setUnapprovedResources((prev) => 
-      prev.map((res) => 
-        res.id === id 
+    setUnapprovedResources((prev) =>
+      prev.map((res) =>
+        res.id === id
           ? { ...res, approved: "Approved", updated_at: currentTime }
           : res
       )
     );
-    
-    const { error } = await supabaseClient.from('resources').update({ 
+
+    const { error } = await supabaseClient.from('resources').update({
       approved: "Approved",
       updated_at: currentTime
     }).eq('id', id);
-    
+
     if (!error) {
       // Remove from unapproved list after successful update
       setTimeout(() => {
         setUnapprovedResources((prev) => prev.filter((res) => res.id !== id));
       }, 1000); // Show the approved status for 1 second before removing
       fetchLatestResources();
-      setMessage("✅ Resource approved successfully");
-      setMessageType("success");
+      showPopup({ type: 'approveSuccess' });
     } else {
       // Revert the optimistic update if there was an error
-      setUnapprovedResources((prev) => 
-        prev.map((res) => 
-          res.id === id 
+      setUnapprovedResources((prev) =>
+        prev.map((res) =>
+          res.id === id
             ? { ...res, approved: "Pending", updated_at: res.updated_at }
             : res
         )
       );
-      setMessage(`Failed to approve resource: ${error.message}`);
-      setMessageType("error");
+      showPopup({ type: 'fetchError', subText: `Failed to approve resource: ${error.message}` });
     }
   };
 
   const rejectResource = async (id) => {
     if (!supabaseClient) return;
     const currentTime = new Date().toISOString();
-    
+
     // Optimistically update the local state first
-    setUnapprovedResources((prev) => 
-      prev.map((res) => 
-        res.id === id 
+    setUnapprovedResources((prev) =>
+      prev.map((res) =>
+        res.id === id
           ? { ...res, approved: "Unapproved", updated_at: currentTime }
           : res
       )
     );
-    
-    const { error } = await supabaseClient.from('resources').update({ 
+
+    const { error } = await supabaseClient.from('resources').update({
       approved: "Unapproved",
       updated_at: currentTime
     }).eq('id', id);
-    
+
     if (!error) {
       // Remove from pending list after successful update
       setTimeout(() => {
         setUnapprovedResources((prev) => prev.filter((res) => res.id !== id));
       }, 1000); // Show the rejected status for 1 second before removing
       fetchLatestResources();
-      setMessage("❌ Resource rejected");
-      setMessageType("error");
+      showPopup({ type: 'rejectSuccess' });
     } else {
       // Revert the optimistic update if there was an error
-      setUnapprovedResources((prev) => 
-        prev.map((res) => 
-          res.id === id 
+      setUnapprovedResources((prev) =>
+        prev.map((res) =>
+          res.id === id
             ? { ...res, approved: "Pending", updated_at: res.updated_at }
             : res
         )
       );
-      setMessage(`Failed to reject resource: ${error.message}`);
-      setMessageType("error");
+      showPopup({ type: 'fetchError', subText: `Failed to reject resource: ${error.message}` });
     }
   };
 
@@ -305,8 +318,9 @@ export default function AdminDashboard() {
     if (!error) {
       setUnapprovedResources((prev) => prev.filter((res) => res.id !== id));
       fetchLatestResources();
-      setMessage("❌ Resource deleted");
-      setMessageType("error");
+      showPopup({ type: 'rejectSuccess', subText: 'Resource deleted.' }); // Using rejectSuccess for a delete type
+    } else {
+      showPopup({ type: 'fetchError', subText: `Failed to delete resource: ${error.message}` });
     }
   };
 
@@ -317,21 +331,22 @@ export default function AdminDashboard() {
     const { data, error } = await supabaseClient.auth.signInWithPassword({ email: loginEmail, password: loginPassword });
     if (!error) {
       setStaffUser(data.user);
-      setMessage('Logged in successfully!');
-      setMessageType('success');
+      showPopup({ type: 'loginSuccess' });
     } else {
-      setMessage(`Login failed: ${error.message}`);
-      setMessageType('error');
+      showPopup({ type: 'fetchError', subText: `Login failed: ${error.message}` });
     }
     setLoginLoading(false);
   };
 
   const handleLogout = async () => {
     if (!supabaseClient) return;
-    await supabaseClient.auth.signOut();
-    setStaffUser(null);
-    setMessage('Logged out.');
-    setMessageType('success');
+    const { error } = await supabaseClient.auth.signOut();
+    if (!error) {
+      setStaffUser(null);
+      showPopup({ type: 'logoutSuccess' });
+    } else {
+      showPopup({ type: 'fetchError', subText: `Logout failed: ${error.message}` });
+    }
   };
 
   const [submitLoading, setSubmitLoading] = useState(false);
@@ -339,14 +354,12 @@ export default function AdminDashboard() {
     e.preventDefault();
     setSubmitLoading(true);
     if (!supabaseClient) {
-      setMessage('Error: Supabase client not initialized. Please refresh the page or check your connection.');
-      setMessageType('error');
+      showPopup({ type: 'fetchError', subText: 'Supabase client not initialized. Please refresh the page or check your connection.' });
       setSubmitLoading(false);
       return;
     }
     if (!title || !link || !selectedSubjectId || !resourceType) {
-      setMessage("Fill all required fields");
-      setMessageType('error');
+      showPopup({ type: 'validationError', subText: 'Please fill all required fields.' });
       setSubmitLoading(false);
       return;
     }
@@ -371,42 +384,26 @@ export default function AdminDashboard() {
       approved: "Approved" // Automatically set to Approved
     }).select();
     if (error) {
-      setMessage(`Submission failed: ${error.message}`);
-      setMessageType('error');
-      setTimeout(() => {
-        setMessage("");
-        setMessageType(null);
-        setSubmitLoading(false);
-      }, 3000);
+      showPopup({ type: 'fetchError', subText: `Submission failed: ${error.message}` });
+      setSubmitLoading(false);
     } else if (!data || data.length === 0) {
-      setMessage('Submission did not return a new resource. Please check your database constraints.');
-      setMessageType('error');
-      setTimeout(() => {
-        setMessage("");
-        setMessageType(null);
-        setSubmitLoading(false);
-      }, 3000);
+      showPopup({ type: 'fetchError', subText: 'Submission did not return a new resource. Please check your database constraints.' });
+      setSubmitLoading(false);
     } else {
-      setMessage("✅ Resource added successfully");
-      setMessageType('success');
+      showPopup({ type: 'uploadSuccess' });
       setTitle('');
       setLink('');
       setDescription('');
       fetchUnapprovedResources();
       fetchLatestResources();
-      setTimeout(() => {
-        setMessage("");
-        setMessageType(null);
-        setSubmitLoading(false);
-      }, 3000);
+      setSubmitLoading(false);
     }
   };
 
   const handleAddSubject = async (e) => {
     e.preventDefault();
     if (!newSubjectName || !newSubjectCode || !newSubjectType) {
-      setMessage('All fields are required for adding a subject');
-      setMessageType('error');
+      showPopup({ type: 'validationError', subText: 'All fields are required for adding a subject.' });
       return;
     }
     const { error } = await supabaseClient.from('subjects').insert({
@@ -416,11 +413,9 @@ export default function AdminDashboard() {
       units: newUnits
     });
     if (error) {
-      setMessage(`Failed to add subject: ${error.message}`);
-      setMessageType('error');
+      showPopup({ type: 'fetchError', subText: `Failed to add subject: ${error.message}` });
     } else {
-      setMessage('✅ Subject added successfully');
-      setMessageType('success');
+      showPopup({ type: 'approveSuccess', subText: 'Subject added successfully.' }); // Using approveSuccess for adding a subject
       setNewSubjectName('');
       setNewSubjectCode('');
       setNewSubjectType('');
@@ -437,8 +432,7 @@ export default function AdminDashboard() {
   const handleAddUnit = (e) => {
     e.preventDefault();
     if (!newUnitName || !newUnitCode || !newUnitNumber) {
-      setMessage('All unit fields are required');
-      setMessageType('error');
+      showPopup({ type: 'validationError', subText: 'All unit fields are required.' });
       return;
     }
     setNewUnits((prev) => [
@@ -448,8 +442,7 @@ export default function AdminDashboard() {
     setNewUnitName('');
     setNewUnitCode('');
     setNewUnitNumber('');
-    setMessage('');
-    setMessageType(null);
+    // No popup here as it's an in-form action
   };
 
   // Remove a unit from the newUnits array
@@ -496,11 +489,9 @@ export default function AdminDashboard() {
     }).eq('id', editResource.id);
     setEditLoading(false);
     if (error) {
-      setMessage(`Failed to update resource: ${error.message}`);
-      setMessageType('error');
+      showPopup({ type: 'fetchError', subText: `Failed to update resource: ${error.message}` });
     } else {
-      setMessage('✅ Resource updated successfully');
-      setMessageType('success');
+      showPopup({ type: 'resourceEdited' });
       closeEditResource();
       fetchUnapprovedResources();
       fetchLatestResources();
@@ -511,9 +502,10 @@ export default function AdminDashboard() {
     if (!supabaseClient) return;
     const { error } = await supabaseClient.from('resources').delete().eq('id', id);
     if (!error) {
-      setMessage('❌ Resource deleted');
-      setMessageType('error');
+      showPopup({ type: 'rejectSuccess', subText: 'Resource deleted.' }); // Using rejectSuccess for a delete type
       fetchLatestResources();
+    } else {
+      showPopup({ type: 'fetchError', subText: `Failed to delete resource: ${error.message}` });
     }
   };
 
@@ -526,8 +518,7 @@ export default function AdminDashboard() {
       .from('staff_users')
       .select('id, username, email');
     if (staffError) {
-      setMessage('Failed to fetch staff users: ' + staffError.message);
-      setMessageType('error');
+      showPopup({ type: 'fetchError', subText: 'Failed to fetch staff users: ' + staffError.message });
       setLoadingLeaderboard(false);
       return;
     }
@@ -536,8 +527,7 @@ export default function AdminDashboard() {
       .from('resources')
       .select('uploaded_by_username, approved');
     if (resError) {
-      setMessage('Failed to fetch resources: ' + resError.message);
-      setMessageType('error');
+      showPopup({ type: 'fetchError', subText: 'Failed to fetch resources: ' + resError.message });
       setLoadingLeaderboard(false);
       return;
     }
@@ -592,11 +582,14 @@ export default function AdminDashboard() {
     query.order('created_at', { ascending: false }).then(({ data, error }) => {
       setModResults(data || []);
       setModLoading(false);
+      if (error) {
+        showPopup({ type: 'fetchError', subText: `Failed to fetch moderation data: ${error.message}` });
+      }
     });
   }, [modType, modSubject, modQualification, activeTab, supabaseClient, subjects]);
 
-  return (  
-    <div className={`pt-20 ${!staffUser ? "h-screen":"min-h-screen h-fit "} bg-blue-100 p-6 flex justify-center items-center`} style={{ fontFamily: 'Poppins, sans-serif' }}>      
+  return (
+    <div className={`pt-20 ${!staffUser ? "h-screen":"min-h-screen h-fit "} bg-blue-100 p-6 flex justify-center items-center`} style={{ fontFamily: 'Poppins, sans-serif' }}>
       <div className="h-fit bg-white rounded-xl shadow-lg w-full max-w-5xl mx-auto p-4 sm:p-6">
         {!staffUser ? (
           <form onSubmit={handleLogin} className="space-y-4">
@@ -610,7 +603,6 @@ export default function AdminDashboard() {
           </form>
         ) : (
           <>
-            {/* <div className="flex  border-b mb-4 sm:text-base text-xs"> */}
             <div className="border-b mb-4 sm:text-base text-xs grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 md:gap-6 sm:px-1 w-full">
                 <button onClick={() => setActiveTab('upload')} className={`cursor-pointer py-2 px-4 flex items-center gap-1 rounded-t-lg ${activeTab === 'upload' ? 'border-b-2 border-blue-600 font-semibold text-blue-700 bg-blue-50' : 'text-gray-500 hover:text-blue-600'}`}><svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4" /></svg>Upload</button>
                 <button onClick={() => setActiveTab('approve')} className={`cursor-pointer py-2 px-4 flex items-center gap-1 rounded-t-lg ${activeTab === 'approve' ? 'border-b-2 border-blue-600 font-semibold text-blue-700 bg-blue-50' : 'text-gray-500 hover:text-blue-600'}`}><svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor"><path d="M263.72-96Q234-96 213-117.15T192-168v-384q0-29.7 21.15-50.85Q234.3-624 264-624h24v-96q0-79.68 56.23-135.84 56.22-56.16 136-56.16Q560-912 616-855.84q56 56.16 56 135.84v96h24q29.7 0 50.85 21.15Q768-581.7 768-552v384q0 29.7-21.16 50.85Q725.68-96 695.96-96H263.72Zm.28-72h432v-384H264v384Zm216.21-120Q510-288 531-309.21t21-51Q552-390 530.79-411t-51-21Q450-432 429-410.79t-21 51Q408-330 429.21-309t51 21ZM360-624h240v-96q0-50-35-85t-85-35q-50 0-85 35t-35 85v96Zm-96 456v-384 384Z"/></svg>Approve</button>
@@ -618,9 +610,7 @@ export default function AdminDashboard() {
                 <button onClick={() => setActiveTab('leaderboard')} className={`cursor-pointer py-2 px-4 flex items-center gap-1 rounded-t-lg ${activeTab === 'leaderboard' ? 'border-b-2 border-blue-600 font-semibold text-blue-700 bg-blue-50' : 'text-gray-500 hover:text-blue-600'}`}><svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M3 17v-2a4 4 0 014-4h10a4 4 0 014 4v2" /><circle cx="12" cy="7" r="4" /></svg>Leaderboard</button>
                 <button onClick={() => setActiveTab('moderation')} className={`cursor-pointer py-2 px-4 flex items-center gap-1 rounded-t-lg ${activeTab === 'moderation' ? 'border-b-2 border-blue-600 font-semibold text-sm text-blue-700 bg-blue-50' : 'text-gray-500 hover:text-blue-600'}`}><svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" /></svg>Moderation View</button>
             </div>
-            {message && (
-              <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className={`mb-4 p-3 rounded text-sm flex items-center gap-2 ${messageType === 'success' ? 'bg-green-100 text-green-800 border border-green-300' : 'bg-red-100 text-red-800 border border-red-300'}`}>{messageType === 'success' ? <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg> : <svg className="w-5 h-5 text-red-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>}<span>{message}</span></motion.div>
-            )}
+            {/* Removed the old message display div */}
             {activeTab === 'upload' && (
               <>
                 <form onSubmit={handleSubmit} className="space-y-4 bg-blue-50 p-4 rounded-2xl border border-blue-100">
@@ -898,7 +888,7 @@ export default function AdminDashboard() {
                       <option value="Pending">Pending</option>
                       <option value="Unapproved">Unapproved</option>
                     </select>
-                      <button onClick={saveEditResource} disabled={editLoading} className="cursor-pointer w-full bg-blue-600 hover:bg-blue-700 transition text-white py-2 rounded-lg flex items-center justify-center gap-2 mt-2">{editLoading ? 'Saving...' : 'Save Changes'}</button> 
+                      <button onClick={saveEditResource} disabled={editLoading} className="cursor-pointer w-full bg-blue-600 hover:bg-blue-700 transition text-white py-2 rounded-lg flex items-center justify-center gap-2 mt-2">{editLoading ? 'Saving...' : 'Save Changes'}</button>
                   </div>
                 </div>
               </div>
