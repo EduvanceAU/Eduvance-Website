@@ -15,7 +15,7 @@ import WhiteDiscordLogo from '@/assets/png/WhiteDiscordLogo.png'
 import QuotationMarks from '@/assets/png/QuotationMarks.png'
 // Reusable components
 const TestimonialCard = ({ content, icon, headline, rotation, imageClassName }) => (
-  <div className={`bg-gradient-to-r from-[#347BFF] to-[#2566E2] border border-white rounded-xl p-6 ${rotation} w-full mx-2 md:mx-0 h-full`}>
+  <div className={`hover:-translate-y-2.5 transition-all duration-200 bg-gradient-to-r from-[#347BFF] to-[#2566E2] border border-white rounded-xl p-6 ${rotation} w-full mx-2 md:mx-0 h-full`}>
     <p className="text-white text-sm font-light leading-relaxed">
       {content}
     </p>
