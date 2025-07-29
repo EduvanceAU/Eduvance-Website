@@ -154,3 +154,9 @@ Systems Todo:
    ✔ Logged in session maintenance through-out different tabs @done(25-07-21 11:36)
    ✔ Persistent log in message -> annoying feature @done(25-07-21 11:36)
    ✔ Log Out button doesn't properly terminate the session @done(25-07-21 11:36)
+
+Final Stage Todo :
+   ☐ Past Paper page year filter bug fix for 2019 year
+   ☐ Past Paper upload mechanism integration to both staff dashboards
+   ☐ Website loading animation experiment + designs for logo animation
+   ☐ Update all subject's past papers with the latest links
