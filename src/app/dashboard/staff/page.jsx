@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-
+import { Pencil } from 'lucide-react';
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
@@ -542,10 +542,9 @@ export default function UploadResource() {
                           ) : (
                             <a
                               href={res.link}
-                              className="text-blue-500 underline text-xs px-2 py-1 rounded hover:bg-blue-100 transition whitespace-nowrap break-all flex-1"
+                              className="text-blue-500 underline text-xs px-2 w-fit py-1 rounded hover:bg-blue-100 transition sm:whitespace-nowrap break-all flex-1"
                               target="_blank"
                               rel="noopener noreferrer"
-                              style={{ minWidth: 0 }}
                             >
                               {res.link}
                             </a>
@@ -652,7 +651,7 @@ export default function UploadResource() {
                           <>
                             <button
                               onClick={() => handleSaveResourceChanges(res.id)}
-                              className="bg-blue-500 hover:bg-blue-700 text-white px-3 py-1 rounded-md flex items-center gap-1 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                              className="cursor-pointer bg-blue-500 hover:bg-blue-700 text-white px-3 py-1 rounded-md flex items-center gap-1 transition disabled:opacity-50 disabled:cursor-not-allowed"
                               // The button is enabled if editedResourceData for this ID exists AND
                               // required fields are not empty. This means any change to required fields
                               // or presence of data will enable it.
@@ -669,7 +668,7 @@ export default function UploadResource() {
                             </button>
                             <button
                               onClick={handleCancelEdit}
-                              className="bg-gray-300 hover:bg-gray-400 text-gray-700 px-3 py-1 rounded-md flex items-center gap-1 transition"
+                              className="cursor-pointer bg-gray-300 hover:bg-gray-400 text-gray-700 px-3 py-1 rounded-md flex items-center gap-1 transition"
                             >
                               <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
                               Cancel
@@ -680,13 +679,11 @@ export default function UploadResource() {
                             <button onClick={() => approveResource(res.id)} className="cursor-pointer bg-green-500 hover:bg-green-600 transition text-white px-3 py-1 rounded-md flex items-center gap-1"><svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>Approve</button>
                             <button
                               onClick={() => handleEditResource(res)} // Set the resource to be edited
-                              className="p-2 cursor-pointer text-blue-500 hover:text-blue-700 focus:outline-none bg-blue-100 rounded-md"
+                              className="p-2 cursor-pointer text-blue-500 hover:text-blue-700 focus:outline-none bg-blue-100 rounded-md max-sm:flex max-sm:items-start max-sm:gap-2"
                               title="Edit Resource Details"
                             >
-                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M17.4142 2.58579C16.6332 1.80474 15.3668 1.80474 14.5858 2.58579L7 10.1716V13H9.82843L17.4142 5.41421C18.1953 4.63316 18.1953 3.36684 17.4142 2.58579Z" fill="#3B82F6"/>
-                                <path d="M2.91039 12.3396L2 17L6.66042 16.0896L14.7142 7.96253L9.03747 2.28577L2.91039 12.3396Z" fill="#3B82F6"/>
-                                </svg>
+                              <Pencil className='w-5 h-5'/>
+                              <p className='max-sm:inline-block hidden'>Edit Resource Details</p>
                             </button>
                             <button onClick={() => handleWatermark(res)} disabled={watermarkLoading[res.id]} className={`cursor-pointer bg-blue-500 hover:bg-blue-600 transition text-white px-3 py-1 rounded-md flex items-center gap-1 ${watermarkLoading[res.id] ? 'opacity-50 cursor-not-allowed' : ''}`}>
                               <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" /></svg>
