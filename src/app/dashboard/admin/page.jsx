@@ -808,7 +808,7 @@ export default function AdminDashboard() {
                       const subject = subjects.find(sub => sub.id === item.subject_id);
                       const approvalStatus = getApprovalStatus(item.approved);
                       return (
-                        <div key={item.id} className="bg-blue-50 border border-blue-200 rounded-lg p-4 shadow-sm flex flex-col gap-2 relative">
+                        <div key={item.id} className="bg-blue-50 border border-blue-200 rounded-lg pb-10 p-4 shadow-sm flex flex-col gap-2 relative">
                           <div className="font-bold text-blue-800 text-lg mb-1">{item.title}</div>
                           <div className="text-sm text-gray-600 mb-1">{item.description}</div>
                           <a href={item.link} className="text-blue-500 underline text-sm break-all" target="_blank" rel="noopener noreferrer">{item.link}</a>
@@ -832,7 +832,7 @@ export default function AdminDashboard() {
                               </>
                             )}
                           </div>
-                          <div className="flex gap-2 mt-2 absolute top-2 right-2">
+                          <div className="flex gap-2 m-2 absolute bottom-0 right-0">
                             <button onClick={() => handleModEdit(item)} className="cursor-pointer bg-yellow-400 hover:bg-yellow-500 text-white px-3 py-1 rounded text-xs">Edit</button>
                             <button onClick={() => handleModDelete(item)} className="cursor-pointer bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-xs">Delete</button>
                           </div>
@@ -896,7 +896,7 @@ export default function AdminDashboard() {
             {/* Moderation Edit Modal */}
             {modEditItem && (
               <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-xs animate-fade-in bg-black/10">
-                <div className="bg-white rounded-2xl p-6 w-full max-w-lg relative shadow-2xl">
+                <div className="bg-white rounded-2xl m-10 p-6 w-full h-[90vh] overflow-y-scroll overscroll-none overflow-x-hidden max-w-lg relative shadow-2xl">
                   <button onClick={() => setModEditItem(null)} className="cursor-pointer absolute top-2 right-2 text-gray-400 hover:text-red-500 text-xl">&times;</button>
                   <h3 className="text-lg font-semibold mb-4 text-blue-700">Edit {modType === 'resource' ? 'Resource' : 'Community Note'}</h3>
                   <div className="space-y-3">
