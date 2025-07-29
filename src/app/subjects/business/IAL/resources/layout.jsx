@@ -1,5 +1,5 @@
 const subjectName = 'Business';
-const examCode = 'WBS1/XBS11/YBS11';
+const examCode = 'BUS';
 const syllabusType = 'IAL';
 const refName = subjectName;
 const refsyllabusType = syllabusType;

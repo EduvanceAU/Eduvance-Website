@@ -15,7 +15,7 @@ import SmallFoot from '@/components/smallFoot.jsx';
 // At the top, define variables for subjectName, syllabusType, and examCode
 const subjectName = 'Chemistry';
 const subjectSlug = subjectName.toLowerCase().replace(/\s+/g, '-');
-const examCode = 'WCH1/XCH11/YCH11';
+const examCode = 'CHE';
 
 // Add SubjectButtons component that fetches subjects dynamically
 const SubjectButtons = () => {
@@ -184,7 +184,7 @@ export default function IALResources() {
 
           <div className="inline-flex items-center justify-center px-4 py-2 mb-8 rounded-md" style={{ border: "1.5px solid #DBDBDB", fontFamily: "Poppins, sans-serif" }}>
             <span className="text-md font-medium text-black tracking-tight">
-              <span className="font-[501]">Exam code:</span> WCH1/XCH11/YCH11
+              <span className="font-[501]">Exam code:</span> CHE
             </span>
           </div>
 

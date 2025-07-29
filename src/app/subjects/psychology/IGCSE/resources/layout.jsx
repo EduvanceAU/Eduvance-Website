@@ -1,5 +1,5 @@
 const subjectName = 'Psychology';
-const examCode = 'WPS0/XPS01/YPS01';
+const examCode = 'PSY';
 const syllabusType = '';
 const refName = subjectName;
 const refsyllabusType = syllabusType;

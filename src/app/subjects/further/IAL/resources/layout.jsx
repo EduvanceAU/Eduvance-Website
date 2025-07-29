@@ -1,5 +1,5 @@
 const subjectName = 'Further';
-const examCode = '4PM1';
+const examCode = 'FUR';
 const syllabusType = '';
 const refName = subjectName;
 const refsyllabusType = syllabusType;

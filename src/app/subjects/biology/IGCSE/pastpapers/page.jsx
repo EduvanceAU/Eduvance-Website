@@ -18,7 +18,7 @@ const subjectName = 'Biology';
 // Remove subjectSlug as it's not needed for this approach
 // const subjectSlug = subjectName.toLowerCase().replace(/\s+/g, '-');
 
-const DISPLAY_START_YEAR = 2020;
+const DISPLAY_START_YEAR = 2019;
 const DISPLAY_END_YEAR = 2024;
 const years = Array.from({ length: DISPLAY_END_YEAR - DISPLAY_START_YEAR + 1 }, (_, i) => DISPLAY_START_YEAR + i);
 
@@ -371,7 +371,7 @@ export default function IGCSEPastPapersPage() {
             }}
           >
             <span className="text-md font-medium text-black tracking-tight">
-              <span className="font-[501]">Exam code:</span> 4BI1
+              <span className="font-[501]">Exam code:</span> BIO
             </span>
           </div>
 
@@ -568,7 +568,7 @@ export default function IGCSEPastPapersPage() {
                                       style={{ fontFamily: "Poppins, sans-serif" }}
                                     >
                                       <h4 className="text-md font-semibold tracking-tight text-[#333333] mb-3 text-left">
-                                        {`${unit.unit}: ${unit.name}`}
+                                        {`${unit.unit}`}
                                       </h4>
                                       <div className="space-y-2"> {/* Links container */}
                                         <Link
