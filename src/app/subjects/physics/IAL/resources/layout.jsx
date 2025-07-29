@@ -1,5 +1,5 @@
 const subjectName = 'Physics';
-const examCode = 'WPH1/XPH11/YPH11';
+const examCode = 'PHY';
 const syllabusType = 'IAL';
 const refName = subjectName;
 const refsyllabusType = syllabusType;
