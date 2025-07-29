@@ -21,6 +21,18 @@
   }
 }
 
+@theme {
+  --animate-loadExtend: loadExtend 1500ms ease-out forwards;
+
+  @keyframes loadExtend {
+    0% {
+      width: 0%;
+    }
+    100% {
+      width: 100%;
+    }
+  }
+}
 
 @theme inline {
   --color-background: var(--background);
