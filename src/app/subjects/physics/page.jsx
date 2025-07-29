@@ -2,7 +2,7 @@
 import { useState, useEffect, use } from 'react';
 import Link from 'next/link';
 import SmallFoot from '@/components/smallFoot.jsx';
-
+import { Home } from '@/components/homenav';
 export default function Subject({ searchParams }) {
   const subjectName = 'Physics';
   const [selected, setSelected] = useState('option1');
@@ -44,6 +44,7 @@ export default function Subject({ searchParams }) {
 
   return (
     <>
+      <Home showExtra dontShowload/>
       {/* Main Content */}
       <div className={`transition-all duration-300 ${sidebarOpen ? 'sm:ml-70' : 'ml-0'}`}>
         {/* Custom Banner Header */}
