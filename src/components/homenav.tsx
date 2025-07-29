@@ -282,15 +282,6 @@ function Home(props) {
         {/* Center Links - Hidden on sm */}
         <div className="hidden sm:flex flex-wrap gap-3 sm:gap-4 md:gap-5 justify-center items-center">
           <NavDropdown
-            labelMain="About"
-            labelSmall="About"
-            items={[
-              { label: "About Eduvance", href: "/about/eduvance" },
-              { label: "Exam Structure", href: "/about/edexcel/examStructure" },
-              { label: "Grading System", href: "/about/edexcel/grading" },
-            ]}
-          />
-          <NavDropdown
             labelMain="IAL Edexcel Subjects"
             labelSmall="IAL"
             items={NonUniqueSubjects
@@ -321,6 +312,15 @@ function Home(props) {
               { label: "Community Guidelines", href: "/guidelines" },
               { label: "Privacy Policy", href: "/privacy" },
               { label: "Terms of Service", href: "/terms" },
+            ]}
+          />
+          <NavDropdown
+            labelMain="About"
+            labelSmall="About"
+            items={[
+              { label: "About Eduvance", href: "/about/eduvance" },
+              { label: "Exam Structure", href: "/about/edexcel/examStructure" },
+              { label: "Grading System", href: "/about/edexcel/grading" },
             ]}
           />
         </div>
