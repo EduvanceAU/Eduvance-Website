@@ -1,5 +1,5 @@
 const subjectName = 'Economics';
-const examCode = 'ECO';
+const examCode = 'WEC1/XEC11/YEC11';
 const syllabusType = 'IAL';
 const refName = subjectName;
 const refsyllabusType = syllabusType;

@@ -371,7 +371,7 @@ export default function IGCSEPastPapersPage() {
             }}
           >
             <span className="text-md font-medium text-black tracking-tight">
-              <span className="font-[501]">Exam code:</span> ACC
+              <span className="font-[501]">Exam code:</span> 4AC1
             </span>
           </div>
 

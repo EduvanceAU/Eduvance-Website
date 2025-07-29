@@ -14,7 +14,7 @@ const sessions = [
 ];
 
 // At the top, define variables for subjectName and syllabusType
-const subjectName = 'Further';
+const subjectName = 'Further Pure Mathematics';
 // Remove subjectSlug as it's not needed for this approach
 // const subjectSlug = subjectName.toLowerCase().replace(/\s+/g, '-');
 
@@ -28,12 +28,12 @@ const SubjectButtons = () => {
 
   useEffect(() => {
     async function fetchSubjects() {
-      console.debug('SubjectButtons: Attempting to fetch subjects for IAL.');
+      console.debug('SubjectButtons: Attempting to fetch subjects for IGCSE.');
       const { data, error } = await supabase
         .from('subjects')
         .select('name')
         .order('name', { ascending: true })
-        .eq('syllabus_type', 'IAL');
+        .eq('syllabus_type', 'IGCSE');
       if (!error && data) {
         setSubjects(data.map(subj => subj.name));
         console.debug('SubjectButtons: Successfully fetched subjects:', data.map(subj => subj.name));
@@ -53,7 +53,7 @@ const SubjectButtons = () => {
         // If your folder system changes, you'll update this `href` accordingly.
         const slug = name.toLowerCase().replace(/\s+/g, '-');
         return (
-          <Link key={index} href={`/subjects/${slug}/IAL/pastpapers`}>
+          <Link key={index} href={`/subjects/${slug}/IGCSE/pastpapers`}>
             <button className="px-4 py-2 cursor-pointer bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition">
               {name}
             </button>
@@ -91,7 +91,7 @@ const specs = [
   { label: 'Old Spec', value: 'old' },
 ];
 
-export default function IALPastPapersPage() {
+export default function IGCSEPastPapersPage() {
   const [selectedUnits, setSelectedUnits] = useState([]);
   const [papers, setPapers] = useState([]);
   const [selectedYears, setSelectedYears] = useState([]);
@@ -122,11 +122,11 @@ export default function IALPastPapersPage() {
         .from('subjects')
         .select('id, code') // Make sure to select 'code' here
         .eq('name', subjectName)
-        .eq('syllabus_type', 'IAL')
+        .eq('syllabus_type', 'IGCSE')
         .single();
 
       if (subjectError || !subjectData) {
-        const errMsg = subjectError ? subjectError.message : `Subject "further" not found.`;
+        const errMsg = subjectError ? subjectError.message : `Subject "further-pure-mathematics" not found.`;
         setError(new Error(errMsg));
         console.error('fetchPapers: Error fetching subject ID and code:', errMsg);
         return;
@@ -173,11 +173,11 @@ export default function IALPastPapersPage() {
         .from('subjects')
         .select('units')
         .eq('name', subjectName)
-        .eq('syllabus_type', 'IAL')
+        .eq('syllabus_type', 'IGCSE')
         .single();
 
       if (subjectError || !subjectData) {
-        const errMsg = subjectError ? subjectError.message : `Subject "further" not found for units.`;
+        const errMsg = subjectError ? subjectError.message : `Subject "further-pure-mathematics" not found for units.`;
         setError(new Error(errMsg));
         console.error('fetchUnits: Error fetching subject units:', errMsg);
         return;
@@ -360,7 +360,7 @@ export default function IALPastPapersPage() {
             className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#000000] mb-8 text-left tracking-[-0.035em]"
             style={{ fontFamily: "Poppins, sans-serif" }}
           >
-            IAL <span className="bg-[#1A69FA] px-2 py-1 -rotate-1 inline-block"><span className="text-[#FFFFFF]">Further</span></span> Past Papers
+            IGCSE <span className="bg-[#1A69FA] px-2 py-1 -rotate-1 inline-block"><span className="text-[#FFFFFF]">Further Pure Mathematics</span></span> Past Papers
           </h1>
 
           <div
@@ -371,7 +371,7 @@ export default function IALPastPapersPage() {
             }}
           >
             <span className="text-md font-medium text-black tracking-tight">
-              <span className="font-[501]">Exam code:</span> FUR
+              <span className="font-[501]">Exam code:</span> 4PM1
             </span>
           </div>
 
@@ -379,7 +379,7 @@ export default function IALPastPapersPage() {
             className="text-sm sm:text-md lg:text-lg font-[500] leading-6 text-[#707070] mb-8 text-left tracking-[-0.015em]"
             style={{ fontFamily: "Poppins, sans-serif" }}
           >
-            Explore our collection of Edexcel IAL Further Past Papers and Mark Schemes below. Practicing with IAL Further past papers is one of the most effective ways to pinpoint the topics that need more focus—helping you revise smarter and prepare confidently for your upcoming exam
+            Explore our collection of Edexcel IGCSE Further Pure Mathematics Past Papers and Mark Schemes below. Practicing with IGCSE Further Pure Mathematics past papers is one of the most effective ways to pinpoint the topics that need more focus—helping you revise smarter and prepare confidently for your upcoming exam
           </h3>
 
           <div className="w-full mb-8">
@@ -568,7 +568,7 @@ export default function IALPastPapersPage() {
                                       style={{ fontFamily: "Poppins, sans-serif" }}
                                     >
                                       <h4 className="text-md font-semibold tracking-tight text-[#333333] mb-3 text-left">
-                                        {`${unit.unit}: ${unit.name}`}
+                                        {`${unit.unit}`}
                                       </h4>
                                       <div className="space-y-2"> {/* Links container */}
                                         <Link

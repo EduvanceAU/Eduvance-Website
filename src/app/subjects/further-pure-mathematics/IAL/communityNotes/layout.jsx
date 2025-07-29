@@ -1,6 +1,6 @@
-const subjectName = 'Further';
-const examCode = 'FUR';
-const syllabusType = 'IGCSE';
+const subjectName = 'Further Pure Mathematics';
+const examCode = '4PM1';
+const syllabusType = '';
 const refName = subjectName;
 const refsyllabusType = syllabusType;
 
@@ -11,7 +11,7 @@ export const viewport = {
 export const metadata = {
   title: `${refsyllabusType} ${refName}`,
   description:
-    `Discover original Eduvance resources for ${refsyllabusType} ${refName}, crafted to simplify tough topics and support your revision. Designed with care and clarity to help you study smarter!`,
+    `Discover clear, concise notes and study guides for ${refsyllabusType} ${refName}, created by students and teachers who get what works. Ideal for exam preparation or topic review, these resources are made to support your learning every step of the way!`,
   icons: {
     icon: "/BlueSolo.svg",
     shortcut: "/BlueSolo.svg",
@@ -20,7 +20,7 @@ export const metadata = {
   openGraph: {
     title: `${refsyllabusType} ${refName}`,
     description:
-      `Discover original Eduvance resources for ${refsyllabusType} ${refName}, crafted to simplify tough topics and support your revision. Designed with care and clarity to help you study smarter!`,
+      `Discover clear, concise notes and study guides for ${refsyllabusType} ${refName}, created by students and teachers who get what works. Ideal for exam preparation or topic review, these resources are made to support your learning every step of the way!`,
     url: `https://www.eduvance-org.vercel.app/subjects/${refName}`,
     type: "website",
     images: [
@@ -36,7 +36,7 @@ export const metadata = {
     card: "summary_large_image",
     title: `${refsyllabusType} ${refName}`,
     description:
-      `Discover original Eduvance resources for ${refsyllabusType} ${refName}, crafted to simplify tough topics and support your revision. Designed with care and clarity to help you study smarter!`,
+      `Discover clear, concise notes and study guides for ${refsyllabusType} ${refName}, created by students and teachers who get what works. Ideal for exam preparation or topic review, these resources are made to support your learning every step of the way!`,
     images: ["https://www.eduvance-org.vercel.app/tempbg.png"],
   },
 };
