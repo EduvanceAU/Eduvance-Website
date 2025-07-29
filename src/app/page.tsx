@@ -82,7 +82,7 @@ export default function Main() {
 
   return (
     <>
-      <Home/>
+      <Home dontShowload/>
       {/* Hero Section */}
       <section className="w-full min-h-screen flex flex-col relative pt-16">
         {/* Gradient Box in Background */}

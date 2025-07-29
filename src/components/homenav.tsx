@@ -242,10 +242,20 @@ function Home(props) {
     showPopup({ type: 'logoutSuccess', subText: 'Hoping you are back soon!' });
     sessionStorage.removeItem('loginPopupShown');
   };
+  const[bar, setBar] = useState(null)
+  useEffect(() => {
+    if(!props.dontShowload){
+      setBar(<div className='bg-[#5cabff] h-[65px] opacity-100 animate-loadExtend'/>)
+      const timeout = setTimeout(() => {
+        setBar(<div className='bg-[#5cabff] h-[0px] transition-all duration-200 opacity-0'/>);
+      }, 2000);
 
+      return () => clearTimeout(timeout);
+    }
+  }, [props.load])
   return (
-    <main className="bg-white relative overflow-x-hidden">
-
+    <main className="bg-white relative overflow-x-hidden"> 
+      {bar}     
       <nav className="w-full h-[60px] flex justify-between items-center px-4 md:px-6 py-4 z-50 fixed top-0 left-0 bg-white bg-opacity-95">
         {/* 👈 Left Side: Sidebar Button + Logo in one group */}
         <div className="flex items-center gap-2">
@@ -549,7 +559,7 @@ function Home(props) {
           </div>
         </div>
         {extra}
-      </div>
+      </div>      
     </main>
   );
 };
