@@ -1,5 +1,5 @@
 const subjectName = 'Physics';
-const examCode = 'PHY';
+const examCode = '4PH1';
 const syllabusType = 'IGCSE';
 const refName = subjectName;
 const refsyllabusType = syllabusType;

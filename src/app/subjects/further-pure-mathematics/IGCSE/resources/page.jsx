@@ -13,9 +13,9 @@ const supabase = createClient(
 import SmallFoot from '@/components/smallFoot.jsx';
 
 // At the top, define variables for subjectName, syllabusType, and examCode
-const subjectName = 'Further';
+const subjectName = 'Further Pure Mathematics';
 const subjectSlug = subjectName.toLowerCase().replace(/\s+/g, '-');
-const examCode = 'FUR';
+const examCode = '4PM1';
 
 // Add SubjectButtons component that fetches subjects dynamically
 const SubjectButtons = () => {
@@ -179,17 +179,17 @@ export default function IGCSEResources() {
       <main className="min-h-screen bg-white flex flex-col items-center justify-start py-10 m-10">
         <div className="w-full max-w-5xl px-4">
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#000000] mb-8 text-left tracking-[-0.035em]" style={{ fontFamily: "Poppins, sans-serif" }}>
-            IGCSE <span className="bg-[#1A69FA] px-2 py-1 -rotate-1 inline-block"><span className="text-[#FFFFFF]">Further</span></span> Resources
+            IGCSE <span className="bg-[#1A69FA] px-2 py-1 -rotate-1 inline-block"><span className="text-[#FFFFFF]">Further Pure Mathematics</span></span> Resources
           </h1>
 
           <div className="inline-flex items-center justify-center px-4 py-2 mb-8 rounded-md" style={{ border: "1.5px solid #DBDBDB", fontFamily: "Poppins, sans-serif" }}>
             <span className="text-md font-medium text-black tracking-tight">
-              <span className="font-[501]">Exam code:</span> FUR
+              <span className="font-[501]">Exam code:</span> 4PM1
             </span>
           </div>
 
           <h3 className="text-sm sm:text-md lg:text-lg font-[500] leading-6 text-[#707070] mb-8 text-left max-w-4xl tracking-[-0.015em]" style={{ fontFamily: "Poppins, sans-serif" }}>
-            Access a wide range of Edexcel IGCSE Further resources—all in one place. Whether you're brushing up on concepts or aiming to master exam strategies, these materials are designed to support your revision and boost your performance
+            Access a wide range of Edexcel IGCSE Further Pure Mathematics resources—all in one place. Whether you're brushing up on concepts or aiming to master exam strategies, these materials are designed to support your revision and boost your performance
           </h3>
 
           <div className="w-full mb-8">

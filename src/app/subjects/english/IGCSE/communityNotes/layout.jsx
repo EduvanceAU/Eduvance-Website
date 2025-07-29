@@ -1,5 +1,5 @@
 const subjectName = 'English';
-const examCode = 'ENG';
+const examCode = '4EB1';
 const syllabusType = 'IGCSE';
 const refName = subjectName;
 const refsyllabusType = syllabusType;

@@ -1,4 +1,4 @@
-const subjectName = 'Further';
+const subjectName = 'Further Pure Mathematics';
 const refName = subjectName;
 
 export const viewport = {
