@@ -518,7 +518,7 @@ export default function UploadResource() {
                               ...prev,
                               [res.id]: { ...prev[res.id], description: e.target.value }
                             }))}
-                            className="w-full border px-2 py-1 rounded-md text-sm mb-1 focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition"
+                            className="min-h-[100px] w-full border px-2 py-1 rounded-md text-sm mb-1 focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition"
                             placeholder="Description (Optional)"
                             rows="2"
                           />
@@ -564,7 +564,7 @@ export default function UploadResource() {
                                     <select
                                       value={editedResourceData[res.id]?.unit_chapter_name ?? res.unit_chapter_name}
                                       onChange={e => setEditedResourceData(prev => ({ ...prev, [res.id]: { ...prev[res.id], unit_chapter_name: e.target.value } }))}
-                                      className="cursor-pointer border px-2 py-1 rounded-md text-sm focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition"
+                                      className="min-w-[150px] cursor-pointer border px-2 py-1 rounded-md text-sm focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition"
                                     >
                                       <option value="">Select Unit/Chapter (optional)</option>
                                       {units.map((unit, idx) => (
@@ -590,7 +590,7 @@ export default function UploadResource() {
                               <select
                                 value={editedResourceData[res.id]?.resource_type ?? res.resource_type}
                                 onChange={e => setEditedResourceData(prev => ({ ...prev, [res.id]: { ...prev[res.id], resource_type: e.target.value } }))}
-                                className="cursor-pointer border px-2 py-1 rounded-md text-sm focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition"
+                                className="min-w-[150px] cursor-pointer border px-2 py-1 rounded-md text-sm focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition"
                               >
                                 {resourceCategories.map((cat) => (
                                   <option key={cat.value} value={cat.value}>{cat.label}</option>
@@ -612,7 +612,7 @@ export default function UploadResource() {
                             <select
                               value={editedResourceData[res.id]?.subject_id ?? res.subject_id}
                               onChange={e => setEditedResourceData(prev => ({ ...prev, [res.id]: { ...prev[res.id], subject_id: e.target.value } }))}
-                              className="cursor-pointer border px-2 py-1 rounded-md text-sm focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition"
+                              className="min-w-[150px] cursor-pointer border px-2 py-1 rounded-md text-sm focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition"
                             >
                                 <optgroup label="IAL">
                                 {subjects
