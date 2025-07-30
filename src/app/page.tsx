@@ -119,7 +119,7 @@ export default function Main() {
             <Image
               src={DocWidgets}
               alt="DocWidgets"
-              className="pointer-events-none absolute top-[70%] sm:top-[90%] w-[300px] sm:w-[300px] h-auto transform sm:-translate-y-40 translate-y-10 left-[-20px] z-0"
+              className="pointer-events-none absolute top-[50%] sm:top-[90%] w-[300px] sm:w-[300px] h-auto transform sm:-translate-y-40 translate-y-10 left-[-20px] z-0"
             />
 
           
