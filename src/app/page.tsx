@@ -15,7 +15,7 @@ import WhiteDiscordLogo from '@/assets/png/WhiteDiscordLogo.png'
 import QuotationMarks from '@/assets/png/QuotationMarks.png'
 // Reusable components
 const TestimonialCard = ({ content, icon, headline, rotation, imageClassName }) => (
-  <div className={`bg-gradient-to-r from-[#347BFF] to-[#2566E2] border border-white rounded-xl p-6 ${rotation} w-full mx-2 md:mx-0 h-full`}>
+  <div className={`hover:-translate-y-2.5 transition-all duration-200 bg-gradient-to-r from-[#347BFF] to-[#2566E2] border border-white rounded-xl p-6 ${rotation} w-full mx-2 md:mx-0 h-full`}>
     <p className="text-white text-sm font-light leading-relaxed">
       {content}
     </p>
@@ -82,11 +82,11 @@ export default function Main() {
 
   return (
     <>
-      <Home/>
+      <Home dontShowload/>
       {/* Hero Section */}
       <section className="w-full min-h-screen flex flex-col relative pt-16">
         {/* Gradient Box in Background */}
-        <div className="flex text-center flex-col gap-4 max-sm:gap-2 max-sm:justify-start max-sm:pt-20 items-center justify-center absolute w-[95vw] h-[85vh] bg-gradient-to-b from-[#4E8CFF] to-[#0C60FB] rounded-2xl shadow-xl z-0 left-1/2 transform -translate-x-1/2 mb-[-50px] overflow-hidden" >
+        <div className="flex text-center flex-col gap-4 max-sm:gap-2 max-sm:justify-start max-sm:pt-5 items-center justify-center absolute w-[95vw] h-[85vh] bg-gradient-to-b from-[#4E8CFF] to-[#0C60FB] rounded-2xl shadow-xl z-0 left-1/2 transform -translate-x-1/2 mb-[-50px] overflow-hidden" >
           
 
             <Image src={Headline} alt="Headline" className="pointer-events-none w-[800px] h-auto z-10" />
@@ -119,7 +119,7 @@ export default function Main() {
             <Image
               src={DocWidgets}
               alt="DocWidgets"
-              className="pointer-events-none absolute top-[70%] sm:top-[90%] w-[300px] sm:w-[300px] h-auto transform sm:-translate-y-40 translate-y-10 left-[-20px] z-0"
+              className="pointer-events-none absolute top-[50%] sm:top-[90%] w-[300px] sm:w-[300px] h-auto transform sm:-translate-y-40 translate-y-10 left-[-20px] z-0"
             />
 
           

@@ -18,7 +18,7 @@ const subjectName = 'Economics';
 // Remove subjectSlug as it's not needed for this approach
 // const subjectSlug = subjectName.toLowerCase().replace(/\s+/g, '-');
 
-const DISPLAY_START_YEAR = 2020;
+const DISPLAY_START_YEAR = 2019;
 const DISPLAY_END_YEAR = 2024;
 const years = Array.from({ length: DISPLAY_END_YEAR - DISPLAY_START_YEAR + 1 }, (_, i) => DISPLAY_START_YEAR + i);
 

@@ -2,7 +2,7 @@
 const { createClient } = require('@supabase/supabase-js');
 const fs = require('fs');
 const path = require('path');
-const { v4: uuidv4 } = require('uuid'); // For generating UUIDs
+const { v4: uuidv4 } = require('uuid'); // For generating UUIDs - no longer used for existing records' IDs
 require('dotenv').config(); // Load environment variables from .env file
 
 // --- Supabase Client Initialization ---
@@ -31,9 +31,12 @@ async function seedDatabase() {
 
   try {
     // --- Data Storage for De-duplication and ID Management ---
+    // tempSubjectsMap will store { name, code, syllabus_type }
     const tempSubjectsMap = new Map();     // Map: 'subject_name-syllabus_type' -> { name, code, syllabus_type }
-    const examSessionsMap = new Map(); // Map: 'session-year' -> { id, session, year }
-    const papersToInsert = new Map();  // Map: 'subject_unique_key-exam_session_id-unit_code' -> { ...paper_data, subject_unique_key }
+    // examSessionsMap will store { session, year }
+    const examSessionsMap = new Map(); // Map: 'session-year' -> { session, year }
+    // papersToInsert will store data without temporary IDs, using unique keys for lookup
+    const papersToInsert = new Map();  // Map: 'subject_unique_key-exam_session_key-unit_code' -> { ...paper_data, subject_unique_key, exam_session_key }
 
     // --- To store final IDs after upserting ---
     const finalSubjectsMap = new Map(); // Map: 'name-syllabus_type' -> actual_db_id
@@ -75,6 +78,7 @@ async function seedDatabase() {
 
           const subjectUniqueKey = `${subjectName}-${syllabusType}`;
           if (!tempSubjectsMap.has(subjectUniqueKey)) {
+            // Store subject data without a temporary ID; Supabase will manage it.
             tempSubjectsMap.set(subjectUniqueKey, { name: subjectName, code: subjectCode, syllabus_type: syllabusType });
             console.log(`  Found new subject: ${subjectName} (Code: ${subjectCode || 'N/A'}, Type: ${syllabusType})`);
           }
@@ -147,10 +151,11 @@ async function seedDatabase() {
 
             const examSessionKey = `${session}-${year}`;
             if (!examSessionsMap.has(examSessionKey)) {
-              examSessionsMap.set(examSessionKey, { id: uuidv4(), session, year });
+              // Store exam session data without a temporary ID; Supabase will manage it.
+              examSessionsMap.set(examSessionKey, { session, year });
               console.log(`      Found new exam session: ${session} ${year}`);
             }
-            const currentExamSessionTempId = examSessionsMap.get(examSessionKey).id;
+            // We no longer need a 'currentExamSessionTempId' as we'll resolve actual IDs later.
 
 
             for (const item of fileContent) {
@@ -199,7 +204,7 @@ async function seedDatabase() {
               if (!unitCode && syllabusType === 'IGCSE') {
                   console.log(`        Attempting IGCSE unit code match for '${Name}' (lowerCaseName: '${lowerCaseName}')`);
                   // Using word boundaries (\b) to ensure exact matches for '1P', '1PR', etc.
-                  const igcseUnitCodeMatch = lowerCaseName.match(/paper\s*(\b(?:1p|1pr|2p|2pr|pr|1c|1cr|2c|2cr|1b|1br|2b|2br|1|1r|2|2r)\b)/);
+                  const igcseUnitCodeMatch = lowerCaseName.match(/paper\s*(\b(?:1p|1pr|2p|2pr|pr|1c|1cr|2c|2cr|1b|1br|2b|2br|1|1r|2|2r|01|02)\b)/);
                   console.log(`        IGCSE regex match result:`, igcseUnitCodeMatch);
 
                   if (igcseUnitCodeMatch && igcseUnitCodeMatch[1]) {
@@ -222,14 +227,14 @@ async function seedDatabase() {
               }
               // --- End Detailed Unit Code Extraction Logic with Logs ---
 
-
-              const paperKey = `${subjectUniqueKey}-${currentExamSessionTempId}-${unitCode}`;
+              // Use examSessionKey directly for paperKey, as actual IDs are resolved later
+              const paperKey = `${subjectUniqueKey}-${examSessionKey}-${unitCode}`;
 
               if (!papersToInsert.has(paperKey)) {
                 papersToInsert.set(paperKey, {
-                  id: uuidv4(),
-                  subject_unique_key: subjectUniqueKey,
-                  exam_session_temp_id: currentExamSessionTempId,
+                  // No 'id' here; let Supabase generate it on insert
+                  subject_unique_key: subjectUniqueKey, // Store the unique key to resolve actual ID later
+                  exam_session_key: examSessionKey,     // Store the key to resolve actual ID later
                   unit_code: unitCode,
                   question_paper_link: null,
                   mark_scheme_link: null,
@@ -259,6 +264,10 @@ async function seedDatabase() {
     // Insert Subjects
     console.log('\n⏳ Inserting/Upserting subjects...');
     const subjectsToUpsert = Array.from(tempSubjectsMap.values());
+    // The `upsert` method with `onConflict` handles checking for existing subjects.
+    // If a subject with the same 'name' and 'syllabus_type' exists, it will not create a new one,
+    // but rather return the ID of the existing subject. If it doesn't exist, it inserts it.
+    // By not providing an 'id' in the upsert data, Supabase will manage the primary key.
     const { data: upsertedSubjects, error: subjectsError } = await supabase
         .from('subjects')
         .upsert(subjectsToUpsert, { onConflict: 'name,syllabus_type' })
@@ -277,6 +286,7 @@ async function seedDatabase() {
     // Insert Exam Sessions
     console.log('\n⏳ Inserting/Upserting exam sessions...');
     const examSessionsToUpsert = Array.from(examSessionsMap.values());
+    // Similar to subjects, let Supabase manage the 'id' for exam sessions.
     const { data: upsertedExamSessions, error: examsError } = await supabase
         .from('exam_sessions')
         .upsert(examSessionsToUpsert, { onConflict: 'session,year' })
@@ -297,23 +307,20 @@ async function seedDatabase() {
     const finalPapersToInsert = [];
     for (const [paperKey, paperData] of papersToInsert.entries()) {
         const actualSubjectId = finalSubjectsMap.get(paperData.subject_unique_key);
-        const originalSessionData = Array.from(examSessionsMap.values())
-            .find(es => es.id === paperData.exam_session_temp_id);
-        const actualExamSessionId = originalSessionData
-            ? finalExamSessionsMap.get(`${originalSessionData.session}-${originalSessionData.year}`)
-            : null;
+        // Resolve actual exam session ID using the stored exam_session_key
+        const actualExamSessionId = finalExamSessionsMap.get(paperData.exam_session_key);
 
         if (!actualSubjectId) {
             console.warn(`    ⚠️ Could not find actual subject ID for ${paperData.subject_unique_key}. Skipping paper ${paperData.unit_code}.`);
             continue;
         }
         if (!actualExamSessionId) {
-            console.warn(`    ⚠️ Could not find actual exam session ID for temp ID ${paperData.exam_session_temp_id}. Skipping paper ${paperData.unit_code}.`);
+            console.warn(`    ⚠️ Could not find actual exam session ID for key ${paperData.exam_session_key}. Skipping paper ${paperData.unit_code}.`);
             continue;
         }
 
         finalPapersToInsert.push({
-            id: paperData.id,
+            // No 'id' here; let Supabase generate it on insert
             subject_id: actualSubjectId,
             exam_session_id: actualExamSessionId,
             unit_code: paperData.unit_code,
@@ -332,6 +339,7 @@ async function seedDatabase() {
         for (let i = 0; i < finalPapersToInsert.length; i += BATCH_SIZE) {
           const batch = finalPapersToInsert.slice(i, i + BATCH_SIZE);
           console.log(`  Inserting batch ${Math.floor(i / BATCH_SIZE) + 1}/${Math.ceil(finalPapersToInsert.length / BATCH_SIZE)} (${batch.length} records)...`);
+          // Upsert papers on the unique combination of subject_id, exam_session_id, and unit_code
           const { error: papersError } = await supabase.from('papers').upsert(batch, { onConflict: 'subject_id,exam_session_id,unit_code' });
           if (papersError) {
               if (papersError.code === '23505') {

@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { Pencil } from 'lucide-react';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -23,7 +24,7 @@ export default function UploadResource() {
   const [resourceType, setResourceType] = useState('note');
   const [selectedSubjectId, setSelectedSubjectId] = useState('');
   const [staffUsername, setStaffUsername] = useState('');
-  const [activeTab, setActiveTab] = useState('upload');
+  const [activeTab, setActiveTab] = useState('upload'); // Default to 'upload' for general resources
   const [pendingResources, setPendingResources] = useState([]);
   const [rejectionReasons, setRejectionReasons] = useState({});
   const [watermarkLoading, setWatermarkLoading] = useState({});
@@ -36,6 +37,15 @@ export default function UploadResource() {
 
   // Add state for watermarked files
   const [watermarkedFiles, setWatermarkedFiles] = useState({});
+
+  // NEW: State variables for Past Papers
+  const [selectedExamSessionId, setSelectedExamSessionId] = useState(''); // Stores the UUID of the selected session
+  const [unitCode, setUnitCode] = useState(''); // e.g., '01', '02', 'P1', 'P2', 'WMA11' -> now from dropdown
+  const [questionPaperLink, setQuestionPaperLink] = useState('');
+  const [markSchemeLink, setMarkSchemeLink] = useState('');
+  const [examinerReportLink, setExaminerReportLink] = useState('');
+  const [examSessions, setExamSessions] = useState([]); // To store fetched exam sessions
+  const [loadingExamSessions, setLoadingExamSessions] = useState(true);
 
   const resourceCategories = [
     { value: 'note', label: 'Note' },
@@ -119,6 +129,31 @@ export default function UploadResource() {
       });
   }, [supabaseClient]);
 
+  // NEW: Fetch Exam Sessions
+  useEffect(() => {
+    if (!supabaseClient) return;
+
+    const fetchExamSessions = async () => {
+      setLoadingExamSessions(true);
+      const { data, error } = await supabaseClient
+        .from('exam_sessions')
+        .select('id, session, year') // CORRECTED: Select 'session' and 'year'
+        .order('year', { ascending: false }) // Order by year descending
+        .order('session', { ascending: false }); // Then by session descending (e.g., Oct/Nov before May/June)
+
+      if (error) {
+        console.error('Error fetching exam sessions:', error.message);
+        setMessage(`Failed to load exam sessions: ${error.message}`);
+        setMessageType('error');
+      } else {
+        setExamSessions(data || []);
+      }
+      setLoadingExamSessions(false);
+    };
+
+    fetchExamSessions();
+  }, [supabaseClient]);
+
   const handleLogin = async (e) => {
     e.preventDefault();
     if (!supabaseClient) return;
@@ -142,7 +177,7 @@ export default function UploadResource() {
         .eq('id', data.user.id)
         .single()
         .then(({ data: staffData }) => {
-          setStaffUsername(staffData?.username || '');
+            setStaffUsername(staffData?.username || '');
         });
       fetchPendingResources();
     }
@@ -208,7 +243,7 @@ export default function UploadResource() {
     } else {
       setMessage("✅ Resource added successfully");
       setMessageType('success');
-      setTitle(''); setLink(''); setDescription('');
+      setTitle(''); setLink(''); setDescription(''); setUnitChapter('');
       setTimeout(() => {
         setMessage("");
         setMessageType(null);
@@ -216,6 +251,74 @@ export default function UploadResource() {
       setSubmitLoading(false);
     }
   };
+
+  // NEW: handlePaperSubmit for past papers
+  const handlePaperSubmit = async (e) => {
+    e.preventDefault();
+    setSubmitLoading(true);
+    setMessage("");
+    setMessageType(null);
+
+    if (!supabaseClient) {
+      setMessage('Error: Supabase client not initialized.');
+      setMessageType('error');
+      setSubmitLoading(false);
+      return;
+    }
+    if (!staffUser) {
+      setMessage("You must be logged in to upload papers.");
+      setMessageType('error');
+      setSubmitLoading(false);
+      return;
+    }
+    if (!selectedSubjectId || !selectedExamSessionId || !unitCode) {
+      setMessage("Subject, Exam Session, and Unit Code are required.");
+      setMessageType('error');
+      setSubmitLoading(false);
+      return;
+    }
+
+    const { data, error } = await supabaseClient
+      .from('papers')
+      .insert({
+        subject_id: selectedSubjectId,
+        exam_session_id: selectedExamSessionId, // Use the ID directly
+        unit_code: unitCode.trim(), // Use selected unitCode from dropdown
+        question_paper_link: questionPaperLink.trim() || null,
+        mark_scheme_link: markSchemeLink.trim() || null,
+        examiner_report_link: examinerReportLink.trim() || null,
+      })
+      .select();
+
+    if (error) {
+      if (error.code === '23505') { // Unique constraint violation code for PostgreSQL
+        setMessage(`A paper for this subject, exam session, and unit code already exists.`);
+      } else {
+        setMessage(`Past paper submission failed: ${error.message}`);
+      }
+      setMessageType('error');
+      console.error('Past paper submission error:', error);
+    } else if (!data || data.length === 0) {
+      setMessage('Past paper submission did not return a new record.');
+      setMessageType('error');
+      console.warn('No data returned from paper insert:', data);
+    } else {
+      setMessage("✅ Past paper added successfully");
+      setMessageType('success');
+      // Clear form fields
+      setSelectedExamSessionId('');
+      setUnitCode('');
+      setQuestionPaperLink('');
+      setMarkSchemeLink('');
+      setExaminerReportLink('');
+      setTimeout(() => {
+        setMessage("");
+        setMessageType(null);
+      }, 3000);
+    }
+    setSubmitLoading(false);
+  };
+
 
   // Fetch pending community resource requests
   const fetchPendingResources = async () => {
@@ -397,13 +500,18 @@ export default function UploadResource() {
     setEditedResourceData({}); // Clear all temporary edited data
   };
 
+  // Find the selected subject to get its units
+  const currentSelectedSubject = subjects.find(s => s.id === selectedSubjectId);
+  const unitsForSelectedSubject = currentSelectedSubject?.units || [];
+
+
   return (
-    <div className={`pt-20 ${!staffUser ? "h-screen":"min-h-screen h-fit "} bg-blue-100 p-6 flex justify-center items-center`} style={{ fontFamily: 'Poppins, sans-serif' }}>      
+    <div className={`pt-20 ${!staffUser ? "h-screen":"min-h-screen h-fit "} bg-blue-100 p-6 flex justify-center items-center`} style={{ fontFamily: 'Poppins, sans-serif' }}>
       <div className="h-fit bg-white rounded-xl shadow-lg w-full max-w-3xl mx-auto p-4 sm:p-6">
         {!staffUser ? (
           <form onSubmit={handleLogin} className="space-y-4">
             <h2 className="text-2xl font-bold mb-2 text-blue-700 flex items-center gap-2">
-              <svg className="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M16 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
+              <svg className="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M16 21v-2a4 4 0 00-4-4H8a4 0 00-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
               Staff Login
             </h2>
             <input type="email" value={loginEmail} onChange={(e) => setLoginEmail(e.target.value)} placeholder="Staff Email" className="w-full border p-2 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 transition" required />
@@ -413,7 +521,9 @@ export default function UploadResource() {
         ) : (
           <>
             <div className="border-b mb-4 sm:text-base text-xs grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 sm:px-1 w-full">
-              <button onClick={() => setActiveTab('upload')} className={`cursor-pointer py-2 px-4 flex items-center gap-1 rounded-t-lg ${activeTab === 'upload' ? 'border-b-2 border-blue-600 font-semibold text-blue-700 bg-blue-50' : 'text-gray-500 hover:text-blue-600'}`}><svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4" /></svg>Upload</button>
+              <button onClick={() => setActiveTab('upload')} className={`cursor-pointer py-2 px-4 flex items-center gap-1 rounded-t-lg ${activeTab === 'upload' ? 'border-b-2 border-blue-600 font-semibold text-blue-700 bg-blue-50' : 'text-gray-500 hover:text-blue-600'}`}><svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4 16v2a2 0 002 2h12a2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4" /></svg>Upload Resources</button>
+              {/* NEW TAB BUTTON */}
+              <button onClick={() => setActiveTab('uploadPaper')} className={`cursor-pointer py-2 px-4 flex items-center gap-1 rounded-t-lg ${activeTab === 'uploadPaper' ? 'border-b-2 border-blue-600 font-semibold text-blue-700 bg-blue-50' : 'text-gray-500 hover:text-blue-600'}`}><svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 13h6m-3-3v6m5 5H7a2 0 01-2-2V5a2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 0 01-2 2z" /></svg>Upload Papers</button>
               <button onClick={() => setActiveTab('approve')} className={`cursor-pointer py-2 px-4 flex items-center gap-1 rounded-t-lg ${activeTab === 'approve' ? 'border-b-2 border-blue-600 font-semibold text-blue-700 bg-blue-50' : 'text-gray-500 hover:text-blue-600'}`}><svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor"><path d="M263.72-96Q234-96 213-117.15T192-168v-384q0-29.7 21.15-50.85Q234.3-624 264-624h24v-96q0-79.68 56.23-135.84 56.22-56.16 136-56.16Q560-912 616-855.84q56 56.16 56 135.84v96h24q29.7 0 50.85 21.15Q768-581.7 768-552v384q0 29.7-21.16 50.85Q725.68-96 695.96-96H263.72Zm.28-72h432v-384H264v384Zm216.21-120Q510-288 531-309.21t21-51Q552-390 530.79-411t-51-21Q450-432 429-410.79t-21 51Q408-330 429.21-309t51 21ZM360-624h240v-96q0-50-35-85t-85-35q-50 0-85 35t-35 85v96Zm-96 456v-384 384Z"/></svg>Approve</button>
             </div>
             {message && (
@@ -426,10 +536,13 @@ export default function UploadResource() {
                 <span>{message}</span>
               </div>
             )}
+
+            {/* Existing Upload Resources Tab Content */}
             {activeTab === 'upload' && (
               <>
                 <form onSubmit={handleSubmit} className="space-y-4 bg-blue-50 p-4 rounded-2xl border border-blue-100">
-                  <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Title" className="w-full border p-2 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 transition" required />
+                  <h3 className="text-xl font-bold mb-2 text-blue-700">Upload New Resource</h3>
+                  <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Title *" className="w-full border p-2 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 transition" required />
                   {/* Unit/Chapter dropdown or input */}
                   {(() => {
                     const selectedSubject = subjects.find(sub => sub.id === selectedSubjectId);
@@ -450,12 +563,13 @@ export default function UploadResource() {
                       );
                     }
                   })()}
-                  <input type="url" value={link} onChange={(e) => setLink(e.target.value)} placeholder="Resource Link (URL)" className="w-full border p-2 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 transition" required />
+                  <input type="url" value={link} onChange={(e) => setLink(e.target.value)} placeholder="Resource Link (URL) *" className="w-full border p-2 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 transition" required />
                   <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Description (Optional)" className="min-h-[100px] w-full border p-2 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 transition" rows="3"></textarea>
                   <select value={resourceType} onChange={(e) => setResourceType(e.target.value)} className="cursor-pointer w-full border p-2 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 transition" required>
                     {resourceCategories.map((cat) => <option key={cat.value} value={cat.value}>{cat.label}</option>)}
                   </select>
                   <select value={selectedSubjectId} onChange={(e) => setSelectedSubjectId(e.target.value)} className="cursor-pointer w-full border p-2 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 transition" required>
+                    <option value="">Select Subject *</option> {/* Added a default option */}
                     <optgroup label="IAL">
                       {subjects
                         .filter((subject) => subject.syllabus_type === "IAL")
@@ -487,6 +601,92 @@ export default function UploadResource() {
                 </form>
               </>
             )}
+
+            {/* NEW: Upload Past Papers Tab Content */}
+            {activeTab === 'uploadPaper' && (
+              <>
+                <form onSubmit={handlePaperSubmit} className="space-y-4 bg-blue-50 p-4 rounded-2xl border border-blue-100">
+                  <h3 className="text-xl font-bold mb-2 text-blue-700">Upload New Past Paper</h3>
+
+                  {/* Subject Selection */}
+                  <select value={selectedSubjectId} onChange={(e) => setSelectedSubjectId(e.target.value)} className="cursor-pointer w-full border p-2 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 transition" required>
+                    <option value="">Select Subject *</option>
+                    <optgroup label="IAL">
+                      {subjects
+                        .filter((subject) => subject.syllabus_type === "IAL")
+                        .map((subject) => (
+                          <option key={subject.id} value={subject.id}>
+                            {subject.name} ({subject.code}) - {subject.syllabus_type}
+                          </option>
+                        ))}
+                    </optgroup>
+                    <optgroup label="IGCSE">
+                      {subjects
+                        .filter((subject) => subject.syllabus_type === "IGCSE")
+                        .map((subject) => (
+                          <option key={subject.id} value={subject.id}>
+                            {subject.name} ({subject.code}) - {subject.syllabus_type}
+                          </option>
+                        ))}
+                    </optgroup>
+                  </select>
+
+                  {/* Exam Session Selection */}
+                  <select
+                    value={selectedExamSessionId}
+                    onChange={(e) => setSelectedExamSessionId(e.target.value)}
+                    className="cursor-pointer w-full border p-2 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 transition"
+                    required
+                    disabled={loadingExamSessions}
+                  >
+                    <option value="">Select Exam Session *</option>
+                    {loadingExamSessions ? (
+                      <option>Loading sessions...</option>
+                    ) : (
+                      examSessions.map((session) => (
+                        <option key={session.id} value={session.id}>
+                          {session.session} {session.year} {/* Display session and year */}
+                        </option>
+                      ))
+                    )}
+                  </select>
+
+                  {/* Unit Code Dropdown (NEWLY ADDED / MODIFIED) */}
+                  <select
+                    value={unitCode}
+                    onChange={(e) => setUnitCode(e.target.value)}
+                    className="cursor-pointer w-full border p-2 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 transition"
+                    required
+                    disabled={!selectedSubjectId || unitsForSelectedSubject.length === 0} // Disable if no subject selected or no units
+                  >
+                    <option value="">Select Unit Code *</option>
+                    {unitsForSelectedSubject.map((unit, idx) => (
+                      <option key={unit.code || idx} value={unit.code}>
+                        {unit.code} - {unit.name} ({unit.unit})
+                      </option>
+                    ))}
+                    {/* Optionally add a "General" or free-form if applicable for past papers */}
+                    {/* <option value="General">General</option> */}
+                  </select>
+
+
+                  <input type="url" value={questionPaperLink} onChange={(e) => setQuestionPaperLink(e.target.value)} placeholder="Question Paper Link (URL)" className="w-full border p-2 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 transition" />
+                  <input type="url" value={markSchemeLink} onChange={(e) => setMarkSchemeLink(e.target.value)} placeholder="Mark Scheme Link (URL)" className="w-full border p-2 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 transition" />
+                  <input type="url" value={examinerReportLink} onChange={(e) => setExaminerReportLink(e.target.value)} placeholder="Examiner Report Link (URL)" className="w-full border p-2 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 transition" />
+
+                  <button type="submit" className="cursor-pointer w-full bg-blue-600 hover:bg-blue-700 transition text-white py-2 rounded-lg flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed" disabled={submitLoading}>
+                    {submitLoading ? (
+                      <svg className="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" /></svg>
+                    ) : (
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M7 10l5 5m0 0l5-5m-5 5V4" /></svg>
+                    )}
+                    {submitLoading ? 'Submitting...' : 'Add Past Paper'}
+                  </button>
+                </form>
+              </>
+            )}
+
+            {/* Existing Approve Tab Content */}
             {activeTab === 'approve' && (
               <>
                 <div className="divide-y divide-blue-100">
@@ -518,7 +718,7 @@ export default function UploadResource() {
                               ...prev,
                               [res.id]: { ...prev[res.id], description: e.target.value }
                             }))}
-                            className="w-full border px-2 py-1 rounded-md text-sm mb-1 focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition"
+                            className="min-h-[100px] w-full border px-2 py-1 rounded-md text-sm mb-1 focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition"
                             placeholder="Description (Optional)"
                             rows="2"
                           />
@@ -542,10 +742,9 @@ export default function UploadResource() {
                           ) : (
                             <a
                               href={res.link}
-                              className="text-blue-500 underline text-xs px-2 py-1 rounded hover:bg-blue-100 transition whitespace-nowrap break-all flex-1"
+                              className="text-blue-500 underline text-xs px-2 w-fit py-1 rounded hover:bg-blue-100 transition sm:whitespace-nowrap break-all flex-1"
                               target="_blank"
                               rel="noopener noreferrer"
-                              style={{ minWidth: 0 }}
                             >
                               {res.link}
                             </a>
@@ -565,7 +764,7 @@ export default function UploadResource() {
                                     <select
                                       value={editedResourceData[res.id]?.unit_chapter_name ?? res.unit_chapter_name}
                                       onChange={e => setEditedResourceData(prev => ({ ...prev, [res.id]: { ...prev[res.id], unit_chapter_name: e.target.value } }))}
-                                      className="cursor-pointer border px-2 py-1 rounded-md text-sm focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition"
+                                      className="min-w-[150px] cursor-pointer border px-2 py-1 rounded-md text-sm focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition"
                                     >
                                       <option value="">Select Unit/Chapter (optional)</option>
                                       {units.map((unit, idx) => (
@@ -591,7 +790,7 @@ export default function UploadResource() {
                               <select
                                 value={editedResourceData[res.id]?.resource_type ?? res.resource_type}
                                 onChange={e => setEditedResourceData(prev => ({ ...prev, [res.id]: { ...prev[res.id], resource_type: e.target.value } }))}
-                                className="cursor-pointer border px-2 py-1 rounded-md text-sm focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition"
+                                className="min-w-[150px] cursor-pointer border px-2 py-1 rounded-md text-sm focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition"
                               >
                                 {resourceCategories.map((cat) => (
                                   <option key={cat.value} value={cat.value}>{cat.label}</option>
@@ -613,9 +812,9 @@ export default function UploadResource() {
                             <select
                               value={editedResourceData[res.id]?.subject_id ?? res.subject_id}
                               onChange={e => setEditedResourceData(prev => ({ ...prev, [res.id]: { ...prev[res.id], subject_id: e.target.value } }))}
-                              className="cursor-pointer border px-2 py-1 rounded-md text-sm focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition"
+                              className="min-w-[150px] cursor-pointer border px-2 py-1 rounded-md text-sm focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition"
                             >
-                                <optgroup label="IAL">
+                              <optgroup label="IAL">
                                 {subjects
                                   .filter((subject) => subject.syllabus_type === "IAL")
                                   .map((subject) => (
@@ -623,8 +822,8 @@ export default function UploadResource() {
                                       {subject.name} ({subject.code}) - {subject.syllabus_type}
                                     </option>
                                   ))}
-                                </optgroup>
-                                <optgroup label="IGCSE">
+                              </optgroup>
+                              <optgroup label="IGCSE">
                                 {subjects
                                   .filter((subject) => subject.syllabus_type === "IGCSE")
                                   .map((subject) => (
@@ -632,7 +831,7 @@ export default function UploadResource() {
                                       {subject.name} ({subject.code}) - {subject.syllabus_type}
                                     </option>
                                   ))}
-                                </optgroup>
+                              </optgroup>
                             </select>
                           ) : (
                             <span className="text-gray-600">
@@ -652,7 +851,7 @@ export default function UploadResource() {
                           <>
                             <button
                               onClick={() => handleSaveResourceChanges(res.id)}
-                              className="bg-blue-500 hover:bg-blue-700 text-white px-3 py-1 rounded-md flex items-center gap-1 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                              className="cursor-pointer bg-blue-500 hover:bg-blue-700 text-white px-3 py-1 rounded-md flex items-center gap-1 transition disabled:opacity-50 disabled:cursor-not-allowed"
                               // The button is enabled if editedResourceData for this ID exists AND
                               // required fields are not empty. This means any change to required fields
                               // or presence of data will enable it.
@@ -669,7 +868,7 @@ export default function UploadResource() {
                             </button>
                             <button
                               onClick={handleCancelEdit}
-                              className="bg-gray-300 hover:bg-gray-400 text-gray-700 px-3 py-1 rounded-md flex items-center gap-1 transition"
+                              className="cursor-pointer bg-gray-300 hover:bg-gray-400 text-gray-700 px-3 py-1 rounded-md flex items-center gap-1 transition"
                             >
                               <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
                               Cancel
@@ -680,13 +879,11 @@ export default function UploadResource() {
                             <button onClick={() => approveResource(res.id)} className="cursor-pointer bg-green-500 hover:bg-green-600 transition text-white px-3 py-1 rounded-md flex items-center gap-1"><svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>Approve</button>
                             <button
                               onClick={() => handleEditResource(res)} // Set the resource to be edited
-                              className="p-2 cursor-pointer text-blue-500 hover:text-blue-700 focus:outline-none bg-blue-100 rounded-md"
+                              className="p-2 cursor-pointer text-blue-500 hover:text-blue-700 focus:outline-none bg-blue-100 rounded-md max-sm:flex max-sm:items-start max-sm:gap-2"
                               title="Edit Resource Details"
                             >
-                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M17.4142 2.58579C16.6332 1.80474 15.3668 1.80474 14.5858 2.58579L7 10.1716V13H9.82843L17.4142 5.41421C18.1953 4.63316 18.1953 3.36684 17.4142 2.58579Z" fill="#3B82F6"/>
-                                <path d="M2.91039 12.3396L2 17L6.66042 16.0896L14.7142 7.96253L9.03747 2.28577L2.91039 12.3396Z" fill="#3B82F6"/>
-                                </svg>
+                              <Pencil className='w-5 h-5'/>
+                              <p className='max-sm:inline-block hidden'>Edit Resource Details</p>
                             </button>
                             <button onClick={() => handleWatermark(res)} disabled={watermarkLoading[res.id]} className={`cursor-pointer bg-blue-500 hover:bg-blue-600 transition text-white px-3 py-1 rounded-md flex items-center gap-1 ${watermarkLoading[res.id] ? 'opacity-50 cursor-not-allowed' : ''}`}>
                               <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" /></svg>
