@@ -17,9 +17,6 @@ export default function AdminDashboard() {
   const [isAuthReady, setIsAuthReady] = useState(false);
   const [subjects, setSubjects] = useState([]);
   const [loadingSubjects, setLoadingSubjects] = useState(true);
-  // Removed message and messageType states, as they are now handled by usePopup
-  // const [message, setMessage] = useState('');
-  // const [messageType, setMessageType] = useState(null);
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
   const [loginLoading, setLoginLoading] = useState(false);
@@ -35,14 +32,14 @@ export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('upload');
   const [newSubjectName, setNewSubjectName] = useState('');
   const [newSubjectCode, setNewSubjectCode] = useState('');
-  const [newSubjectType, setNewSubjectType] = '';
+  const [newSubjectType, setNewSubjectType] = useState(''); // Corrected initialization
   // For adding units to a new subject
   const [newUnitName, setNewUnitName] = useState('');
   const [newUnitCode, setNewUnitCode] = useState('');
   const [newUnitNumber, setNewUnitNumber] = useState('');
   const [newUnits, setNewUnits] = useState([]);
   const [editResource, setEditResource] = useState(null);
-  const [editForm, setEditForm] = useState({});
+  const [editForm, setEditForm] = useState({}); // Corrected initialization
   const [editLoading, setEditLoading] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [leaderboard, setLeaderboard] = useState([]);
@@ -58,6 +55,17 @@ export default function AdminDashboard() {
   const [modEditItem, setModEditItem] = useState(null);
   const [modEditForm, setModEditForm] = useState({});
   const [modEditLoading, setModEditLoading] = useState(false);
+
+  // NEW: State variables for Past Papers
+  const [selectedExamSessionId, setSelectedExamSessionId] = useState(''); // Stores the UUID of the selected session
+  const [unitCode, setUnitCode] = useState(''); // e.g., 'WAC11' from dropdown or text input
+  const [questionPaperLink, setQuestionPaperLink] = useState('');
+  const [markSchemeLink, setMarkSchemeLink] = useState('');
+  const [examinerReportLink, setExaminerReportLink] = useState('');
+  const [examSessions, setExamSessions] = useState([]); // To store fetched exam sessions
+  const [loadingExamSessions, setLoadingExamSessions] = useState(true);
+  const [pastPaperSubmitLoading, setPastPaperSubmitLoading] = useState(false);
+
 
   // Helper function to get approval status display
   const getApprovalStatus = (approved) => {
@@ -179,6 +187,7 @@ export default function AdminDashboard() {
         });
         fetchLatestResources();
         fetchUnapprovedResources();
+        fetchExamSessions(); // Fetch exam sessions when authenticated
       } else {
         setStaffUsername('');
       }
@@ -192,6 +201,7 @@ export default function AdminDashboard() {
         });
         fetchLatestResources();
         fetchUnapprovedResources();
+        fetchExamSessions(); // Fetch exam sessions when authenticated
       } else {
         setStaffUsername('');
       }
@@ -212,6 +222,27 @@ export default function AdminDashboard() {
       setLoadingSubjects(false);
     });
   }, [supabaseClient]);
+
+  // NEW: Fetch exam sessions
+  const fetchExamSessions = async () => {
+    if (!supabaseClient) return;
+    setLoadingExamSessions(true);
+    const { data, error } = await supabaseClient
+      .from('exam_sessions')
+      .select('id, session, year') // CORRECTED: Select 'session' and 'year'
+      .order('year', { ascending: false }) // Order by year descending
+      .order('session', { ascending: false }); // Then by session descending (e.g., Oct/Nov before May/June)
+    if (error) {
+      console.error("Failed to fetch exam sessions:", error.message);
+      showPopup({ type: 'fetchError', subText: `Failed to fetch exam sessions: ${error.message}` });
+    } else {
+      setExamSessions(data || []);
+      if (data?.length > 0) {
+        setSelectedExamSessionId(data[0].id);
+      }
+    }
+    setLoadingExamSessions(false);
+  };
 
   const fetchLatestResources = async () => {
     if (!supabaseClient) return;
@@ -397,6 +428,77 @@ export default function AdminDashboard() {
       fetchUnapprovedResources();
       fetchLatestResources();
       setSubmitLoading(false);
+    }
+  };
+
+  // NEW: Handle Past Paper Submission
+  const handlePaperSubmit = async (e) => {
+    e.preventDefault();
+    setPastPaperSubmitLoading(true);
+
+    if (!supabaseClient) {
+      showPopup({ type: 'fetchError', subText: 'Supabase client not initialized. Please refresh the page or check your connection.' });
+      setPastPaperSubmitLoading(false);
+      return;
+    }
+
+    if (!selectedSubjectId || !selectedExamSessionId || !unitCode || !questionPaperLink) {
+      showPopup({ type: 'validationError', subText: 'Subject, Exam Session, Unit Code, and Question Paper Link are required.' });
+      setPastPaperSubmitLoading(false);
+      return;
+    }
+
+    // Basic URL validation
+    const validateLink = (link) => {
+        if (!link) return null; // Optional links can be empty
+        let safeLink = link.trim();
+        if (!/^https?:\/\//i.test(safeLink)) {
+            if (!/^www\./i.test(safeLink)) {
+                safeLink = 'www.' + safeLink;
+            }
+            safeLink = 'https://' + safeLink;
+        }
+        return safeLink;
+    };
+
+    const safeQPLink = validateLink(questionPaperLink);
+    const safeMSLink = validateLink(markSchemeLink);
+    const safeERLink = validateLink(examinerReportLink);
+
+    if (!safeQPLink) {
+        showPopup({ type: 'validationError', subText: 'Question Paper Link is required and must be a valid URL.' });
+        setPastPaperSubmitLoading(false);
+        return;
+    }
+
+    const { data, error } = await supabaseClient.from('papers').insert({ // Changed from 'past_papers' to 'papers' based on schema
+      subject_id: selectedSubjectId,
+      exam_session_id: selectedExamSessionId,
+      unit_code: unitCode,
+      question_paper_link: safeQPLink,
+      mark_scheme_link: safeMSLink,
+      examiner_report_link: safeERLink,
+      uploaded_by_username: staffUsername,
+      // You might want an 'approved' field for past papers as well, defaulting to 'Approved'
+      // approved: "Approved"
+    }).select();
+
+    if (error) {
+      showPopup({ type: 'fetchError', subText: `Past Paper submission failed: ${error.message}` });
+      setPastPaperSubmitLoading(false);
+    } else if (!data || data.length === 0) {
+      showPopup({ type: 'fetchError', subText: 'Past Paper submission did not return a new record. Please check your database constraints.' });
+      setPastPaperSubmitLoading(false);
+    } else {
+      showPopup({ type: 'uploadSuccess', subText: 'Past paper uploaded successfully!' });
+      // Clear form fields
+      setSelectedExamSessionId('');
+      setUnitCode('');
+      setQuestionPaperLink('');
+      setMarkSchemeLink('');
+      setExaminerReportLink('');
+      // Optionally re-fetch past papers if you have a display for them
+      setPastPaperSubmitLoading(false);
     }
   };
 
@@ -588,6 +690,11 @@ export default function AdminDashboard() {
     });
   }, [modType, modSubject, modQualification, activeTab, supabaseClient, subjects]);
 
+  // Find the selected subject to get its units for the past paper unit code dropdown
+  const currentSelectedSubject = subjects.find(s => s.id === selectedSubjectId);
+  const unitsForSelectedSubject = currentSelectedSubject?.units || [];
+
+
   return (
     <div className={`pt-20 ${!staffUser ? "h-screen":"min-h-screen h-fit "} bg-blue-100 p-6 flex justify-center items-center`} style={{ fontFamily: 'Poppins, sans-serif' }}>
       <div className="h-fit bg-white rounded-xl shadow-lg w-full max-w-5xl mx-auto p-4 sm:p-6">
@@ -603,8 +710,12 @@ export default function AdminDashboard() {
           </form>
         ) : (
           <>
-            <div className="border-b mb-4 sm:text-base text-xs grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 md:gap-6 sm:px-1 w-full">
+            <div className="border-b mb-4 sm:text-base text-xs grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4 md:gap-6 sm:px-1 w-full">
                 <button onClick={() => setActiveTab('upload')} className={`cursor-pointer py-2 px-4 flex items-center gap-1 rounded-t-lg ${activeTab === 'upload' ? 'border-b-2 border-blue-600 font-semibold text-blue-700 bg-blue-50' : 'text-gray-500 hover:text-blue-600'}`}><svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4" /></svg>Upload</button>
+                <button onClick={() => setActiveTab('past_papers')} className={`cursor-pointer py-2 px-4 flex items-center gap-1 rounded-t-lg ${activeTab === 'past_papers' ? 'border-b-2 border-blue-600 font-semibold text-blue-700 bg-blue-50' : 'text-gray-500 hover:text-blue-600'}`}>
+                    <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor"><path d="M224-120q-29.7 0-50.85-21.15Q152-162.3 152-192v-576q0-29.7 21.15-50.85Q194.3-840 224-840h312l-72 72H224v576h512v-328l72-72v400q0 29.7-21.15 50.85Q797.7-120 768-120H224ZM224-768v-72 72Zm0 0v-72 72Zm512 0-216-216 216-216 48 48-168 168 168 168-48 48ZM536-768q-33 0-56.5-23.5T456-848q0-33 23.5-56.5t56.5-23.5q33 0 56.5 23.5T616-848q0 33-23.5 56.5T536-768Z"/></svg>
+                    Past Papers
+                </button>
                 <button onClick={() => setActiveTab('approve')} className={`cursor-pointer py-2 px-4 flex items-center gap-1 rounded-t-lg ${activeTab === 'approve' ? 'border-b-2 border-blue-600 font-semibold text-blue-700 bg-blue-50' : 'text-gray-500 hover:text-blue-600'}`}><svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor"><path d="M263.72-96Q234-96 213-117.15T192-168v-384q0-29.7 21.15-50.85Q234.3-624 264-624h24v-96q0-79.68 56.23-135.84 56.22-56.16 136-56.16Q560-912 616-855.84q56 56.16 56 135.84v96h24q29.7 0 50.85 21.15Q768-581.7 768-552v384q0 29.7-21.16 50.85Q725.68-96 695.96-96H263.72Zm.28-72h432v-384H264v384Zm216.21-120Q510-288 531-309.21t21-51Q552-390 530.79-411t-51-21Q450-432 429-410.79t-21 51Q408-330 429.21-309t51 21ZM360-624h240v-96q0-50-35-85t-85-35q-50 0-85 35t-35 85v96Zm-96 456v-384 384Z"/></svg>Approve</button>
                 <button onClick={() => setActiveTab('subjects')} className={`cursor-pointer py-2 px-4 flex items-center gap-1 rounded-t-lg ${activeTab === 'subjects' ? 'border-b-2 border-blue-600 font-semibold text-blue-700 bg-blue-50' : 'text-gray-500 hover:text-blue-600'}`}><svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" /></svg>Add Subject</button>
                 <button onClick={() => setActiveTab('leaderboard')} className={`cursor-pointer py-2 px-4 flex items-center gap-1 rounded-t-lg ${activeTab === 'leaderboard' ? 'border-b-2 border-blue-600 font-semibold text-blue-700 bg-blue-50' : 'text-gray-500 hover:text-blue-600'}`}><svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M3 17v-2a4 4 0 014-4h10a4 4 0 014 4v2" /><circle cx="12" cy="7" r="4" /></svg>Leaderboard</button>
@@ -679,6 +790,81 @@ export default function AdminDashboard() {
                 </form>
               </>
             )}
+
+            {/* NEW: Past Papers Tab Content */}
+            {activeTab === 'past_papers' && (
+              <>
+                <form onSubmit={handlePaperSubmit} className="space-y-4 bg-blue-50 p-4 rounded-2xl border border-blue-100">
+                  <h3 className="text-xl font-semibold text-blue-700 mb-4">Upload Past Paper</h3>
+                  <div className="flex flex-col md:flex-row gap-2">
+                    <select value={selectedSubjectId} onChange={(e) => setSelectedSubjectId(e.target.value)} className="cursor-pointer w-full border p-2 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 transition" required>
+                      <option value="">Select Subject *</option>
+                      <optgroup label="IAL">
+                        {subjects
+                          .filter((subject) => subject.syllabus_type === "IAL")
+                          .map((subject) => (
+                            <option key={subject.id} value={subject.id}>
+                              {subject.name} ({subject.code}) - {subject.syllabus_type}
+                            </option>
+                          ))}
+                      </optgroup>
+                      <optgroup label="IGCSE">
+                        {subjects
+                          .filter((subject) => subject.syllabus_type === "IGCSE")
+                          .map((subject) => (
+                            <option key={subject.id} value={subject.id}>
+                              {subject.name} ({subject.code}) - {subject.syllabus_type}
+                            </option>
+                          ))}
+                      </optgroup>
+                    </select>
+                    <select value={selectedExamSessionId} onChange={(e) => setSelectedExamSessionId(e.target.value)} className="cursor-pointer w-full border p-2 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 transition" required disabled={loadingExamSessions}>
+                      <option value="">{loadingExamSessions ? 'Loading Exam Sessions...' : 'Select Exam Session *'}</option>
+                      {examSessions.map((session) => (
+                        <option key={session.id} value={session.id}>
+                          {session.session} {session.year} {/* CORRECTED: Display session and year */}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  {/* Unit Code input - can be a dropdown if subjects have units, otherwise a text input */}
+                  {(() => {
+                    const selectedSubject = subjects.find(sub => sub.id === selectedSubjectId);
+                    const units = selectedSubject?.units || [];
+                    if (Array.isArray(units) && units.length > 0) {
+                      return (
+                        <select value={unitCode} onChange={e => setUnitCode(e.target.value)} className="cursor-pointer w-full border p-2 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 transition" required>
+                          <option value="">Select Unit Code *</option>
+                          {units.map((unit, idx) => (
+                            <option key={unit.code || unit.name || idx} value={unit.code}>{unit.unit ? `${unit.unit} - ${unit.name} (${unit.code})` : `${unit.name} (${unit.code})`}</option>
+                          ))}
+                          {/* Option for subjects without specific units, if applicable for past papers */}
+                          {/* <option value="General">General</option> */}
+                        </select>
+                      );
+                    } else {
+                      return (
+                        <input type="text" value={unitCode} onChange={(e) => setUnitCode(e.target.value)} placeholder="Unit Code (e.g., WAC11) *" className="w-full border p-2 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 transition" required />
+                      );
+                    }
+                  })()}
+
+                  <span className="text-xs text-gray-500">Paste any URL format (www.abc.com, abc.com, https://www.abc.com, etc.):</span>
+                  <input type="text" value={questionPaperLink} onChange={(e) => setQuestionPaperLink(e.target.value)} placeholder="Question Paper Link *" className="w-full border p-2 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 transition" required />
+                  <input type="text" value={markSchemeLink} onChange={(e) => setMarkSchemeLink(e.target.value)} placeholder="Mark Scheme Link (optional)" className="w-full border p-2 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 transition" />
+                  <input type="text" value={examinerReportLink} onChange={(e) => setExaminerReportLink(e.target.value)} placeholder="Examiner Report Link (optional)" className="w-full border p-2 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 transition" />
+                  <button type="submit" className="cursor-pointer w-full bg-blue-600 hover:bg-blue-700 transition text-white py-2 rounded-lg flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed" disabled={pastPaperSubmitLoading}>
+                    {pastPaperSubmitLoading ? (
+                      <svg className="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" /></svg>
+                    ) : (
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M7 10l5 5m0 0l5-5m-5 5V4" /></svg>
+                    )}
+                    {pastPaperSubmitLoading ? 'Submitting...' : 'Upload Past Paper'}
+                  </button>
+                </form>
+              </>
+            )}
+
             {activeTab === 'approve' && (
               <>
                 <div className="divide-y divide-blue-100">
