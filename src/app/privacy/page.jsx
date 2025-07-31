@@ -40,7 +40,7 @@ export default function Guidelines() {
 
   return (
     <>
-      <Home showExtra />
+      <Home showExtra dontShowload/>
       <main className="min-h-screen bg-white flex flex-col items-center justify-start py-10 m-10">
         <div className="w-full max-w-5xl px-4">
           <div className='mb-8'>

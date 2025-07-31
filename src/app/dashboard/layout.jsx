@@ -4,7 +4,7 @@ import PopupManager from '@/components/ui/PopupNotification';
 export default function Layout({ children }) { 
   return (
     <PopupManager>
-      <Home showExtra />
+      <Home showExtra dontShowload/>
       {children}
     </PopupManager>
   );
