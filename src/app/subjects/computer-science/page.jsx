@@ -5,15 +5,25 @@ import SmallFoot from '@/components/smallFoot.jsx';
 import { Home } from '@/components/homenav';
 export default function Subject({ searchParams }) {
   const subjectName = 'Computer Science';
-  const [selected, setSelected] = useState('option1');
+  // Default to 'option2' (IGCSEs) since IALs is greyed out/disabled
+  const [selected, setSelected] = useState('option2');
+  // Access choice directly from the searchParams prop
   const params = use(searchParams);
   const choice = params.choice;
-  const regExp = /option[1-2]/g;
+
+  const regExp = /option[1-2]/g; // Regular expression to validate choice
+
   useEffect(() => {
     if (regExp.test(choice)) {
-      setSelected(choice);
+      // If choice is 'option1' (IALs), still force to 'option2' because IALs is disabled
+      if (choice === 'option1') {
+        setSelected('option2');
+      } else {
+        setSelected(choice);
+      }
     }
   }, [choice]);
+
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
@@ -64,8 +74,10 @@ export default function Subject({ searchParams }) {
             {/* Selection Bar - Responsive width */}
             <div className="flex rounded-[15px] bg-[#F2F6FF] border-[#0C58E4] border-2 p-1 w-full h-[65px] justify-between mb-10">
               <button
-                onClick={() => setSelected('option1')}
-                className={`cursor-pointer w-1/2 py-2 text-center rounded-[10px] transition-all ease-in-out duration-500 text-sm md:text-base lg:text-xl ${selected === 'option1' ? 'bg-[#D0E0FF] shadow-md font-semibold tracking-[-0.75px]' : ''}`}
+                // IALs button: Always disabled and greyed out
+                disabled // Make it non-clickable
+                className={`cursor-not-allowed w-1/2 py-2 text-center rounded-[10px] transition-all ease-in-out duration-500 text-sm md:text-base lg:text-xl
+                            bg-gray-200 text-gray-400 font-semibold tracking-[-0.75px]`} // Always greyed out styles
                 style={{ fontFamily: 'Poppins, sans-serif' }}
               >
                 IALs

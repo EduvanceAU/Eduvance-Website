@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 // Removed 'motion' import as we're replacing the custom message display
-// import { motion } from 'framer-motion'; 
+// import { motion } from 'framer-motion'; 
 
 // Import the usePopup hook from your utility file
 import { usePopup } from '@/components/ui/PopupNotification';
@@ -65,6 +65,14 @@ export default function AdminDashboard() {
   const [examSessions, setExamSessions] = useState([]); // To store fetched exam sessions
   const [loadingExamSessions, setLoadingExamSessions] = useState(true);
   const [pastPaperSubmitLoading, setPastPaperSubmitLoading] = useState(false);
+
+  const [staffUsers, setStaffUsers] = useState([]); // All staff users
+  const [loadingStaffUsers, setLoadingStaffUsers] = useState(true);
+  const [newUserData, setNewUserData] = useState({ username: '', email: '', password: '', role: 'moderator' });
+  const [selectedUserIdForUpdate, setSelectedUserIdForUpdate] = useState('');
+  const [selectedUserNewRole, setSelectedUserNewRole] = useState('moderator');
+  const [selectedUserIdForRemove, setSelectedUserIdForRemove] = useState('');
+  const [userActionLoading, setUserActionLoading] = useState(false);
 
 
   // Helper function to get approval status display
@@ -188,8 +196,10 @@ export default function AdminDashboard() {
         fetchLatestResources();
         fetchUnapprovedResources();
         fetchExamSessions(); // Fetch exam sessions when authenticated
+        fetchStaffUsers(); // NEW: Fetch staff users when authenticated
       } else {
         setStaffUsername('');
+        setStaffUsers([]); // Clear users on logout
       }
     });
     supabaseClient.auth.getSession().then(({ data }) => {
@@ -202,8 +212,10 @@ export default function AdminDashboard() {
         fetchLatestResources();
         fetchUnapprovedResources();
         fetchExamSessions(); // Fetch exam sessions when authenticated
+        fetchStaffUsers(); // NEW: Fetch staff users when authenticated
       } else {
         setStaffUsername('');
+        setStaffUsers([]); // Clear users on logout
       }
     });
     return () => subscription?.unsubscribe?.();
@@ -265,6 +277,19 @@ export default function AdminDashboard() {
     } else {
       setUnapprovedResources(data);
     }
+  };
+
+  // NEW: Fetch all staff users
+  const fetchStaffUsers = async () => {
+    if (!supabaseClient) return;
+    setLoadingStaffUsers(true);
+    const { data, error } = await supabaseClient.from('staff_users').select('id, username, email, role, created_at').order('created_at', { ascending: false });
+    if (error) {
+      showPopup({ type: 'fetchError', subText: `Failed to fetch staff users: ${error.message}` });
+    } else {
+      setStaffUsers(data || []);
+    }
+    setLoadingStaffUsers(false);
   };
 
   const approveResource = async (id) => {
@@ -620,7 +645,7 @@ export default function AdminDashboard() {
       .from('staff_users')
       .select('id, username, email');
     if (staffError) {
-      showPopup({ type: 'fetchError', subText: 'Failed to fetch staff users: ' + staffError.message });
+      showPopup({ type: 'fetchError', subText: 'Failed to fetch staff users for leaderboard: ' + staffError.message });
       setLoadingLeaderboard(false);
       return;
     }
@@ -629,7 +654,7 @@ export default function AdminDashboard() {
       .from('resources')
       .select('uploaded_by_username, approved');
     if (resError) {
-      showPopup({ type: 'fetchError', subText: 'Failed to fetch resources: ' + resError.message });
+      showPopup({ type: 'fetchError', subText: 'Failed to fetch resources for leaderboard: ' + resError.message });
       setLoadingLeaderboard(false);
       return;
     }
@@ -694,6 +719,116 @@ export default function AdminDashboard() {
   const currentSelectedSubject = subjects.find(s => s.id === selectedSubjectId);
   const unitsForSelectedSubject = currentSelectedSubject?.units || [];
 
+  // NEW: User Management Functions
+  const handleNewUserChange = (e) => {
+    const { name, value } = e.target;
+    setNewUserData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleAddStaffUser = async (e) => {
+    e.preventDefault();
+    setUserActionLoading(true);
+  
+    const { username, email, password, role } = newUserData;
+  
+    if (!username || !email || !password || !role) {
+      showPopup({ type: 'validationError', subText: 'All fields are required to add a user.' });
+      setUserActionLoading(false);
+      return;
+    }
+  
+    try {
+      // Make a fetch request to your new backend API route
+      // For Next.js App Router at src/app/api/staff-users/route.js, the path is simply /api/staff-users
+      const response = await fetch('/api/staff-users', { // <-- **THIS LINE IS CHANGED**
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, email, password, role }), // Send plain password to backend
+      });
+  
+      const result = await response.json(); // Parse the JSON response from your API
+  
+      if (response.ok) { // Check if the HTTP status is 2xx (success)
+        showPopup({ type: 'approveSuccess', subText: result.message || 'User added successfully!' });
+        setNewUserData({ username: '', email: '', password: '', role: 'moderator' }); // Reset form
+        fetchStaffUsers(); // Refresh the user list in the UI
+      } else {
+        // Handle errors returned from your backend API
+        showPopup({ type: 'fetchError', subText: result.message || 'Failed to add user.' });
+      }
+    } catch (error) {
+      // Handle network errors or other unexpected issues
+      console.error('Error adding staff user:', error);
+      showPopup({ type: 'fetchError', subText: `An unexpected error occurred: ${error.message}` });
+    } finally {
+      setUserActionLoading(false); // Always stop loading, regardless of success or failure
+    }
+  };
+  
+
+  const handleUpdateStaffUserRole = async (e) => {
+    e.preventDefault();
+    setUserActionLoading(true);
+    if (!supabaseClient) {
+      showPopup({ type: 'fetchError', subText: 'Supabase client not initialized.' });
+      setUserActionLoading(false);
+      return;
+    }
+    if (!selectedUserIdForUpdate || !selectedUserNewRole) {
+      showPopup({ type: 'validationError', subText: 'Please select a user and a new role.' });
+      setUserActionLoading(false);
+      return;
+    }
+
+    const { error } = await supabaseClient.from('staff_users').update({
+      role: selectedUserNewRole
+    }).eq('id', selectedUserIdForUpdate);
+
+    if (error) {
+      showPopup({ type: 'fetchError', subText: `Failed to update user role: ${error.message}` });
+    } else {
+      showPopup({ type: 'resourceEdited', subText: 'User role updated successfully!' });
+      setSelectedUserIdForUpdate('');
+      setSelectedUserNewRole('moderator');
+      fetchStaffUsers(); // Refresh the user list
+    }
+    setUserActionLoading(false);
+  };
+
+  const handleRemoveStaffUser = async (e) => {
+    e.preventDefault();
+    setUserActionLoading(true);
+    if (!supabaseClient) {
+      showPopup({ type: 'fetchError', subText: 'Supabase client not initialized.' });
+      setUserActionLoading(false);
+      return;
+    }
+    if (!selectedUserIdForRemove) {
+      showPopup({ type: 'validationError', subText: 'Please select a user to remove.' });
+      setUserActionLoading(false);
+      return;
+    }
+
+    // Confirm deletion
+    if (!window.confirm('Are you sure you want to permanently remove this user? This action cannot be undone.')) {
+      setUserActionLoading(false);
+      return;
+    }
+
+    const { error } = await supabaseClient.from('staff_users').delete().eq('id', selectedUserIdForRemove);
+
+    if (error) {
+      showPopup({ type: 'fetchError', subText: `Failed to remove user: ${error.message}` });
+    } else {
+      showPopup({ type: 'rejectSuccess', subText: 'User removed successfully!' });
+      setSelectedUserIdForRemove('');
+      fetchStaffUsers(); // Refresh the user list
+    }
+    setUserActionLoading(false);
+  };
+
 
   return (
     <div className={`pt-20 ${!staffUser ? "h-screen":"min-h-screen h-fit "} bg-blue-100 p-6 flex justify-center items-center`} style={{ fontFamily: 'Poppins, sans-serif' }}>
@@ -710,16 +845,21 @@ export default function AdminDashboard() {
           </form>
         ) : (
           <>
-            <div className="border-b mb-4 sm:text-base text-xs grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4 md:gap-6 sm:px-1 w-full">
+            <div className="border-b mb-4 sm:text-base text-xs grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 sm:px-1 w-full">
                 <button onClick={() => setActiveTab('upload')} className={`cursor-pointer py-2 px-4 flex items-center gap-1 rounded-t-lg ${activeTab === 'upload' ? 'border-b-2 border-blue-600 font-semibold text-blue-700 bg-blue-50' : 'text-gray-500 hover:text-blue-600'}`}><svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4" /></svg>Upload</button>
                 <button onClick={() => setActiveTab('past_papers')} className={`cursor-pointer py-2 px-4 flex items-center gap-1 rounded-t-lg ${activeTab === 'past_papers' ? 'border-b-2 border-blue-600 font-semibold text-blue-700 bg-blue-50' : 'text-gray-500 hover:text-blue-600'}`}>
-                    <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor"><path d="M224-120q-29.7 0-50.85-21.15Q152-162.3 152-192v-576q0-29.7 21.15-50.85Q194.3-840 224-840h312l-72 72H224v576h512v-328l72-72v400q0 29.7-21.15 50.85Q797.7-120 768-120H224ZM224-768v-72 72Zm0 0v-72 72Zm512 0-216-216 216-216 48 48-168 168 168 168-48 48ZM536-768q-33 0-56.5-23.5T456-848q0-33 23.5-56.5t56.5-23.5q33 0 56.5 23.5T616-848q0 33-23.5 56.5T536-768Z"/></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#666666"><path d="M288-168v-432q0-30.08 21-51.04T360-672h432q29.7 0 50.85 21.15Q864-629.7 864-600v312L672-96H360q-29.7 0-50.85-21.15Q288-138.3 288-168ZM98-703q-5-29 12.5-54t46.5-30l425-76q29-5 53.5 12.5T665-804l11 60h-73l-9-48-425 76 47 263v228q-16-7-27.5-21.08Q177-260.16 174-278L98-703Zm262 103v432h264v-168h168v-264H360Zm216 216Z"/></svg>
                     Past Papers
                 </button>
                 <button onClick={() => setActiveTab('approve')} className={`cursor-pointer py-2 px-4 flex items-center gap-1 rounded-t-lg ${activeTab === 'approve' ? 'border-b-2 border-blue-600 font-semibold text-blue-700 bg-blue-50' : 'text-gray-500 hover:text-blue-600'}`}><svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor"><path d="M263.72-96Q234-96 213-117.15T192-168v-384q0-29.7 21.15-50.85Q234.3-624 264-624h24v-96q0-79.68 56.23-135.84 56.22-56.16 136-56.16Q560-912 616-855.84q56 56.16 56 135.84v96h24q29.7 0 50.85 21.15Q768-581.7 768-552v384q0 29.7-21.16 50.85Q725.68-96 695.96-96H263.72Zm.28-72h432v-384H264v384Zm216.21-120Q510-288 531-309.21t21-51Q552-390 530.79-411t-51-21Q450-432 429-410.79t-21 51Q408-330 429.21-309t51 21ZM360-624h240v-96q0-50-35-85t-85-35q-50 0-85 35t-35 85v96Zm-96 456v-384 384Z"/></svg>Approve</button>
                 <button onClick={() => setActiveTab('subjects')} className={`cursor-pointer py-2 px-4 flex items-center gap-1 rounded-t-lg ${activeTab === 'subjects' ? 'border-b-2 border-blue-600 font-semibold text-blue-700 bg-blue-50' : 'text-gray-500 hover:text-blue-600'}`}><svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" /></svg>Add Subject</button>
-                <button onClick={() => setActiveTab('leaderboard')} className={`cursor-pointer py-2 px-4 flex items-center gap-1 rounded-t-lg ${activeTab === 'leaderboard' ? 'border-b-2 border-blue-600 font-semibold text-blue-700 bg-blue-50' : 'text-gray-500 hover:text-blue-600'}`}><svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M3 17v-2a4 4 0 014-4h10a4 4 0 014 4v2" /><circle cx="12" cy="7" r="4" /></svg>Leaderboard</button>
-                <button onClick={() => setActiveTab('moderation')} className={`cursor-pointer py-2 px-4 flex items-center gap-1 rounded-t-lg ${activeTab === 'moderation' ? 'border-b-2 border-blue-600 font-semibold text-sm text-blue-700 bg-blue-50' : 'text-gray-500 hover:text-blue-600'}`}><svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" /></svg>Moderation View</button>
+                <button onClick={() => setActiveTab('leaderboard')} className={`cursor-pointer py-2 px-4 flex items-center gap-1 rounded-t-lg ${activeTab === 'leaderboard' ? 'border-b-2 border-blue-600 font-semibold text-blue-700 bg-blue-50' : 'text-gray-500 hover:text-blue-600'}`}><svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#666666"><path d="m290-96-50-50 264-264 144 144 213-214 51 51-264 264-144-144L290-96Zm-122-48q-30 0-51-21.15T96-216v-528q0-29 21.5-50.5T168-816h528q29 0 50.5 21.5T768-744v160H168v440Zm0-512h528v-88H168v88Zm0 0v-88 88Z"/></svg>Leaderboard</button>
+                <button onClick={() => setActiveTab('moderation')} className={`cursor-pointer py-2 px-4 flex items-center gap-1 rounded-t-lg ${activeTab === 'moderation' ? 'border-b-2 border-blue-600 font-semibold text-blue-700 bg-blue-50' : 'text-gray-500 hover:text-blue-600'}`}><svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#666666"><path d="m376-336 104-79 104 79-40-128 104-82H521.07L480-672l-41.07 126H312l104 82-40 128ZM480-96q-135-33-223.5-152.84Q168-368.69 168-515v-229l312-120 312 120v229q0 146.31-88.5 266.16Q615-129 480-96Zm0-75q104-32.25 172-129t68-215v-180l-240-92-240 92v180q0 118.25 68 215t172 129Zm0-308Z"/></svg>Moderation View</button>
+                {/* NEW: User Management Tab Button */}
+                <button onClick={() => setActiveTab('users')} className={`cursor-pointer py-2 px-4 flex items-center gap-1 rounded-t-lg ${activeTab === 'users' ? 'border-b-2 border-blue-600 font-semibold text-blue-700 bg-blue-50' : 'text-gray-500 hover:text-blue-600'}`}>
+                    <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#666666"><path d="M480-480q-60 0-102-42t-42-102q0-60 42-102t102-42q60 0 102 42t42 102q0 60-42 102t-102 42ZM192-192v-96q0-23 12.5-43.5T239-366q55-32 116.29-49 61.29-17 124.5-17t124.71 17Q666-398 721-366q22 13 34.5 34t12.5 44v96H192Zm72-72h432v-24q0-5.18-3.03-9.41-3.02-4.24-7.97-6.59-46-28-98-42t-107-14q-55 0-107 14t-98 42q-5 4-8 7.72-3 3.73-3 8.28v24Zm216.21-288Q510-552 531-573.21t21-51Q552-654 530.79-675t-51-21Q450-696 429-674.79t-21 51Q408-594 429.21-573t51 21Zm-.21-72Zm0 360Z"/></svg>
+                    User Management
+                </button>
             </div>
             {/* Removed the old message display div */}
             {activeTab === 'upload' && (
@@ -1122,6 +1262,189 @@ export default function AdminDashboard() {
                   </div>
                 </div>
               </div>
+            )}
+            {/* NEW: User Management Tab Content */}
+            {activeTab === 'users' && (
+              <>
+                <div className="space-y-6">
+                  {/* Add New User Section */}
+                  <div className="bg-blue-50 p-4 rounded-2xl border border-blue-100">
+                    <h3 className="text-xl font-semibold text-blue-700 mb-4">Add New Staff User</h3>
+                    <form onSubmit={handleAddStaffUser} className="space-y-3">
+                      <div>
+                        <label htmlFor="newUserUsername" className="block text-sm font-medium text-gray-700">Username</label>
+                        <input
+                          type="text"
+                          id="newUserUsername"
+                          name="username"
+                          value={newUserData.username}
+                          onChange={handleNewUserChange}
+                          className="w-full border p-2 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 transition"
+                          required
+                        />
+                      </div>
+                      <div>
+                        <label htmlFor="newUserEmail" className="block text-sm font-medium text-gray-700">Email</label>
+                        <input
+                          type="email"
+                          id="newUserEmail"
+                          name="email"
+                          value={newUserData.email}
+                          onChange={handleNewUserChange}
+                          className="w-full border p-2 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 transition"
+                          required
+                        />
+                      </div>
+                      <div>
+                        <label htmlFor="newUserPassword" className="block text-sm font-medium text-gray-700">Password</label>
+                        <input
+                          type="password"
+                          id="newUserPassword"
+                          name="password"
+                          value={newUserData.password}
+                          onChange={handleNewUserChange}
+                          className="w-full border p-2 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 transition"
+                          required
+                        />
+                      </div>
+                      <div>
+                        <label htmlFor="newUserRole" className="block text-sm font-medium text-gray-700">Role</label>
+                        <select
+                          id="newUserRole"
+                          name="role"
+                          value={newUserData.role}
+                          onChange={handleNewUserChange}
+                          className="cursor-pointer w-full border p-2 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 transition"
+                        >
+                          <option value="moderator">Moderator</option>
+                          <option value="admin">Admin</option>
+                          <option value="editor">Editor</option>
+                          <option value="viewer">Viewer</option>
+                        </select>
+                      </div>
+                      <button type="submit" className="cursor-pointer w-full bg-blue-600 hover:bg-blue-700 transition text-white py-2 rounded-lg flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed" disabled={userActionLoading}>
+                        {userActionLoading ? (
+                          <svg className="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" /></svg>
+                        ) : (
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" /></svg>
+                        )}
+                        {userActionLoading ? 'Adding User...' : 'Add User'}
+                      </button>
+                    </form>
+                  </div>
+
+                  {/* Update User Role Section */}
+                  <div className="bg-blue-50 p-4 rounded-2xl border border-blue-100">
+                    <h3 className="text-xl font-semibold text-blue-700 mb-4">Update Staff User Role</h3>
+                    <form onSubmit={handleUpdateStaffUserRole} className="space-y-3">
+                      <div>
+                        <label htmlFor="updateUserSelect" className="block text-sm font-medium text-gray-700">Select User</label>
+                        <select
+                          id="updateUserSelect"
+                          value={selectedUserIdForUpdate}
+                          onChange={(e) => setSelectedUserIdForUpdate(e.target.value)}
+                          className="cursor-pointer w-full border p-2 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 transition"
+                          required
+                        >
+                          <option value="">Select a user</option>
+                          {staffUsers.map(user => (
+                            <option key={user.id} value={user.id}>{user.username} ({user.email})</option>
+                          ))}
+                        </select>
+                      </div>
+                      <div>
+                        <label htmlFor="updateUserRole" className="block text-sm font-medium text-gray-700">New Role</label>
+                        <select
+                          id="updateUserRole"
+                          value={selectedUserNewRole}
+                          onChange={(e) => setSelectedUserNewRole(e.target.value)}
+                          className="cursor-pointer w-full border p-2 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 transition"
+                        >
+                          <option value="moderator">Moderator</option>
+                          <option value="admin">Admin</option>
+                          <option value="editor">Editor</option>
+                          <option value="viewer">Viewer</option>
+                        </select>
+                      </div>
+                      <button type="submit" className="cursor-pointer w-full bg-green-600 hover:bg-green-700 transition text-white py-2 rounded-lg flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed" disabled={userActionLoading}>
+                        {userActionLoading ? (
+                          <svg className="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" /></svg>
+                        ) : (
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        )}
+                        {userActionLoading ? 'Updating Role...' : 'Update Role'}
+                      </button>
+                    </form>
+                  </div>
+
+                  {/* Remove User Section */}
+                  <div className="bg-blue-50 p-4 rounded-2xl border border-blue-100">
+                    <h3 className="text-xl font-semibold text-blue-700 mb-4">Remove Staff User</h3>
+                    <form onSubmit={handleRemoveStaffUser} className="space-y-3">
+                      <div>
+                        <label htmlFor="removeUserSelect" className="block text-sm font-medium text-gray-700">Select User</label>
+                        <select
+                          id="removeUserSelect"
+                          value={selectedUserIdForRemove}
+                          onChange={(e) => setSelectedUserIdForRemove(e.target.value)}
+                          className="cursor-pointer w-full border p-2 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 transition"
+                          required
+                        >
+                          <option value="">Select a user</option>
+                          {staffUsers.map(user => (
+                            <option key={user.id} value={user.id}>{user.username} ({user.email})</option>
+                          ))}
+                        </select>
+                      </div>
+                      <button type="submit" className="cursor-pointer w-full bg-red-600 hover:bg-red-700 transition text-white py-2 rounded-lg flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed" disabled={userActionLoading}>
+                        {userActionLoading ? (
+                          <svg className="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" /></svg>
+                        ) : (
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                        )}
+                        {userActionLoading ? 'Removing User...' : 'Remove User'}
+                      </button>
+                    </form>
+                  </div>
+
+                  {/* Current Staff Users List */}
+                  <div className="bg-blue-50 p-4 rounded-2xl border border-blue-100">
+                    <h3 className="text-xl font-semibold text-blue-700 mb-4">Current Staff Users</h3>
+                    {loadingStaffUsers ? (
+                      <div className="text-gray-500 text-sm py-4">Loading users...</div>
+                    ) : (
+                      <div className="overflow-x-auto">
+                        <table className="min-w-full bg-white border border-blue-200 rounded-lg">
+                          <thead>
+                            <tr className="bg-blue-50">
+                              <th className="px-4 py-2 text-left text-blue-700 font-semibold">Username</th>
+                              <th className="px-4 py-2 text-left text-blue-700 font-semibold">Email</th>
+                              <th className="px-4 py-2 text-left text-blue-700 font-semibold">Role</th>
+                              <th className="px-4 py-2 text-left text-blue-700 font-semibold">Created At</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {staffUsers.length === 0 ? (
+                              <tr>
+                                <td colSpan="4" className="px-4 py-2 text-center text-gray-500">No staff users found.</td>
+                              </tr>
+                            ) : (
+                              staffUsers.map(user => (
+                                <tr key={user.id} className="border-t border-blue-100">
+                                  <td className="px-4 py-2">{user.username}</td>
+                                  <td className="px-4 py-2">{user.email}</td>
+                                  <td className="px-4 py-2 capitalize">{user.role}</td>
+                                  <td className="px-4 py-2">{new Date(user.created_at).toLocaleDateString()}</td>
+                                </tr>
+                              ))
+                            )}
+                          </tbody>
+                        </table>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </>
             )}
             {latestResources.length > 0 && (
               <div className="mt-8">
