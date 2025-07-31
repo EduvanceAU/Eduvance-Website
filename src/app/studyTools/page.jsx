@@ -34,7 +34,7 @@ export default function Subject() {
 
   return (
     <>
-      <Home/>
+      <Home dontShowload showExtra/>
       {/* Main Content */}
       <div className={`transition-all duration-300 ${sidebarOpen ? 'sm:ml-70' : 'ml-0'}`}>
         {/* Custom Banner Header */}
