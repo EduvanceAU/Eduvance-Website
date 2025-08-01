@@ -48,18 +48,23 @@ async function data() {
 
     subject_list = data;
     const base_url = "https://eduvance.au"
-    const date = new Date(2025, 6, 12);
+    const date = new Date(2025, 7, 2);
     let urls = []
     urls.push({url:`${base_url}/`, lastModified: date.toISOString().split('T')[0], changeFrequency: 'monthly', priority: 1});
     urls.push({url:`${base_url}/resources`, lastModified: date.toISOString().split('T')[0], changeFrequency: 'monthly', priority: 1});
     urls.push({url:`${base_url}/contributor`, lastModified: date.toISOString().split('T')[0], changeFrequency: 'monthly', priority: 0.9});
     urls.push({url:`${base_url}/studyTools`, lastModified: date.toISOString().split('T')[0], changeFrequency: 'monthly', priority: 0.9});
-    urls.push({url:`${base_url}/communityNotes/IAL`, lastModified: date.toISOString().split('T')[0], changeFrequency: 'monthly', priority: 0.9});
-    urls.push({url:`${base_url}/communityNotes/IGCSE`, lastModified: date.toISOString().split('T')[0], changeFrequency: 'monthly', priority: 0.9});
+    // urls.push({url:`${base_url}/communityNotes/IAL`, lastModified: date.toISOString().split('T')[0], changeFrequency: 'monthly', priority: 0.9});
+    // urls.push({url:`${base_url}/communityNotes/IGCSE`, lastModified: date.toISOString().split('T')[0], changeFrequency: 'monthly', priority: 0.9});
     urls.push({url:`${base_url}/pastPapers/IAL`, lastModified: date.toISOString().split('T')[0], changeFrequency: 'monthly', priority: 0.9});
     urls.push({url:`${base_url}/pastPapers/IGCSE`, lastModified: date.toISOString().split('T')[0], changeFrequency: 'monthly', priority: 0.9});
     urls.push({url:`${base_url}/terms`, lastModified: date.toISOString().split('T')[0], changeFrequency: 'monthly', priority: 0.9});
     urls.push({url:`${base_url}/privacy`, lastModified: date.toISOString().split('T')[0], changeFrequency: 'monthly', priority: 0.9});
+    urls.push({url:`${base_url}/guidelines`, lastModified: date.toISOString().split('T')[0], changeFrequency: 'monthly', priority: 0.9});
+    urls.push({url:`${base_url}/faq`, lastModified: date.toISOString().split('T')[0], changeFrequency: 'monthly', priority: 0.8});
+    urls.push({url:`${base_url}/about/eduvance`, lastModified: date.toISOString().split('T')[0], changeFrequency: 'monthly', priority: 0.8});
+    urls.push({url:`${base_url}/about/edexcel/examStructure`, lastModified: date.toISOString().split('T')[0], changeFrequency: 'monthly', priority: 0.8});
+    urls.push({url:`${base_url}/about/edexcel/grading`, lastModified: date.toISOString().split('T')[0], changeFrequency: 'monthly', priority: 0.8});
     for (let subject of subject_list) {
         const one_timer = {url:`${base_url}/subjects/${toKebabCase(subject.name)}`, lastModified: date.toISOString().split('T')[0], changeFrequency: 'monthly', priority: 0.9}
         if (!urls.some(entry => entry.url === one_timer.url)){
