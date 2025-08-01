@@ -40,7 +40,7 @@ export default function exam() {
 
   return (
     <>
-      <Home showExtra />
+      <Home showExtra dontShowload/>
       <main className="min-h-screen bg-white flex flex-col items-center justify-start py-10 m-10">
         <div className="w-full max-w-5xl px-4">
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#000000] mb-8 text-left tracking-[-0.035em]" style={{ fontFamily: "Poppins, sans-serif" }}>
