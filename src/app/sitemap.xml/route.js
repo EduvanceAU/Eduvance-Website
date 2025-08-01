@@ -30,7 +30,9 @@ try {
 //     })
 //     .finally(console.log(subject_list))
 // }
-
+function toKebabCase(str) {
+  return str.toLowerCase().replace(/\s+/g, '-');
+}
 async function data() {
   let subject_list = [];
   try {
@@ -59,20 +61,20 @@ async function data() {
     urls.push({url:`${base_url}/terms`, lastModified: date.toISOString().split('T')[0], changeFrequency: 'monthly', priority: 0.9});
     urls.push({url:`${base_url}/privacy`, lastModified: date.toISOString().split('T')[0], changeFrequency: 'monthly', priority: 0.9});
     for (let subject of subject_list) {
-        const one_timer = {url:`${base_url}/subjects/${subject.name.toLowerCase()}`, lastModified: date.toISOString().split('T')[0], changeFrequency: 'monthly', priority: 0.9}
+        const one_timer = {url:`${base_url}/subjects/${toKebabCase(subject.name)}`, lastModified: date.toISOString().split('T')[0], changeFrequency: 'monthly', priority: 0.9}
         if (!urls.some(entry => entry.url === one_timer.url)){
             urls.push(one_timer)
         }
       
         if(subject.syllabus_type === "IAL"){
-            urls.push({url:`${base_url}/subjects/${subject.name.toLowerCase()}/IAL/communityNotes`, lastModified: date.toISOString().split('T')[0], changeFrequency: 'weekly', priority: 0.8});
-            urls.push({url:`${base_url}/subjects/${subject.name.toLowerCase()}/IAL/resources`, lastModified: date.toISOString().split('T')[0], changeFrequency: 'weekly', priority: 0.8});
-            urls.push({url:`${base_url}/subjects/${subject.name.toLowerCase()}/IAL/pastpapers`, lastModified: date.toISOString().split('T')[0], changeFrequency: 'weekly', priority: 0.8});
+            urls.push({url:`${base_url}/subjects/${toKebabCase(subject.name)}/IAL/communityNotes`, lastModified: date.toISOString().split('T')[0], changeFrequency: 'weekly', priority: 0.8});
+            urls.push({url:`${base_url}/subjects/${toKebabCase(subject.name)}/IAL/resources`, lastModified: date.toISOString().split('T')[0], changeFrequency: 'weekly', priority: 0.8});
+            urls.push({url:`${base_url}/subjects/${toKebabCase(subject.name)}/IAL/pastpapers`, lastModified: date.toISOString().split('T')[0], changeFrequency: 'weekly', priority: 0.8});
         }
         else if(subject.syllabus_type === "IGCSE"){
-            urls.push({url:`${base_url}/subjects/${subject.name.toLowerCase()}/IGCSE/communityNotes`, lastModified: date.toISOString().split('T')[0], changeFrequency: 'weekly', priority: 0.8});
-            urls.push({url:`${base_url}/subjects/${subject.name.toLowerCase()}/IGCSE/resources`, lastModified: date.toISOString().split('T')[0], changeFrequency: 'weekly', priority: 0.8});
-            urls.push({url:`${base_url}/subjects/${subject.name.toLowerCase()}/IGCSE/pastpapers`, lastModified: date.toISOString().split('T')[0], changeFrequency: 'weekly', priority: 0.8});
+            urls.push({url:`${base_url}/subjects/${toKebabCase(subject.name)}/IGCSE/communityNotes`, lastModified: date.toISOString().split('T')[0], changeFrequency: 'weekly', priority: 0.8});
+            urls.push({url:`${base_url}/subjects/${toKebabCase(subject.name)}/IGCSE/resources`, lastModified: date.toISOString().split('T')[0], changeFrequency: 'weekly', priority: 0.8});
+            urls.push({url:`${base_url}/subjects/${toKebabCase(subject.name)}/IGCSE/pastpapers`, lastModified: date.toISOString().split('T')[0], changeFrequency: 'weekly', priority: 0.8});
         }
     }
     return urls

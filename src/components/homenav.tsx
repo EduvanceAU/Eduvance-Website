@@ -8,6 +8,7 @@ import { Auth } from '@supabase/auth-ui-react';
 import { ThemeSupa } from '@supabase/auth-ui-shared';
 import BlueSolo from '@/assets/png/BlueSolo.png'
 import SmallLogo from '@/assets/png/SmallLogo.png'
+import { useReloadOnStuckLoading } from '@/utils/reloadOnStuckLoading';
 import {
   Dialog,
   DialogContent,
@@ -18,6 +19,7 @@ import {
 } from "@/components/ui/dialog"
 import { useSupabaseAuth } from '@/components/client/SupabaseAuthContext';
 import { usePopup } from '@/components/ui/PopupNotification';
+
 // --- Utility Function: toKebabCase ---
 // Place this function either here at the top, or in a shared utility file (e.g., utils/string.js)
 const toKebabCase = (str) => {
@@ -93,9 +95,13 @@ function Home(props) {
   const showPopup = usePopup();
   const [subjects, setSubjects] = useState([]);
   const [NonUniqueSubjects, setNQSubjects] = useState([]);
+  const [loadingSubjects, setLoadingSubjects] = useState(true); // New state for loading
   const subjectsDivRef = useRef(null); // Ref for the subjects div
 
+  useReloadOnStuckLoading(loadingSubjects);
+
   const fetchSubjects = async () => {
+    setLoadingSubjects(true); // Set loading to true at the start of fetch
     console.debug('Attempting to fetch subjects from Supabase...');
     try {
       const { data, error } = await supabase
@@ -105,6 +111,7 @@ function Home(props) {
 
       if (error) {
         console.error('Error fetching subjects:', error.message);
+        setLoadingSubjects(false); // Set loading to false on error
         return;
       }
 
@@ -117,8 +124,10 @@ function Home(props) {
       } else {
         console.warn('No data received when fetching subjects.');
       }
+      setLoadingSubjects(false); // Set loading to false after successful fetch
     } catch (err) {
       console.error('An unexpected error occurred during subject fetch:', err);
+      setLoadingSubjects(false); // Set loading to false on unexpected error
     }
   };
 
@@ -132,7 +141,7 @@ function Home(props) {
       console.debug('Checking if subjects are rendered in the sidebar...');
       if (subjectsDivRef.current) {
         const subjectLinks = subjectsDivRef.current.querySelectorAll('a');
-        if (subjectLinks.length === 0 && subjects.length === 0) {
+        if (subjectLinks.length === 0 && subjects.length === 0 && !loadingSubjects) { // Add loadingSubjects check
           console.warn('No subject links found in the sidebar. Re-fetching subjects...');
           fetchSubjects();
         } else if (subjectLinks.length > 0) {
@@ -145,7 +154,7 @@ function Home(props) {
 
     const timer = setTimeout(checkAndRefetchSubjects, 1000); // Check after a short delay to allow rendering
     return () => clearTimeout(timer);
-  }, [subjects]); // Rerun when subjects state changes
+  }, [subjects, loadingSubjects]); // Rerun when subjects or loading state changes
 
   let extra = null;
 
@@ -536,12 +545,13 @@ function Home(props) {
           <h3 className="text-lg font-semibold tracking-[-1px] text-[#0C58E4] mb-4 px-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
             Subjects
           </h3>
-          <div className="space-y-1" ref={subjectsDivRef}> {/* Assign ref here */}
-            {subjects.length > 0 ? (
+          <div className="space-y-1" ref={subjectsDivRef}>
+            {loadingSubjects ? (
+              <p className="px-4 py-2 text-gray-500">Loading subjects...</p>
+            ) : subjects.length > 0 ? (
               subjects.map((subject) => (
                 <Link
                   key={subject}
-                  // Apply toKebabCase here for sidebar subjects
                   href={`/subjects/${toKebabCase(subject)}`}
                   className="block px-4 py-2 text-[#000000] tracking-[-0.5px] cursor-pointer hover:bg-[#BAD1FD] rounded transition-colors duration-200"
                   style={{ fontFamily: 'Poppins, sans-serif' }}
@@ -554,7 +564,7 @@ function Home(props) {
                 </Link>
               ))
             ) : (
-              <p className="px-4 py-2 text-gray-500">Loading subjects or no subjects available...</p>
+              <p className="px-4 py-2 text-gray-500">No subjects available.</p>
             )}
           </div>
         </div>
