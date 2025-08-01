@@ -3,6 +3,7 @@ import { Home } from '@/components/homenav';
 import SmallFoot from '@/components/smallFoot.jsx';
 import { useEffect } from "react";
 import {Shield, FilePen, BookCheck, Bot, Globe} from 'lucide-react'
+import Link from 'next/link';
 function Guideline({ id, title, content }) {
   useEffect(() => {
     const header = document.querySelector(`[data-title="${title}header"]`);
@@ -40,7 +41,7 @@ export default function Eduvance() {
 
   return (
     <>
-      <Home showExtra />
+      <Home showExtra dontShowload/>
       <main className="min-h-screen bg-white flex flex-col items-center justify-start py-10 m-10">
         <div className="w-full max-w-5xl px-4">
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#000000] mb-8 text-left tracking-[-0.035em]" style={{ fontFamily: "Poppins, sans-serif" }}>
@@ -70,10 +71,11 @@ export default function Eduvance() {
           />
           <Guideline title="Server Boost Perks" content={
             <ul className="list-disc ml-6 space-y-2 text-left">
-              <li>You will be given a <span className='text-[#ba34b5]'>Server Booster role</span> which is high on the members list.</li> 
+              <li>You will be given a <span className='text-[#ba34b5]'>Server Booster role</span> which is placed high on the members list.</li> 
               <li>You can choose a <span className='text-[#ba34b5]'>Custom Role</span>, this includes editing its Name/Color/Badge picture.</li>
-              <li>You can add <span className='text-[#ba34b5]'>any Emoji</span> of you own choosing to the Server.</li>
-              <li>You can add <span className='text-[#ba34b5]'>any Sticker</span> of your own choosing to the Server.</li>
+              <li>You can add <span className='text-[#ba34b5]'>any Emoji</span> of your own choice to the Server.</li>
+              <li>You can add <span className='text-[#ba34b5]'>any Sticker</span> of your own choice to the Server.</li>
+              <li>The aforementioned must follow <Link href="/guidelines" className='underline'>server rules</Link> (i.e. not be NSFW, etc)</li>
             </ul>}/> 
           <Guideline title="Contact Us" id="contact" content={
             <div className='flex gap-2'>
