@@ -1,4 +1,4 @@
-"use client"; // This directive marks the component as a Client Component in Next.js
+"use client";
 
 import React, { useState, useEffect } from 'react';
 // Import useRouter for navigation in Next.js.
@@ -66,7 +66,7 @@ export default function StaffAuthPage() {
       const { data: { session } } = await supabase.auth.getSession();
       setSession(session);
 
-      // If a session exists, fetch the user's role and redirect accordingly
+      // If a session exists, check if the user is a staff member and redirect
       if (session) {
         setLoading(true);
         const { data: staffData, error: staffError } = await supabase
@@ -74,15 +74,21 @@ export default function StaffAuthPage() {
           .select('role')
           .eq('id', session.user.id)
           .single();
+        
         setLoading(false);
-        if (!staffError && staffData) {
-          if (staffData.role === 'admin') {
-            router.replace('/dashboard/admin');
-          } else {
-            router.replace('/dashboard/staff');
-          }
+
+        // --- NEW: Security check for staff_users table ---
+        if (staffError || !staffData) {
+          console.error("User is not in staff_users table or an error occurred:", staffError);
+          setMessage("Access denied. You are not a registered staff member.");
+          // Redirect the user to a non-staff page
+          router.replace('/'); 
+          return;
+        }
+
+        if (staffData.role === 'admin') {
+          router.replace('/dashboard/admin');
         } else {
-          // fallback if role can't be determined
           router.replace('/dashboard/staff');
         }
       }
@@ -99,12 +105,18 @@ export default function StaffAuthPage() {
               .eq('id', newSession.user.id)
               .single();
             setLoading(false);
-            if (!staffError && staffData) {
-              if (staffData.role === 'admin') {
-                router.replace('/dashboard/admin');
-              } else {
-                router.replace('/dashboard/staff');
-              }
+
+            // --- NEW: Security check for staff_users table in listener ---
+            if (staffError || !staffData) {
+              console.error("User is not in staff_users table or an error occurred:", staffError);
+              setMessage("Access denied. You are not a registered staff member.");
+              // Redirect the user to a non-staff page
+              router.replace('/');
+              return;
+            }
+
+            if (staffData.role === 'admin') {
+              router.replace('/dashboard/admin');
             } else {
               router.replace('/dashboard/staff');
             }
@@ -148,20 +160,26 @@ export default function StaffAuthPage() {
       }
 
       if (data.user) {
-        // Fetch role and redirect accordingly
+        // Fetch role and check if the user is in the staff_users table
         const { data: staffData, error: staffError } = await supabase
           .from('staff_users')
           .select('role')
           .eq('id', data.user.id)
           .single();
-        if (!staffError && staffData) {
-          if (staffData.role === 'admin') {
-            setMessage('Sign-in successful! Redirecting to admin dashboard...');
-            router.replace('/dashboard/admin');
-          } else {
-            setMessage('Sign-in successful! Redirecting to staff dashboard...');
-            router.replace('/dashboard/staff');
-          }
+        
+        // --- NEW: Security check after successful sign-in ---
+        if (staffError || !staffData) {
+          console.error("User is not in staff_users table or an error occurred:", staffError);
+          // Sign the user out since they are not authorized staff
+          await supabase.auth.signOut();
+          setMessage('Access denied. Your account is not a registered staff member.');
+          setLoading(false);
+          return;
+        }
+
+        if (staffData.role === 'admin') {
+          setMessage('Sign-in successful! Redirecting to admin dashboard...');
+          router.replace('/dashboard/admin');
         } else {
           setMessage('Sign-in successful! Redirecting to staff dashboard...');
           router.replace('/dashboard/staff');
