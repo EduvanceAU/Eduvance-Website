@@ -31,19 +31,8 @@ export default function SmallFoot() {
 
     return () => observer.disconnect();
   }, []);
-  const[ratio, setRatio] = useState(1)
-  useEffect(() => {
-    const updateRatio = () => {
-      setRatio(window.devicePixelRatio); 
-    };
-    updateRatio();
-    window.addEventListener("resize", updateRatio);
-    return () => {
-      window.removeEventListener("resize", updateRatio);
-    };
-  }, []);
   return (
-    <footer className={`bg-white pt-10 pb-0 border-t border-[#e5e7eb] ${sidebarOpen && ratio > 0.85 ? 'sm:ml-70 w-fit' : 'w-full'} ${ratio < 0.85 ? "absolute bottom-0" : ""} transition-all duration-300`}>
+    <footer className={`max-w-screen bg-white pt-10 pb-0 border-t border-[#e5e7eb] ${sidebarOpen ? 'sm:ml-70' : ''} transition-all duration-300`}>
       <div className="container mx-auto px-4 relative">
         <div className="rounded-2xl p-6 max-w-[1850px] mx-auto flex flex-col lg:flex-row sm:gap-8">
           {/* Left Column */}
@@ -90,11 +79,11 @@ export default function SmallFoot() {
         </div>
       </div>
       {/* Blue strip at the bottom */}
-      <div className={`w-full bg-[#357BFD] ${sidebarOpen && ratio > 0.85 ? 'sm:pl-10 sm:text-xs' : 'text-sm'} text-white text-center py-3 mt-2 font-medium flex flex-col sm:flex-row sm:justify-evenly sm:items-center gap-2 px-4`} style={{ fontFamily: 'Poppins, sans-serif' }}>
+      <div className={`w-full bg-[#357BFD] ${sidebarOpen ? 'sm:pl-10 sm:text-xs' : 'text-sm'} text-white text-center py-3 mt-2 font-medium flex flex-col sm:flex-row sm:justify-evenly sm:items-center gap-2 px-4`} style={{ fontFamily: 'Poppins, sans-serif' }}>
         <span className="block text-left font-grand-small">
           Eduvance.au is a student-led initiative non-commercial organisation and not yet a registered business entity.
         </span>
-        <span className="flex flex-col sm:flex-row gap-2 sm:gap-4 justify-center items-center">
+        <span className="flex flex-row gap-2 sm:gap-4 items-start justify-between sm:justify-center sm:items-center">
           <Link href="/guidelines" className="hover:underline font-grand-small text-white">Community Guidelines</Link>
           <Link href="/terms" className="hover:underline font-grand-small text-white">Terms of Service</Link>
           <Link href="/privacy" className="hover:underline font-grand-small text-white">Privacy Policy</Link>
