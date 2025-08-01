@@ -222,7 +222,7 @@ export default function UploadResource() {
         title,
         link,
         description,
-        resource_type,
+        resource_type: resourceType,
         subject_id: selectedSubjectId,
         unit_chapter_name: unitValue,
         uploaded_by_username: staffUsername,
