@@ -371,7 +371,7 @@ export default function UploadResource() {
     }
     const { error } = await supabaseClient
       .from('community_resource_requests')
-      .update({ rejection_reason: rejectionReasons[id], approved: "Rejected" }) // Set approved to Rejected
+      .update({ rejection_reason: rejectionReasons[id], approved: "Unapproved" })
       .eq('id', id);
     if (!error) {
       setPendingResources((prev) => prev.filter((res) => res.id !== id));
