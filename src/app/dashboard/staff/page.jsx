@@ -30,6 +30,8 @@ export default function UploadResource() {
   const [watermarkLoading, setWatermarkLoading] = useState({});
   const [submitLoading, setSubmitLoading] = useState(false);
 
+  const SUBMISSION_TIMEOUT = 10000; // 10 seconds
+
   // General state for all editable fields for a resource
   const [editedResourceData, setEditedResourceData] = useState({});
   // Use a more generic ID to indicate which resource is being edited
@@ -196,24 +198,36 @@ export default function UploadResource() {
     e.preventDefault();
     setSubmitLoading(true);
     console.log('handleSubmit called');
+
+    // Start a timeout timer
+    const timeoutId = setTimeout(() => {
+        setMessage("Submission timed out. Please check your connection and try again.");
+        setMessageType('error');
+        setSubmitLoading(false);
+        console.warn('Submission timed out.');
+    }, SUBMISSION_TIMEOUT);
+
     if (!supabaseClient) {
-      setMessage('Error: Supabase client not initialized. Please refresh the page or check your connection.');
-      setMessageType('error');
-      console.error('Supabase client is null in handleSubmit');
-      setSubmitLoading(false);
-      return;
+        clearTimeout(timeoutId); // Clear the timeout if we return early
+        setMessage('Error: Supabase client not initialized. Please refresh the page or check your connection.');
+        setMessageType('error');
+        console.error('Supabase client is null in handleSubmit');
+        setSubmitLoading(false);
+        return;
     }
     if (!title || !link || !selectedSubjectId || !resourceType) {
-      setMessage("Fill all required fields");
-      setMessageType('error');
-      setSubmitLoading(false);
-      return;
+        clearTimeout(timeoutId); // Clear the timeout if we return early
+        setMessage("Fill all required fields");
+        setMessageType('error');
+        setSubmitLoading(false);
+        return;
     }
     if (!supabaseClient || !staffUser) {
-      setMessage("Not ready to submit");
-      setMessageType('error');
-      setSubmitLoading(false);
-      return;
+        clearTimeout(timeoutId); // Clear the timeout if we return early
+        setMessage("Not ready to submit");
+        setMessageType('error');
+        setSubmitLoading(false);
+        return;
     }
     const unitValue = unitChapter.trim() === '' ? 'General' : unitChapter.trim();
     const { data, error } = await supabaseClient
@@ -229,6 +243,9 @@ export default function UploadResource() {
         approved: "Pending"
       })
       .select();
+
+    clearTimeout(timeoutId); // Clear the timeout on completion
+
     console.log('Insert data:', data, 'Insert error:', error);
     if (error) {
       setMessage(`Submission failed: ${error.message}`);
@@ -259,19 +276,30 @@ export default function UploadResource() {
     setMessage("");
     setMessageType(null);
 
+    // Start a timeout timer
+    const timeoutId = setTimeout(() => {
+        setMessage("Past paper submission timed out. Please check your connection and try again.");
+        setMessageType('error');
+        setSubmitLoading(false);
+        console.warn('Past paper submission timed out.');
+    }, SUBMISSION_TIMEOUT);
+
     if (!supabaseClient) {
+      clearTimeout(timeoutId); // Clear the timeout if we return early
       setMessage('Error: Supabase client not initialized.');
       setMessageType('error');
       setSubmitLoading(false);
       return;
     }
     if (!staffUser) {
+      clearTimeout(timeoutId); // Clear the timeout if we return early
       setMessage("You must be logged in to upload papers.");
       setMessageType('error');
       setSubmitLoading(false);
       return;
     }
     if (!selectedSubjectId || !selectedExamSessionId || !unitCode) {
+      clearTimeout(timeoutId); // Clear the timeout if we return early
       setMessage("Subject, Exam Session, and Unit Code are required.");
       setMessageType('error');
       setSubmitLoading(false);
@@ -282,16 +310,18 @@ export default function UploadResource() {
       .from('papers')
       .insert({
         subject_id: selectedSubjectId,
-        exam_session_id: selectedExamSessionId, // Use the ID directly
-        unit_code: unitCode.trim(), // Use selected unitCode from dropdown
+        exam_session_id: selectedExamSessionId,
+        unit_code: unitCode.trim(),
         question_paper_link: questionPaperLink.trim() || null,
         mark_scheme_link: markSchemeLink.trim() || null,
         examiner_report_link: examinerReportLink.trim() || null,
       })
       .select();
 
+    clearTimeout(timeoutId); // Clear the timeout on completion
+
     if (error) {
-      if (error.code === '23505') { // Unique constraint violation code for PostgreSQL
+      if (error.code === '23505') {
         setMessage(`A paper for this subject, exam session, and unit code already exists.`);
       } else {
         setMessage(`Past paper submission failed: ${error.message}`);
@@ -305,7 +335,6 @@ export default function UploadResource() {
     } else {
       setMessage("✅ Past paper added successfully");
       setMessageType('success');
-      // Clear form fields
       setSelectedExamSessionId('');
       setUnitCode('');
       setQuestionPaperLink('');
@@ -317,7 +346,7 @@ export default function UploadResource() {
       }, 3000);
     }
     setSubmitLoading(false);
-  };
+};
 
 
   // Fetch pending community resource requests
