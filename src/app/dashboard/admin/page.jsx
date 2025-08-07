@@ -74,6 +74,54 @@ export default function AdminDashboard() {
   const [selectedUserIdForRemove, setSelectedUserIdForRemove] = useState('');
   const [userActionLoading, setUserActionLoading] = useState(false);
 
+  // Watermarking States
+  const [watermarkLoading, setWatermarkLoading] = useState({});
+  const [watermarkedFiles, setWatermarkedFiles] = useState({});
+
+  const handleWatermark = async (resource) => {
+    setWatermarkLoading((prev) => ({ ...prev, [resource.id]: true }));
+    try {
+      const res = await fetch('/api/watermark', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: resource.link }),
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        setMessage(`Watermark failed: ${err.error || res.statusText}`);
+        setMessageType('error');
+        return;
+      }
+      const contentDisposition = res.headers.get('Content-Disposition') || '';
+      let fileNames = [];
+      if (contentDisposition.includes('zip')) {
+        // Folder: try to get file list from zip (not possible client-side), so just show generic message
+        fileNames = ['All PDFs in folder'];
+      } else {
+        // Single file: extract filename
+        const match = contentDisposition.match(/filename="([^"]+)"/);
+        if (match) fileNames = [match[1]];
+      }
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fileNames[0] || 'watermarked.pdf';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+      setMessage('Watermarked PDF downloaded!');
+      setMessageType('success');
+      setWatermarkedFiles(prev => ({ ...prev, [resource.id]: fileNames }));
+    } catch (err) {
+      setMessage('Watermark error: ' + err.message);
+      setMessageType('error');
+    } finally {
+      setWatermarkLoading((prev) => ({ ...prev, [resource.id]: false }));
+    }
+  };
+
 
   // Helper function to get approval status display
   const getApprovalStatus = (approved) => {
@@ -174,6 +222,7 @@ export default function AdminDashboard() {
     { value: 'topic_question', label: 'Topic Question' },
     { value: 'marking_scheme', label: 'Marking Scheme' },
     { value: 'extra_resource', label: 'Extra Resource' },
+    { value: 'essay_questions', label: 'Essay Questions' },
   ];
 
   useEffect(() => {
@@ -1013,7 +1062,7 @@ export default function AdminDashboard() {
                     const subject = subjects.find(sub => sub.id === res.subject_id);
                     const approvalStatus = getApprovalStatus(res.approved);
                     return (
-                      <div key={res.id} className="bg-gray-50 p-4 rounded-lg mb-3 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+                      <div key={res.id} className="bg-gray-50 p-4 rounded-lg mb-3 flex flex-col gap-2">
                         <div className="w-full">
                           <p className="font-bold text-blue-800 text-lg mb-1">{res.title}</p>
                           <p className="text-sm text-gray-600 mb-1">{res.description}</p>
@@ -1025,17 +1074,63 @@ export default function AdminDashboard() {
                             <div><span className="font-semibold">Status:</span> <span className={`font-semibold px-2 py-1 rounded text-xs ${approvalStatus.bgColor} ${approvalStatus.color}`}>{approvalStatus.text}</span></div>
                             <div><span className="font-semibold">Last updated:</span> {res.updated_at ? new Date(res.updated_at).toLocaleString() : 'Unknown'}</div>
                           </div>
-                          <div className='flex justify-start gap-2 text-xs'>
+                          <div className='flex justify-start gap-2 text-xs mb-2'>
                             <div className="cursor-pointer w-fit px-4 py-0.5 text-green-400 ring ring-green-400 rounded-md hover:bg-green-400 hover:text-white transition-colors">{res.unit_chapter_name}</div>
                             <div className="cursor-pointer w-fit px-4 py-0.5 text-orange-400 uppercase ring ring-orange-400 rounded-md hover:bg-orange-400 hover:text-white transition-colors">{res.resource_type}</div>
                           </div>
                         </div>
-                        <div className="flex space-x-2 sm:mt-2 md:mt-0">
-                          <button onClick={() => approveResource(res.id)} className="cursor-pointer bg-green-500 hover:bg-green-600 transition text-white px-3 py-1 rounded-md flex items-center gap-1"><svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>Approve</button>
-                          <button onClick={() => rejectResource(res.id)} className="cursor-pointer bg-orange-500 hover:bg-orange-600 transition text-white px-3 py-1 rounded-md flex items-center gap-1"><svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>Reject</button>
-                          <button onClick={() => openEditResource(res)} className="cursor-pointer bg-yellow-400 hover:bg-yellow-500 transition text-white px-3 py-1 rounded-md flex items-center gap-1"><svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#FFFFFF"><path d="M192-396v-72h288v72H192Zm0-150v-72h432v72H192Zm0-150v-72h432v72H192Zm336 504v-113l210-209q7.26-7.41 16.13-10.71Q763-528 771.76-528q9.55 0 18.31 3.5Q798.83-521 806-514l44 45q6.59 7.26 10.29 16.13Q864-444 864-435.24t-3.29 17.92q-3.3 9.15-10.71 16.32L641-192H528Zm288-243-45-45 45 45ZM576-240h45l115-115-22-23-22-22-116 115v45Zm138-138-22-22 44 45-22-23Z"/></svg>Edit</button>
-                          <button onClick={() => deleteResource(res.id)} className="cursor-pointer bg-red-500 hover:bg-red-600 transition text-white px-3 py-1 rounded-md flex items-center gap-1"><svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>Delete</button>
+                        
+                        {/* Action Buttons */}
+                        <div className="flex flex-wrap gap-2">
+                          <button onClick={() => approveResource(res.id)} className="cursor-pointer bg-green-500 hover:bg-green-600 transition text-white px-3 py-1 rounded-md flex items-center gap-1">
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                            </svg>
+                            Approve
+                          </button>
+                          <button onClick={() => rejectResource(res.id)} className="cursor-pointer bg-orange-500 hover:bg-orange-600 transition text-white px-3 py-1 rounded-md flex items-center gap-1">
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                            Reject
+                          </button>
+                          <button onClick={() => openEditResource(res)} className="cursor-pointer bg-yellow-400 hover:bg-yellow-500 transition text-white px-3 py-1 rounded-md flex items-center gap-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#FFFFFF">
+                              <path d="M192-396v-72h288v72H192Zm0-150v-72h432v72H192Zm0-150v-72h432v72H192Zm336 504v-113l210-209q7.26-7.41 16.13-10.71Q763-528 771.76-528q9.55 0 18.31 3.5Q798.83-521 806-514l44 45q6.59 7.26 10.29 16.13Q864-444 864-435.24t-3.29 17.92q-3.3 9.15-10.71 16.32L641-192H528Zm288-243-45-45 45 45ZM576-240h45l115-115-22-23-22-22-116 115v45Zm138-138-22-22 44 45-22-23Z"/>
+                            </svg>
+                            Edit
+                          </button>
+                          
+                          {/* Watermark Button */}
+                          <button 
+                            onClick={() => handleWatermark(res)} 
+                            disabled={watermarkLoading[res.id]} 
+                            className={`cursor-pointer bg-blue-500 hover:bg-blue-600 transition text-white px-3 py-1 rounded-md flex items-center gap-1 ${watermarkLoading[res.id] ? 'opacity-50 cursor-not-allowed' : ''}`}
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+                            </svg>
+                            {watermarkLoading[res.id] ? 'Watermarking...' : 'Watermark'}
+                          </button>
+                          
+                          <button onClick={() => deleteResource(res.id)} className="cursor-pointer bg-red-500 hover:bg-red-600 transition text-white px-3 py-1 rounded-md flex items-center gap-1">
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                            Delete
+                          </button>
                         </div>
+
+                        {/* Watermark Success Indicator */}
+                        {watermarkedFiles[res.id] && (
+                          <div className="text-green-600 text-xs mt-2 w-full">
+                            {Array.isArray(watermarkedFiles[res.id]) && watermarkedFiles[res.id].length > 0
+                              ? watermarkedFiles[res.id].map((name, idx) => (
+                                  <div key={idx}>✅ Watermarked {name}</div>
+                                ))
+                              : <div>✅ Watermarked {watermarkedFiles[res.id]}</div>}
+                          </div>
+                        )}
                       </div>
                     );
                   })}
