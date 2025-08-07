@@ -137,27 +137,43 @@ export default function ContributorUploadResource() {
     }
   };
 
-  // Show loading state if subjects or user session are still loading
-  if (loadingSubjects || loadingUserSession) {
-    return (
-      <div className="pt-20 pr-10 pl-10 pb-10 min-h-screen bg-blue-100 flex items-center justify-center" style={{ fontFamily: 'Poppins, sans-serif' }}>
-        <p className="text-xl text-gray-600">Loading...</p>
-      </div>
-    );
-  }
+  // // Show loading state if subjects or user session are still loading
+  // if (loadingSubjects || loadingUserSession) {
+  //   return (
+  //     <div className="pt-20 pr-10 pl-10 pb-10 min-h-screen bg-blue-100 flex items-center justify-center" style={{ fontFamily: 'Poppins, sans-serif' }}>
+  //       <p className="text-xl text-gray-600">Loading...</p>
+  //     </div>
+  //   );
+  // }
 
   // If not logged in, show the Auth UI
   if (!session) {
     return (
       <>
-        <Home showExtra/>
+        <Home showExtra dontShowload/>
         <div className="pt-20 pr-10 pl-10 pb-10 min-h-screen bg-blue-100 flex flex-col items-center justify-center" style={{ fontFamily: 'Poppins, sans-serif' }}>
           <div className="bg-white rounded-xl shadow-lg max-w-md w-full p-8 tracking-[-0.025em] text-center">
             <h2 className="text-2xl font-semibold text-gray-800 mb-6">You must be logged in to contribute.</h2>
-            <Auth
+            {/* <Auth
               supabaseClient={supabase}
               appearance={{ theme: ThemeSupa }}
               providers={['google']}
+              redirectTo={typeof window !== 'undefined' ? window.location.href : undefined}
+            /> */}
+            <Auth
+              supabaseClient={supabase}
+              appearance={{
+                theme: ThemeSupa,
+                variables: {
+                  default: {
+                    colors: {
+                      brand: '#0C58E4',
+                      brandAccent: '#0846b8',
+                    }
+                  }
+                }
+              }}
+              providers={['google', 'discord']}
               redirectTo={typeof window !== 'undefined' ? window.location.href : undefined}
             />
           </div>
