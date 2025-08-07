@@ -59,7 +59,7 @@ export default function Subject() {
   }, []);
 
   return (
-    <>
+    <div className='mt-10 sm:mt-15'>
       {/* Main Content */}
       <div className={`transition-all duration-300 ${sidebarOpen ? 'sm:ml-64' : 'ml-0'}`}>
         <main className="flex flex-col w-full pb-5 relative">
@@ -143,6 +143,6 @@ export default function Subject() {
           </div>
         </main>
       </div>
-    </>
+    </div>
   );
 }
