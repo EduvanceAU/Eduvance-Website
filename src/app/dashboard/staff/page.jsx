@@ -53,6 +53,7 @@ export default function UploadResource() {
     { value: 'note', label: 'Note' },
     { value: 'topic_question', label: 'Topic Questions' },
     { value: 'solved_papers', label: 'Solved Past Paper Questions' },
+    { value: 'essay_questions', label: 'Essay Questions' },
   ];
 
   useEffect(() => {
