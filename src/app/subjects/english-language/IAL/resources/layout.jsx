@@ -1,5 +1,5 @@
 const subjectName = 'English Language';
-const examCode = 'ENG';
+const examCode = 'WEN0/XEN01/YEN01';
 const syllabusType = 'IAL';
 const refName = subjectName;
 const refsyllabusType = syllabusType;
