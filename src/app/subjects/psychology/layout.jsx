@@ -18,11 +18,11 @@ export const metadata = {
     title: subjectName,
     description:
       `Explore all-in-one study tools for ${refName} — from curated revision guides and official past papers to peer-shared notes. Perfect for reviewing concepts, preparing for exams, or finding simplified explanations, everything you need is right here to boost your learning and help you stay ahead!`,
-    url: `https://www.eduvance-org.vercel.app/subjects/${refName}`,
+    url: `https://eduvance-org.vercel.app/subjects/${refName}`,
     type: "website",
     images: [
       {
-        url: "https://www.eduvance-org.vercel.app/tempbg.png",
+        url: "https://eduvance-org.vercel.app/tempbg.png",
         width: 1200,
         height: 630,
         alt: "Eduvance Image",
@@ -34,7 +34,7 @@ export const metadata = {
     title: subjectName,
     description:
       `Explore all-in-one study tools for ${refName} — from curated revision guides and official past papers to peer-shared notes. Perfect for reviewing concepts, preparing for exams, or finding simplified explanations, everything you need is right here to boost your learning and help you stay ahead!`,
-    images: ["https://www.eduvance-org.vercel.app/tempbg.png"],
+    images: ["https://eduvance-org.vercel.app/tempbg.png"],
   },
 };
 
