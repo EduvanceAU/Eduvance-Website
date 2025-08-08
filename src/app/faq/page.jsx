@@ -55,8 +55,8 @@ export default function FAQ() {
                   The following are the timetables released by Edexcel for upcoming sessions
                 </p>
                 <hr className='my-4'></hr>
-                <div className='flex items-start justify-start gap-2 mb-2'><a href='https://forms.gle/F67mUf3TtdD62o4A7'><CalendarClock className='w-6 h-6 stroke-[#1a69fa] inline'/></a><p>IGCSE October November 2025 Exams</p></div>
-                <div className='flex items-start justify-start gap-2'><a href='https://forms.gle/F67mUf3TtdD62o4A7'><CalendarClock className='w-6 h-6 stroke-[#1a69fa] inline'/></a><p>IAL October November 2025 Exams</p></div>
+                <div className='flex items-start justify-start gap-2 mb-2'><a href='https://qualifications.pearson.com/content/dam/pdf/Support/Examination-timetables-for-Edexcel-International-GCSE/november-2025-int-gcse-final.pdf'><CalendarClock className='w-6 h-6 stroke-[#1a69fa] inline'/></a><p>IGCSE October November 2025 Exams</p></div>
+                <div className='flex items-start justify-start gap-2'><a href='https://qualifications.pearson.com/content/dam/pdf/Support/Examination-timetables-for-International-Advanced-Levels/ial-october2025-final.pdf'><CalendarClock className='w-6 h-6 stroke-[#1a69fa] inline'/></a><p>IAL October November 2025 Exams</p></div>
               </>
             }
           />

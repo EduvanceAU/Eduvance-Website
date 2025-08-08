@@ -62,7 +62,7 @@ export default function Grading() {
           <Guideline title="Pearson Edexcel International GCSE (9-1)" content={
             <>
               <p className='mb-2'>
-                The 9–1 grading system is used in GCSEs and International GCSEs to provide more detailed differentiation between student performance. It replaces the old A*–G scale, with 9 being the highest grade and 1 the lowest (with 0 for ungraded).
+                The 9–1 grading system is used in GCSEs and International GCSEs to provide more detailed differentiation between student performance. It replaces the old A*–F scale, with 9 being the highest grade and 1 the lowest (with U for ungraded).
               </p>
               <ul className="list-disc ml-6 space-y-2 text-left">
                 <li>More differentiation at the top: Grades 7, 8, and 9 replace A and A*, allowing universities and employers to better distinguish between high-achieving students.</li>

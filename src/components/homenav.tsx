@@ -291,17 +291,6 @@ function Home(props) {
         {/* Center Links - Hidden on sm */}
         <div className="hidden sm:flex flex-wrap gap-3 sm:gap-4 md:gap-5 justify-center items-center">
           <NavDropdown
-            labelMain="IAL Edexcel Subjects"
-            labelSmall="IAL"
-            items={NonUniqueSubjects
-              .filter((subject) => subject.syllabus_type === "IAL")
-              .map((subject) => ({
-                label: subject.name,
-                // Apply toKebabCase here for dropdown items
-                href: `/subjects/${toKebabCase(subject.name)}?choice=option1`,
-              }))
-            } />
-          <NavDropdown
             labelMain="IGCSE Edexcel Subjects"
             labelSmall="IGCSE"
             items={NonUniqueSubjects
@@ -312,6 +301,17 @@ function Home(props) {
                 href: `/subjects/${toKebabCase(subject.name)}?choice=option2`,
               }))
             } />
+          <NavDropdown
+            labelMain="IAL Edexcel Subjects"
+            labelSmall="IAL"
+            items={NonUniqueSubjects
+              .filter((subject) => subject.syllabus_type === "IAL")
+              .map((subject) => ({
+                label: subject.name,
+                // Apply toKebabCase here for dropdown items
+                href: `/subjects/${toKebabCase(subject.name)}?choice=option1`,
+              }))
+            } />            
           <NavDropdown
             labelMain="More"
             labelSmall="More"
@@ -328,8 +328,8 @@ function Home(props) {
             labelSmall="About"
             items={[
               { label: "About Eduvance", href: "/about/eduvance" },
-              { label: "Exam Structure", href: "/about/edexcel/examStructure" },
-              { label: "Grading System", href: "/about/edexcel/grading" },
+              { label: "Edexcel Exam Structure", href: "/about/edexcel/examStructure" },
+              { label: "Edexcel Grading System", href: "/about/edexcel/grading" },
             ]}
           />
         </div>
