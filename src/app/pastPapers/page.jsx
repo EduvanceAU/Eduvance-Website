@@ -4,6 +4,9 @@ import Link from 'next/link';
 import { supabase } from '@/lib/supabaseClient';
 import SmallFoot from '@/components/smallFoot';
 export default function Subject() {
+  function toKebabCase(str) {
+    return str.toLowerCase().replace(/\s+/g, '-');
+  }
   const [selected, setSelected] = useState('IGCSE');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [IALsubjects, setIALSubjects] = useState([]);
@@ -60,7 +63,7 @@ export default function Subject() {
   }, []);
 
   return (
-    <div className='mt-10 sm:mt-15 flex flex-col justify-between h-screen'>
+    <div className='mt-20 flex flex-col justify-between h-screen'>
       {/* Main Content */}
         <div className={`transition-all duration-300 mb-10 ${sidebarOpen ? 'sm:ml-64' : 'ml-0'}`}>
           <main className="flex flex-col w-full pb-5 relative">
@@ -95,7 +98,7 @@ export default function Subject() {
                     {/* Links like in Resources page */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 w-full">
                       {IALsubjects.map((subject) => (
-                        <a key={subject.name} href={`/subjects/${subject.toLowerCase()}/IAL/pastpapers`}>
+                        <a key={subject.name} href={`/subjects/${toKebabCase(subject)}/IAL/pastpapers`}>
                           <div className={`${sidebarOpen ? "px-2" : "px-6"} cursor-pointer flex items-center justify-between w-full py-4 bg-[#BAD1FD] rounded-[12px] group hover:bg-[#A8C6FF] transition-all duration-200 border-[#153064] border-1`}>
                             <p
                               className="text-xl font-[550] text-[#153064]"
@@ -121,7 +124,7 @@ export default function Subject() {
                     {/* Links like in Resources page */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 w-full">
                       {IGCSEsubjects.map((subject) => (
-                        <a key={subject.name} href={`/subjects/${subject.toLowerCase()}/IGCSE/pastpapers`}>
+                        <a key={subject.name} href={`/subjects/${toKebabCase(subject)}/IGCSE/pastpapers`}>
                           <div className={`${sidebarOpen ? "px-2" : "px-6"} cursor-pointer flex items-center justify-between w-full py-4 bg-[#BAD1FD] rounded-[12px] group hover:bg-[#A8C6FF] transition-all duration-200 border-[#153064] border-1`}>
                             <p
                               className="text-xl font-[550] text-[#153064]"
