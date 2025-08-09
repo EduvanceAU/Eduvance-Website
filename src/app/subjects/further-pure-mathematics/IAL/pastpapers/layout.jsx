@@ -21,11 +21,11 @@ export const metadata = {
     title: `${refsyllabusType} ${refName}`,
     description:
       `Browse a complete repository of ${refsyllabusType} ${refName} past papers, sorted by year and session. Perfect for timed practice or marking scheme review — your go-to resource for efficient, up-to-date exam preparation!`,
-    url: `https://www.eduvance-org.vercel.app/subjects/${refName}`,
+    url: `https://eduvance-org.vercel.app/subjects/${refName}`,
     type: "website",
     images: [
       {
-        url: "https://www.eduvance-org.vercel.app/tempbg.png",
+        url: "https://eduvance-org.vercel.app/tempbg.png",
         width: 1200,
         height: 630,
         alt: "Eduvance Image",
@@ -37,7 +37,7 @@ export const metadata = {
     title: `${refsyllabusType} ${refName}`,
     description:
       `Browse a complete repository of ${refsyllabusType} ${refName} past papers, sorted by year and session. Perfect for timed practice or marking scheme review — your go-to resource for efficient, up-to-date exam preparation!`,
-    images: ["https://www.eduvance-org.vercel.app/tempbg.png"],
+    images: ["https://eduvance-org.vercel.app/tempbg.png"],
   },
 };
 
