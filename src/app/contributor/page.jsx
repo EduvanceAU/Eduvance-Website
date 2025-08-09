@@ -27,6 +27,8 @@ export default function ContributorUploadResource() {
     { value: 'note', label: 'Note' },
     { value: 'topic_question', label: 'Topic Questions' },
     { value: 'solved_papers', label: 'Solved Past Paper Questions' },
+    { value: 'commonly_asked_questions', label: 'Commonly Asked Questions' },
+    { value: 'essay_questions', label: 'Essay Questions' },
   ];
 
   // Fetch current user session
