@@ -865,39 +865,68 @@ export default function AdminDashboard() {
   const fetchLeaderboard = async () => {
     if (!supabaseClient) return;
     setLoadingLeaderboard(true);
-    // Get all staff users
-    const { data: staffUsers, error: staffError } = await supabaseClient
-      .from('staff_users')
-      .select('id, username, email');
-    if (staffError) {
-      showPopup({ type: 'fetchError', subText: 'Failed to fetch staff users for leaderboard: ' + staffError.message });
+    
+    try {
+      // Get all staff users
+      const { data: staffUsers, error: staffError } = await supabaseClient
+        .from('staff_users')
+        .select('id, username, email');
+      if (staffError) {
+        showPopup({ type: 'fetchError', subText: 'Failed to fetch staff users for leaderboard: ' + staffError.message });
+        setLoadingLeaderboard(false);
+        return;
+      }
+
+      // Get all resources
+      const { data: resources, error: resError } = await supabaseClient
+        .from('resources')
+        .select('uploaded_by_username, approved');
+      if (resError) {
+        showPopup({ type: 'fetchError', subText: 'Failed to fetch resources for leaderboard: ' + resError.message });
+        setLoadingLeaderboard(false);
+        return;
+      }
+
+      // Get all community resource requests
+      const { data: communityRequests, error: commError } = await supabaseClient
+        .from('community_resource_requests')
+        .select('contributor_email, approved');
+      if (commError) {
+        showPopup({ type: 'fetchError', subText: 'Failed to fetch community requests for leaderboard: ' + commError.message });
+        setLoadingLeaderboard(false);
+        return;
+      }
+
+      // Count uploads and approvals per user
+      const stats = staffUsers.map(user => {
+        // Count regular resource uploads
+        const resourceUploads = resources.filter(r => r.uploaded_by_username === user.username);
+        const resourceApproved = resourceUploads.filter(r => r.approved === "Approved").length;
+        
+        // Count community resource requests (match by email)
+        const communityUploads = communityRequests.filter(r => r.contributor_email === user.email);
+        const communityApproved = communityUploads.filter(r => r.approved === "Approved").length;
+        
+        return {
+          username: user.username,
+          email: user.email,
+          uploads: resourceUploads.length + communityUploads.length,
+          approved: resourceApproved + communityApproved,
+          resourceUploads: resourceUploads.length,
+          communityUploads: communityUploads.length,
+          resourceApproved,
+          communityApproved
+        };
+      });
+
+      // Sort by approved desc, then uploads desc
+      stats.sort((a, b) => b.uploads - a.uploads || b.approved - a.approved);
+      setLeaderboard(stats);
       setLoadingLeaderboard(false);
-      return;
-    }
-    // Get all resources
-    const { data: resources, error: resError } = await supabaseClient
-      .from('resources')
-      .select('uploaded_by_username, approved');
-    if (resError) {
-      showPopup({ type: 'fetchError', subText: 'Failed to fetch resources for leaderboard: ' + resError.message });
+    } catch (error) {
+      showPopup({ type: 'fetchError', subText: 'Failed to fetch leaderboard data: ' + error.message });
       setLoadingLeaderboard(false);
-      return;
     }
-    // Count uploads and approvals per user
-    const stats = staffUsers.map(user => {
-      const uploads = resources.filter(r => r.uploaded_by_username === user.username);
-      const approved = uploads.filter(r => r.approved === "Approved").length;
-      return {
-        username: user.username,
-        email: user.email,
-        uploads: uploads.length,
-        approved,
-      };
-    });
-    // Sort by approved desc, then uploads desc
-    stats.sort((a, b) => b.approved - a.approved || b.uploads - a.uploads);
-    setLeaderboard(stats);
-    setLoadingLeaderboard(false);
   };
 
   // Fetch leaderboard when tab is selected
