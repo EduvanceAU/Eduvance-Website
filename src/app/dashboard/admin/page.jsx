@@ -3,6 +3,8 @@ import React, { useState, useEffect } from 'react';
 // Removed 'motion' import as we're replacing the custom message display
 // import { motion } from 'framer-motion'; 
 
+import { supabase } from '@/lib/supabaseClient';
+
 // Import the usePopup hook from your utility file
 import { usePopup } from '@/components/ui/PopupNotification';
 
@@ -86,12 +88,14 @@ export default function AdminDashboard() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url: resource.link }),
       });
+      
       if (!res.ok) {
         const err = await res.json();
         setMessage(`Watermark failed: ${err.error || res.statusText}`);
         setMessageType('error');
         return;
       }
+      
       const contentDisposition = res.headers.get('Content-Disposition') || '';
       let fileNames = [];
       if (contentDisposition.includes('zip')) {
@@ -102,6 +106,7 @@ export default function AdminDashboard() {
         const match = contentDisposition.match(/filename="([^"]+)"/);
         if (match) fileNames = [match[1]];
       }
+      
       const blob = await res.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -111,9 +116,29 @@ export default function AdminDashboard() {
       a.click();
       a.remove();
       window.URL.revokeObjectURL(url);
-      setMessage('Watermarked PDF downloaded!');
+      
+      // Update database to set is_watermarked to true after successful watermark
+      try {
+        const { error: updateError } = await supabase
+          .from('community_resource_requests')
+          .update({ is_watermarked: true })
+          .eq('id', resource.id);
+        
+        if (updateError) {
+          console.error('Error updating watermark status:', updateError);
+          // Don't fail the whole operation, just log the error
+          setMessage('Watermarked PDF downloaded! (Note: Status update failed)');
+        } else {
+          setMessage('Watermarked PDF downloaded!');
+        }
+      } catch (dbError) {
+        console.error('Database update error:', dbError);
+        setMessage('Watermarked PDF downloaded! (Note: Status update failed)');
+      }
+      
       setMessageType('success');
       setWatermarkedFiles(prev => ({ ...prev, [resource.id]: fileNames }));
+      
     } catch (err) {
       setMessage('Watermark error: ' + err.message);
       setMessageType('error');

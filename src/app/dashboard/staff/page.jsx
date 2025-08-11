@@ -3,6 +3,8 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Pencil } from 'lucide-react';
 
+import { supabase } from '@/lib/supabaseClient';
+
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
@@ -53,6 +55,7 @@ export default function UploadResource() {
     { value: 'note', label: 'Note' },
     { value: 'topic_question', label: 'Topic Questions' },
     { value: 'solved_papers', label: 'Solved Past Paper Questions' },
+    { value: 'commonly_asked_questions', label: 'Commonly Asked Questions' },
     { value: 'essay_questions', label: 'Essay Questions' },
   ];
 
@@ -426,12 +429,14 @@ export default function UploadResource() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url: resource.link }),
       });
+      
       if (!res.ok) {
         const err = await res.json();
         setMessage(`Watermark failed: ${err.error || res.statusText}`);
         setMessageType('error');
         return;
       }
+      
       const contentDisposition = res.headers.get('Content-Disposition') || '';
       let fileNames = [];
       if (contentDisposition.includes('zip')) {
@@ -442,6 +447,7 @@ export default function UploadResource() {
         const match = contentDisposition.match(/filename="([^"]+)"/);
         if (match) fileNames = [match[1]];
       }
+      
       const blob = await res.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -451,9 +457,29 @@ export default function UploadResource() {
       a.click();
       a.remove();
       window.URL.revokeObjectURL(url);
-      setMessage('Watermarked PDF downloaded!');
+      
+      // Update database to set is_watermarked to true after successful watermark
+      try {
+        const { error: updateError } = await supabase
+          .from('community_resource_requests')
+          .update({ is_watermarked: true })
+          .eq('id', resource.id);
+        
+        if (updateError) {
+          console.error('Error updating watermark status:', updateError);
+          // Don't fail the whole operation, just log the error
+          setMessage('Watermarked PDF downloaded! (Note: Status update failed)');
+        } else {
+          setMessage('Watermarked PDF downloaded!');
+        }
+      } catch (dbError) {
+        console.error('Database update error:', dbError);
+        setMessage('Watermarked PDF downloaded! (Note: Status update failed)');
+      }
+      
       setMessageType('success');
       setWatermarkedFiles(prev => ({ ...prev, [resource.id]: fileNames }));
+      
     } catch (err) {
       setMessage('Watermark error: ' + err.message);
       setMessageType('error');

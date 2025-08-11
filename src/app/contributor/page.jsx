@@ -27,6 +27,8 @@ export default function ContributorUploadResource() {
     { value: 'note', label: 'Note' },
     { value: 'topic_question', label: 'Topic Questions' },
     { value: 'solved_papers', label: 'Solved Past Paper Questions' },
+    { value: 'commonly_asked_questions', label: 'Commonly Asked Questions' },
+    { value: 'essay_questions', label: 'Essay Questions' },
   ];
 
   // Fetch current user session
@@ -186,7 +188,7 @@ export default function ContributorUploadResource() {
     <>
       <Home showExtra dontShowload/>
       <div className="pt-20 pr-10 pl-10 pb-10 min-h-screen bg-blue-100 flex items-center justify-center" style={{ fontFamily: 'Poppins, sans-serif' }}>
-        <div className="bg-white rounded-xl shadow-lg max-w-md w-full p-8 tracking-[-0.025em]">
+        <div className="bg-white rounded-xl shadow-lg max-w-md w-full p-9 tracking-[-0.025em]">
           <h2 className="text-xl font-semibold text-gray-800 text-center">Contribute with new resource</h2>
 
           {/* Display current user info */}
@@ -257,7 +259,7 @@ export default function ContributorUploadResource() {
             </div>
             <div>
               <label htmlFor="unitChapter" className="block text-sm font-medium text-gray-700">
-                Unit/Chapter Name (Optional)
+                Unit/Chapter Name
               </label>
               {(() => {
                 const selectedSubject = subjects.find(sub => sub.id === selectedSubjectId);
@@ -265,7 +267,7 @@ export default function ContributorUploadResource() {
                 if (Array.isArray(units) && units.length > 0) {
                   return (
                     <select value={unitChapter} onChange={e => setUnitChapter(e.target.value)} className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                      <option value="">Select Unit/Chapter (optional)</option>
+                      <option value="">Select Unit/Chapter</option>
                       {units.map((unit, idx) => (
                         <option key={unit.code || unit.name || idx} value={unit.unit || unit.name}>{unit.unit ? `${unit.unit} - ${unit.name}` : unit.name}</option>
                       ))}
@@ -286,6 +288,22 @@ export default function ContributorUploadResource() {
                 }
               })()}
               <p className="text-xs text-gray-500 mt-1">Leave blank if it applies to the whole subject (will be marked as "General")</p>
+            </div>
+            <div>
+              <label htmlFor="resourceType" className="block text-sm font-medium text-gray-700">Resource Type *</label>
+              <select
+                id="resourceType"
+                value={resourceType}
+                onChange={(e) => setResourceType(e.target.value)}
+                className="cursor-pointer mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                required
+              >
+                {resourceCategories.map((category) => (
+                  <option key={category.value} value={category.value}>
+                    {category.label}
+                  </option>
+                ))}
+              </select>
             </div>
             <div>
               <label htmlFor="link" className="block text-sm font-medium text-gray-700">Resource Link (URL) *</label>
@@ -309,22 +327,6 @@ export default function ContributorUploadResource() {
                 className="min-h-[100px] mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm resize-y"
                 placeholder="A brief summary of the resource content."
               ></textarea>
-            </div>
-            <div>
-              <label htmlFor="resourceType" className="block text-sm font-medium text-gray-700">Resource Type *</label>
-              <select
-                id="resourceType"
-                value={resourceType}
-                onChange={(e) => setResourceType(e.target.value)}
-                className="cursor-pointer mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                required
-              >
-                {resourceCategories.map((category) => (
-                  <option key={category.value} value={category.value}>
-                    {category.label}
-                  </option>
-                ))}
-              </select>
             </div>
             <button
               type="submit"
