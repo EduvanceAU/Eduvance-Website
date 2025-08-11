@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect } from 'react';
+import { Pencil } from 'lucide-react';
 // Removed 'motion' import as we're replacing the custom message display
 // import { motion } from 'framer-motion'; 
 
@@ -75,6 +76,155 @@ export default function AdminDashboard() {
   const [selectedUserNewRole, setSelectedUserNewRole] = useState('moderator');
   const [selectedUserIdForRemove, setSelectedUserIdForRemove] = useState('');
   const [userActionLoading, setUserActionLoading] = useState(false);
+
+  // Under review section states
+  const [pendingResources, setPendingResources] = useState([]);
+  const [rejectionReasons, setRejectionReasons] = useState({});
+  const [editedResourceData, setEditedResourceData] = useState({});
+  const [editingResourceId, setEditingResourceId] = useState(null);
+
+  // Fetch pending community resource requests
+  const fetchPendingResources = async () => {
+    if (!supabaseClient) return;
+    const { data, error } = await supabaseClient
+      .from('community_resource_requests')
+      .select('*')
+      .eq('approved', "Pending");
+    if (!error) setPendingResources(data);
+  };
+
+  // Approve a community resource request
+  const approveResource_Under = async (id) => {
+    if (!supabaseClient) return;
+    const { data, error } = await supabaseClient
+      .from('community_resource_requests')
+      .select('*')
+      .eq('id', id)
+      .single();
+    if (!error && data) {
+      await supabaseClient.from('resources').insert({
+        title: data.title,
+        link: data.link,
+        description: data.description,
+        resource_type: data.resource_type,
+        subject_id: data.subject_id,
+        unit_chapter_name: data.unit_chapter_name,
+        uploaded_by_username: data.contributor_name || data.contributor_email || 'Community',
+        approved: "Pending"
+      });
+      // Corrected fix: Delete the resource from the community_resource_requests table
+      const { error: deleteError } = await supabaseClient
+        .from('community_resource_requests')
+        .delete()
+        .eq('id', id);
+
+      if (!deleteError) {
+        setPendingResources((prev) => prev.filter((res) => res.id !== id));
+        setMessage('Resource approved and moved to pending resources!');
+        setMessageType('success');
+      } else {
+        setMessage('Failed to delete resource from community_resource_requests table: ' + deleteError.message);
+        setMessageType('error');
+      }
+    } else {
+      setMessage('Failed to approve resource: ' + (error ? error.message : 'Resource not found.'));
+      setMessageType('error');
+    }
+  };
+
+  // Reject a community resource request
+  const rejectResource_Under = async (id) => {
+    if (!supabaseClient || !rejectionReasons[id]) {
+      setMessage('Please provide a rejection reason.');
+      setMessageType('error');
+      return;
+    }
+    const { error } = await supabaseClient
+      .from('community_resource_requests')
+      .update({ rejection_reason: rejectionReasons[id], approved: "Unapproved" })
+      .eq('id', id);
+    if (!error) {
+      setPendingResources((prev) => prev.filter((res) => res.id !== id));
+      setMessage('Resource rejected!');
+      setMessageType('success');
+      setRejectionReasons(prev => {
+        const newState = { ...prev };
+        delete newState[id];
+        return newState;
+      });
+    } else {
+      setMessage('Failed to reject resource: ' + error.message);
+      setMessageType('error');
+    }
+  };
+
+  // Handler to save all edited fields
+  const handleSaveResourceChanges = async (id) => {
+    if (!supabaseClient) return;
+    const currentEditedData = editedResourceData[id];
+
+    // Basic validation for required fields
+    if (!currentEditedData || !currentEditedData.title || !currentEditedData.link || !currentEditedData.subject_id || !currentEditedData.resource_type) {
+      setMessage('All required fields (Title, Link, Subject, Resource Type) must be filled for saving changes.');
+      setMessageType('error');
+      return;
+    }
+
+    // Prepare data to send to Supabase
+    const updateData = {
+      title: currentEditedData.title,
+      link: currentEditedData.link,
+      description: currentEditedData.description,
+      resource_type: currentEditedData.resource_type,
+      subject_id: currentEditedData.subject_id,
+      unit_chapter_name: currentEditedData.unit_chapter_name || 'General', // Default to General if empty
+    };
+
+    const { error } = await supabaseClient
+      .from('community_resource_requests')
+      .update(updateData)
+      .eq('id', id);
+
+    if (!error) {
+      setPendingResources(prev =>
+        prev.map(res => res.id === id ? { ...res, ...updateData } : res)
+      );
+      setEditingResourceId(null); // Exit edit mode
+      setEditedResourceData(prev => { // Clear edited data for this resource
+        const newState = { ...prev };
+        delete newState[id];
+        return newState;
+      });
+      setMessage('Resource details updated!');
+      setMessageType('success');
+    } else {
+      setMessage('Failed to update resource: ' + error.message);
+      setMessageType('error');
+    }
+  };
+
+  // Handler to initialize edit mode for a resource
+  const handleEditResource = (resource) => {
+    setEditingResourceId(resource.id);
+    // Initialize edited data with current resource values
+    setEditedResourceData(prev => ({
+      ...prev,
+      [resource.id]: {
+        title: resource.title,
+        link: resource.link,
+        description: resource.description,
+        resource_type: resource.resource_type,
+        subject_id: resource.subject_id,
+        unit_chapter_name: resource.unit_chapter_name,
+      }
+    }));
+  };
+
+  // Handler to cancel edit mode
+  const handleCancelEdit = () => {
+    setEditingResourceId(null);
+    setEditedResourceData({}); // Clear all temporary edited data
+  };
 
   // Watermarking States
   const [watermarkLoading, setWatermarkLoading] = useState({});
@@ -271,6 +421,7 @@ export default function AdminDashboard() {
         fetchUnapprovedResources();
         fetchExamSessions(); // Fetch exam sessions when authenticated
         fetchStaffUsers(); // NEW: Fetch staff users when authenticated
+        fetchPendingResources(); // ADDED: Fetch pending community resources
       } else {
         setStaffUsername('');
         setStaffUsers([]); // Clear users on logout
@@ -926,6 +1077,25 @@ export default function AdminDashboard() {
                     Past Papers
                 </button>
                 <button onClick={() => setActiveTab('approve')} className={`cursor-pointer py-2 px-4 flex items-center gap-1 rounded-t-lg ${activeTab === 'approve' ? 'border-b-2 border-blue-600 font-semibold text-blue-700 bg-blue-50' : 'text-gray-500 hover:text-blue-600'}`}><svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor"><path d="M263.72-96Q234-96 213-117.15T192-168v-384q0-29.7 21.15-50.85Q234.3-624 264-624h24v-96q0-79.68 56.23-135.84 56.22-56.16 136-56.16Q560-912 616-855.84q56 56.16 56 135.84v96h24q29.7 0 50.85 21.15Q768-581.7 768-552v384q0 29.7-21.16 50.85Q725.68-96 695.96-96H263.72Zm.28-72h432v-384H264v384Zm216.21-120Q510-288 531-309.21t21-51Q552-390 530.79-411t-51-21Q450-432 429-410.79t-21 51Q408-330 429.21-309t51 21ZM360-624h240v-96q0-50-35-85t-85-35q-50 0-85 35t-35 85v96Zm-96 456v-384 384Z"/></svg>Approve</button>
+                <button
+                  onClick={() => setActiveTab('under_review')}
+                  className={`cursor-pointer py-2 px-4 flex items-center gap-1 rounded-t-lg sm:rounded-none sm:rounded-tr-lg w-full justify-center ${
+                    activeTab === 'under_review'
+                      ? 'border-b-2 border-blue-600 font-semibold text-blue-700 bg-blue-50'
+                      : 'text-gray-500 hover:text-blue-600'
+                  }`}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    height="20px"
+                    viewBox="0 -960 960 960"
+                    width="20px"
+                    fill="currentColor"
+                  >
+                    <path d="M263.72-96Q234-96 213-117.15T192-168v-384q0-29.7 21.15-50.85Q234.3-624 264-624h24v-96q0-79.68 56.23-135.84 56.22-56.16 136-56.16Q560-912 616-855.84q56 56.16 56 135.84v96h24q29.7 0 50.85 21.15Q768-581.7 768-552v384q0 29.7-21.16 50.85Q725.68-96 695.96-96H263.72Zm.28-72h432v-384H264v384Zm216.21-120Q510-288 531-309.21t21-51Q552-390 530.79-411t-51-21Q450-432 429-410.79t-21 51Q408-330 429.21-309t51 21ZM360-624h240v-96q0-50-35-85t-85-35q-50 0-85 35t-35 85v96Zm-96 456v-384 384Z" />
+                  </svg>
+                  Under Review
+                </button>
                 <button onClick={() => setActiveTab('subjects')} className={`cursor-pointer py-2 px-4 flex items-center gap-1 rounded-t-lg ${activeTab === 'subjects' ? 'border-b-2 border-blue-600 font-semibold text-blue-700 bg-blue-50' : 'text-gray-500 hover:text-blue-600'}`}><svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" /></svg>Add Subject</button>
                 <button onClick={() => setActiveTab('leaderboard')} className={`cursor-pointer py-2 px-4 flex items-center gap-1 rounded-t-lg ${activeTab === 'leaderboard' ? 'border-b-2 border-blue-600 font-semibold text-blue-700 bg-blue-50' : 'text-gray-500 hover:text-blue-600'}`}><svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#666666"><path d="m290-96-50-50 264-264 144 144 213-214 51 51-264 264-144-144L290-96Zm-122-48q-30 0-51-21.15T96-216v-528q0-29 21.5-50.5T168-816h528q29 0 50.5 21.5T768-744v160H168v440Zm0-512h528v-88H168v88Zm0 0v-88 88Z"/></svg>Leaderboard</button>
                 <button onClick={() => setActiveTab('moderation')} className={`cursor-pointer py-2 px-4 flex items-center gap-1 rounded-t-lg ${activeTab === 'moderation' ? 'border-b-2 border-blue-600 font-semibold text-blue-700 bg-blue-50' : 'text-gray-500 hover:text-blue-600'}`}><svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#666666"><path d="m376-336 104-79 104 79-40-128 104-82H521.07L480-672l-41.07 126H312l104 82-40 128ZM480-96q-135-33-223.5-152.84Q168-368.69 168-515v-229l312-120 312 120v229q0 146.31-88.5 266.16Q615-129 480-96Zm0-75q104-32.25 172-129t68-215v-180l-240-92-240 92v180q0 118.25 68 215t172 129Zm0-308Z"/></svg>Moderation View</button>
@@ -1383,6 +1553,235 @@ export default function AdminDashboard() {
                 </div>
               </div>
             )}
+            {activeTab === 'under_review' && (
+              <>
+                <div className="divide-y divide-blue-100">
+                  {pendingResources.length === 0 && <div className="text-gray-500 text-sm py-4">No pending reviews 🎉</div>}
+                  {pendingResources.map((res) => (
+                    <div key={res.id} className="bg-gray-100 p-4 rounded mb-3 flex flex-col flex-shrink min-w-0 w-full ">
+                      <div>
+                        {/* Title Field */}
+                        {editingResourceId === res.id ? (
+                          <input
+                            type="text"
+                            value={editedResourceData[res.id]?.title ?? res.title}
+                            onChange={e => setEditedResourceData(prev => ({
+                              ...prev,
+                              [res.id]: { ...prev[res.id], title: e.target.value }
+                            }))}
+                            className="w-full border px-2 py-1 rounded-md text-sm mb-1 focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition"
+                            placeholder="Title"
+                          />
+                        ) : (
+                          <p className="font-bold break-words text-blue-800">{res.title}</p>
+                        )}
+
+                        {/* Description Field */}
+                        {editingResourceId === res.id ? (
+                          <textarea
+                            value={editedResourceData[res.id]?.description ?? res.description}
+                            onChange={e => setEditedResourceData(prev => ({
+                              ...prev,
+                              [res.id]: { ...prev[res.id], description: e.target.value }
+                            }))}
+                            className="min-h-[100px] w-full border px-2 py-1 rounded-md text-sm mb-1 focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition"
+                            placeholder="Description (Optional)"
+                            rows="2"
+                          />
+                        ) : (
+                          <p className="text-sm text-gray-600 break-words mb-1">{res.description}</p>
+                        )}
+
+                        {/* Link Field */}
+                        <div className="flex items-center gap-2 mb-1">
+                          {editingResourceId === res.id ? (
+                            <>
+                              <input
+                                type="url"
+                                value={editedResourceData[res.id]?.link ?? res.link}
+                                onChange={e => setEditedResourceData(prev => ({ ...prev, [res.id]: { ...prev[res.id], link: e.target.value } }))}
+                                className="border px-2 py-1 rounded-md text-sm flex-1 min-w-0 focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition"
+                                placeholder="Resource Link (URL)"
+                                autoFocus
+                              />
+                            </>
+                          ) : (
+                            <a
+                              href={res.link}
+                              className="text-blue-500 underline text-xs px-2 w-fit py-1 rounded hover:bg-blue-100 transition sm:whitespace-nowrap break-all flex-1"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              {res.link}
+                            </a>
+                          )}
+                        </div>
+
+                        {/* Unit/Chapter & Resource Type Fields */}
+                        <div className='flex justify-start gap-2 text-xs mb-2 mt-2 flex-wrap'>
+                          {editingResourceId === res.id ? (
+                            <>
+                              {/* Unit/Chapter Selector */}
+                              {(() => {
+                                const selectedSubject = subjects.find(sub => sub.id === (editedResourceData[res.id]?.subject_id ?? res.subject_id));
+                                const units = selectedSubject?.units || [];
+                                if (Array.isArray(units) && units.length > 0) {
+                                  return (
+                                    <select
+                                      value={editedResourceData[res.id]?.unit_chapter_name ?? res.unit_chapter_name}
+                                      onChange={e => setEditedResourceData(prev => ({ ...prev, [res.id]: { ...prev[res.id], unit_chapter_name: e.target.value } }))}
+                                      className="min-w-[150px] cursor-pointer border px-2 py-1 rounded-md text-sm focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition"
+                                    >
+                                      <option value="">Select Unit/Chapter (optional)</option>
+                                      {units.map((unit, idx) => (
+                                        <option key={unit.code || unit.name || idx} value={unit.unit || unit.name}>{unit.unit ? `${unit.unit} - ${unit.name}` : unit.name}</option>
+                                      ))}
+                                      <option value="General">General</option>
+                                    </select>
+                                  );
+                                } else {
+                                  return (
+                                    <input
+                                      type="text"
+                                      value={editedResourceData[res.id]?.unit_chapter_name ?? res.unit_chapter_name}
+                                      onChange={e => setEditedResourceData(prev => ({ ...prev, [res.id]: { ...prev[res.id], unit_chapter_name: e.target.value } }))}
+                                      className="border px-2 py-1 rounded-md text-sm focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition"
+                                      placeholder="Unit/Chapter Name (Optional)"
+                                    />
+                                  );
+                                }
+                              })()}
+
+                              {/* Resource Type Selector */}
+                              <select
+                                value={editedResourceData[res.id]?.resource_type ?? res.resource_type}
+                                onChange={e => setEditedResourceData(prev => ({ ...prev, [res.id]: { ...prev[res.id], resource_type: e.target.value } }))}
+                                className="min-w-[150px] cursor-pointer border px-2 py-1 rounded-md text-sm focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition"
+                              >
+                                {resourceCategories.map((cat) => (
+                                  <option key={cat.value} value={cat.value}>{cat.label}</option>
+                                ))}
+                              </select>
+                            </>
+                          ) : (
+                            <>
+                              <div className="cursor-pointer w-fit px-4 py-0.5 text-green-400 ring ring-green-400 rounded-md hover:bg-green-400 hover:text-white transition-colors">{res.unit_chapter_name || 'General'}</div>
+                              <div className="cursor-pointer w-fit px-4 py-0.5 text-orange-400 uppercase ring ring-orange-400 rounded-md hover:bg-orange-400 hover:text-white transition-colors">{res.resource_type}</div>
+                            </>
+                          )}
+                        </div>
+
+                        {/* Subject Selector (always present but editable in edit mode) */}
+                        <div className="flex justify-start gap-2 text-xs mb-2 mt-2 flex-wrap">
+                          <span className="font-semibold text-gray-700">Subject:</span>
+                          {editingResourceId === res.id ? (
+                            <select
+                              value={editedResourceData[res.id]?.subject_id ?? res.subject_id}
+                              onChange={e => setEditedResourceData(prev => ({ ...prev, [res.id]: { ...prev[res.id], subject_id: e.target.value } }))}
+                              className="min-w-[150px] cursor-pointer border px-2 py-1 rounded-md text-sm focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition"
+                            >
+                              <optgroup label="IAL">
+                                {subjects
+                                  .filter((subject) => subject.syllabus_type === "IAL")
+                                  .map((subject) => (
+                                    <option key={subject.id} value={subject.id}>
+                                      {subject.name} ({subject.code}) - {subject.syllabus_type}
+                                    </option>
+                                  ))}
+                              </optgroup>
+                              <optgroup label="IGCSE">
+                                {subjects
+                                  .filter((subject) => subject.syllabus_type === "IGCSE")
+                                  .map((subject) => (
+                                    <option key={subject.id} value={subject.id}>
+                                      {subject.name} ({subject.code}) - {subject.syllabus_type}
+                                    </option>
+                                  ))}
+                              </optgroup>
+                            </select>
+                          ) : (
+                            <span className="text-gray-600">
+                              {subjects.find(s => s.id === res.subject_id)?.name || 'N/A'}
+                            </span>
+                          )}
+                        </div>
+
+                        <div className="text-xs text-gray-700 mt-1">
+                          <span className="font-semibold">Contributor:</span> {res.contributor_name || 'Anonymous'} ({res.contributor_email || 'N/A'})
+                        </div>
+                      </div>
+
+                      {/* Action Buttons */}
+                      <div className="flex mt-2 flex-wrap flex-col sm:flex-row gap-2">
+                        {editingResourceId === res.id ? (
+                          <>
+                            <button
+                              onClick={() => handleSaveResourceChanges(res.id)}
+                              className="cursor-pointer bg-blue-500 hover:bg-blue-700 text-white px-3 py-1 rounded-md flex items-center gap-1 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                              // The button is enabled if editedResourceData for this ID exists AND
+                              // required fields are not empty. This means any change to required fields
+                              // or presence of data will enable it.
+                              disabled={
+                                !editedResourceData[res.id] ||
+                                !editedResourceData[res.id].title ||
+                                !editedResourceData[res.id].link ||
+                                !editedResourceData[res.id].subject_id ||
+                                !editedResourceData[res.id].resource_type
+                              }
+                            >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+                              Save
+                            </button>
+                            <button
+                              onClick={handleCancelEdit}
+                              className="cursor-pointer bg-gray-300 hover:bg-gray-400 text-gray-700 px-3 py-1 rounded-md flex items-center gap-1 transition"
+                            >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                              Cancel
+                            </button>
+                          </>
+                        ) : (
+                          <>
+                            <button onClick={() => approveResource_Under(res.id)} className="cursor-pointer bg-green-500 hover:bg-green-600 transition text-white px-3 py-1 rounded-md flex items-center gap-1"><svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>Approve</button>
+                            <button
+                              onClick={() => handleEditResource(res)} // Set the resource to be edited
+                              className="p-2 cursor-pointer text-blue-500 hover:text-blue-700 focus:outline-none bg-blue-100 rounded-md max-sm:flex max-sm:items-start max-sm:gap-2"
+                              title="Edit Resource Details"
+                            >
+                              <Pencil className='w-5 h-5'/>
+                              <p className='max-sm:inline-block hidden'>Edit Resource Details</p>
+                            </button>
+                            <button onClick={() => handleWatermark(res)} disabled={watermarkLoading[res.id]} className={`cursor-pointer bg-blue-500 hover:bg-blue-600 transition text-white px-3 py-1 rounded-md flex items-center gap-1 ${watermarkLoading[res.id] ? 'opacity-50 cursor-not-allowed' : ''}`}>
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" /></svg>
+                              {watermarkLoading[res.id] ? 'Watermarking...' : 'Watermark'}
+                            </button>
+                          </>
+                        )}
+                        {/* Show watermarked file(s) below the button */}
+                        {watermarkedFiles[res.id] && (
+                          <div className="text-green-600 text-xs mt-2 w-full">
+                            {Array.isArray(watermarkedFiles[res.id]) && watermarkedFiles[res.id].length > 0
+                              ? watermarkedFiles[res.id].map((name, idx) => (
+                                  <div key={idx}>✅ Watermarked {name}</div>
+                                ))
+                              : <div>✅ Watermarked {watermarkedFiles[res.id]}</div>}
+                          </div>
+                        )}
+                        <input
+                          type="text"
+                          placeholder="Rejection reason"
+                          value={rejectionReasons[res.id] || ''}
+                          onChange={(e) => setRejectionReasons(prev => ({ ...prev, [res.id]: e.target.value }))}
+                          className="border px-2 py-1 rounded-md text-sm focus:ring-2 focus:ring-red-200 focus:border-red-400 transition flex-grow min-w-[150px]"
+                        />
+                        <button onClick={() => rejectResource_Under(res.id)} className="cursor-pointer bg-red-500 hover:bg-red-600 transition text-white px-3 py-1 rounded-md flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed" disabled={!rejectionReasons[res.id]}><svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>Reject</button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
+
             {/* NEW: User Management Tab Content */}
             {activeTab === 'users' && (
               <>
