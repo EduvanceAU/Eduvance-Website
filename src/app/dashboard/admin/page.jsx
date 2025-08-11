@@ -133,28 +133,111 @@ export default function AdminDashboard() {
   };
 
   // Reject a community resource request
-  const rejectResource_Under = async (id) => {
+  const rejectResource_Under = async (id, retryCount = 0) => {
     if (!supabaseClient || !rejectionReasons[id]) {
       setMessage('Please provide a rejection reason.');
       setMessageType('error');
       return;
     }
-    const { error } = await supabaseClient
-      .from('community_resource_requests')
-      .update({ rejection_reason: rejectionReasons[id], approved: "Unapproved" })
-      .eq('id', id);
-    if (!error) {
-      setPendingResources((prev) => prev.filter((res) => res.id !== id));
-      setMessage('Resource rejected!');
-      setMessageType('success');
-      setRejectionReasons(prev => {
-        const newState = { ...prev };
-        delete newState[id];
-        return newState;
-      });
-    } else {
-      setMessage('Failed to reject resource: ' + error.message);
-      setMessageType('error');
+  
+    const maxRetries = 2;
+    const rejectionReason = rejectionReasons[id];
+  
+    // Store the original resource state for potential rollback
+    const originalResource = pendingResources.find(res => res.id === id);
+  
+    // Optimistically update the local state first
+    setPendingResources((prev) =>
+      prev.map((res) =>
+        res.id === id
+          ? { ...res, approved: "Unapproved", rejection_reason: rejectionReason }
+          : res
+      )
+    );
+  
+    try {
+      const { error } = await supabaseClient
+        .from('community_resource_requests')
+        .update({ 
+          rejection_reason: rejectionReason, 
+          approved: "Unapproved" 
+        })
+        .eq('id', id);
+  
+      if (!error) {
+        // Success - remove from pending list and clean up rejection reason
+        setTimeout(() => {
+          setPendingResources((prev) => prev.filter((res) => res.id !== id));
+        }, 1000);
+        
+        setMessage('Resource rejected!');
+        setMessageType('success');
+        
+        // Clean up rejection reason
+        setRejectionReasons(prev => {
+          const newState = { ...prev };
+          delete newState[id];
+          return newState;
+        });
+      } else {
+        throw new Error(error.message);
+      }
+    } catch (error) {
+      console.error(`Reject attempt ${retryCount + 1} failed:`, error);
+      
+      // Revert the optimistic update
+      if (originalResource) {
+        setPendingResources((prev) =>
+          prev.map((res) =>
+            res.id === id
+              ? originalResource
+              : res
+          )
+        );
+      }
+  
+      // Retry logic
+      if (retryCount < maxRetries) {
+        setMessage(`Reject failed, retrying... (${retryCount + 1}/${maxRetries + 1})`);
+        setMessageType('error');
+        
+        // Wait a bit before retrying
+        setTimeout(() => {
+          rejectResource_Under(id, retryCount + 1);
+        }, 1000);
+      } else {
+        // All retries failed - offer manual solutions
+        const shouldReload = window.confirm(
+          `Failed to reject community resource after ${maxRetries + 1} attempts. This might be due to a network issue or database problem.\n\nWould you like to reload the page to refresh the data? (Recommended)`
+        );
+        
+        if (shouldReload) {
+          window.location.reload();
+        } else {
+          // Alternative: Force refresh the resource list
+          setMessage(`Failed to reject resource: ${error.message}. Refreshing resource list...`);
+          setMessageType('error');
+          
+          // Force refresh the pending resources if that function exists
+          setTimeout(() => {
+            if (typeof fetchPendingResources === 'function') {
+              fetchPendingResources();
+            } else if (typeof fetchLatestResources === 'function') {
+              fetchLatestResources();
+            }
+            
+            // Clear the failed rejection reason to allow retry
+            setRejectionReasons(prev => {
+              const newState = { ...prev };
+              delete newState[id];
+              return newState;
+            });
+            
+            setMessage('Resource list refreshed. Please try rejecting again.');
+            setMessageType('success');
+          }, 1000);
+        }
+      }
     }
   };
 
@@ -555,10 +638,15 @@ export default function AdminDashboard() {
     }
   };
 
-  const rejectResource = async (id) => {
+  const rejectResource = async (id, retryCount = 0) => {
     if (!supabaseClient) return;
+    
     const currentTime = new Date().toISOString();
-
+    const maxRetries = 2;
+  
+    // Store the original resource state for potential rollback
+    const originalResource = unapprovedResources.find(res => res.id === id);
+    
     // Optimistically update the local state first
     setUnapprovedResources((prev) =>
       prev.map((res) =>
@@ -567,29 +655,77 @@ export default function AdminDashboard() {
           : res
       )
     );
-
-    const { error } = await supabaseClient.from('resources').update({
-      approved: "Unapproved",
-      updated_at: currentTime
-    }).eq('id', id);
-
-    if (!error) {
-      // Remove from pending list after successful update
-      setTimeout(() => {
-        setUnapprovedResources((prev) => prev.filter((res) => res.id !== id));
-      }, 1000); // Show the rejected status for 1 second before removing
-      fetchLatestResources();
-      showPopup({ type: 'rejectSuccess' });
-    } else {
-      // Revert the optimistic update if there was an error
-      setUnapprovedResources((prev) =>
-        prev.map((res) =>
-          res.id === id
-            ? { ...res, approved: "Pending", updated_at: res.updated_at }
-            : res
-        )
-      );
-      showPopup({ type: 'fetchError', subText: `Failed to reject resource: ${error.message}` });
+  
+    try {
+      const { error } = await supabaseClient
+        .from('resources')
+        .update({
+          approved: "Unapproved",
+          updated_at: currentTime
+        })
+        .eq('id', id);
+  
+      if (!error) {
+        // Success - remove from pending list after showing rejected status
+        setTimeout(() => {
+          setUnapprovedResources((prev) => prev.filter((res) => res.id !== id));
+        }, 1000);
+        
+        fetchLatestResources();
+        showPopup({ type: 'rejectSuccess' });
+      } else {
+        throw new Error(error.message);
+      }
+    } catch (error) {
+      console.error(`Reject attempt ${retryCount + 1} failed:`, error);
+      
+      // Revert the optimistic update
+      if (originalResource) {
+        setUnapprovedResources((prev) =>
+          prev.map((res) =>
+            res.id === id
+              ? originalResource
+              : res
+          )
+        );
+      }
+  
+      // Retry logic
+      if (retryCount < maxRetries) {
+        showPopup({ 
+          type: 'fetchError', 
+          subText: `Reject failed, retrying... (${retryCount + 1}/${maxRetries + 1})` 
+        });
+        
+        // Wait a bit before retrying
+        setTimeout(() => {
+          rejectResource(id, retryCount + 1);
+        }, 1000);
+      } else {
+        // All retries failed - offer manual solutions
+        const shouldReload = window.confirm(
+          `Failed to reject resource after ${maxRetries + 1} attempts. This might be due to a network issue or database problem.\n\nWould you like to reload the page to refresh the data? (Recommended)`
+        );
+        
+        if (shouldReload) {
+          window.location.reload();
+        } else {
+          // Alternative: Force refresh the resource list
+          showPopup({ 
+            type: 'fetchError', 
+            subText: `Failed to reject resource: ${error.message}. Refreshing resource list...` 
+          });
+          
+          // Force refresh the resource list
+          setTimeout(() => {
+            fetchLatestResources();
+            // Also refresh the unapproved resources if that function exists
+            if (typeof fetchUnapprovedResources === 'function') {
+              fetchUnapprovedResources();
+            }
+          }, 1000);
+        }
+      }
     }
   };
 
@@ -865,39 +1001,68 @@ export default function AdminDashboard() {
   const fetchLeaderboard = async () => {
     if (!supabaseClient) return;
     setLoadingLeaderboard(true);
-    // Get all staff users
-    const { data: staffUsers, error: staffError } = await supabaseClient
-      .from('staff_users')
-      .select('id, username, email');
-    if (staffError) {
-      showPopup({ type: 'fetchError', subText: 'Failed to fetch staff users for leaderboard: ' + staffError.message });
+    
+    try {
+      // Get all staff users
+      const { data: staffUsers, error: staffError } = await supabaseClient
+        .from('staff_users')
+        .select('id, username, email');
+      if (staffError) {
+        showPopup({ type: 'fetchError', subText: 'Failed to fetch staff users for leaderboard: ' + staffError.message });
+        setLoadingLeaderboard(false);
+        return;
+      }
+
+      // Get all resources
+      const { data: resources, error: resError } = await supabaseClient
+        .from('resources')
+        .select('uploaded_by_username, approved');
+      if (resError) {
+        showPopup({ type: 'fetchError', subText: 'Failed to fetch resources for leaderboard: ' + resError.message });
+        setLoadingLeaderboard(false);
+        return;
+      }
+
+      // Get all community resource requests
+      const { data: communityRequests, error: commError } = await supabaseClient
+        .from('community_resource_requests')
+        .select('contributor_email, approved');
+      if (commError) {
+        showPopup({ type: 'fetchError', subText: 'Failed to fetch community requests for leaderboard: ' + commError.message });
+        setLoadingLeaderboard(false);
+        return;
+      }
+
+      // Count uploads and approvals per user
+      const stats = staffUsers.map(user => {
+        // Count regular resource uploads
+        const resourceUploads = resources.filter(r => r.uploaded_by_username === user.username);
+        const resourceApproved = resourceUploads.filter(r => r.approved === "Approved").length;
+        
+        // Count community resource requests (match by email)
+        const communityUploads = communityRequests.filter(r => r.contributor_email === user.email);
+        const communityApproved = communityUploads.filter(r => r.approved === "Approved").length;
+        
+        return {
+          username: user.username,
+          email: user.email,
+          uploads: resourceUploads.length + communityUploads.length,
+          approved: resourceApproved + communityApproved,
+          resourceUploads: resourceUploads.length,
+          communityUploads: communityUploads.length,
+          resourceApproved,
+          communityApproved
+        };
+      });
+
+      // Sort by approved desc, then uploads desc
+      stats.sort((a, b) => b.uploads - a.uploads || b.approved - a.approved);
+      setLeaderboard(stats);
       setLoadingLeaderboard(false);
-      return;
-    }
-    // Get all resources
-    const { data: resources, error: resError } = await supabaseClient
-      .from('resources')
-      .select('uploaded_by_username, approved');
-    if (resError) {
-      showPopup({ type: 'fetchError', subText: 'Failed to fetch resources for leaderboard: ' + resError.message });
+    } catch (error) {
+      showPopup({ type: 'fetchError', subText: 'Failed to fetch leaderboard data: ' + error.message });
       setLoadingLeaderboard(false);
-      return;
     }
-    // Count uploads and approvals per user
-    const stats = staffUsers.map(user => {
-      const uploads = resources.filter(r => r.uploaded_by_username === user.username);
-      const approved = uploads.filter(r => r.approved === "Approved").length;
-      return {
-        username: user.username,
-        email: user.email,
-        uploads: uploads.length,
-        approved,
-      };
-    });
-    // Sort by approved desc, then uploads desc
-    stats.sort((a, b) => b.approved - a.approved || b.uploads - a.uploads);
-    setLeaderboard(stats);
-    setLoadingLeaderboard(false);
   };
 
   // Fetch leaderboard when tab is selected
@@ -1061,7 +1226,7 @@ export default function AdminDashboard() {
         {!staffUser ? (
           <form onSubmit={handleLogin} className="space-y-4">
             <h2 className="text-2xl font-bold mb-2 text-blue-700 flex items-center gap-2">
-              <svg className="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M16 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1447e6"><path d="M185-80q-17 0-29.5-12.5T143-122v-105q0-90 56-159t144-88q-40 28-62 70.5T259-312v190q0 11 3 22t10 20h-87Zm147 0q-17 0-29.5-12.5T290-122v-190q0-70 49.5-119T459-480h189q70 0 119 49t49 119v64q0 70-49 119T648-80H332Zm148-484q-66 0-112-46t-46-112q0-66 46-112t112-46q66 0 112 46t46 112q0 66-46 112t-112 46Z"/></svg>
               Admin Login
             </h2>
             <input type="email" value={loginEmail} onChange={(e) => setLoginEmail(e.target.value)} placeholder="Staff Email" className="w-full border p-2 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 transition" required />
@@ -1073,35 +1238,22 @@ export default function AdminDashboard() {
             <div className="border-b mb-4 sm:text-base text-xs grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 sm:px-1 w-full">
                 <button onClick={() => setActiveTab('upload')} className={`cursor-pointer py-2 px-4 flex items-center gap-1 rounded-t-lg ${activeTab === 'upload' ? 'border-b-2 border-blue-600 font-semibold text-blue-700 bg-blue-50' : 'text-gray-500 hover:text-blue-600'}`}><svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4" /></svg>Upload</button>
                 <button onClick={() => setActiveTab('past_papers')} className={`cursor-pointer py-2 px-4 flex items-center gap-1 rounded-t-lg ${activeTab === 'past_papers' ? 'border-b-2 border-blue-600 font-semibold text-blue-700 bg-blue-50' : 'text-gray-500 hover:text-blue-600'}`}>
-                    <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#666666"><path d="M288-168v-432q0-30.08 21-51.04T360-672h432q29.7 0 50.85 21.15Q864-629.7 864-600v312L672-96H360q-29.7 0-50.85-21.15Q288-138.3 288-168ZM98-703q-5-29 12.5-54t46.5-30l425-76q29-5 53.5 12.5T665-804l11 60h-73l-9-48-425 76 47 263v228q-16-7-27.5-21.08Q177-260.16 174-278L98-703Zm262 103v432h264v-168h168v-264H360Zm216 216Z"/></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor"><path d="M288-168v-432q0-30.08 21-51.04T360-672h432q29.7 0 50.85 21.15Q864-629.7 864-600v312L672-96H360q-29.7 0-50.85-21.15Q288-138.3 288-168ZM98-703q-5-29 12.5-54t46.5-30l425-76q29-5 53.5 12.5T665-804l11 60h-73l-9-48-425 76 47 263v228q-16-7-27.5-21.08Q177-260.16 174-278L98-703Zm262 103v432h264v-168h168v-264H360Zm216 216Z"/></svg>
                     Past Papers
                 </button>
                 <button onClick={() => setActiveTab('approve')} className={`cursor-pointer py-2 px-4 flex items-center gap-1 rounded-t-lg ${activeTab === 'approve' ? 'border-b-2 border-blue-600 font-semibold text-blue-700 bg-blue-50' : 'text-gray-500 hover:text-blue-600'}`}><svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor"><path d="M263.72-96Q234-96 213-117.15T192-168v-384q0-29.7 21.15-50.85Q234.3-624 264-624h24v-96q0-79.68 56.23-135.84 56.22-56.16 136-56.16Q560-912 616-855.84q56 56.16 56 135.84v96h24q29.7 0 50.85 21.15Q768-581.7 768-552v384q0 29.7-21.16 50.85Q725.68-96 695.96-96H263.72Zm.28-72h432v-384H264v384Zm216.21-120Q510-288 531-309.21t21-51Q552-390 530.79-411t-51-21Q450-432 429-410.79t-21 51Q408-330 429.21-309t51 21ZM360-624h240v-96q0-50-35-85t-85-35q-50 0-85 35t-35 85v96Zm-96 456v-384 384Z"/></svg>Approve</button>
-                <button
-                  onClick={() => setActiveTab('under_review')}
-                  className={`cursor-pointer py-2 px-4 flex items-center gap-1 rounded-t-lg sm:rounded-none sm:rounded-tr-lg w-full justify-center ${
-                    activeTab === 'under_review'
-                      ? 'border-b-2 border-blue-600 font-semibold text-blue-700 bg-blue-50'
-                      : 'text-gray-500 hover:text-blue-600'
-                  }`}
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    height="20px"
-                    viewBox="0 -960 960 960"
-                    width="20px"
-                    fill="currentColor"
-                  >
-                    <path d="M263.72-96Q234-96 213-117.15T192-168v-384q0-29.7 21.15-50.85Q234.3-624 264-624h24v-96q0-79.68 56.23-135.84 56.22-56.16 136-56.16Q560-912 616-855.84q56 56.16 56 135.84v96h24q29.7 0 50.85 21.15Q768-581.7 768-552v384q0 29.7-21.16 50.85Q725.68-96 695.96-96H263.72Zm.28-72h432v-384H264v384Zm216.21-120Q510-288 531-309.21t21-51Q552-390 530.79-411t-51-21Q450-432 429-410.79t-21 51Q408-330 429.21-309t51 21ZM360-624h240v-96q0-50-35-85t-85-35q-50 0-85 35t-35 85v96Zm-96 456v-384 384Z" />
+                <button onClick={() => setActiveTab('under_review')} className={`cursor-pointer py-2 px-4 flex items-center justify-start gap-1 rounded-t-lg ${activeTab === 'under_review' ? 'border-b-2 border-blue-600 font-semibold text-blue-700 bg-blue-50' : 'text-gray-500 hover:text-blue-600'}`}>
+                  <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor">
+                    <path d="M360-600v-72h336v72H360Zm0 120v-72h336v72H360Zm144 312H216h288Zm0 72H240q-40 0-68-28t-28-68v-144h96v-528h576v361q-20 1-38 7t-34 19v-315H312v456h289l-72 72H216v72q0 10.2 6.9 17.1 6.9 6.9 17.1 6.9h264v72Zm72 0v-113l210-209q7.26-7.41 16.13-10.71Q811-432 819.76-432q9.55 0 18.31 3.5Q846.83-425 854-418l44 45q6.59 7.26 10.29 16.13Q912-348 912-339.24t-3.29 17.92q-3.3 9.15-10.71 16.32L689-96H576Zm288-243-45-45 45 45ZM624-144h45l115-115-22-23-22-22-116 115v45Zm138-138-22-22 44 45-22-23Z"/>
                   </svg>
                   Under Review
                 </button>
                 <button onClick={() => setActiveTab('subjects')} className={`cursor-pointer py-2 px-4 flex items-center gap-1 rounded-t-lg ${activeTab === 'subjects' ? 'border-b-2 border-blue-600 font-semibold text-blue-700 bg-blue-50' : 'text-gray-500 hover:text-blue-600'}`}><svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" /></svg>Add Subject</button>
-                <button onClick={() => setActiveTab('leaderboard')} className={`cursor-pointer py-2 px-4 flex items-center gap-1 rounded-t-lg ${activeTab === 'leaderboard' ? 'border-b-2 border-blue-600 font-semibold text-blue-700 bg-blue-50' : 'text-gray-500 hover:text-blue-600'}`}><svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#666666"><path d="m290-96-50-50 264-264 144 144 213-214 51 51-264 264-144-144L290-96Zm-122-48q-30 0-51-21.15T96-216v-528q0-29 21.5-50.5T168-816h528q29 0 50.5 21.5T768-744v160H168v440Zm0-512h528v-88H168v88Zm0 0v-88 88Z"/></svg>Leaderboard</button>
-                <button onClick={() => setActiveTab('moderation')} className={`cursor-pointer py-2 px-4 flex items-center gap-1 rounded-t-lg ${activeTab === 'moderation' ? 'border-b-2 border-blue-600 font-semibold text-blue-700 bg-blue-50' : 'text-gray-500 hover:text-blue-600'}`}><svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#666666"><path d="m376-336 104-79 104 79-40-128 104-82H521.07L480-672l-41.07 126H312l104 82-40 128ZM480-96q-135-33-223.5-152.84Q168-368.69 168-515v-229l312-120 312 120v229q0 146.31-88.5 266.16Q615-129 480-96Zm0-75q104-32.25 172-129t68-215v-180l-240-92-240 92v180q0 118.25 68 215t172 129Zm0-308Z"/></svg>Moderation View</button>
+                <button onClick={() => setActiveTab('leaderboard')} className={`cursor-pointer py-2 px-4 flex items-center gap-1 rounded-t-lg ${activeTab === 'leaderboard' ? 'border-b-2 border-blue-600 font-semibold text-blue-700 bg-blue-50' : 'text-gray-500 hover:text-blue-600'}`}><svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor"><path d="m290-96-50-50 264-264 144 144 213-214 51 51-264 264-144-144L290-96Zm-122-48q-30 0-51-21.15T96-216v-528q0-29 21.5-50.5T168-816h528q29 0 50.5 21.5T768-744v160H168v440Zm0-512h528v-88H168v88Zm0 0v-88 88Z"/></svg>Leaderboard</button>
+                <button onClick={() => setActiveTab('moderation')} className={`cursor-pointer py-2 px-4 flex items-center gap-1 rounded-t-lg ${activeTab === 'moderation' ? 'border-b-2 border-blue-600 font-semibold text-blue-700 bg-blue-50' : 'text-gray-500 hover:text-blue-600'}`}><svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor"><path d="m376-336 104-79 104 79-40-128 104-82H521.07L480-672l-41.07 126H312l104 82-40 128ZM480-96q-135-33-223.5-152.84Q168-368.69 168-515v-229l312-120 312 120v229q0 146.31-88.5 266.16Q615-129 480-96Zm0-75q104-32.25 172-129t68-215v-180l-240-92-240 92v180q0 118.25 68 215t172 129Zm0-308Z"/></svg>Moderation View</button>
                 {/* NEW: User Management Tab Button */}
                 <button onClick={() => setActiveTab('users')} className={`cursor-pointer py-2 px-4 flex items-center gap-1 rounded-t-lg ${activeTab === 'users' ? 'border-b-2 border-blue-600 font-semibold text-blue-700 bg-blue-50' : 'text-gray-500 hover:text-blue-600'}`}>
-                    <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#666666"><path d="M480-480q-60 0-102-42t-42-102q0-60 42-102t102-42q60 0 102 42t42 102q0 60-42 102t-102 42ZM192-192v-96q0-23 12.5-43.5T239-366q55-32 116.29-49 61.29-17 124.5-17t124.71 17Q666-398 721-366q22 13 34.5 34t12.5 44v96H192Zm72-72h432v-24q0-5.18-3.03-9.41-3.02-4.24-7.97-6.59-46-28-98-42t-107-14q-55 0-107 14t-98 42q-5 4-8 7.72-3 3.73-3 8.28v24Zm216.21-288Q510-552 531-573.21t21-51Q552-654 530.79-675t-51-21Q450-696 429-674.79t-21 51Q408-594 429.21-573t51 21Zm-.21-72Zm0 360Z"/></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor"><path d="M480-480q-60 0-102-42t-42-102q0-60 42-102t102-42q60 0 102 42t42 102q0 60-42 102t-102 42ZM192-192v-96q0-23 12.5-43.5T239-366q55-32 116.29-49 61.29-17 124.5-17t124.71 17Q666-398 721-366q22 13 34.5 34t12.5 44v96H192Zm72-72h432v-24q0-5.18-3.03-9.41-3.02-4.24-7.97-6.59-46-28-98-42t-107-14q-55 0-107 14t-98 42q-5 4-8 7.72-3 3.73-3 8.28v24Zm216.21-288Q510-552 531-573.21t21-51Q552-654 530.79-675t-51-21Q450-696 429-674.79t-21 51Q408-594 429.21-573t51 21Zm-.21-72Zm0 360Z"/></svg>
                     User Management
                 </button>
             </div>

@@ -72,8 +72,10 @@ export default function Subject({ searchParams }) {
                   IALs
                 </button>
                 <button
-                  onClick={() => setSelected('option2')}
-                  className={`cursor-pointer w-1/2 py-2 text-center rounded-[10px] transition-all ease-in-out duration-500 text-sm md:text-base lg:text-xl ${selected === 'option2' ? 'bg-[#D0E0FF] shadow-md font-semibold tracking-[-0.75px]' : 'bg transparent'}`}
+                  // IGCSEs button: Always disabled and greyed out
+                  disabled // Make it non-clickable
+                  className={`cursor-not-allowed w-1/2 py-2 text-center rounded-[10px] transition-all ease-in-out duration-500 text-sm md:text-base lg:text-xl
+                bg-gray-200 text-gray-400 font-semibold tracking-[-0.75px]`} // Always greyed out styles
                   style={{ fontFamily: 'Poppins, sans-serif' }}
                 >
                   IGCSEs

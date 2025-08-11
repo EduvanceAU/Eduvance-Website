@@ -396,28 +396,111 @@ export default function UploadResource() {
   };
 
   // Reject a community resource request
-  const rejectResource = async (id) => {
+  const rejectResource = async (id, retryCount = 0) => {
     if (!supabaseClient || !rejectionReasons[id]) {
       setMessage('Please provide a rejection reason.');
       setMessageType('error');
       return;
     }
-    const { error } = await supabaseClient
-      .from('community_resource_requests')
-      .update({ rejection_reason: rejectionReasons[id], approved: "Unapproved" })
-      .eq('id', id);
-    if (!error) {
-      setPendingResources((prev) => prev.filter((res) => res.id !== id));
-      setMessage('Resource rejected!');
-      setMessageType('success');
-      setRejectionReasons(prev => {
-        const newState = { ...prev };
-        delete newState[id];
-        return newState;
-      });
-    } else {
-      setMessage('Failed to reject resource: ' + error.message);
-      setMessageType('error');
+  
+    const maxRetries = 2;
+    const rejectionReason = rejectionReasons[id];
+  
+    // Store the original resource state for potential rollback
+    const originalResource = pendingResources.find(res => res.id === id);
+  
+    // Optimistically update the local state first
+    setPendingResources((prev) =>
+      prev.map((res) =>
+        res.id === id
+          ? { ...res, approved: "Unapproved", rejection_reason: rejectionReason }
+          : res
+      )
+    );
+  
+    try {
+      const { error } = await supabaseClient
+        .from('community_resource_requests')
+        .update({ 
+          rejection_reason: rejectionReason, 
+          approved: "Unapproved" 
+        })
+        .eq('id', id);
+  
+      if (!error) {
+        // Success - remove from pending list and clean up rejection reason
+        setTimeout(() => {
+          setPendingResources((prev) => prev.filter((res) => res.id !== id));
+        }, 1000);
+        
+        setMessage('Resource rejected!');
+        setMessageType('success');
+        
+        // Clean up rejection reason
+        setRejectionReasons(prev => {
+          const newState = { ...prev };
+          delete newState[id];
+          return newState;
+        });
+      } else {
+        throw new Error(error.message);
+      }
+    } catch (error) {
+      console.error(`Reject attempt ${retryCount + 1} failed:`, error);
+      
+      // Revert the optimistic update
+      if (originalResource) {
+        setPendingResources((prev) =>
+          prev.map((res) =>
+            res.id === id
+              ? originalResource
+              : res
+          )
+        );
+      }
+  
+      // Retry logic
+      if (retryCount < maxRetries) {
+        setMessage(`Reject failed, retrying... (${retryCount + 1}/${maxRetries + 1})`);
+        setMessageType('error');
+        
+        // Wait a bit before retrying
+        setTimeout(() => {
+          rejectResource(id, retryCount + 1);
+        }, 1000);
+      } else {
+        // All retries failed - offer manual solutions
+        const shouldReload = window.confirm(
+          `Failed to reject community resource after ${maxRetries + 1} attempts. This might be due to a network issue or database problem.\n\nWould you like to reload the page to refresh the data? (Recommended)`
+        );
+        
+        if (shouldReload) {
+          window.location.reload();
+        } else {
+          // Alternative: Force refresh the resource list
+          setMessage(`Failed to reject resource: ${error.message}. Refreshing resource list...`);
+          setMessageType('error');
+          
+          // Force refresh the pending resources if that function exists
+          setTimeout(() => {
+            if (typeof fetchPendingResources === 'function') {
+              fetchPendingResources();
+            } else if (typeof fetchLatestResources === 'function') {
+              fetchLatestResources();
+            }
+            
+            // Clear the failed rejection reason to allow retry
+            setRejectionReasons(prev => {
+              const newState = { ...prev };
+              delete newState[id];
+              return newState;
+            });
+            
+            setMessage('Resource list refreshed. Please try rejecting again.');
+            setMessageType('success');
+          }, 1000);
+        }
+      }
     }
   };
 
@@ -567,7 +650,7 @@ export default function UploadResource() {
         {!staffUser ? (
           <form onSubmit={handleLogin} className="space-y-4">
             <h2 className="text-2xl font-bold mb-2 text-blue-700 flex items-center gap-2">
-              <svg className="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M16 21v-2a4 4 0 00-4-4H8a4 0 00-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1447e6"><path d="M185-80q-17 0-29.5-12.5T143-122v-105q0-90 56-159t144-88q-40 28-62 70.5T259-312v190q0 11 3 22t10 20h-87Zm147 0q-17 0-29.5-12.5T290-122v-190q0-70 49.5-119T459-480h189q70 0 119 49t49 119v64q0 70-49 119T648-80H332Zm148-484q-66 0-112-46t-46-112q0-66 46-112t112-46q66 0 112 46t46 112q0 66-46 112t-112 46Z"/></svg>
               Staff Login
             </h2>
             <input type="email" value={loginEmail} onChange={(e) => setLoginEmail(e.target.value)} placeholder="Staff Email" className="w-full border p-2 rounded-md focus:ring-2 focus:ring-blue-300 focus:border-blue-500 transition" required />
@@ -579,7 +662,7 @@ export default function UploadResource() {
             <div className="border-b mb-4 sm:text-base text-xs grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 sm:px-1 w-full">
               <button onClick={() => setActiveTab('upload')} className={`cursor-pointer py-2 px-4 flex items-center gap-1 rounded-t-lg ${activeTab === 'upload' ? 'border-b-2 border-blue-600 font-semibold text-blue-700 bg-blue-50' : 'text-gray-500 hover:text-blue-600'}`}><svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4" /></svg>Upload Resources</button>
               {/* NEW TAB BUTTON */}
-              <button onClick={() => setActiveTab('uploadPaper')} className={`cursor-pointer py-2 px-4 flex items-center gap-1 rounded-t-lg ${activeTab === 'uploadPaper' ? 'border-b-2 border-blue-600 font-semibold text-blue-700 bg-blue-50' : 'text-gray-500 hover:text-blue-600'}`}><svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#666666"><path d="M744-192H312q-29 0-50.5-21.5T240-264v-576q0-29 21.5-50.5T312-912h312l192 192v456q0 29-21.5 50.5T744-192ZM576-672v-168H312v576h432v-408H576ZM168-48q-29 0-50.5-21.5T96-120v-552h72v552h456v72H168Zm144-792v195-195 576-576Z"/></svg>Upload Papers</button>
+              <button onClick={() => setActiveTab('uploadPaper')} className={`cursor-pointer py-2 px-4 flex items-center gap-1 rounded-t-lg ${activeTab === 'uploadPaper' ? 'border-b-2 border-blue-600 font-semibold text-blue-700 bg-blue-50' : 'text-gray-500 hover:text-blue-600'}`}><svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor"><path d="M744-192H312q-29 0-50.5-21.5T240-264v-576q0-29 21.5-50.5T312-912h312l192 192v456q0 29-21.5 50.5T744-192ZM576-672v-168H312v576h432v-408H576ZM168-48q-29 0-50.5-21.5T96-120v-552h72v552h456v72H168Zm144-792v195-195 576-576Z"/></svg>Upload Papers</button>
               <button onClick={() => setActiveTab('approve')} className={`cursor-pointer py-2 px-4 flex items-center gap-1 rounded-t-lg ${activeTab === 'approve' ? 'border-b-2 border-blue-600 font-semibold text-blue-700 bg-blue-50' : 'text-gray-500 hover:text-blue-600'}`}><svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor"><path d="M263.72-96Q234-96 213-117.15T192-168v-384q0-29.7 21.15-50.85Q234.3-624 264-624h24v-96q0-79.68 56.23-135.84 56.22-56.16 136-56.16Q560-912 616-855.84q56 56.16 56 135.84v96h24q29.7 0 50.85 21.15Q768-581.7 768-552v384q0 29.7-21.16 50.85Q725.68-96 695.96-96H263.72Zm.28-72h432v-384H264v384Zm216.21-120Q510-288 531-309.21t21-51Q552-390 530.79-411t-51-21Q450-432 429-410.79t-21 51Q408-330 429.21-309t51 21ZM360-624h240v-96q0-50-35-85t-85-35q-50 0-85 35t-35 85v96Zm-96 456v-384 384Z"/></svg>Approve</button>
             </div>
             {message && (
