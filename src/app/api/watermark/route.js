@@ -27,7 +27,7 @@ async function watermarkPdf(pdfBuffer, headerBuffer, footerBuffer) {
   const srcPdfDoc = await PDFDocument.load(pdfBuffer);
   srcPdfDoc.registerFontkit(fontkit);
   const totalPages = srcPdfDoc.getPageCount();
-  const extraHeight = 40;
+  const extraHeight = 50;
   const fontUrl = 'https://eduvance-org.vercel.app/fonts/poppins.ttf';
   const response = await fetch(fontUrl);
   const fontBytes = await response.arrayBuffer();
