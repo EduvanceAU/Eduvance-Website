@@ -79,7 +79,7 @@ async function watermarkPdf(pdfBuffer, headerBuffer, footerBuffer) {
       x: (width - FONT.widthOfTextAtSize(headerText, 12))/2, 
       y: height+5, 
       font: FONT,
-      size: 14
+      size: 12
     });
   }
 
