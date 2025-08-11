@@ -396,28 +396,111 @@ export default function UploadResource() {
   };
 
   // Reject a community resource request
-  const rejectResource = async (id) => {
+  const rejectResource = async (id, retryCount = 0) => {
     if (!supabaseClient || !rejectionReasons[id]) {
       setMessage('Please provide a rejection reason.');
       setMessageType('error');
       return;
     }
-    const { error } = await supabaseClient
-      .from('community_resource_requests')
-      .update({ rejection_reason: rejectionReasons[id], approved: "Unapproved" })
-      .eq('id', id);
-    if (!error) {
-      setPendingResources((prev) => prev.filter((res) => res.id !== id));
-      setMessage('Resource rejected!');
-      setMessageType('success');
-      setRejectionReasons(prev => {
-        const newState = { ...prev };
-        delete newState[id];
-        return newState;
-      });
-    } else {
-      setMessage('Failed to reject resource: ' + error.message);
-      setMessageType('error');
+  
+    const maxRetries = 2;
+    const rejectionReason = rejectionReasons[id];
+  
+    // Store the original resource state for potential rollback
+    const originalResource = pendingResources.find(res => res.id === id);
+  
+    // Optimistically update the local state first
+    setPendingResources((prev) =>
+      prev.map((res) =>
+        res.id === id
+          ? { ...res, approved: "Unapproved", rejection_reason: rejectionReason }
+          : res
+      )
+    );
+  
+    try {
+      const { error } = await supabaseClient
+        .from('community_resource_requests')
+        .update({ 
+          rejection_reason: rejectionReason, 
+          approved: "Unapproved" 
+        })
+        .eq('id', id);
+  
+      if (!error) {
+        // Success - remove from pending list and clean up rejection reason
+        setTimeout(() => {
+          setPendingResources((prev) => prev.filter((res) => res.id !== id));
+        }, 1000);
+        
+        setMessage('Resource rejected!');
+        setMessageType('success');
+        
+        // Clean up rejection reason
+        setRejectionReasons(prev => {
+          const newState = { ...prev };
+          delete newState[id];
+          return newState;
+        });
+      } else {
+        throw new Error(error.message);
+      }
+    } catch (error) {
+      console.error(`Reject attempt ${retryCount + 1} failed:`, error);
+      
+      // Revert the optimistic update
+      if (originalResource) {
+        setPendingResources((prev) =>
+          prev.map((res) =>
+            res.id === id
+              ? originalResource
+              : res
+          )
+        );
+      }
+  
+      // Retry logic
+      if (retryCount < maxRetries) {
+        setMessage(`Reject failed, retrying... (${retryCount + 1}/${maxRetries + 1})`);
+        setMessageType('error');
+        
+        // Wait a bit before retrying
+        setTimeout(() => {
+          rejectResource(id, retryCount + 1);
+        }, 1000);
+      } else {
+        // All retries failed - offer manual solutions
+        const shouldReload = window.confirm(
+          `Failed to reject community resource after ${maxRetries + 1} attempts. This might be due to a network issue or database problem.\n\nWould you like to reload the page to refresh the data? (Recommended)`
+        );
+        
+        if (shouldReload) {
+          window.location.reload();
+        } else {
+          // Alternative: Force refresh the resource list
+          setMessage(`Failed to reject resource: ${error.message}. Refreshing resource list...`);
+          setMessageType('error');
+          
+          // Force refresh the pending resources if that function exists
+          setTimeout(() => {
+            if (typeof fetchPendingResources === 'function') {
+              fetchPendingResources();
+            } else if (typeof fetchLatestResources === 'function') {
+              fetchLatestResources();
+            }
+            
+            // Clear the failed rejection reason to allow retry
+            setRejectionReasons(prev => {
+              const newState = { ...prev };
+              delete newState[id];
+              return newState;
+            });
+            
+            setMessage('Resource list refreshed. Please try rejecting again.');
+            setMessageType('success');
+          }, 1000);
+        }
+      }
     }
   };
 
