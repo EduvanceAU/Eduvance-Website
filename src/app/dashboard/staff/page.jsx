@@ -359,7 +359,8 @@ export default function UploadResource() {
     const { data, error } = await supabaseClient
       .from('community_resource_requests')
       .select('*')
-      .eq('approved', "Unapproved");
+      .eq('approved', "Unapproved")
+      .is('rejected', null); // This line fetches resources where rejected is NULL
     if (!error) setPendingResources(data);
   };
 
@@ -402,31 +403,32 @@ export default function UploadResource() {
       setMessageType('error');
       return;
     }
-  
+
     const maxRetries = 2;
     const rejectionReason = rejectionReasons[id];
-  
+
     // Store the original resource state for potential rollback
     const originalResource = pendingResources.find(res => res.id === id);
-  
+
     // Optimistically update the local state first
     setPendingResources((prev) =>
       prev.map((res) =>
         res.id === id
-          ? { ...res, approved: "Unapproved", rejection_reason: rejectionReason }
+          ? { ...res, approved: "Unapproved", rejected: true, rejection_reason: rejectionReason }
           : res
       )
     );
-  
+
     try {
       const { error } = await supabaseClient
         .from('community_resource_requests')
         .update({ 
           rejection_reason: rejectionReason, 
-          approved: "Unapproved" 
+          approved: "Unapproved",
+          rejected: true // Set the 'rejected' field to TRUE
         })
         .eq('id', id);
-  
+
       if (!error) {
         // Success - remove from pending list and clean up rejection reason
         setTimeout(() => {
@@ -458,7 +460,7 @@ export default function UploadResource() {
           )
         );
       }
-  
+
       // Retry logic
       if (retryCount < maxRetries) {
         setMessage(`Reject failed, retrying... (${retryCount + 1}/${maxRetries + 1})`);
