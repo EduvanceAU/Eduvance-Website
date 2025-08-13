@@ -136,7 +136,7 @@ export default function ContributorUploadResource() {
     } else {
       setMessage("✅ Resource request submitted for review");
       setMessageType('success');
-      setTitle(''); setLink(''); setDescription(''); setUnitChapter('');
+      setTitle(''); setLink(''); setDescription('');
     }
   };
 
