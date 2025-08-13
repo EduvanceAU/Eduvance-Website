@@ -1096,7 +1096,7 @@ export default function AdminDashboard() {
       if (subjectIds.length > 0) query = query.in('subject_id', subjectIds);
       else query = query.eq('subject_id', ''); // No results
     }
-    query.order('created_at', { ascending: false }).then(({ data, error }) => {
+    query.order(modType === 'resource' ? 'created_at' : 'submitted_at', { ascending: false }).then(({ data, error }) => {
       setModResults(data || []);
       setModLoading(false);
       if (error) {
