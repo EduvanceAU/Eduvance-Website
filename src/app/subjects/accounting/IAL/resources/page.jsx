@@ -124,6 +124,7 @@ export default function IALResources() {
           .from('resources')
           .select('*')
           .eq('subject_id', subjectId)
+          .order('title', { ascending: true })
           .eq('approved', "Approved")
           .order('created_at', { ascending: false });
 
