@@ -387,7 +387,7 @@ export default function IGCSEPastPapersPage() {
 
           <div className="w-full mb-8">
             <h2 className="text-xl font-[550] tracking-tight text-[#000000] mb-4 text-left">
-              Other Resources
+              Other Subjects
             </h2>
             <SubjectButtons />
           </div>
