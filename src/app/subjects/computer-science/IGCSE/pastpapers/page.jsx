@@ -183,6 +183,9 @@ export default function IGCSEPastPapersPage() {
         return;
       }
       let fetchedUnits = subjectData.units || [];
+      fetchedUnits = fetchedUnits.filter(unit => 
+        !unit.unit?.includes('R') && !unit.name?.includes('R')
+      );
       fetchedUnits.sort((a, b) => {
         const getUnitNum = (u) => {
           const match = (u.unit || '').match(/Unit\s*(\d+)/i);
