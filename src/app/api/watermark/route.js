@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { PDFDocument, rgb } from 'pdf-lib';
+import { PDFDocument, rgb, PDFName } from 'pdf-lib';
 import fetch from 'node-fetch';
 import fs from 'fs/promises';
 import path from 'path';
@@ -34,6 +34,10 @@ async function watermarkPdf(pdfBuffer, headerBuffer, footerBuffer) {
   const FONT = await srcPdfDoc.embedFont(fontBytes);
   for (let i = 0; i < totalPages; i++) {
     const originalPage = srcPdfDoc.getPage(i);
+    const pageRef = originalPage.node;
+    pageRef.delete(PDFName.of('CropBox'));
+    pageRef.delete(PDFName.of('TrimBox'));
+    pageRef.delete(PDFName.of('BleedBox'));
     const { width, height } = originalPage.getSize();    
     originalPage.setSize(width, height+extraHeight)
     originalPage.translateContent(0, extraHeight/2)
