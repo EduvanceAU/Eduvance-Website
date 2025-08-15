@@ -81,6 +81,9 @@ export default function IGCSEResources() {
         return;
       }
       let fetchedUnits = subjectData.units || [];
+      fetchedUnits = fetchedUnits.filter(unit => 
+        !unit.unit?.includes('R') && !unit.name?.includes('R')
+      );
       // Sort by unit number if possible, fallback to name
       fetchedUnits.sort((a, b) => {
         const getUnitNum = (u) => {
