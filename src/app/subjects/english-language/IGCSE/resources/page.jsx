@@ -191,7 +191,7 @@ export default function IGCSEResources() {
       }
     })
     document.querySelectorAll(`.${event.currentTarget.innerHTML}`).forEach((resource) => {
-      const indicator = resource.querySelector("div > div > div")
+      const indicator = resource.querySelector("div > .flex > div")
       if(indicator.classList.contains("text-green-400")){
         indicator.classList.remove("text-green-400", "hover:text-white", "hover:bg-green-400")
         indicator.classList.add("bg-green-400", "text-white")
@@ -249,7 +249,12 @@ export default function IGCSEResources() {
                       <div className="cursor-pointer flex flex-col p-5 border h-fit border-gray-200 rounded-2xl shadow-md bg-white hover:shadow-xl transition-shadow duration-200 group sm:min-h-[120px] sm:min-w-[300px]" style={{ position: 'relative' }}>
                         {/* <span className="text-sm font-semibold text-[#1A69FA] mb-1 tracking-tight uppercase" style={{ fontFamily: 'Poppins, sans-serif', letterSpacing: '0.04em' }}>{resourceGroup.heading}</span> */}
                         
-                          {link.name && (<p className="text-xl font-bold text-[#153064]">{link.name}</p>)}
+                          <div className="inline-flex justify-between">
+                            {link.name && (<p className="text-xl font-bold text-[#153064]">{link.name}</p>)}
+                            <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                              <svg width="22" height="22" fill="none" stroke="#1A69FA" strokeWidth="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                            </div>
+                          </div>
                           {link.description && (
                             <p className="text-sm text-gray-600 mt-2 border-l-4 mb-2 border-blue-600 pl-2">{link.description}</p>
                           )}
@@ -257,9 +262,7 @@ export default function IGCSEResources() {
                             {resourceGroup.heading && (<div className="cursor-pointer mt-1 text-xs font-semibold tracking-tight uppercase w-fit px-2 py-0.5 text-green-400 ring ring-green-400 rounded-md hover:bg-green-400 hover:text-white transition-colors" onClick={handleTag}>{resourceGroup.heading}</div>)}
                             {link.last && (<p className="text-xs text-gray-600 mt-1 text-right">{link.contributor ? "Shared On ": "Shared On "}{new Date(link.last).toLocaleString(undefined, {year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'})}</p>)}
                           </div>
-                        <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                          <svg width="22" height="22" fill="none" stroke="#1A69FA" strokeWidth="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                        </div>
+                        
                       </div>
                     </Link>))
                 ))}
@@ -284,7 +287,12 @@ export default function IGCSEResources() {
                       <div className="cursor-pointer flex flex-col p-5 border h-fit border-gray-200 rounded-2xl shadow-md bg-white hover:shadow-xl transition-shadow duration-200 group sm:min-h-[120px] sm:min-w-[300px]" style={{ position: 'relative' }}>
                         {/* <span className="text-sm font-semibold text-[#1A69FA] mb-1 tracking-tight uppercase" style={{ fontFamily: 'Poppins, sans-serif', letterSpacing: '0.04em' }}>{resourceGroup.heading}</span> */}
                         
-                          {link.name && (<p className="text-xl font-bold text-[#153064]">{link.name}</p>)}
+                          <div className="inline-flex justify-between">
+                            {link.name && (<p className="text-xl font-bold text-[#153064]">{link.name}</p>)}
+                            <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                              <svg width="22" height="22" fill="none" stroke="#1A69FA" strokeWidth="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                            </div>
+                          </div>
                           {link.description && (
                             <p className="text-sm text-gray-600 mt-2 border-l-4 mb-2 border-blue-600 pl-2">{link.description}</p>
                           )}
@@ -292,9 +300,7 @@ export default function IGCSEResources() {
                             {resourceGroup.heading && (<div className="cursor-pointer mt-1 text-xs font-semibold tracking-tight uppercase w-fit px-2 py-0.5 text-green-400 ring ring-green-400 rounded-md hover:bg-green-400 hover:text-white transition-colors" onClick={handleTag}>{resourceGroup.heading}</div>)}
                             {link.last && (<p className="text-xs text-gray-600 mt-1 text-right">{link.contributor ? "Shared On ": "Shared On "}{new Date(link.last).toLocaleString(undefined, {year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'})}</p>)}
                           </div>
-                        <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                          <svg width="22" height="22" fill="none" stroke="#1A69FA" strokeWidth="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                        </div>
+                        
                       </div>
                     </Link>))
                   ))}
