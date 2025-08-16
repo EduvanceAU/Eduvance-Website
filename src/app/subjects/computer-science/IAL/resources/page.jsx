@@ -102,6 +102,35 @@ export default function IALResources() {
   }, []);
 
   useEffect(() => {
+    const fetchUnits = async () => {
+      const { data: subjectData, error: subjectError } = await supabase
+        .from('subjects')
+        .select('units')
+        .eq('name', subjectName)
+        .eq('syllabus_type', 'IAL')
+        .single();
+      if (subjectError || !subjectData) {
+        setError(subjectError || new Error('Subject "Physics" not found.'));
+        return;
+      }
+      let fetchedUnits = subjectData.units || [];
+      // Sort by unit number if possible, fallback to name
+      fetchedUnits.sort((a, b) => {
+        const getUnitNum = (u) => {
+          const match = (u.unit || '').match(/Unit\s*(\d+)/i);
+          return match ? parseInt(match[1], 10) : Number.MAX_SAFE_INTEGER;
+        };
+        const numA = getUnitNum(a);
+        const numB = getUnitNum(b);
+        if (numA !== numB) return numA - numB;
+        return (a.name || '').localeCompare(b.name || '');
+      });
+      setUnits(fetchedUnits);
+    };
+    fetchUnits();
+  }, []);
+
+  useEffect(() => {
     setLoading(true);
     const fetchResources = async () => {
       try {
@@ -158,6 +187,13 @@ export default function IALResources() {
           });
         });
         setUnitResources(groupedResources);
+
+        // Set the initial expanded state after resources are fetched
+        setExpandedUnits(units.reduce((acc, unit) => {
+          const hasResources = !!groupedResources[unit.unit];
+          acc[unit.unit] = hasResources; // True if it has resources, false otherwise
+          return acc;
+        }, {}));
         setLoading(false);
       } catch (error) {
         setError(error);
@@ -165,7 +201,7 @@ export default function IALResources() {
       }
     };
     fetchResources();
-  }, []);
+  }, [units]); // Add 'units' as a dependency
 
   if (error) {
     return (
