@@ -57,7 +57,8 @@ export default function IALResources() {
   const [unitResources, setUnitResources] = useState({});
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
-
+  const[tag, setTag] = useState(null)
+  
   useReloadOnStuckLoading(loading);
 
   const toggleUnit = (unit) => {
@@ -175,36 +176,8 @@ export default function IALResources() {
   }
   function handleTag(event){
     event.stopPropagation(); 
-    event.preventDefault();  
-    document.querySelectorAll(".allResources").forEach((resource) => {
-      if(!resource.classList.contains("hidden")){
-        resource.classList.remove("block")
-        resource.classList.add("hidden")
-      }
-      else{
-        resource.classList.add("block")
-        resource.classList.remove("hidden")
-      }
-    })
-    document.querySelectorAll(`.${event.currentTarget.innerHTML}`).forEach((resource) => {
-      const indicator = resource.querySelector("div > div > div")
-      if(indicator.classList.contains("text-green-400")){
-        indicator.classList.remove("text-green-400", "hover:text-white", "hover:bg-green-400")
-        indicator.classList.add("bg-green-400", "text-white")
-      }
-      else{
-        indicator.classList.add("text-green-400", "hover:text-white", "hover:bg-green-400")
-        indicator.classList.remove("bg-green-400", "text-white")
-      }
-      if(!resource.classList.contains("hidden")){
-        resource.classList.remove("block")
-        resource.classList.add("hidden")
-      }
-      else{
-        resource.classList.add("block")
-        resource.classList.remove("hidden")
-      }
-    })
+    event.preventDefault(); 
+    setTag(event.currentTarget.innerHTML) 
   }
   return (
     <>
@@ -213,7 +186,11 @@ export default function IALResources() {
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#000000] mb-8 text-left tracking-[-0.035em]" style={{ fontFamily: "Poppins, sans-serif" }}>
             IAL <span className="bg-[#1A69FA] px-2 py-1 -rotate-1 inline-block"><span className="text-[#FFFFFF]">Chemistry</span></span> Resources
           </h1>
-
+          {tag && (
+            <div className="mb-4 px-3 py-1 bg-blue-100 text-blue-800 rounded">
+              Current filter: {tag}
+            </div>
+          )}
           <div className="inline-flex items-center justify-center px-4 py-2 mb-8 rounded-md" style={{ border: "1.5px solid #DBDBDB", fontFamily: "Poppins, sans-serif" }}>
             <span className="text-md font-medium text-black tracking-tight">
               <span className="font-[501]">Exam code:</span> WCH11/XCH11/YCH11
@@ -241,7 +218,7 @@ export default function IALResources() {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
                 {unitResources["General"].map((resourceGroup, groupIndex) => (
                   resourceGroup.links.map((link, linkIndex) => (
-                    <Link key={groupIndex + '-' + linkIndex} href={link.url} style={{ fontFamily: 'Poppins, sans-serif' }} className={`allResources ${resourceGroup.heading} transition-opacity duration-300`}>
+                    <Link key={groupIndex + '-' + linkIndex} href={link.url} style={{ fontFamily: 'Poppins, sans-serif' }} className={`${tag === null ? "block" : tag === resourceGroup.heading ? "block":"hidden"}`}>
                       <div className="cursor-pointer flex flex-col p-5 border h-fit border-gray-200 rounded-2xl shadow-md bg-white hover:shadow-xl transition-shadow duration-200 group sm:min-h-[120px] sm:min-w-[300px]" style={{ position: 'relative' }}>
                         {/* <span className="text-sm font-semibold text-[#1A69FA] mb-1 tracking-tight uppercase" style={{ fontFamily: 'Poppins, sans-serif', letterSpacing: '0.04em' }}>{resourceGroup.heading}</span> */}
                           {link.name && (<p className="text-xl font-bold text-[#153064]">{link.name}</p>)}
@@ -249,14 +226,14 @@ export default function IALResources() {
                             <p className="text-sm text-gray-600 mt-2 border-l-4 mb-2 border-blue-600 pl-2">{link.description}</p>
                           )}
                           <div className="flex flex-col justify-end items-end">
-                            {resourceGroup.heading && (<div className="cursor-pointer mt-1 text-xs font-semibold tracking-tight uppercase w-fit px-2 py-0.5 text-green-400 ring ring-green-400 rounded-md hover:bg-green-400 hover:text-white transition-colors" onClick={handleTag}>{resourceGroup.heading}</div>)}
+                            {resourceGroup.heading && (<div className={`cursor-pointer mt-1 text-xs font-semibold tracking-tight uppercase w-fit px-2 py-0.5 ring ring-green-400 rounded-md transition-colors ${tag === null ? "hover:bg-green-400 hover:text-white text-green-400" : tag === resourceGroup.heading ? "bg-green-400 text-white hover:text-green-400 hover:bg-white":"hover:bg-green-400 hover:text-white text-green-400"}`} onClick={handleTag}>{resourceGroup.heading}</div>)}
                             {link.last && (<p className="text-xs text-gray-600 mt-1 text-right">{link.contributor ? "Shared On ": "Shared On "}{new Date(link.last).toLocaleString(undefined, {year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'})}</p>)}
                           </div>
                         <div className="absolute top-3 right-3 hidden group-hover:block transition-opacity duration-200">
                           <svg width="22" height="22" fill="none" stroke="#1A69FA" strokeWidth="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                         </div>
                       </div>
-                    </Link>))
+                    </Link>)) 
                 ))}
               </div>
             </div>
@@ -275,7 +252,7 @@ export default function IALResources() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 p-6">
                   {(unitResources[unitData.unit] || []).map((resourceGroup, groupIndex) => (
                     resourceGroup.links.map((link, linkIndex) => (
-                      <Link key={groupIndex + '-' + linkIndex} href={link.url} style={{ fontFamily: 'Poppins, sans-serif' }} className={`allResources ${resourceGroup.heading} transition-opacity duration-300`}>
+                      <Link key={groupIndex + '-' + linkIndex} href={link.url} style={{ fontFamily: 'Poppins, sans-serif' }} className={`${tag === null ? "block" : tag === resourceGroup.heading ? "block":"hidden"}`}>
                       <div className="cursor-pointer flex flex-col p-5 border h-fit border-gray-200 rounded-2xl shadow-md bg-white hover:shadow-xl transition-shadow duration-200 group sm:min-h-[120px] sm:min-w-[300px]" style={{ position: 'relative' }}>
                         {/* <span className="text-sm font-semibold text-[#1A69FA] mb-1 tracking-tight uppercase" style={{ fontFamily: 'Poppins, sans-serif', letterSpacing: '0.04em' }}>{resourceGroup.heading}</span> */}
                         
@@ -284,7 +261,7 @@ export default function IALResources() {
                             <p className="text-sm text-gray-600 mt-2 border-l-4 mb-2 border-blue-600 pl-2">{link.description}</p>
                           )}
                           <div className="flex flex-col justify-end items-end">
-                            {resourceGroup.heading && (<div className="cursor-pointer mt-1 text-xs font-semibold tracking-tight uppercase w-fit px-2 py-0.5 text-green-400 ring ring-green-400 rounded-md hover:bg-green-400 hover:text-white transition-colors" onClick={handleTag}>{resourceGroup.heading}</div>)}
+                            {resourceGroup.heading && (<div className={`cursor-pointer mt-1 text-xs font-semibold tracking-tight uppercase w-fit px-2 py-0.5 ring ring-green-400 rounded-md transition-colors ${tag === null ? "hover:bg-green-400 hover:text-white text-green-400" : tag === resourceGroup.heading ? "bg-green-400 text-white hover:text-green-400 hover:bg-white":"hover:bg-green-400 hover:text-white text-green-400"}`} onClick={handleTag}>{resourceGroup.heading}</div>)}
                             {link.last && (<p className="text-xs text-gray-600 mt-1 text-right">{link.contributor ? "Shared On ": "Shared On "}{new Date(link.last).toLocaleString(undefined, {year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'})}</p>)}
                           </div>
                         <div className="absolute top-3 right-3 hidden group-hover:block transition-opacity duration-200">
