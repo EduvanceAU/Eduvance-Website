@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { createClient } from '@supabase/supabase-js';
 import { useReloadOnStuckLoading } from '@/utils/reloadOnStuckLoading';
+import ResourceSelector from '@/components/ui/QualiSelector';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -238,6 +239,8 @@ export default function IALResources() {
           <h3 className="text-sm sm:text-md lg:text-lg font-[500] leading-6 text-[#707070] mb-8 text-left max-w-4xl tracking-[-0.015em]" style={{ fontFamily: "Poppins, sans-serif" }}>
             Access a wide range of Edexcel IAL Economics resources—all in one place. Whether you're brushing up on concepts or aiming to master exam strategies, these materials are designed to support your revision and boost your performance
           </h3>
+
+          <ResourceSelector />
 
           <Link href={`/subjects/${subjectSlug}/IAL/pastpapers`}>
             <button className="px-4 py-2 mb-6 cursor-pointer bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition">
