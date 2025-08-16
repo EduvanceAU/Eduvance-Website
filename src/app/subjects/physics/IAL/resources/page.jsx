@@ -102,6 +102,35 @@ export default function IALResources() {
   }, []);
 
   useEffect(() => {
+    const fetchUnits = async () => {
+      const { data: subjectData, error: subjectError } = await supabase
+        .from('subjects')
+        .select('units')
+        .eq('name', subjectName)
+        .eq('syllabus_type', 'IAL')
+        .single();
+      if (subjectError || !subjectData) {
+        setError(subjectError || new Error('Subject "Physics" not found.'));
+        return;
+      }
+      let fetchedUnits = subjectData.units || [];
+      // Sort by unit number if possible, fallback to name
+      fetchedUnits.sort((a, b) => {
+        const getUnitNum = (u) => {
+          const match = (u.unit || '').match(/Unit\s*(\d+)/i);
+          return match ? parseInt(match[1], 10) : Number.MAX_SAFE_INTEGER;
+        };
+        const numA = getUnitNum(a);
+        const numB = getUnitNum(b);
+        if (numA !== numB) return numA - numB;
+        return (a.name || '').localeCompare(b.name || '');
+      });
+      setUnits(fetchedUnits);
+    };
+    fetchUnits();
+  }, []);
+
+  useEffect(() => {
     setLoading(true);
     const fetchResources = async () => {
       try {
@@ -124,6 +153,7 @@ export default function IALResources() {
           .from('resources')
           .select('*')
           .eq('subject_id', subjectId)
+          .order('title', { ascending: true })
           .eq('approved', "Approved")
           .order('created_at', { ascending: false });
 
@@ -157,6 +187,13 @@ export default function IALResources() {
           });
         });
         setUnitResources(groupedResources);
+
+        // Set the initial expanded state after resources are fetched
+        setExpandedUnits(units.reduce((acc, unit) => {
+          const hasResources = !!groupedResources[unit.unit];
+          acc[unit.unit] = hasResources; // True if it has resources, false otherwise
+          return acc;
+        }, {}));
         setLoading(false);
       } catch (error) {
         setError(error);
@@ -164,7 +201,7 @@ export default function IALResources() {
       }
     };
     fetchResources();
-  }, []);
+  }, [units]); // Add 'units' as a dependency
 
   if (error) {
     return (
@@ -173,7 +210,39 @@ export default function IALResources() {
       </main>
     );
   }
-
+  function handleTag(event){
+    event.stopPropagation(); 
+    event.preventDefault();  
+    document.querySelectorAll(".allResources").forEach((resource) => {
+      if(!resource.classList.contains("hidden")){
+        resource.classList.remove("block")
+        resource.classList.add("hidden")
+      }
+      else{
+        resource.classList.add("block")
+        resource.classList.remove("hidden")
+      }
+    })
+    document.querySelectorAll(`.${event.currentTarget.innerHTML}`).forEach((resource) => {
+      const indicator = resource.querySelector("div > .flex > div")
+      if(indicator.classList.contains("text-green-400")){
+        indicator.classList.remove("text-green-400", "hover:text-white", "hover:bg-green-400")
+        indicator.classList.add("bg-green-400", "text-white")
+      }
+      else{
+        indicator.classList.add("text-green-400", "hover:text-white", "hover:bg-green-400")
+        indicator.classList.remove("bg-green-400", "text-white")
+      }
+      if(!resource.classList.contains("hidden")){
+        resource.classList.remove("block")
+        resource.classList.add("hidden")
+      }
+      else{
+        resource.classList.add("block")
+        resource.classList.remove("hidden")
+      }
+    })
+  }
   return (
     <>
       <main className="min-h-screen bg-white flex flex-col items-center justify-start py-10 m-10">
@@ -192,6 +261,12 @@ export default function IALResources() {
             Access a wide range of Edexcel IAL Physics resources—all in one place. Whether you're brushing up on concepts or aiming to master exam strategies, these materials are designed to support your revision and boost your performance
           </h3>
 
+          <Link href={`/subjects/${subjectSlug}/IAL/pastpapers`}>
+            <button className="px-4 py-2 mb-6 cursor-pointer bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition">
+              Practice Past Papers
+            </button>
+          </Link>
+
           <div className="w-full mb-8">
             <h2 className="text-xl font-[550] tracking-tight text-[#000000] mb-4 text-left">
               Other Resources
@@ -201,7 +276,7 @@ export default function IALResources() {
 
           {/* General Resources */}
           {unitResources["General"] && (
-            <div className="cursor-pointer bg-white rounded-lg shadow-md mb-8 border border-gray-200 overflow-hidden">
+            <div className="bg-white rounded-lg shadow-md mb-8 border border-gray-200 overflow-hidden">
               <div className="bg-gray-200 text-black tracking-tight p-4 text-left font-bold text-xl sm:text-2xl"
                   style={{ fontFamily: "Poppins, sans-serif" }}>  
                 General Resources
@@ -209,21 +284,24 @@ export default function IALResources() {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
                 {unitResources["General"].map((resourceGroup, groupIndex) => (
                   resourceGroup.links.map((link, linkIndex) => (
-                    <Link key={groupIndex + '-' + linkIndex} href={link.url} style={{ fontFamily: 'Poppins, sans-serif' }}>
+                    <Link key={groupIndex + '-' + linkIndex} href={link.url} style={{ fontFamily: 'Poppins, sans-serif' }} className={`allResources ${resourceGroup.heading} transition-opacity duration-300`}>
                       <div className="cursor-pointer flex flex-col p-5 border h-fit border-gray-200 rounded-2xl shadow-md bg-white hover:shadow-xl transition-shadow duration-200 group sm:min-h-[120px] sm:min-w-[300px]" style={{ position: 'relative' }}>
                         {/* <span className="text-sm font-semibold text-[#1A69FA] mb-1 tracking-tight uppercase" style={{ fontFamily: 'Poppins, sans-serif', letterSpacing: '0.04em' }}>{resourceGroup.heading}</span> */}
                         
-                          {link.name && (<p className="text-xl font-bold text-[#153064]">{link.name}</p>)}
+                          <div className="inline-flex justify-between">
+                            {link.name && (<p className="text-xl font-bold text-[#153064]">{link.name}</p>)}
+                            <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                              <svg width="22" height="22" fill="none" stroke="#1A69FA" strokeWidth="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                            </div>
+                          </div>
                           {link.description && (
                             <p className="text-sm text-gray-600 mt-2 border-l-4 mb-2 border-blue-600 pl-2">{link.description}</p>
                           )}
                           <div className="flex flex-col justify-end items-end">
-                            {resourceGroup.heading && (<div className="cursor-pointer mt-1 text-xs font-semibold tracking-tight uppercase w-fit px-2 py-0.5 text-green-400 ring ring-green-400 rounded-md hover:bg-green-400 hover:text-white transition-colors">{resourceGroup.heading}</div>)}
+                            {resourceGroup.heading && (<div className="cursor-pointer mt-1 text-xs font-semibold tracking-tight uppercase w-fit px-2 py-0.5 text-green-400 ring ring-green-400 rounded-md hover:bg-green-400 hover:text-white transition-colors" onClick={handleTag}>{resourceGroup.heading}</div>)}
                             {link.last && (<p className="text-xs text-gray-600 mt-1 text-right">{link.contributor ? "Shared On ": "Shared On "}{new Date(link.last).toLocaleString(undefined, {year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'})}</p>)}
                           </div>
-                        <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                          <svg width="22" height="22" fill="none" stroke="#1A69FA" strokeWidth="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                        </div>
+                        
                       </div>
                     </Link>))
                 ))}
@@ -244,21 +322,24 @@ export default function IALResources() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 p-6">
                   {(unitResources[unitData.unit] || []).map((resourceGroup, groupIndex) => (
                     resourceGroup.links.map((link, linkIndex) => (
-                      <Link key={groupIndex + '-' + linkIndex} href={link.url} style={{ fontFamily: 'Poppins, sans-serif' }}>
+                      <Link key={groupIndex + '-' + linkIndex} href={link.url} style={{ fontFamily: 'Poppins, sans-serif' }} className={`allResources ${resourceGroup.heading} transition-opacity duration-300`}>
                       <div className="cursor-pointer flex flex-col p-5 border h-fit border-gray-200 rounded-2xl shadow-md bg-white hover:shadow-xl transition-shadow duration-200 group sm:min-h-[120px] sm:min-w-[300px]" style={{ position: 'relative' }}>
                         {/* <span className="text-sm font-semibold text-[#1A69FA] mb-1 tracking-tight uppercase" style={{ fontFamily: 'Poppins, sans-serif', letterSpacing: '0.04em' }}>{resourceGroup.heading}</span> */}
                         
-                          {link.name && (<p className="text-xl font-bold text-[#153064]">{link.name}</p>)}
+                          <div className="inline-flex justify-between">
+                            {link.name && (<p className="text-xl font-bold text-[#153064]">{link.name}</p>)}
+                            <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                              <svg width="22" height="22" fill="none" stroke="#1A69FA" strokeWidth="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                            </div>
+                          </div>
                           {link.description && (
                             <p className="text-sm text-gray-600 mt-2 border-l-4 mb-2 border-blue-600 pl-2">{link.description}</p>
                           )}
                           <div className="flex flex-col justify-end items-end">
-                            {resourceGroup.heading && (<div className="cursor-pointer mt-1 text-xs font-semibold tracking-tight uppercase w-fit px-2 py-0.5 text-green-400 ring ring-green-400 rounded-md hover:bg-green-400 hover:text-white transition-colors">{resourceGroup.heading}</div>)}
+                            {resourceGroup.heading && (<div className="cursor-pointer mt-1 text-xs font-semibold tracking-tight uppercase w-fit px-2 py-0.5 text-green-400 ring ring-green-400 rounded-md hover:bg-green-400 hover:text-white transition-colors" onClick={handleTag}>{resourceGroup.heading}</div>)}
                             {link.last && (<p className="text-xs text-gray-600 mt-1 text-right">{link.contributor ? "Shared On ": "Shared On "}{new Date(link.last).toLocaleString(undefined, {year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'})}</p>)}
                           </div>
-                        <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                          <svg width="22" height="22" fill="none" stroke="#1A69FA" strokeWidth="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                        </div>
+                        
                       </div>
                     </Link>))
                   ))}

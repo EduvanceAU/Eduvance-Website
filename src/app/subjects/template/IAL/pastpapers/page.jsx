@@ -384,7 +384,7 @@ export default function IALPastPapersPage() {
 
           <div className="w-full mb-8">
             <h2 className="text-xl font-[550] tracking-tight text-[#000000] mb-4 text-left">
-              Subjects
+              Other Subjects
             </h2>
             <SubjectButtons />
           </div>
