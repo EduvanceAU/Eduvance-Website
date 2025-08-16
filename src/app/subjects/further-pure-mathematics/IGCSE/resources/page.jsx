@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { createClient } from '@supabase/supabase-js';
 import { useReloadOnStuckLoading } from '@/utils/reloadOnStuckLoading';
+import ResourceSelector from '@/components/ui/QualiSelector';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -183,38 +184,16 @@ export default function IGCSEResources() {
       </main>
     );
   }
+  const[tag, setTag] = useState(null)
   function handleTag(event){
     event.stopPropagation(); 
-    event.preventDefault();  
-    document.querySelectorAll(".allResources").forEach((resource) => {
-      if(!resource.classList.contains("hidden")){
-        resource.classList.remove("block")
-        resource.classList.add("hidden")
-      }
-      else{
-        resource.classList.add("block")
-        resource.classList.remove("hidden")
-      }
-    })
-    document.querySelectorAll(`.${event.currentTarget.innerHTML}`).forEach((resource) => {
-      const indicator = resource.querySelector("div > .flex > div")
-      if(indicator.classList.contains("text-green-400")){
-        indicator.classList.remove("text-green-400", "hover:text-white", "hover:bg-green-400")
-        indicator.classList.add("bg-green-400", "text-white")
-      }
-      else{
-        indicator.classList.add("text-green-400", "hover:text-white", "hover:bg-green-400")
-        indicator.classList.remove("bg-green-400", "text-white")
-      }
-      if(!resource.classList.contains("hidden")){
-        resource.classList.remove("block")
-        resource.classList.add("hidden")
-      }
-      else{
-        resource.classList.add("block")
-        resource.classList.remove("hidden")
-      }
-    })
+    event.preventDefault(); 
+    if(tag === null){
+      setTag(event.currentTarget.innerHTML) 
+    }
+    else{
+      setTag(null)
+    }
   }
   return (
     <>
@@ -234,6 +213,14 @@ export default function IGCSEResources() {
             Access a wide range of Edexcel IGCSE Further Pure Mathematics resources—all in one place. Whether you're brushing up on concepts or aiming to master exam strategies, these materials are designed to support your revision and boost your performance
           </h3>
 
+          <ResourceSelector />
+
+          <Link href={`/subjects/${subjectSlug}/IGCSE/pastpapers`}>
+            <button className="px-4 py-2 mb-6 cursor-pointer bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition">
+              Practice Past Papers
+            </button>
+          </Link>
+
           <div className="w-full mb-8">
             <h2 className="text-xl font-[550] tracking-tight text-[#000000] mb-4 text-left">
               Other Resources
@@ -251,7 +238,7 @@ export default function IGCSEResources() {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
                 {unitResources["General"].map((resourceGroup, groupIndex) => (
                   resourceGroup.links.map((link, linkIndex) => (
-                    <Link key={groupIndex + '-' + linkIndex} href={link.url} style={{ fontFamily: 'Poppins, sans-serif' }} className={`allResources ${resourceGroup.heading} transition-opacity duration-300`}>
+                    <Link key={groupIndex + '-' + linkIndex} href={link.url} style={{ fontFamily: 'Poppins, sans-serif' }} className={`${tag === null ? "block" : tag === resourceGroup.heading ? "block":"hidden"}`}>
                       <div className="cursor-pointer flex flex-col p-5 border h-fit border-gray-200 rounded-2xl shadow-md bg-white hover:shadow-xl transition-shadow duration-200 group sm:min-h-[120px] sm:min-w-[300px]" style={{ position: 'relative' }}>
                         {/* <span className="text-sm font-semibold text-[#1A69FA] mb-1 tracking-tight uppercase" style={{ fontFamily: 'Poppins, sans-serif', letterSpacing: '0.04em' }}>{resourceGroup.heading}</span> */}
                         
@@ -265,7 +252,7 @@ export default function IGCSEResources() {
                             <p className="text-sm text-gray-600 mt-2 border-l-4 mb-2 border-blue-600 pl-2">{link.description}</p>
                           )}
                           <div className="flex flex-col justify-end items-end">
-                            {resourceGroup.heading && (<div className="cursor-pointer mt-1 text-xs font-semibold tracking-tight uppercase w-fit px-2 py-0.5 text-green-400 ring ring-green-400 rounded-md hover:bg-green-400 hover:text-white transition-colors" onClick={handleTag}>{resourceGroup.heading}</div>)}
+                            {resourceGroup.heading && (<div className={`cursor-pointer mt-1 text-xs font-semibold tracking-tight uppercase w-fit px-2 py-0.5 ring ring-green-400 rounded-md transition-colors ${tag === null ? "hover:bg-green-400 hover:text-white text-green-400" : tag === resourceGroup.heading ? "bg-green-400 text-white hover:text-green-400 hover:bg-white":"hover:bg-green-400 hover:text-white text-green-400"}`} onClick={handleTag}>{resourceGroup.heading}</div>)}
                             {link.last && (<p className="text-xs text-gray-600 mt-1 text-right">{link.contributor ? "Shared On ": "Shared On "}{new Date(link.last).toLocaleString(undefined, {year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'})}</p>)}
                           </div>
                         
@@ -289,7 +276,7 @@ export default function IGCSEResources() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 p-6">
                   {(unitResources[unitData.unit] || []).map((resourceGroup, groupIndex) => (
                     resourceGroup.links.map((link, linkIndex) => (
-                      <Link key={groupIndex + '-' + linkIndex} href={link.url} style={{ fontFamily: 'Poppins, sans-serif' }} className={`allResources ${resourceGroup.heading} transition-opacity duration-300`}>
+                      <Link key={groupIndex + '-' + linkIndex} href={link.url} style={{ fontFamily: 'Poppins, sans-serif' }} className={`${tag === null ? "block" : tag === resourceGroup.heading ? "block":"hidden"}`}>
                       <div className="cursor-pointer flex flex-col p-5 border h-fit border-gray-200 rounded-2xl shadow-md bg-white hover:shadow-xl transition-shadow duration-200 group sm:min-h-[120px] sm:min-w-[300px]" style={{ position: 'relative' }}>
                         {/* <span className="text-sm font-semibold text-[#1A69FA] mb-1 tracking-tight uppercase" style={{ fontFamily: 'Poppins, sans-serif', letterSpacing: '0.04em' }}>{resourceGroup.heading}</span> */}
                         
@@ -303,7 +290,7 @@ export default function IGCSEResources() {
                             <p className="text-sm text-gray-600 mt-2 border-l-4 mb-2 border-blue-600 pl-2">{link.description}</p>
                           )}
                           <div className="flex flex-col justify-end items-end">
-                            {resourceGroup.heading && (<div className="cursor-pointer mt-1 text-xs font-semibold tracking-tight uppercase w-fit px-2 py-0.5 text-green-400 ring ring-green-400 rounded-md hover:bg-green-400 hover:text-white transition-colors" onClick={handleTag}>{resourceGroup.heading}</div>)}
+                            {resourceGroup.heading && (<div className={`cursor-pointer mt-1 text-xs font-semibold tracking-tight uppercase w-fit px-2 py-0.5 ring ring-green-400 rounded-md transition-colors ${tag === null ? "hover:bg-green-400 hover:text-white text-green-400" : tag === resourceGroup.heading ? "bg-green-400 text-white hover:text-green-400 hover:bg-white":"hover:bg-green-400 hover:text-white text-green-400"}`} onClick={handleTag}>{resourceGroup.heading}</div>)}
                             {link.last && (<p className="text-xs text-gray-600 mt-1 text-right">{link.contributor ? "Shared On ": "Shared On "}{new Date(link.last).toLocaleString(undefined, {year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'})}</p>)}
                           </div>
                         

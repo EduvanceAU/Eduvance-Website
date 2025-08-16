@@ -15,8 +15,7 @@ const sessions = [
 
 // At the top, define variables for subjectName and syllabusType
 const subjectName = 'English Literature';
-// Remove subjectSlug as it's not needed for this approach
-// const subjectSlug = subjectName.toLowerCase().replace(/\s+/g, '-');
+const subjectSlug = subjectName.toLowerCase().replace(/\s+/g, '-');
 
 const DISPLAY_START_YEAR = 2019;
 const DISPLAY_END_YEAR = 2024;
@@ -382,6 +381,12 @@ export default function IGCSEPastPapersPage() {
           >
             Explore our collection of Edexcel IGCSE English Literature Past Papers and Mark Schemes below. Practicing with IGCSE English Literature past papers is one of the most effective ways to pinpoint the topics that need more focus—helping you revise smarter and prepare confidently for your upcoming exam
           </h3>
+
+          <Link href={`/subjects/${subjectSlug}/IGCSE/resources`}>
+            <button className="px-4 py-2 mb-6 cursor-pointer bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition">
+              Brush Up Concepts with Resources
+            </button>
+          </Link>
 
           <div className="w-full mb-8">
             <h2 className="text-xl font-[550] tracking-tight text-[#000000] mb-4 text-left">

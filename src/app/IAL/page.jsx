@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 // REMOVED: import { createClient } from '@supabase/supabase-js'; // Removed this line
 import { supabase } from '@/lib/supabaseClient'; // Use the shared browser client
 import SmallFoot from '@/components/smallFoot.jsx';
-
+import { LoaderCircle } from "lucide-react";
 // --- Utility Function: toKebabCase ---
 // Place this function either here at the top, or in a shared utility file (e.g., utils/string.js)
 const toKebabCase = (str) => {
@@ -84,14 +84,6 @@ export default function IALResources() {
     );
   }
 
-  if (loading) {
-    return (
-      <main className="min-h-screen bg-white flex items-center justify-center">
-        <p className="text-xl text-gray-700">Loading IAL subjects...</p>
-      </main>
-    );
-  }
-
   return (
     <div className='flex flex-col justify-between h-screen'>
       <main className="bg-white flex flex-col items-center justify-start py-10 m-10">
@@ -114,7 +106,7 @@ export default function IALResources() {
           {subjects.length > 0 ? (
             <SubjectButtons subjects={subjects} />
           ) : (
-            <p className="text-lg text-gray-600">No IAL subjects found.</p>
+            <LoaderCircle className="animate-spin stroke-[#1A69FA]"/>
           )}
 
         </div>

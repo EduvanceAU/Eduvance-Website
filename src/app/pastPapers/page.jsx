@@ -63,7 +63,7 @@ export default function Subject() {
   }, []);
 
   return (
-    <div className='mt-20 flex flex-col justify-between h-screen'>
+    <div className='mt-15 flex flex-col justify-between h-screen'>
       {/* Main Content */}
         <div className={`transition-all duration-300 mb-10 ${sidebarOpen ? 'sm:ml-64' : 'ml-0'}`}>
           <main className="flex flex-col w-full pb-5 relative">
