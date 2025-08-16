@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 // REMOVED: import { createClient } from '@supabase/supabase-js'; // Removed this line
 import { supabase } from '@/lib/supabaseClient'; // Use the shared browser client
 import SmallFoot from '@/components/smallFoot.jsx';
+import { LoaderCircle } from "lucide-react";
 
 // --- Utility Function: toKebabCase ---
 // Place this function either here at the top, or in a shared utility file (e.g., utils/string.js)
@@ -84,13 +85,6 @@ export default function IGCSEResources() {
     );
   }
 
-  if (loading) {
-    return (
-      <main className="min-h-screen bg-white flex items-center justify-center">
-        <p className="text-xl text-gray-700">Loading IGCSE subjects...</p>
-      </main>
-    );
-  }
 
   return (
     <div className='flex flex-col justify-between h-screen'>
@@ -114,7 +108,7 @@ export default function IGCSEResources() {
           {subjects.length > 0 ? (
             <SubjectButtons subjects={subjects} />
           ) : (
-            <p className="text-lg text-gray-600">No IGCSE subjects found.</p>
+            <LoaderCircle className="animate-spin stroke-[#1A69FA]"/>
           )}
 
         </div>
