@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { createClient } from '@supabase/supabase-js';
 import { useReloadOnStuckLoading } from '@/utils/reloadOnStuckLoading';
+import ResourceSelector from '@/components/ui/QualiSelector';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -211,6 +212,8 @@ export default function IGCSEResources() {
           <h3 className="text-sm sm:text-md lg:text-lg font-[500] leading-6 text-[#707070] mb-8 text-left max-w-4xl tracking-[-0.015em]" style={{ fontFamily: "Poppins, sans-serif" }}>
             Access a wide range of Edexcel IGCSE Mathematics resources—all in one place. Whether you're brushing up on concepts or aiming to master exam strategies, these materials are designed to support your revision and boost your performance
           </h3>
+
+          <ResourceSelector />
 
           <div className="w-full mb-8">
             <h2 className="text-xl font-[550] tracking-tight text-[#000000] mb-4 text-left">
