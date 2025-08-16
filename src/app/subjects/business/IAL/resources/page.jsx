@@ -93,10 +93,6 @@ export default function IALResources() {
         return (a.name || '').localeCompare(b.name || '');
       });
       setUnits(fetchedUnits);
-      setExpandedUnits(fetchedUnits.reduce((acc, unit) => {
-        acc[unit.unit] = true;
-        return acc;
-      }, {}));
     };
     fetchUnits();
   }, []);
@@ -158,6 +154,13 @@ export default function IALResources() {
           });
         });
         setUnitResources(groupedResources);
+
+        // Set the initial expanded state after resources are fetched
+        setExpandedUnits(units.reduce((acc, unit) => {
+          const hasResources = !!groupedResources[unit.unit];
+          acc[unit.unit] = hasResources; // True if it has resources, false otherwise
+          return acc;
+        }, {}));
         setLoading(false);
       } catch (error) {
         setError(error);
@@ -165,7 +168,7 @@ export default function IALResources() {
       }
     };
     fetchResources();
-  }, []);
+  }, [units]); // Add 'units' as a dependency
 
   if (error) {
     return (

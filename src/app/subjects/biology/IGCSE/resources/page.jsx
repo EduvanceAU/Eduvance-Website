@@ -161,6 +161,12 @@ export default function IGCSEResources() {
           });
         });
         setUnitResources(groupedResources);
+        
+        setExpandedUnits(units.reduce((acc, unit) => {
+          const hasResources = !!groupedResources[unit.unit];
+          acc[unit.unit] = hasResources;
+          return acc;
+        }, {}));
         setLoading(false);
       } catch (error) {
         setError(error);
@@ -168,7 +174,7 @@ export default function IGCSEResources() {
       }
     };
     fetchResources();
-  }, []);
+  }, [units]);
 
   if (error) {
     return (
