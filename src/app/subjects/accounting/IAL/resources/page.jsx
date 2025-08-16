@@ -93,10 +93,6 @@ export default function IALResources() {
         return (a.name || '').localeCompare(b.name || '');
       });
       setUnits(fetchedUnits);
-      setExpandedUnits(fetchedUnits.reduce((acc, unit) => {
-        acc[unit.unit] = true;
-        return acc;
-      }, {}));
     };
     fetchUnits();
   }, []);
@@ -261,10 +257,18 @@ export default function IALResources() {
             Access a wide range of Edexcel IAL Accounting resources—all in one place. Whether you're brushing up on concepts or aiming to master exam strategies, these materials are designed to support your revision and boost your performance
           </h3>
 
-          <div className="w-full mb-8">
-            <h2 className="text-xl font-[550] tracking-tight text-[#000000] mb-4 text-left">
+          <Link href={`/subjects/${subjectSlug}/IAL/pastpapers`}>
+            <button className="px-4 py-2 mb-6 cursor-pointer bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition">
+              Practice Past Papers
+            </button>
+          </Link>
+
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-[550] tracking-tight text-[#000000] text-left">
               Other Resources
             </h2>
+          </div>
+          <div className="flex flex-wrap gap-2 mb-8">
             <SubjectButtons />
           </div>
 
