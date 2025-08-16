@@ -254,7 +254,7 @@ function Home(props) {
   const[bar, setBar] = useState(null)
   useEffect(() => {
     if(!props.dontShowload){
-      setBar(<div className='bg-[#5cabff] h-[65px] opacity-100 animate-loadExtend'/>)
+      setBar(<div className='fixed bg-[#5cabff] h-[65px] opacity-100 animate-loadExtend'/>)
       const timeout = setTimeout(() => {
         setBar(<div className='bg-[#5cabff] h-[0px] transition-all duration-200 opacity-0'/>);
       }, 2000);
