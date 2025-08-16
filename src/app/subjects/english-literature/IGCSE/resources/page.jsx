@@ -215,6 +215,12 @@ export default function IGCSEResources() {
 
           <ResourceSelector />
 
+          <Link href={`/subjects/${subjectSlug}/IGCSE/pastpapers`}>
+            <button className="px-4 py-2 mb-6 cursor-pointer bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition">
+              Practice Past Papers
+            </button>
+          </Link>
+
           <div className="w-full mb-8">
             <h2 className="text-xl font-[550] tracking-tight text-[#000000] mb-4 text-left">
               Other Resources
