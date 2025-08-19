@@ -54,6 +54,8 @@ export default function AdminDashboard() {
   const [modQualification, setModQualification] = useState('');
   const [modResults, setModResults] = useState([]);
   const [modLoading, setModLoading] = useState(false);
+  const [modStaffUser, setModStaffUser] = useState('');
+
   // Moderation edit modal state
   const [modEditItem, setModEditItem] = useState(null);
   const [modEditForm, setModEditForm] = useState({});
@@ -1268,6 +1270,48 @@ export default function AdminDashboard() {
     setUserActionLoading(false);
   };
 
+  // Fetch moderation data when filters change or tab is selected
+  useEffect(() => {
+    if (activeTab !== 'moderation') return;
+    if (!supabaseClient) return;
+    setModLoading(true);
+
+    let query;
+    if (modType === 'resource') {
+      query = supabaseClient.from('resources').select('*');
+    } else {
+      query = supabaseClient.from('community_resource_requests').select('*');
+    }
+
+    if (modStaffUser) {
+      const selectedStaffUser = staffUsers.find(user => user.username === modStaffUser);
+      if (selectedStaffUser) {
+        query = query.eq('contributor_email', selectedStaffUser.email);
+      }
+    }
+
+    if (modSubject) {
+      const subjectIds = subjects.filter(s => s.name === modSubject).map(s => s.id);
+      if (subjectIds.length > 0) query = query.in('subject_id', subjectIds);
+      else query = query.eq('subject_id', '');
+    }
+
+    if (modQualification) {
+      const filteredSubjects = subjects.filter(s => s.syllabus_type === modQualification);
+      const subjectIds = filteredSubjects.map(s => s.id);
+      if (subjectIds.length > 0) query = query.in('subject_id', subjectIds);
+      else query = query.eq('subject_id', '');
+    }
+
+    query.order('submitted_at', { ascending: false }).then(({ data, error }) => {
+      setModResults(data || []);
+      setModLoading(false);
+      if (error) {
+        showPopup({ type: 'fetchError', subText: `Failed to fetch moderation data: ${error.message}` });
+      }
+    });
+  }, [modType, modSubject, modQualification, modStaffUser, activeTab, supabaseClient, subjects, staffUsers]);
+
 
   return (
     <div className={`pt-20 ${!staffUser ? "h-screen":"min-h-screen h-fit "} bg-blue-100 p-6 flex justify-center items-center`} style={{ fontFamily: 'Poppins, sans-serif' }}>
@@ -1615,6 +1659,18 @@ export default function AdminDashboard() {
                       <option key={q} value={q}>{q}</option>
                     ))}
                   </select>
+                  <div className="flex flex-col flex-grow">
+                    <select
+                      value={modStaffUser}
+                      onChange={(e) => setModStaffUser(e.target.value)}
+                      className="cursor-pointer border p-2 rounded-md"
+                    >
+                      <option value="">All Staff</option>
+                      {staffUsers.map((user) => (
+                        <option key={user.id} value={user.username}>{user.username}</option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
                 {modLoading ? (
                   <div className="text-gray-500 text-sm py-4">Loading...</div>
