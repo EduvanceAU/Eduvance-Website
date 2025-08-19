@@ -40,7 +40,7 @@ const SubjectButtons = () => {
       {subjects.map((name, index) => {
         const slug = name.toLowerCase().replace(/\s+/g, '-');
         return (
-          <Link key={index} href={`/subjects/${slug}/IAL/resources`}>
+          <Link key={index} href={`/subjects/${slug}/IAL/communityNotes`}>
             <button className="px-4 py-2 cursor-pointer bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition">
               {name}
             </button>
@@ -190,7 +190,7 @@ export default function IALResources() {
       <main className="min-h-screen bg-white flex flex-col items-center justify-start py-10 m-10">
         <div className="w-full max-w-5xl px-4">
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#000000] mb-8 text-left tracking-[-0.035em]" style={{ fontFamily: "Poppins, sans-serif" }}>
-            IAL <span className="bg-[#1A69FA] px-2 py-1 -rotate-1 inline-block"><span className="text-[#FFFFFF]">Biology</span></span> Resources
+            IAL <span className="bg-[#1A69FA] px-2 py-1 -rotate-1 inline-block"><span className="text-[#FFFFFF]">Biology</span></span> Community Notes
           </h1>
 
           <div className="inline-flex items-center justify-center px-4 py-2 mb-8 rounded-md" style={{ border: "1.5px solid #DBDBDB", fontFamily: "Poppins, sans-serif" }}>
@@ -205,7 +205,7 @@ export default function IALResources() {
 
           <div className="w-full mb-8">
             <h2 className="text-xl font-[550] tracking-tight text-[#000000] mb-4 text-left">
-              Other Resources
+              Other Community Notes
             </h2>
             <SubjectButtons />
           </div>
