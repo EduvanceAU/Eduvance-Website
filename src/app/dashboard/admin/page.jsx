@@ -54,6 +54,9 @@ export default function AdminDashboard() {
   const [modQualification, setModQualification] = useState('');
   const [modResults, setModResults] = useState([]);
   const [modLoading, setModLoading] = useState(false);
+  const [modStaffUser, setModStaffUser] = useState('');
+  const [modKeyword, setModKeyword] = useState('');
+
   // Moderation edit modal state
   const [modEditItem, setModEditItem] = useState(null);
   const [modEditForm, setModEditForm] = useState({});
@@ -109,7 +112,7 @@ export default function AdminDashboard() {
         resource_type: data.resource_type,
         subject_id: data.subject_id,
         unit_chapter_name: data.unit_chapter_name,
-        uploaded_by_username: data.contributor_name || data.contributor_email || 'Community',
+        contributor_email: data.contributor_name || data.contributor_email || 'Community',
         approved: "Pending"
       });
       // Corrected fix: Delete the resource from the community_resource_requests table
@@ -428,7 +431,7 @@ export default function AdminDashboard() {
     const editableFields = { ...modEditForm };
     delete editableFields.id;
     if (modType === 'resource') {
-      delete editableFields.created_at;
+      delete editableFields.submitted_at;
       delete editableFields.updated_at;
     } else {
       delete editableFields.submitted_at;
@@ -462,7 +465,7 @@ export default function AdminDashboard() {
         if (subjectIds.length > 0) query = query.in('subject_id', subjectIds);
         else query = query.eq('subject_id', '');
       }
-      query.order('created_at', { ascending: false }).then(({ data }) => {
+      query.order('submitted_at', { ascending: false }).then(({ data }) => {
         setModResults(data || []);
         setModLoading(false);
       });
@@ -566,7 +569,7 @@ export default function AdminDashboard() {
 
   const fetchLatestResources = async () => {
     if (!supabaseClient) return;
-    const { data, error } = await supabaseClient.from('resources').select('*').order('created_at', { ascending: false }).limit(5);
+    const { data, error } = await supabaseClient.from('resources').select('*').order('submitted_at', { ascending: false }).limit(5);
     if (error) {
       // Not showing a popup for background fetches, only for user-initiated actions
       console.error("Failed to fetch latest resources:", error.message);
@@ -577,14 +580,63 @@ export default function AdminDashboard() {
 
   const fetchUnapprovedResources = async () => {
     if (!supabaseClient) return;
-    // Fetch resources with 'Pending' status for the approve section
-    const { data, error } = await supabaseClient.from('resources').select('*').eq('approved', "Pending");
+    
+    // Fetch resources with 'Pending' or 'Unapproved' status for the approve section
+    const { data, error } = await supabaseClient
+        .from('community_resource_requests')
+        .select('*')
+        .eq('approved', 'Pending'); // or 'Pending' if that's a valid enum value
+    
     if (error) {
-      // Not showing a popup for background fetches
-      console.error("Failed to fetch unapproved resources:", error.message);
+        // Not showing a popup for background fetches
+        console.error("Failed to fetch unapproved resources:", error.message);
+        return null;
     } else {
-      setUnapprovedResources(data);
+        setUnapprovedResources(data);
+        return data;
     }
+  };
+
+  // Alternative version if you want to fetch multiple approval statuses
+  const fetchUnapprovedResourcesMultiStatus = async () => {
+      if (!supabaseClient) return;
+      
+      // Fetch resources that are either 'Unapproved' or 'Pending' (if both exist in your enum)
+      const { data, error } = await supabaseClient
+          .from('community_resource_requests')
+          .select('*')
+          .in('approved', ['Pending']);
+      
+      if (error) {
+          console.error("Failed to fetch unapproved resources:", error.message);
+          return null;
+      } else {
+          setUnapprovedResources(data);
+          return data;
+      }
+  };
+
+  // If you want to fetch with additional filtering (e.g., only non-rejected items)
+  const fetchUnapprovedResourcesFiltered = async () => {
+      if (!supabaseClient) return;
+      
+      const { data, error } = await supabaseClient
+          .from('community_resource_requests')
+          .select(`
+              *,
+              subjects(name)
+          `)
+          .eq('approved', 'Pending')
+          .is('rejected', false) // Only get non-rejected items
+          .order('submitted_at', { ascending: false }); // Most recent first
+      
+      if (error) {
+          console.error("Failed to fetch unapproved resources:", error.message);
+          return null;
+      } else {
+          setUnapprovedResources(data);
+          return data;
+      }
   };
 
   // NEW: Fetch all staff users
@@ -613,7 +665,7 @@ export default function AdminDashboard() {
       )
     );
 
-    const { error } = await supabaseClient.from('resources').update({
+    const { error } = await supabaseClient.from('community_resource_requests').update({
       approved: "Approved",
       updated_at: currentTime
     }).eq('id', id);
@@ -797,7 +849,7 @@ export default function AdminDashboard() {
       resource_type: resourceType,
       subject_id: selectedSubjectId,
       unit_chapter_name: unitValue,
-      uploaded_by_username: staffUsername,
+      contributor_email: staffUsername,
       approved: "Approved" // Automatically set to Approved
     }).select();
     if (error) {
@@ -864,7 +916,7 @@ export default function AdminDashboard() {
       question_paper_link: safeQPLink,
       mark_scheme_link: safeMSLink,
       examiner_report_link: safeERLink,
-      uploaded_by_username: staffUsername,
+      contributor_email: staffUsername,
       // You might want an 'approved' field for past papers as well, defaulting to 'Approved'
       // approved: "Approved"
     }).select();
@@ -1016,7 +1068,7 @@ export default function AdminDashboard() {
       // Get all resources
       const { data: resources, error: resError } = await supabaseClient
         .from('resources')
-        .select('uploaded_by_username, approved');
+        .select('contributor_email, approved');
       if (resError) {
         showPopup({ type: 'fetchError', subText: 'Failed to fetch resources for leaderboard: ' + resError.message });
         setLoadingLeaderboard(false);
@@ -1036,7 +1088,7 @@ export default function AdminDashboard() {
       // Count uploads and approvals per user
       const stats = staffUsers.map(user => {
         // Count regular resource uploads
-        const resourceUploads = resources.filter(r => r.uploaded_by_username === user.username);
+        const resourceUploads = resources.filter(r => r.contributor_email === user.username);
         const resourceApproved = resourceUploads.filter(r => r.approved === "Approved").length;
         
         // Count community resource requests (match by email)
@@ -1096,7 +1148,7 @@ export default function AdminDashboard() {
       if (subjectIds.length > 0) query = query.in('subject_id', subjectIds);
       else query = query.eq('subject_id', ''); // No results
     }
-    query.order(modType === 'resource' ? 'created_at' : 'submitted_at', { ascending: false }).then(({ data, error }) => {
+    query.order(modType === 'resource' ? 'submitted_at' : 'submitted_at', { ascending: false }).then(({ data, error }) => {
       setModResults(data || []);
       setModLoading(false);
       if (error) {
@@ -1218,6 +1270,61 @@ export default function AdminDashboard() {
     }
     setUserActionLoading(false);
   };
+
+  // Fetch moderation data when filters change or tab is selected
+  useEffect(() => {
+    if (activeTab !== 'moderation') return;
+    if (!supabaseClient) return;
+    setModLoading(true);
+
+    let query;
+    if (modType === 'resource') {
+      query = supabaseClient.from('resources').select('*');
+    } else {
+      query = supabaseClient.from('community_resource_requests').select('*');
+    }
+
+    if (modStaffUser) {
+      const selectedStaffUser = staffUsers.find(user => user.username === modStaffUser);
+      if (selectedStaffUser) {
+        query = query.eq('contributor_email', selectedStaffUser.email);
+      }
+    }
+
+    if (modSubject) {
+      const subjectIds = subjects.filter(s => s.name === modSubject).map(s => s.id);
+      if (subjectIds.length > 0) query = query.in('subject_id', subjectIds);
+      else query = query.eq('subject_id', '');
+    }
+
+    if (modQualification) {
+      const filteredSubjects = subjects.filter(s => s.syllabus_type === modQualification);
+      const subjectIds = filteredSubjects.map(s => s.id);
+      if (subjectIds.length > 0) query = query.in('subject_id', subjectIds);
+      else query = query.eq('subject_id', '');
+    }
+
+    query.order('submitted_at', { ascending: false }).then(({ data, error }) => {
+      setModResults(data || []);
+      setModLoading(false);
+      if (error) {
+        showPopup({ type: 'fetchError', subText: `Failed to fetch moderation data: ${error.message}` });
+      }
+    });
+
+    if (modKeyword) {
+      const regexSearch = `(?<![a-zA-Z0-9])${modKeyword}(?![a-zA-Z0-9])`;
+      query = query.or(`title.ilike.%${modKeyword}%,description.ilike.%${modKeyword}%`);
+    }
+
+    query.order('submitted_at', { ascending: false }).then(({ data, error }) => {
+      setModResults(data || []);
+      setModLoading(false);
+      if (error) {
+        showPopup({ type: 'fetchError', subText: `Failed to fetch moderation data: ${error.message}` });
+      }
+    });
+  }, [modType, modSubject, modQualification, modStaffUser, modKeyword, activeTab, supabaseClient, subjects, staffUsers]);
 
 
   return (
@@ -1415,9 +1522,9 @@ export default function AdminDashboard() {
                           <p className="text-sm text-gray-600 mb-1">{res.description}</p>
                           <a href={res.link} className="text-blue-500 underline text-sm break-all" target="_blank" rel="noopener noreferrer">{res.link}</a>
                           <div className="mt-2 mb-2 grid grid-cols-1 md:grid-cols-2 gap-2 text-xs text-gray-700">
-                            <div><span className="font-semibold">Added by:</span> {res.uploaded_by_username || 'Unknown'}</div>
+                            <div><span className="font-semibold">Added by:</span> {res.contributor_email || 'Unknown'}</div>
                             <div><span className="font-semibold">Subject:</span> {subject ? `${subject.name} (${subject.code}) - ${subject.syllabus_type}` : 'Unknown'}</div>
-                            <div><span className="font-semibold">Suggested on:</span> {res.created_at ? new Date(res.created_at).toLocaleString() : 'Unknown'}</div>
+                            <div><span className="font-semibold">Suggested on:</span> {res.submitted_at ? new Date(res.submitted_at).toLocaleString() : 'Unknown'}</div>
                             <div><span className="font-semibold">Status:</span> <span className={`font-semibold px-2 py-1 rounded text-xs ${approvalStatus.bgColor} ${approvalStatus.color}`}>{approvalStatus.text}</span></div>
                             <div><span className="font-semibold">Last updated:</span> {res.updated_at ? new Date(res.updated_at).toLocaleString() : 'Unknown'}</div>
                           </div>
@@ -1566,6 +1673,28 @@ export default function AdminDashboard() {
                       <option key={q} value={q}>{q}</option>
                     ))}
                   </select>
+                  <div className="flex flex-col flex-grow">
+                    <select
+                      value={modStaffUser}
+                      onChange={(e) => setModStaffUser(e.target.value)}
+                      className="cursor-pointer border p-2 rounded-md"
+                    >
+                      <option value="">All Staff</option>
+                      {staffUsers.map((user) => (
+                        <option key={user.id} value={user.username}>{user.username}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="flex flex-col flex-grow">
+                    <label className="text-sm font-semibold text-gray-700">Keyword Search</label>
+                    <input
+                      type="text"
+                      value={modKeyword}
+                      onChange={(e) => setModKeyword(e.target.value)}
+                      placeholder="e.g. 'linear algebra' or 'trigonometry'"
+                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 transition"
+                    />
+                  </div>
                 </div>
                 {modLoading ? (
                   <div className="text-gray-500 text-sm py-4">Loading...</div>
@@ -1586,8 +1715,8 @@ export default function AdminDashboard() {
                             <div><span className="font-semibold">Type:</span> {item.resource_type}</div>
                             {modType === 'resource' ? (
                               <>
-                                <div><span className="font-semibold">Uploaded by:</span> {item.uploaded_by_username || 'Unknown'}</div>
-                                <div><span className="font-semibold">Created at:</span> {item.created_at ? new Date(item.created_at).toLocaleString() : 'Unknown'}</div>
+                                <div><span className="font-semibold">Uploaded by:</span> {item.contributor_email || 'Unknown'}</div>
+                                <div><span className="font-semibold">Created at:</span> {item.submitted_at ? new Date(item.submitted_at).toLocaleString() : 'Unknown'}</div>
                                 <div><span className="font-semibold">Status:</span> <span className={`font-semibold px-2 py-1 rounded text-xs ${approvalStatus.bgColor} ${approvalStatus.color}`}>{approvalStatus.text}</span></div>
                               </>
                             ) : (
@@ -2131,9 +2260,9 @@ export default function AdminDashboard() {
                           <p className="text-sm text-gray-600 mb-1">{res.description}</p>
                           <a href={res.link} className="text-blue-500 underline text-sm break-all" target="_blank" rel="noopener noreferrer">{res.link}</a>
                           <div className="mt-2 mb-2 grid grid-cols-1 md:grid-cols-2 gap-2 text-xs text-gray-700">
-                            <div><span className="font-semibold">Added by:</span> {res.uploaded_by_username || 'Unknown'}</div>
+                            <div><span className="font-semibold">Added by:</span> {res.contributor_email || 'Unknown'}</div>
                             <div><span className="font-semibold">Subject:</span> {subject ? `${subject.name} (${subject.code}) - ${subject.syllabus_type}` : 'Unknown'}</div>
-                            <div><span className="font-semibold">Suggested on:</span> {res.created_at ? new Date(res.created_at).toLocaleString() : 'Unknown'}</div>
+                            <div><span className="font-semibold">Suggested on:</span> {res.submitted_at ? new Date(res.submitted_at).toLocaleString() : 'Unknown'}</div>
                             <div><span className="font-semibold">Status:</span> <span className={`font-semibold px-2 py-1 rounded text-xs ${approvalStatus.bgColor} ${approvalStatus.color}`}>{approvalStatus.text}</span></div>
                             <div><span className="font-semibold">Last updated:</span> {res.updated_at ? new Date(res.updated_at).toLocaleString() : 'Unknown'}</div>
                           </div>

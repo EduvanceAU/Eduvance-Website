@@ -13,6 +13,15 @@ Resource Upload and Staff Dashboard Development:
    ✔ Update resource type selection form update @done(25-06-27 15:44)
    ✔ Update Staff console UI for better user experience @done(25-07-04 15:34)
 
+   Admin Console Rework v2 :
+      ☐ Introduce pages
+      ☐ Only count approved notes for leaderboard
+      ☐ Improve moderation view with features like keyword search, filters, and pages
+   
+   Moderator Console Reword v2 :
+      ☐ Introduce Pages
+      ☐ Update approve section with sort feature
+
 Modular Subject Update and Admin Console:
    ✔ Add Admin Subject Adding Feature with necessary inputs @done(25-06-26 19:00)
    ✔ Update Main Subject selection page for resources to fetch subjects from database @done(25-06-26 18:21)
