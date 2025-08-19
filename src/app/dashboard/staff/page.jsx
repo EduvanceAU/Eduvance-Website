@@ -243,7 +243,7 @@ export default function UploadResource() {
         resource_type: resourceType,
         subject_id: selectedSubjectId,
         unit_chapter_name: unitValue,
-        uploaded_by_username: staffUsername,
+        contributor_email: staffUsername,
         approved: "Pending"
       })
       .select();
@@ -383,7 +383,7 @@ export default function UploadResource() {
         resource_type: data.resource_type,
         subject_id: data.subject_id,
         unit_chapter_name: data.unit_chapter_name,
-        uploaded_by_username: data.contributor_name || data.contributor_email || 'Community',
+        contributor_email: data.contributor_name || data.contributor_email || 'Community',
         approved: "Pending"
       });
       // Remove from pending list
