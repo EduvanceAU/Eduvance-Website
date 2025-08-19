@@ -55,6 +55,7 @@ export default function AdminDashboard() {
   const [modResults, setModResults] = useState([]);
   const [modLoading, setModLoading] = useState(false);
   const [modStaffUser, setModStaffUser] = useState('');
+  const [modKeyword, setModKeyword] = useState('');
 
   // Moderation edit modal state
   const [modEditItem, setModEditItem] = useState(null);
@@ -1310,7 +1311,20 @@ export default function AdminDashboard() {
         showPopup({ type: 'fetchError', subText: `Failed to fetch moderation data: ${error.message}` });
       }
     });
-  }, [modType, modSubject, modQualification, modStaffUser, activeTab, supabaseClient, subjects, staffUsers]);
+
+    if (modKeyword) {
+      const regexSearch = `(?<![a-zA-Z0-9])${modKeyword}(?![a-zA-Z0-9])`;
+      query = query.or(`title.ilike.%${modKeyword}%,description.ilike.%${modKeyword}%`);
+    }
+
+    query.order('submitted_at', { ascending: false }).then(({ data, error }) => {
+      setModResults(data || []);
+      setModLoading(false);
+      if (error) {
+        showPopup({ type: 'fetchError', subText: `Failed to fetch moderation data: ${error.message}` });
+      }
+    });
+  }, [modType, modSubject, modQualification, modStaffUser, modKeyword, activeTab, supabaseClient, subjects, staffUsers]);
 
 
   return (
@@ -1670,6 +1684,16 @@ export default function AdminDashboard() {
                         <option key={user.id} value={user.username}>{user.username}</option>
                       ))}
                     </select>
+                  </div>
+                  <div className="flex flex-col flex-grow">
+                    <label className="text-sm font-semibold text-gray-700">Keyword Search</label>
+                    <input
+                      type="text"
+                      value={modKeyword}
+                      onChange={(e) => setModKeyword(e.target.value)}
+                      placeholder="e.g. 'linear algebra' or 'trigonometry'"
+                      className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 transition"
+                    />
                   </div>
                 </div>
                 {modLoading ? (
