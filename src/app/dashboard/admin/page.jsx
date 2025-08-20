@@ -867,8 +867,11 @@ export default function AdminDashboard() {
     setLoginLoading(true);
     const { data, error } = await supabaseClient.auth.signInWithPassword({ email: loginEmail, password: loginPassword });
     if (!error) {
-      if (!staffUsers.includes(data.user)) {
-        setStaffUser(null);
+      setStaffUser(null);
+      const {data: staffData, error: staffError} = await supabase
+      .from("staff_users")
+      .select("id")
+      if (!staffData.some(staff => staff.id === data.user.id)) {
         showPopup({ type: 'fetchError', subText: `Login failed: Access Denied.` });
       } else {
         setStaffUser(data.user);
@@ -1398,7 +1401,6 @@ export default function AdminDashboard() {
       }
     });
   }, [modType, modSubject, modQualification, modStaffUser, modKeyword, activeTab, supabaseClient, subjects, staffUsers]);
-
 
   return (
     <div className={`pt-20 ${staffUser === null ? "h-screen":"min-h-screen h-fit "} bg-blue-100 p-6 flex justify-center items-center`} style={{ fontFamily: 'Poppins, sans-serif' }}>
