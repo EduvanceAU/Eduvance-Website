@@ -1,6 +1,6 @@
 "use client";
-import React, { useState, useEffect } from 'react';
-import { Pencil } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Pencil, LoaderCircle } from 'lucide-react';
 // Removed 'motion' import as we're replacing the custom message display
 // import { motion } from 'framer-motion'; 
 
@@ -13,9 +13,14 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
 export default function AdminDashboard() {
-  const showPopup = usePopup(); // Initialize the showPopup function
-
   const [supabaseClient, setSupabaseClient] = useState(null);
+  useEffect(() => {
+    if (window.supabase && !supabaseClient) {
+      const client = window.supabase.createClient(supabaseUrl, supabaseKey);
+      setSupabaseClient(client);
+    }
+  }, []);
+  const showPopup = usePopup(); // Initialize the showPopup function
   const [staffUser, setStaffUser] = useState(null);
   const [isAuthReady, setIsAuthReady] = useState(false);
   const [subjects, setSubjects] = useState([]);
@@ -49,7 +54,7 @@ export default function AdminDashboard() {
   const [loadingLeaderboard, setLoadingLeaderboard] = useState(false);
 
   // Moderation View State
-  const [modType, setModType] = useState('resource'); // 'resource' or 'community'
+  const [modType, setModType] = useState('community'); // 'resource' or 'community'
   const [modSubject, setModSubject] = useState('');
   const [modQualification, setModQualification] = useState('');
   const [modResults, setModResults] = useState([]);
@@ -85,17 +90,53 @@ export default function AdminDashboard() {
   const [rejectionReasons, setRejectionReasons] = useState({});
   const [editedResourceData, setEditedResourceData] = useState({});
   const [editingResourceId, setEditingResourceId] = useState(null);
-
-  // Fetch pending community resource requests
-  const fetchPendingResources = async () => {
-    if (!supabaseClient) return;
-    const { data, error } = await supabaseClient
+  // Under_review's Pagination
+  const [page, setPage] = useState(1);
+  const [total, setTotal] = useState(0);
+  const [pageLoading, setPageLoading] = useState(false);
+  const findTotalPending = async () => {    
+    // if (!supabaseClient) return;
+    const { data: allData, error:countError } = await supabase
       .from('community_resource_requests')
       .select('*')
-      .eq('approved', "Pending");
+      .eq('approved', "Pending")
+    if(!countError) return allData.length;
+    else return null;
+  }
+  // Fetch pending community resource requests
+  const fetchPendingResources = async () => {   
+    setPageLoading(true) 
+    let upper = page * 10
+    let lower = upper - 9       
+    if(lower <= 0){
+      lower = 1
+    }
+    if(upper >= total && total !== 0){
+      upper = total
+      lower = ((page-1)*10)+9
+    }
+    // if (!supabaseClient) return;
+    const { data, error } = await supabase
+      .from('community_resource_requests')
+      .select('*')
+      .eq('approved', "Pending")
+      .range(lower-1,upper-1)
     if (!error) setPendingResources(data);
+    setPageLoading(false);
   };
-
+  const PendingTotalFetched = useRef(false)
+  const loadPending = async () => {
+    if(PendingTotalFetched.current === false){
+      const Total = await findTotalPending(); 
+      setTotal(Total);   
+      PendingTotalFetched.current = true                
+    }     
+    await fetchPendingResources();     
+  };
+  useEffect(() => {
+    loadPending()
+  }, [page]);
+  
   // Approve a community resource request
   const approveResource_Under = async (id) => {
     if (!supabaseClient) return;
@@ -486,13 +527,7 @@ export default function AdminDashboard() {
     { value: 'essay_questions', label: 'Essay Questions' },
   ];
 
-  useEffect(() => {
-    if (window.supabase && !supabaseClient) {
-      const client = window.supabase.createClient(supabaseUrl, supabaseKey);
-      setSupabaseClient(client);
-    }
-  }, []);
-
+  
   useEffect(() => {
     if (!supabaseClient) return;
     setIsAuthReady(false);
@@ -504,10 +539,11 @@ export default function AdminDashboard() {
           setStaffUsername(staffData?.username || '');
         });
         fetchLatestResources();
-        fetchUnapprovedResources();
+        // fetchUnapprovedResources();
         fetchExamSessions(); // Fetch exam sessions when authenticated
         fetchStaffUsers(); // NEW: Fetch staff users when authenticated
-        fetchPendingResources(); // ADDED: Fetch pending community resources
+        // findTotalPending();
+        // fetchPendingResources(); // ADDED: Fetch pending community resources
       } else {
         setStaffUsername('');
         setStaffUsers([]); // Clear users on logout
@@ -521,7 +557,7 @@ export default function AdminDashboard() {
           setStaffUsername(staffData?.username || '');
         });
         fetchLatestResources();
-        fetchUnapprovedResources();
+        // fetchUnapprovedResources();
         fetchExamSessions(); // Fetch exam sessions when authenticated
         fetchStaffUsers(); // NEW: Fetch staff users when authenticated
       } else {
@@ -577,25 +613,57 @@ export default function AdminDashboard() {
       setLatestResources(data);
     }
   };
-
+  const [Unapprovedpage, setUnapprovedPage] = useState(1);
+  const [Unapprovedtotal, setUnapprovedTotal] = useState(0);
+  const [UnapprovedpageLoading, setUnapprovedPageLoading] = useState(false);
+  const findTotalUnapproved = async () => {    
+    // if (!supabaseClient) return;
+    const { data: allData, error:countError } = await supabase
+      .from('community_resource_requests')
+      .select('*')
+      .eq('approved', "Unapproved")
+    if(!countError) return allData.length;
+    else return null;
+  }
+  // Fetch unapproved community resource requests
   const fetchUnapprovedResources = async () => {
-    if (!supabaseClient) return;
-    
-    // Fetch resources with 'Pending' or 'Unapproved' status for the approve section
-    const { data, error } = await supabaseClient
-        .from('community_resource_requests')
-        .select('*')
-        .eq('approved', 'Pending'); // or 'Pending' if that's a valid enum value
-    
+    setUnapprovedPageLoading(true) 
+    let upper = Unapprovedpage * 10
+    let lower = upper - 9       
+    if(lower <= 0){
+      lower = 1
+    }
+    if(upper >= Unapprovedtotal && Unapprovedtotal !== 0){
+      upper = Unapprovedtotal
+      lower = ((Unapprovedpage-1)*10)+9
+    }
+    // if (!supabaseClient) return;
+    const { data, error } = await supabase
+      .from('community_resource_requests')
+      .select('*')
+      .eq('approved', "Unapproved")
+      .range(lower-1,upper-1)
     if (error) {
-        // Not showing a popup for background fetches
         console.error("Failed to fetch unapproved resources:", error.message);
         return null;
     } else {
         setUnapprovedResources(data);
+        setUnapprovedPageLoading(false); 
         return data;
     }
   };
+  const UnapprovedTotalFetched = useRef(false)
+  const loadUnapproved = async () => {
+    if(UnapprovedTotalFetched.current === false){
+      const Total = await findTotalUnapproved(); 
+      setUnapprovedTotal(Total);   
+      UnapprovedTotalFetched.current = true                
+    }     
+    await fetchUnapprovedResources();     
+  };
+  useEffect(() => {
+    loadUnapproved()
+  }, [Unapprovedpage]);
 
   // Alternative version if you want to fetch multiple approval statuses
   const fetchUnapprovedResourcesMultiStatus = async () => {
@@ -799,8 +867,16 @@ export default function AdminDashboard() {
     setLoginLoading(true);
     const { data, error } = await supabaseClient.auth.signInWithPassword({ email: loginEmail, password: loginPassword });
     if (!error) {
-      setStaffUser(data.user);
-      showPopup({ type: 'loginSuccess' });
+      setStaffUser(null);
+      const {data: staffData, error: staffError} = await supabase
+      .from("staff_users")
+      .select("id")
+      if (!staffData.some(staff => staff.id === data.user.id)) {
+        showPopup({ type: 'fetchError', subText: `Login failed: Access Denied.` });
+      } else {
+        setStaffUser(data.user);
+        showPopup({ type: 'loginSuccess' });
+      }
     } else {
       showPopup({ type: 'fetchError', subText: `Login failed: ${error.message}` });
     }
@@ -1326,11 +1402,10 @@ export default function AdminDashboard() {
     });
   }, [modType, modSubject, modQualification, modStaffUser, modKeyword, activeTab, supabaseClient, subjects, staffUsers]);
 
-
   return (
-    <div className={`pt-20 ${!staffUser ? "h-screen":"min-h-screen h-fit "} bg-blue-100 p-6 flex justify-center items-center`} style={{ fontFamily: 'Poppins, sans-serif' }}>
+    <div className={`pt-20 ${staffUser === null ? "h-screen":"min-h-screen h-fit "} bg-blue-100 p-6 flex justify-center items-center`} style={{ fontFamily: 'Poppins, sans-serif' }}>
       <div className="h-fit bg-white rounded-xl shadow-lg w-full max-w-5xl mx-auto p-4 sm:p-6">
-        {!staffUser ? (
+        {staffUser === null ? (
           <form onSubmit={handleLogin} className="space-y-4">
             <h2 className="text-2xl font-bold mb-2 text-blue-700 flex items-center gap-2">
               <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#1447e6"><path d="M185-80q-17 0-29.5-12.5T143-122v-105q0-90 56-159t144-88q-40 28-62 70.5T259-312v190q0 11 3 22t10 20h-87Zm147 0q-17 0-29.5-12.5T290-122v-190q0-70 49.5-119T459-480h189q70 0 119 49t49 119v64q0 70-49 119T648-80H332Zm148-484q-66 0-112-46t-46-112q0-66 46-112t112-46q66 0 112 46t46 112q0 66-46 112t-112 46Z"/></svg>
@@ -1510,13 +1585,13 @@ export default function AdminDashboard() {
 
             {activeTab === 'approve' && (
               <>
-                <div className="divide-y divide-blue-100">
+                <div className="w-full flex flex-col items-center divide-y divide-blue-100">
                   {unapprovedResources.length === 0 && <div className="text-gray-500 text-sm py-4">No pending resources 🎉</div>}
-                  {unapprovedResources.map((res) => {
+                  {UnapprovedpageLoading === true ?  <LoaderCircle className="animate-spin stroke-[#1A69FA]"/> : unapprovedResources.map((res) => {
                     const subject = subjects.find(sub => sub.id === res.subject_id);
                     const approvalStatus = getApprovalStatus(res.approved);
                     return (
-                      <div key={res.id} className="bg-gray-50 p-4 rounded-lg mb-3 flex flex-col gap-2">
+                      <div key={res.id} className="w-full bg-gray-50 p-4 rounded-lg mb-3 flex flex-col gap-2">
                         <div className="w-full">
                           <p className="font-bold text-blue-800 text-lg mb-1">{res.title}</p>
                           <p className="text-sm text-gray-600 mb-1">{res.description}</p>
@@ -1588,6 +1663,11 @@ export default function AdminDashboard() {
                       </div>
                     );
                   })}
+                  <div className="w-full inline-flex justify-between items-center gap-2 mt-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" onClick={() => {setUnapprovedPage(prev => prev-1)}} className={`cursor-pointer fill-[#0C58E4] ${Unapprovedpage <= 1 ? "hidden": "inline-block"}`} viewBox="0 0 256 256"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm48-88a8,8,0,0,1-8,8H107.31l18.35,18.34a8,8,0,0,1-11.32,11.32l-32-32a8,8,0,0,1,0-11.32l32-32a8,8,0,0,1,11.32,11.32L107.31,120H168A8,8,0,0,1,176,128Z"></path></svg>
+                    <p className="text-[#0C58E4] text-md">Page: {Unapprovedpage}/{Math.floor(Unapprovedtotal/10)}</p>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" onClick={() => {setUnapprovedPage(prev => prev+1)}} className={`cursor-pointer fill-[#0C58E4] ${Unapprovedpage === Math.floor(Unapprovedtotal/10) ? "hidden": "inline-block"}`} viewBox="0 0 256 256"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm45.66-93.66a8,8,0,0,1,0,11.32l-32,32a8,8,0,0,1-11.32-11.32L148.69,136H88a8,8,0,0,1,0-16h60.69l-18.35-18.34a8,8,0,0,1,11.32-11.32Z"></path></svg>
+                  </div>
                 </div>
               </>
             )}
@@ -1625,7 +1705,7 @@ export default function AdminDashboard() {
             {activeTab === 'leaderboard' && (
               <>
                 {loadingLeaderboard ? (
-                  <div className="text-gray-500 text-sm py-4">Loading leaderboard...</div>
+                  <div className="text-gray-500 text-sm py-4"><LoaderCircle className="animate-spin stroke-[#1A69FA]"/></div>
                 ) : (
                   <div className="overflow-x-auto">
                     <table className="min-w-full bg-white border border-blue-200 rounded-lg">
@@ -1658,8 +1738,8 @@ export default function AdminDashboard() {
               <>
                 <div className="mb-4 flex flex-wrap gap-3 items-center">
                   <select value={modType} onChange={e => setModType(e.target.value)} className="cursor-pointer border p-2 rounded-md">
-                    <option value="resource">Eduvance Resource</option>
                     <option value="community">Community Notes</option>
+                    <option value="resource">Eduvance Resource</option>
                   </select>
                   <select value={modSubject} onChange={e => setModSubject(e.target.value)} className="cursor-pointer border p-2 rounded-md">
                     <option value="">All Subjects</option>
@@ -1697,7 +1777,7 @@ export default function AdminDashboard() {
                   </div>
                 </div>
                 {modLoading ? (
-                  <div className="text-gray-500 text-sm py-4">Loading...</div>
+                  <div className="text-gray-500 text-sm py-4"><LoaderCircle className="animate-spin stroke-[#1A69FA]"/></div>
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {modResults.length === 0 && <div className="text-gray-500 text-sm col-span-full">No results found.</div>}
@@ -1836,9 +1916,9 @@ export default function AdminDashboard() {
             )}
             {activeTab === 'under_review' && (
               <>
-                <div className="divide-y divide-blue-100">
+                <div className="flex flex-col items-center divide-y divide-blue-100">
                   {pendingResources.length === 0 && <div className="text-gray-500 text-sm py-4">No pending reviews 🎉</div>}
-                  {pendingResources.map((res) => (
+                  {pageLoading === true ? <LoaderCircle className="animate-spin stroke-[#1A69FA]"/>: pendingResources.map((res) => (
                     <div key={res.id} className="bg-gray-100 p-4 rounded mb-3 flex flex-col flex-shrink min-w-0 w-full ">
                       <div>
                         {/* Title Field */}
@@ -2059,6 +2139,11 @@ export default function AdminDashboard() {
                       </div>
                     </div>
                   ))}
+                  <div className="w-full inline-flex justify-between items-center gap-2 mt-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" onClick={() => {setPage(prev => prev-1)}} className={`cursor-pointer fill-[#0C58E4] ${page <= 1 ? "hidden": "inline-block"}`} viewBox="0 0 256 256"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm48-88a8,8,0,0,1-8,8H107.31l18.35,18.34a8,8,0,0,1-11.32,11.32l-32-32a8,8,0,0,1,0-11.32l32-32a8,8,0,0,1,11.32,11.32L107.31,120H168A8,8,0,0,1,176,128Z"></path></svg>
+                    <p className="text-[#0C58E4] text-md">Page: {page}/{Math.floor(total/10)}</p>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" onClick={() => {setPage(prev => prev+1)}} className={`cursor-pointer fill-[#0C58E4] ${page === Math.floor(total/10) ? "hidden": "inline-block"}`} viewBox="0 0 256 256"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm45.66-93.66a8,8,0,0,1,0,11.32l-32,32a8,8,0,0,1-11.32-11.32L148.69,136H88a8,8,0,0,1,0-16h60.69l-18.35-18.34a8,8,0,0,1,11.32-11.32Z"></path></svg>
+                  </div>
                 </div>
               </>
             )}
@@ -2211,7 +2296,7 @@ export default function AdminDashboard() {
                   <div className="bg-blue-50 p-4 rounded-2xl border border-blue-100">
                     <h3 className="text-xl font-semibold text-blue-700 mb-4">Current Staff Users</h3>
                     {loadingStaffUsers ? (
-                      <div className="text-gray-500 text-sm py-4">Loading users...</div>
+                      <div className="text-gray-500 text-sm py-4"><LoaderCircle className="animate-spin stroke-[#1A69FA]"/></div>
                     ) : (
                       <div className="overflow-x-auto">
                         <table className="min-w-full bg-white border border-blue-200 rounded-lg">
