@@ -101,6 +101,7 @@ export default function IALResources() {
     fetchUnits();
   }, []);
 
+  // Updated fetchResources function with better error handling and debugging
   useEffect(() => {
     setLoading(true);
     const fetchResources = async () => {
@@ -113,36 +114,44 @@ export default function IALResources() {
           .single();
 
         if (subjectError || !subjectData) {
-          setError(subjectError || new Error('Subject "Physics" not found.'));
+          console.error('Subject fetch error:', subjectError);
+          setError(subjectError || new Error(`Subject "english-literature" not found.`));
           setLoading(false);
           return;
         }
 
         const subjectId = subjectData.id;
+        console.log('Fetching resources for subject ID:', subjectId);
 
         const { data: resources, error: resourcesError } = await supabase
           .from('community_resource_requests')
           .select('*')
           .eq('subject_id', subjectId)
-          .order('title', { ascending: true })
-          .eq('approved', "Approved")
-          .order('submitted_at', { ascending: false });
+          .eq('approved', 'Approved') // This ensures only approved resources are fetched
+          .order('unit_chapter_name', { ascending: true }) // Order by unit first
+          .order('resource_type', { ascending: true })     // Then by resource type
+          .order('title', { ascending: true });            // Finally by title
 
         if (resourcesError) {
+          console.error('Resources fetch error:', resourcesError);
           setError(resourcesError);
           setLoading(false);
           return;
         }
 
+        console.log('Fetched approved resources:', resources?.length || 0);
+
         const groupedResources = {};
 
-        resources.forEach((resource) => {
+        resources?.forEach((resource) => {
+          // Use unit_chapter_name if available, otherwise fallback to 'General'
           const unit = resource.unit_chapter_name || 'General';
 
           if (!groupedResources[unit]) {
             groupedResources[unit] = [];
           }
 
+          // Find existing group for this resource type or create new one
           let group = groupedResources[unit].find((grp) => grp.heading === resource.resource_type);
           if (!group) {
             group = { heading: resource.resource_type, links: [] };
@@ -153,13 +162,17 @@ export default function IALResources() {
             name: resource.title,
             url: resource.link,
             description: resource.description,
-            contributor: resource.uploaded_by_username,
-            last: resource.updated_at
+            contributor: resource.contributor_name || resource.uploaded_by_username, // Use contributor_name from table
+            last: resource.updated_at || resource.submitted_at, // Fallback to submitted_at if updated_at is null
+            approvedAt: resource.approved_at // Include approval date for reference
           });
         });
+
+        console.log('Grouped resources:', groupedResources);
         setUnitResources(groupedResources);
         setLoading(false);
       } catch (error) {
+        console.error('Unexpected error:', error);
         setError(error);
         setLoading(false);
       }
