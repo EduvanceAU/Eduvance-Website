@@ -613,6 +613,7 @@ export default function AdminDashboard() {
       setLatestResources(data);
     }
   };
+
   const [Unapprovedpage, setUnapprovedPage] = useState(1);
   const [Unapprovedtotal, setUnapprovedTotal] = useState(0);
   const [UnapprovedpageLoading, setUnapprovedPageLoading] = useState(false);
@@ -621,10 +622,11 @@ export default function AdminDashboard() {
     const { data: allData, error:countError } = await supabase
       .from('community_resource_requests')
       .select('*')
-      .eq('approved', "Unapproved")
+      .eq('approved', "Pending")
     if(!countError) return allData.length;
     else return null;
   }
+
   // Fetch unapproved community resource requests
   const fetchUnapprovedResources = async () => {
     setUnapprovedPageLoading(true) 
@@ -641,7 +643,7 @@ export default function AdminDashboard() {
     const { data, error } = await supabase
       .from('community_resource_requests')
       .select('*')
-      .eq('approved', "Unapproved")
+      .eq('approved', "Pending")
       .range(lower-1,upper-1)
     if (error) {
         console.error("Failed to fetch unapproved resources:", error.message);
