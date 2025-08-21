@@ -119,7 +119,7 @@ export default function AdminDashboard() {
     const { data, error } = await supabase
       .from('community_resource_requests')
       .select('*')
-      .eq('approved', "Pending")
+      .eq('approved', "Unapproved")
       .range(lower-1,upper-1)
     if (!error) setPendingResources(data);
     setPageLoading(false);
