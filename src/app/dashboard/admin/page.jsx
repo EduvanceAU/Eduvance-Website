@@ -605,7 +605,7 @@ export default function AdminDashboard() {
 
   const fetchLatestResources = async () => {
     if (!supabaseClient) return;
-    const { data, error } = await supabaseClient.from('resources').select('*').order('submitted_at', { ascending: false }).limit(5);
+    const { data, error } = await supabaseClient.from('community_resource_requests').select('*').order('submitted_at', { ascending: false }).limit(5);
     if (error) {
       // Not showing a popup for background fetches, only for user-initiated actions
       console.error("Failed to fetch latest resources:", error.message);
