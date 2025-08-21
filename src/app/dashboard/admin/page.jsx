@@ -730,14 +730,13 @@ export default function AdminDashboard() {
     setUnapprovedResources((prev) =>
       prev.map((res) =>
         res.id === id
-          ? { ...res, approved: "Approved", updated_at: currentTime }
+          ? { ...res, approved: "Approved"}
           : res
       )
     );
 
     const { error } = await supabaseClient.from('community_resource_requests').update({
       approved: "Approved",
-      updated_at: currentTime
     }).eq('id', id);
 
     if (!error) {
@@ -752,7 +751,7 @@ export default function AdminDashboard() {
       setUnapprovedResources((prev) =>
         prev.map((res) =>
           res.id === id
-            ? { ...res, approved: "Pending", updated_at: res.updated_at }
+            ? { ...res, approved: "Approved", updated_at: res.updated_at }
             : res
         )
       );
