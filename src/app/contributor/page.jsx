@@ -29,7 +29,9 @@ export default function ContributorUploadResource() {
     { value: 'solved_papers', label: 'Solved Past Paper Questions' },
     { value: 'commonly_asked_questions', label: 'Commonly Asked Questions' },
     { value: 'essay_questions', label: 'Essay Questions' },
-    { value: 'youtube_videos', label: 'Youtube Videos' },
+    { value: 'assorted_papers', label: 'Assorted Papers' },
+    { value: 'general_as', label: 'General (Purely AS)' },
+    { value: 'general_practicals', label: 'General (Practical)' },
   ];
 
   // Fetch current user session
