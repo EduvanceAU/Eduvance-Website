@@ -14,7 +14,7 @@ const sessions = [
 ];
 
 // At the top, define variables for subjectName and syllabusType
-const subjectName = 'Further Pure Mathematics';
+const subjectName = 'Further Mathematics';
 // Remove subjectSlug as it's not needed for this approach
 // const subjectSlug = subjectName.toLowerCase().replace(/\s+/g, '-');
 
@@ -126,7 +126,7 @@ export default function IGCSEPastPapersPage() {
         .single();
 
       if (subjectError || !subjectData) {
-        const errMsg = subjectError ? subjectError.message : `Subject "further-pure-mathematics" not found.`;
+        const errMsg = subjectError ? subjectError.message : `Subject "further-mathematics" not found.`;
         setError(new Error(errMsg));
         console.error('fetchPapers: Error fetching subject ID and code:', errMsg);
         return;
@@ -177,7 +177,7 @@ export default function IGCSEPastPapersPage() {
         .single();
 
       if (subjectError || !subjectData) {
-        const errMsg = subjectError ? subjectError.message : `Subject "further-pure-mathematics" not found for units.`;
+        const errMsg = subjectError ? subjectError.message : `Subject "further-mathematics" not found for units.`;
         setError(new Error(errMsg));
         console.error('fetchUnits: Error fetching subject units:', errMsg);
         return;
@@ -361,7 +361,7 @@ export default function IGCSEPastPapersPage() {
             className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#000000] mb-8 text-left tracking-[-0.035em]"
             style={{ fontFamily: "Poppins, sans-serif" }}
           >
-            IGCSE <span className="bg-[#1A69FA] px-2 py-1 -rotate-1 inline-block"><span className="text-[#FFFFFF]">Further Pure Mathematics</span></span> Past Papers
+            IGCSE <span className="bg-[#1A69FA] px-2 py-1 -rotate-1 inline-block"><span className="text-[#FFFFFF]">Further Mathematics</span></span> Past Papers
           </h1>
 
           <div
@@ -380,7 +380,7 @@ export default function IGCSEPastPapersPage() {
             className="text-sm sm:text-md lg:text-lg font-[500] leading-6 text-[#707070] mb-8 text-left tracking-[-0.015em]"
             style={{ fontFamily: "Poppins, sans-serif" }}
           >
-            Explore our collection of Edexcel IGCSE Further Pure Mathematics Past Papers and Mark Schemes below. Practicing with IGCSE Further Pure Mathematics past papers is one of the most effective ways to pinpoint the topics that need more focus—helping you revise smarter and prepare confidently for your upcoming exam
+            Explore our collection of Edexcel IGCSE Further Mathematics Past Papers and Mark Schemes below. Practicing with IGCSE Further Mathematics past papers is one of the most effective ways to pinpoint the topics that need more focus—helping you revise smarter and prepare confidently for your upcoming exam
           </h3>
 
           <div className="w-full mb-8">
