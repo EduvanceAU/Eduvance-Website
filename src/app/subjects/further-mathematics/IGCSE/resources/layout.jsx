@@ -1,4 +1,4 @@
-const subjectName = 'Further Pure Mathematics';
+const subjectName = 'Further Mathematics';
 const examCode = '4PM1';
 const syllabusType = 'IGCSE';
 const refName = subjectName;

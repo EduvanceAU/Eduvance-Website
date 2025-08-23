@@ -371,7 +371,7 @@ export default function IALPastPapersPage() {
             }}
           >
             <span className="text-md font-medium text-black tracking-tight">
-              <span className="font-[501]">Exam code:</span> WCH11/XCH11/YCH11
+              <span className="font-[501]">Exam code:</span> CHE
             </span>
           </div>
 

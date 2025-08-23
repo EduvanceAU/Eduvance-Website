@@ -1,6 +1,6 @@
-const subjectName = 'Further Pure Mathematics';
-const examCode = '4PM1';
-const syllabusType = '';
+const subjectName = 'Further Mathematics';
+const examCode = 'FPM';
+const syllabusType = 'IAL';
 const refName = subjectName;
 const refsyllabusType = syllabusType;
 
