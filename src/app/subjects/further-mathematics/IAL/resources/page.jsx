@@ -158,7 +158,7 @@ export default function IALCommunityNotesPage() {
         .eq('syllabus_type', 'IAL')
         .single();
       if (subjectError || !subjectData) {
-        setError(subjectError || new Error(`Subject "further-pure-mathematics" not found for units.`));
+        setError(subjectError || new Error(`Subject "further-mathematics" not found for units.`));
         return;
       }
       let fetchedUnits = subjectData.units || [];
@@ -196,7 +196,7 @@ export default function IALCommunityNotesPage() {
         .eq('syllabus_type', 'IAL')
         .single();
       if (subjectError || !subjectData) {
-        setError(subjectError || new Error(`Subject "further-pure-mathematics" not found for notes.`));
+        setError(subjectError || new Error(`Subject "further-mathematics" not found for notes.`));
         setLoading(false);
         return;
       }
@@ -289,7 +289,7 @@ export default function IALCommunityNotesPage() {
               className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#000000] mb-8 text-left tracking-[-0.035em]"
               style={{ fontFamily: "Poppins, sans-serif" }}
             >
-              IAL <span className="bg-[#1A69FA] px-2 py-1 -rotate-1 inline-block"><span className="text-[#FFFFFF]">Further Pure Mathematics</span></span> Eduvance Notes
+              IAL <span className="bg-[#1A69FA] px-2 py-1 -rotate-1 inline-block"><span className="text-[#FFFFFF]">Further Mathematics</span></span> Eduvance Notes
             </h1>
 
             <div
@@ -300,7 +300,7 @@ export default function IALCommunityNotesPage() {
               }}
             >
               <span className="text-md font-medium text-black tracking-tight">
-                <span className="font-[501]">Exam code:</span> 4PM1 {/* This now uses the state */}
+                <span className="font-[501]">Exam code:</span> FPM {/* This now uses the state */}
               </span>
             </div>
 
@@ -308,7 +308,7 @@ export default function IALCommunityNotesPage() {
               className="text-sm sm:text-md lg:text-lg font-[500] leading-6 text-[#707070] mb-8 text-left max-w-4xl tracking-[-0.015em]"
               style={{ fontFamily: "Poppins, sans-serif" }}
             >
-              Explore our collection of Edexcel A Level Further Pure Mathematics community-contributed resources, including detailed notes, explanations, and revision tips. These resources are perfect for deepening your understanding, clarifying tricky concepts, and supporting your study alongside past papers.
+              Explore our collection of Edexcel A Level Further Mathematics community-contributed resources, including detailed notes, explanations, and revision tips. These resources are perfect for deepening your understanding, clarifying tricky concepts, and supporting your study alongside past papers.
             </h3>
 
             <div className="w-full mb-8">

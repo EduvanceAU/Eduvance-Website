@@ -1,6 +1,6 @@
-const subjectName = 'Further Pure Mathematics';
+const subjectName = 'Further Mathematics';
 const examCode = '4PM1';
-const syllabusType = '';
+const syllabusType = 'IGCSE';
 const refName = subjectName;
 const refsyllabusType = syllabusType;
 
@@ -11,7 +11,7 @@ export const viewport = {
 export const metadata = {
   title: `${refsyllabusType} ${refName}`,
   description:
-    `Browse a complete repository of ${refsyllabusType} ${refName} past papers, sorted by year and session. Perfect for timed practice or marking scheme review — your go-to resource for efficient, up-to-date exam preparation!`,
+    `Discover original Eduvance resources for ${refsyllabusType} ${refName}, crafted to simplify tough topics and support your revision. Designed with care and clarity to help you study smarter!`,
   icons: {
     icon: "/BlueSolo.svg",
     shortcut: "/BlueSolo.svg",
@@ -20,7 +20,7 @@ export const metadata = {
   openGraph: {
     title: `${refsyllabusType} ${refName}`,
     description:
-      `Browse a complete repository of ${refsyllabusType} ${refName} past papers, sorted by year and session. Perfect for timed practice or marking scheme review — your go-to resource for efficient, up-to-date exam preparation!`,
+      `Discover original Eduvance resources for ${refsyllabusType} ${refName}, crafted to simplify tough topics and support your revision. Designed with care and clarity to help you study smarter!`,
     url: `https://eduvance-org.vercel.app/subjects/${refName}`,
     type: "website",
     images: [
@@ -36,7 +36,7 @@ export const metadata = {
     card: "summary_large_image",
     title: `${refsyllabusType} ${refName}`,
     description:
-      `Browse a complete repository of ${refsyllabusType} ${refName} past papers, sorted by year and session. Perfect for timed practice or marking scheme review — your go-to resource for efficient, up-to-date exam preparation!`,
+      `Discover original Eduvance resources for ${refsyllabusType} ${refName}, crafted to simplify tough topics and support your revision. Designed with care and clarity to help you study smarter!`,
     images: ["https://eduvance-org.vercel.app/tempbg.png"],
   },
 };

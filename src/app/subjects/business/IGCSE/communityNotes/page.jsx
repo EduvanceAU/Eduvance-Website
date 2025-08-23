@@ -15,7 +15,7 @@ import SmallFoot from '@/components/smallFoot.jsx';
 // At the top, define variables for subjectName, syllabusType, and examCode
 const subjectName = 'Business';
 const subjectSlug = subjectName.toLowerCase().replace(/\s+/g, '-');
-const examCode = '4BS1';
+const examCode = 'BUS';
 
 // Add SubjectButtons component that fetches subjects dynamically
 const SubjectButtons = () => {
@@ -97,7 +97,7 @@ export default function IGCSEResources() {
       });
       setUnits(fetchedUnits);
       setExpandedUnits(fetchedUnits.reduce((acc, unit) => {
-        acc[unit.unit] = true;
+        acc[unit.unit] = false;
         return acc;
       }, {}));
     };
@@ -188,6 +188,24 @@ export default function IGCSEResources() {
       setTag(null)
     }
   }
+
+  useEffect(() => {
+    if (Object.keys(unitResources).length > 0) {
+      setExpandedUnits(prev => {
+        const newExpandedUnits = { ...prev };
+        
+        // Only expand units that have resources
+        Object.keys(unitResources).forEach(unitName => {
+          if (unitResources[unitName] && unitResources[unitName].length > 0) {
+            newExpandedUnits[unitName] = true;
+          }
+        });
+        
+        return newExpandedUnits;
+      });
+    }
+  }, [unitResources]); // This runs after unitResources is populated
+  
   return (
     <>
       <main className="min-h-screen bg-white flex flex-col items-center justify-start py-10 m-10">
@@ -198,7 +216,7 @@ export default function IGCSEResources() {
 
           <div className="inline-flex items-center justify-center px-4 py-2 mb-8 rounded-md" style={{ border: "1.5px solid #DBDBDB", fontFamily: "Poppins, sans-serif" }}>
             <span className="text-md font-medium text-black tracking-tight">
-              <span className="font-[501]">Exam code:</span> 4BS1
+              <span className="font-[501]">Exam code:</span> BUS
             </span>
           </div>
 
