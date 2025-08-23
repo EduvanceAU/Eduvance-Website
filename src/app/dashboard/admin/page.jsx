@@ -760,56 +760,76 @@ export default function AdminDashboard() {
   };
 
   const rejectResource = async (id, retryCount = 0) => {
-    if (!supabaseClient) return;
+    if (!supabaseClient) {
+      console.error('Supabase client not initialized');
+      showPopup({ 
+        type: 'fetchError', 
+        subText: 'Database connection not available' 
+      });
+      return;
+    }
     
-    const currentTime = new Date().toISOString();
     const maxRetries = 2;
   
     // Store the original resource state for potential rollback
     const originalResource = unapprovedResources.find(res => res.id === id);
     
+    if (!originalResource) {
+      console.error(`Resource with id ${id} not found in local state`);
+      showPopup({ 
+        type: 'fetchError', 
+        subText: 'Resource not found' 
+      });
+      return;
+    }
+  
     // Optimistically update the local state first
     setUnapprovedResources((prev) =>
       prev.map((res) =>
         res.id === id
-          ? { ...res, approved: "Unapproved", updated_at: currentTime }
+          ? { ...res, approved: "Unapproved" }
           : res
       )
     );
   
     try {
-      const { error } = await supabaseClient
-        .from('resources')
+      const { data, error } = await supabaseClient
+        .from('community_resource_requests')
         .update({
-          approved: "Unapproved",
-          updated_at: currentTime
+          approved: "Unapproved"
         })
-        .eq('id', id);
+        .eq('id', id)
+        .select(); // Add select() to get the updated data back
   
-      if (!error) {
-        // Success - remove from pending list after showing rejected status
-        setTimeout(() => {
-          setUnapprovedResources((prev) => prev.filter((res) => res.id !== id));
-        }, 1000);
-        
-        fetchLatestResources();
-        showPopup({ type: 'rejectSuccess' });
-      } else {
-        throw new Error(error.message);
+      if (error) {
+        throw new Error(`Supabase error: ${error.message} (Code: ${error.code})`);
       }
+  
+      // Verify the update was successful
+      if (!data || data.length === 0) {
+        throw new Error('No rows were updated - resource may not exist');
+      }
+  
+      console.log('Resource rejected successfully:', data[0]);
+      
+      // Success - remove from pending list after showing rejected status
+      setTimeout(() => {
+        setUnapprovedResources((prev) => prev.filter((res) => res.id !== id));
+      }, 1000);
+      
+      // Refresh data and show success message
+      await fetchLatestResources();
+      showPopup({ type: 'rejectSuccess' });
+      
     } catch (error) {
       console.error(`Reject attempt ${retryCount + 1} failed:`, error);
       
       // Revert the optimistic update
-      if (originalResource) {
-        setUnapprovedResources((prev) =>
-          prev.map((res) =>
-            res.id === id
-              ? originalResource
-              : res
-          )
-        );
-      }
+      setUnapprovedResources((prev) =>
+        prev.map((res) =>
+          res.id === id ? originalResource : res
+        )
+      );
   
       // Retry logic
       if (retryCount < maxRetries) {
@@ -818,35 +838,74 @@ export default function AdminDashboard() {
           subText: `Reject failed, retrying... (${retryCount + 1}/${maxRetries + 1})` 
         });
         
-        // Wait a bit before retrying
+        // Exponential backoff for retries
+        const delay = Math.pow(2, retryCount) * 1000; // 1s, 2s, 4s...
+        
         setTimeout(() => {
           rejectResource(id, retryCount + 1);
-        }, 1000);
+        }, delay);
       } else {
         // All retries failed - offer manual solutions
-        const shouldReload = window.confirm(
-          `Failed to reject resource after ${maxRetries + 1} attempts. This might be due to a network issue or database problem.\n\nWould you like to reload the page to refresh the data? (Recommended)`
-        );
-        
-        if (shouldReload) {
-          window.location.reload();
-        } else {
-          // Alternative: Force refresh the resource list
+        handleFinalFailure(error);
+      }
+    }
+  };
+  
+  // Separate function to handle final failure scenarios
+  const handleFinalFailure = (error) => {
+    const errorMessage = error?.message || 'Unknown error';
+    
+    console.error('All retry attempts failed:', errorMessage);
+    
+    // Check if it's a network error
+    if (errorMessage.includes('fetch') || errorMessage.includes('network') || errorMessage.includes('Failed to fetch')) {
+      const shouldReload = window.confirm(
+        `Network error: Unable to reject resource after multiple attempts.\n\nThis is likely due to a connection issue. Would you like to reload the page?`
+      );
+      
+      if (shouldReload) {
+        window.location.reload();
+      }
+      return;
+    }
+    
+    // Check if it's a permission/auth error
+    if (errorMessage.includes('permission') || errorMessage.includes('auth') || errorMessage.includes('unauthorized')) {
+      showPopup({ 
+        type: 'fetchError', 
+        subText: 'Authentication error. Please refresh the page and try again.' 
+      });
+      return;
+    }
+    
+    // Generic database error
+    const shouldReload = window.confirm(
+      `Failed to reject resource: ${errorMessage}\n\nWould you like to reload the page to refresh the data?`
+    );
+    
+    if (shouldReload) {
+      window.location.reload();
+    } else {
+      // Force refresh without reload
+      showPopup({ 
+        type: 'fetchError', 
+        subText: 'Reject failed. Refreshing resource list...' 
+      });
+      
+      setTimeout(async () => {
+        try {
+          await fetchLatestResources();
+          if (typeof fetchUnapprovedResources === 'function') {
+            await fetchUnapprovedResources();
+          }
+        } catch (refreshError) {
+          console.error('Failed to refresh resources:', refreshError);
           showPopup({ 
             type: 'fetchError', 
-            subText: `Failed to reject resource: ${error.message}. Refreshing resource list...` 
+            subText: 'Failed to refresh data. Please reload the page.' 
           });
-          
-          // Force refresh the resource list
-          setTimeout(() => {
-            fetchLatestResources();
-            // Also refresh the unapproved resources if that function exists
-            if (typeof fetchUnapprovedResources === 'function') {
-              fetchUnapprovedResources();
-            }
-          }, 1000);
         }
-      }
+      }, 1000);
     }
   };
 
@@ -1602,7 +1661,6 @@ export default function AdminDashboard() {
                             <div><span className="font-semibold">Subject:</span> {subject ? `${subject.name} (${subject.code}) - ${subject.syllabus_type}` : 'Unknown'}</div>
                             <div><span className="font-semibold">Suggested on:</span> {res.submitted_at ? new Date(res.submitted_at).toLocaleString() : 'Unknown'}</div>
                             <div><span className="font-semibold">Status:</span> <span className={`font-semibold px-2 py-1 rounded text-xs ${approvalStatus.bgColor} ${approvalStatus.color}`}>{approvalStatus.text}</span></div>
-                            <div><span className="font-semibold">Last updated:</span> {res.updated_at ? new Date(res.updated_at).toLocaleString() : 'Unknown'}</div>
                           </div>
                           <div className='flex justify-start gap-2 text-xs mb-2'>
                             <div className="cursor-pointer w-fit px-4 py-0.5 text-green-400 ring ring-green-400 rounded-md hover:bg-green-400 hover:text-white transition-colors">{res.unit_chapter_name}</div>
