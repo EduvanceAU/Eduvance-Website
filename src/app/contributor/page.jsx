@@ -30,8 +30,9 @@ export default function ContributorUploadResource() {
     { value: 'commonly_asked_questions', label: 'Commonly Asked Questions' },
     { value: 'essay_questions', label: 'Essay Questions' },
     { value: 'assorted_papers', label: 'Assorted Papers' },
+    { value: 'youtube_videos', label: 'Youtube Videos'},
     { value: 'general_as', label: 'General (Purely AS)' },
-    { value: 'general_practicals', label: 'General (Practical)' },
+    { value: 'general_a2', label: 'General (Purely A2)' },
   ];
 
   // Fetch current user session
