@@ -94,7 +94,7 @@ export default function IALResources() {
       });
       setUnits(fetchedUnits);
       setExpandedUnits(fetchedUnits.reduce((acc, unit) => {
-        acc[unit.unit] = true;
+        acc[unit.unit] = false;
         return acc;
       }, {}));
     };
@@ -198,6 +198,24 @@ export default function IALResources() {
       setTag(null)
     }
   }
+
+  useEffect(() => {
+    if (Object.keys(unitResources).length > 0) {
+      setExpandedUnits(prev => {
+        const newExpandedUnits = { ...prev };
+        
+        // Only expand units that have resources
+        Object.keys(unitResources).forEach(unitName => {
+          if (unitResources[unitName] && unitResources[unitName].length > 0) {
+            newExpandedUnits[unitName] = true;
+          }
+        });
+        
+        return newExpandedUnits;
+      });
+    }
+  }, [unitResources]); // This runs after unitResources is populated
+  
   return (
     <>
       <main className="min-h-screen bg-white flex flex-col items-center justify-start py-10 m-10">
