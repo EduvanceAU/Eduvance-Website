@@ -1,5 +1,5 @@
 const subjectName = 'Accounting';
-const examCode = 'ACC';
+const examCode = '4AC1';
 const syllabusType = 'IGCSE';
 const refName = subjectName;
 const refsyllabusType = syllabusType;
