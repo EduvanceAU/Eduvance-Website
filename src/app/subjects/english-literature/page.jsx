@@ -96,9 +96,9 @@ export default function Subject({ searchParams }) {
                         Eduvance Notes
                       </Link>
                       <Link
-                        href={`/subjects/english-literature/`}
-                        className="transition-all duration-300 h-40 rounded-xl font-[550] tracking-[-0.5px] border-[1.5px] border-[#B0B0B0] flex items-end justify-start pl-4 pb-4 text-gray-400 bg-gray-200 hover:text-gray-500 hover:bg-gray-300 bg-blend-multiply cursor-not-allowed"
-                        style={{ backgroundImage: "url('/PPQ Background.svg')", backgroundSize: 'cover', backgroundPosition: 'center', opacity: 0.7 }}
+                        href={`/subjects/english-literature/IAL/communityNotes`}
+                        className="transition-all duration-300 h-40 rounded-xl font-[550] tracking-[-0.5px] border-[1.5px] border-[#0C58E4] flex items-end justify-start pl-4 pb-4 text-black hover:text-[#0C58E4] hover:bg-[#CEE0FF] bg-blend-multiply cursor-pointer"
+                        style={{ backgroundImage: "url('/PPQ Background.svg')", backgroundSize: 'cover', backgroundPosition: 'center' }}
                       >
                         Community Resources
                       </Link>
@@ -133,9 +133,9 @@ export default function Subject({ searchParams }) {
                         Eduvance Notes
                       </Link>
                       <Link
-                        href={`/subjects/english-literature/`}
-                        className="transition-all duration-300 h-40 rounded-xl font-[550] tracking-[-0.5px] border-[1.5px] border-[#B0B0B0] flex items-end justify-start pl-4 pb-4 text-gray-400 bg-gray-200 hover:text-gray-500 hover:bg-gray-300 bg-blend-multiply cursor-not-allowed"
-                        style={{ backgroundImage: "url('/PPQ Background.svg')", backgroundSize: 'cover', backgroundPosition: 'center', opacity: 0.7 }}
+                        href={`/subjects/english-literature/IGCSE/communityNotes`}
+                        className="transition-all duration-300 h-40 rounded-xl font-[550] tracking-[-0.5px] border-[1.5px] border-[#0C58E4] flex items-end justify-start pl-4 pb-4 text-black hover:text-[#0C58E4] hover:bg-[#CEE0FF] bg-blend-multiply cursor-pointer"
+                        style={{ backgroundImage: "url('/PPQ Background.svg')", backgroundSize: 'cover', backgroundPosition: 'center' }}
                       >
                         Community Resources
                       </Link>
