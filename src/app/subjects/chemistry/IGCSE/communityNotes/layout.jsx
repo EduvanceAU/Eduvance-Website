@@ -1,5 +1,5 @@
 const subjectName = 'Chemistry';
-const examCode = 'CHE';
+const examCode = '4CH1';
 const syllabusType = 'IGCSE';
 const refName = subjectName;
 const refsyllabusType = syllabusType;

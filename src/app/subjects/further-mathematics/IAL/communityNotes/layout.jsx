@@ -1,5 +1,5 @@
 const subjectName = 'Further Mathematics';
-const examCode = 'FPM';
+const examCode = 'XFM01/YFM01';
 const syllabusType = 'IAL';
 const refName = subjectName;
 const refsyllabusType = syllabusType;
