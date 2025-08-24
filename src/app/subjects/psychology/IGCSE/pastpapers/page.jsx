@@ -16,7 +16,7 @@ const sessions = [
 // At the top, define variables for subjectName and syllabusType
 const subjectName = 'Psychology';
 // Remove subjectSlug as it's not needed for this approach
-// const subjectSlug = subjectName.toLowerCase().replace(/\s+/g, '-');
+const subjectSlug = subjectName.toLowerCase().replace(/\s+/g, '-');
 
 const DISPLAY_START_YEAR = 2019;
 const DISPLAY_END_YEAR = 2024;
@@ -394,7 +394,7 @@ export default function IGCSEPastPapersPage() {
   const qualifications = [
     { value: 'IAL', label: 'IAL' },
     { value: 'IGCSE', label: 'IGCSE' }
-  ];
+  ];  
 
   return error ? (
     <>

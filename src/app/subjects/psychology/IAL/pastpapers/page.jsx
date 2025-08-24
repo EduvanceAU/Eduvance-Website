@@ -111,6 +111,10 @@ export default function IALPastPapersPage() {
   const specDropdownRef = useRef(null);
   const pastPaperLinksContainerRef = useRef(null); // Ref for the main container of past paper links
 
+  const [showQualificationDropdown, setShowQualificationDropdown] = useState(false);
+  const [selectedQualification, setSelectedQualification] = useState('');
+  const qualificationDropdownRef = useRef(null);
+
   // Function to fetch papers
   const fetchPapers = async () => {
     console.debug('fetchPapers: Attempting to fetch past papers...');
