@@ -1,5 +1,5 @@
 const subjectName = 'Mathematics';
-const examCode = 'MAT';
+const examCode = 'XMA01/YMA01';
 const syllabusType = 'IAL';
 const refName = subjectName;
 const refsyllabusType = syllabusType;

@@ -99,7 +99,7 @@ export default function AdminDashboard() {
     const { data: allData, error:countError } = await supabase
       .from('community_resource_requests')
       .select('*')
-      .eq('approved', "Pending")
+      .eq('approved', "Unapproved")
     if(!countError) return allData.length;
     else return null;
   }
@@ -1724,8 +1724,8 @@ export default function AdminDashboard() {
                   })}
                   <div className="w-full inline-flex justify-between items-center gap-2 mt-2">
                     <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" onClick={() => {setUnapprovedPage(prev => prev-1)}} className={`cursor-pointer fill-[#0C58E4] ${Unapprovedpage <= 1 ? "hidden": "inline-block"}`} viewBox="0 0 256 256"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm48-88a8,8,0,0,1-8,8H107.31l18.35,18.34a8,8,0,0,1-11.32,11.32l-32-32a8,8,0,0,1,0-11.32l32-32a8,8,0,0,1,11.32,11.32L107.31,120H168A8,8,0,0,1,176,128Z"></path></svg>
-                    <p className="text-[#0C58E4] text-md">Page: {Unapprovedpage}/{Math.floor(Unapprovedtotal/10)}</p>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" onClick={() => {setUnapprovedPage(prev => prev+1)}} className={`cursor-pointer fill-[#0C58E4] ${Unapprovedpage === Math.floor(Unapprovedtotal/10) ? "hidden": "inline-block"}`} viewBox="0 0 256 256"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm45.66-93.66a8,8,0,0,1,0,11.32l-32,32a8,8,0,0,1-11.32-11.32L148.69,136H88a8,8,0,0,1,0-16h60.69l-18.35-18.34a8,8,0,0,1,11.32-11.32Z"></path></svg>
+                    <p className="text-[#0C58E4] text-md">Page: {Unapprovedpage}{Math.floor(Unapprovedtotal/10) === 0 ? "":`/${Math.floor(Unapprovedtotal/10)}`}</p>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" onClick={() => {setUnapprovedPage(prev => prev+1)}} className={`cursor-pointer fill-[#0C58E4] ${Unapprovedpage === Math.floor(Unapprovedtotal/10) || Math.floor(Unapprovedtotal/10) === 0 ? "hidden": "inline-block"}`} viewBox="0 0 256 256"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm45.66-93.66a8,8,0,0,1,0,11.32l-32,32a8,8,0,0,1-11.32-11.32L148.69,136H88a8,8,0,0,1,0-16h60.69l-18.35-18.34a8,8,0,0,1,11.32-11.32Z"></path></svg>
                   </div>
                 </div>
               </>
@@ -2200,8 +2200,8 @@ export default function AdminDashboard() {
                   ))}
                   <div className="w-full inline-flex justify-between items-center gap-2 mt-2">
                     <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" onClick={() => {setPage(prev => prev-1)}} className={`cursor-pointer fill-[#0C58E4] ${page <= 1 ? "hidden": "inline-block"}`} viewBox="0 0 256 256"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm48-88a8,8,0,0,1-8,8H107.31l18.35,18.34a8,8,0,0,1-11.32,11.32l-32-32a8,8,0,0,1,0-11.32l32-32a8,8,0,0,1,11.32,11.32L107.31,120H168A8,8,0,0,1,176,128Z"></path></svg>
-                    <p className="text-[#0C58E4] text-md">Page: {page}/{Math.floor(total/10)}</p>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" onClick={() => {setPage(prev => prev+1)}} className={`cursor-pointer fill-[#0C58E4] ${page === Math.floor(total/10) ? "hidden": "inline-block"}`} viewBox="0 0 256 256"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm45.66-93.66a8,8,0,0,1,0,11.32l-32,32a8,8,0,0,1-11.32-11.32L148.69,136H88a8,8,0,0,1,0-16h60.69l-18.35-18.34a8,8,0,0,1,11.32-11.32Z"></path></svg>
+                    <p className="text-[#0C58E4] text-md">Page: {page}{Math.floor(total/10) === 0 ? "" : `/${Math.floor(total/10)}`}</p>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" onClick={() => {setPage(prev => prev+1)}} className={`cursor-pointer fill-[#0C58E4] ${page === Math.floor(total/10) ||  Math.floor(total/10) === 0 ? "hidden": "inline-block"}`} viewBox="0 0 256 256"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm45.66-93.66a8,8,0,0,1,0,11.32l-32,32a8,8,0,0,1-11.32-11.32L148.69,136H88a8,8,0,0,1,0-16h60.69l-18.35-18.34a8,8,0,0,1,11.32-11.32Z"></path></svg>
                   </div>
                 </div>
               </>

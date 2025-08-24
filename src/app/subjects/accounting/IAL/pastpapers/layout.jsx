@@ -1,5 +1,5 @@
 const subjectName = 'Accounting';
-const examCode = 'ACC';
+const examCode = 'WAC1/XAC11/YAC11';
 const syllabusType = 'IAL';
 const refName = subjectName;
 const refsyllabusType = syllabusType;

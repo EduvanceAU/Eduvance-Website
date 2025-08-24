@@ -16,7 +16,7 @@ const sessions = [
 // At the top, define variables for subjectName and syllabusType
 const subjectName = 'Business';
 // Remove subjectSlug as it's not needed for this approach
-// const subjectSlug = subjectName.toLowerCase().replace(/\s+/g, '-');
+const subjectSlug = subjectName.toLowerCase().replace(/\s+/g, '-');
 
 const DISPLAY_START_YEAR = 2019;
 const DISPLAY_END_YEAR = 2024;
@@ -110,6 +110,10 @@ export default function IGCSEPastPapersPage() {
   const unitDropdownRef = useRef(null);
   const specDropdownRef = useRef(null);
   const pastPaperLinksContainerRef = useRef(null); // Ref for the main container of past paper links
+
+  const [showQualificationDropdown, setShowQualificationDropdown] = useState(false);
+  const [selectedQualification, setSelectedQualification] = useState('');
+  const qualificationDropdownRef = useRef(null);
 
   // Function to fetch papers
   const fetchPapers = async () => {
@@ -346,6 +350,52 @@ export default function IGCSEPastPapersPage() {
   }, {});
   console.debug('Grouped papers:', groupedPapers);
 
+  // Add these handler functions
+  const handleToggleQualificationDropdown = () => {
+    setShowQualificationDropdown(!showQualificationDropdown);
+  };
+  
+  const handleQualificationSelect = (qualification) => {
+    setSelectedQualification(qualification);
+    setShowQualificationDropdown(false);
+    
+    // Get current URL and replace IAL/IGCSE in the path
+    const currentUrl = window.location.pathname;
+    let newUrl;
+    
+    if (currentUrl.includes('/IAL/')) {
+      newUrl = currentUrl.replace('/IAL/', `/${qualification}/`);
+    } else if (currentUrl.includes('/IGCSE/')) {
+      newUrl = currentUrl.replace('/IGCSE/', `/${qualification}/`);
+    } else {
+      // Fallback: construct URL if current path doesn't contain IAL/IGCSE
+      newUrl = `subjects/${subjectSlug}/${qualification}/pastpapers`;
+    }
+    
+    window.location.href = newUrl;
+    // Or if using React Router: navigate(newUrl);
+  };
+  
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (qualificationDropdownRef.current && !qualificationDropdownRef.current.contains(event.target)) {
+        setShowQualificationDropdown(false);
+      }
+    };
+  
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+  
+  // The qualification options
+  const qualifications = [
+    { value: 'IAL', label: 'IAL' },
+    { value: 'IGCSE', label: 'IGCSE' }
+  ];  
+
   return error ? (
     <>
       <main className="min-h-screen bg-white flex items-center justify-center">
@@ -372,7 +422,7 @@ export default function IGCSEPastPapersPage() {
             }}
           >
             <span className="text-md font-medium text-black tracking-tight">
-              <span className="font-[501]">Exam code:</span> BUS
+              <span className="font-[501]">Exam code:</span> 4BS1
             </span>
           </div>
 
@@ -480,43 +530,45 @@ export default function IGCSEPastPapersPage() {
               </div>
 
               {/* NEW SPEC FILTER BUTTON & DROPDOWN */}
-              <div className="relative" ref={specDropdownRef}>
+              {/* Removed, can be added back from older commit code */}
+              {/* END NEW SPEC FILTER */}
+
+              <div className="relative" ref={qualificationDropdownRef}>
                 <button
-                  onClick={handleToggleSpecDropdown}
+                  onClick={handleToggleQualificationDropdown}
                   className="px-4 py-2 rounded-lg cursor-pointer border border-gray-400 text-sm font-[501] text-[#000000] hover:bg-gray-50 transition-colors flex items-center"
                   style={{ fontFamily: "Poppins, sans-serif" }}
                 >
-                  Spec
-                  {selectedSpec && (
+                  Qualification
+                  {selectedQualification && (
                     <span className="ml-2 text-xs bg-[#153064] text-white px-1.5 py-0.5 rounded-full">
-                      {selectedSpec === 'new' ? 'New' : 'Old'}
+                      {selectedQualification}
                     </span>
                   )}
                 </button>
-                {showSpecDropdown && (
+                {showQualificationDropdown && (
                   <div className="absolute z-10 bg-white shadow-lg rounded-lg mt-2 py-2 w-48 max-h-60 overflow-y-auto border border-gray-200">
-                    {specs.map((specOption) => (
+                    {qualifications.map((qualification) => (
                       <div
-                        key={specOption.value}
-                        onClick={() => toggleSpec(specOption.value)}
+                        key={qualification.value}
+                        onClick={() => handleQualificationSelect(qualification.value)}
                         className={`cursor-pointer px-4 py-2 text-sm flex items-center transition-colors
-                          ${selectedSpec === specOption.value ? 'bg-blue-50 text-blue-700 font-semibold' : 'hover:bg-gray-100 text-gray-900'}`}
+                          ${selectedQualification === qualification.value ? 'bg-blue-50 text-blue-700 font-semibold' : 'hover:bg-gray-100 text-gray-900'}`}
                         style={{ fontFamily: "Poppins, sans-serif" }}
                       >
                         {/* Checkbox (visual only, logic is single-select via click) */}
                         <input
                           type="checkbox"
-                          checked={selectedSpec === specOption.value}
+                          checked={selectedQualification === qualification.value}
                           onChange={() => {}} // onChange is required but click handler on div manages state
                           className="form-checkbox h-4 w-4 text-blue-600 rounded mr-2"
                         />
-                        <span>{specOption.label}</span>
+                        <span>{qualification.label}</span>
                       </div>
                     ))}
                   </div>
                 )}
               </div>
-              {/* END NEW SPEC FILTER */}
 
             </div>
           </div>
