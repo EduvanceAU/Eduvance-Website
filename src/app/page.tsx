@@ -13,6 +13,11 @@ import Headline from '@/assets/png/Headline.png'
 import Page from '@/assets/png/Page.png'
 import WhiteDiscordLogo from '@/assets/png/WhiteDiscordLogo.png'
 import QuotationMarks from '@/assets/png/QuotationMarks.png'
+
+import dynamic from 'next/dynamic';
+
+import AutoScrollTestimonials from '@/components/AutoScrollTestimonials';
+
 // Reusable components
 const TestimonialCard = ({ content, icon, headline, rotation, imageClassName }) => (
   <div className={`hover:-translate-y-2.5 transition-all duration-200 bg-gradient-to-r from-[#347BFF] to-[#2566E2] border border-white rounded-xl p-6 ${rotation} w-full mx-2 md:mx-0 h-full`}>
@@ -250,6 +255,13 @@ export default function Main() {
               />
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Testimonials Section */}
+      <section className="mt-[-120px] w-full py-24">
+        <div className="container mx-auto px-4">
+          <AutoScrollTestimonials />
         </div>
       </section>
       

@@ -28,8 +28,15 @@ const SubjectButtons = () => {
         .select('name')
         .order('name', { ascending: true })
         .eq('syllabus_type', 'IGCSE');
+      
       if (!error && data) {
-        setSubjects(data.map(subj => subj.name));
+        // Define the subjects you want to hide for IGCSE pages only
+        const subjectsToHide = ['Economics', 'Further Mathematics', 'IT'];
+        
+        // Filter the fetched data to exclude the specified subjects
+        const filteredSubjects = data.filter(subj => !subjectsToHide.includes(subj.name));
+        
+        setSubjects(filteredSubjects.map(subj => subj.name));
       }
     }
     fetchSubjects();
@@ -60,6 +67,18 @@ export default function IGCSEResources() {
 
   useReloadOnStuckLoading(loading);
 
+  // New state for the dropdown
+  const [isTagsDropdownOpen, setIsTagsDropdownOpen] = useState(false);
+
+  useReloadOnStuckLoading(loading);
+
+  // Helper function to format tag names
+  function formatTagName(name) {
+    if (!name) return '';
+    return name.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+  }
+  
+
   const toggleUnit = (unit) => {
     setExpandedUnits(prev => ({
       ...prev,
@@ -81,7 +100,7 @@ export default function IGCSEResources() {
         return;
       }
       let fetchedUnits = subjectData.units || [];
-      fetchedUnits = fetchedUnits.filter(unit => 
+      fetchedUnits = fetchedUnits.filter(unit =>
         !unit.unit?.includes('R') && !unit.name?.includes('R')
       );
       // Sort by unit number if possible, fallback to name
@@ -97,6 +116,7 @@ export default function IGCSEResources() {
       });
       setUnits(fetchedUnits);
       setExpandedUnits(fetchedUnits.reduce((acc, unit) => {
+        // Only initialize units that might have resources
         acc[unit.unit] = false;
         return acc;
       }, {}));
@@ -229,6 +249,55 @@ export default function IGCSEResources() {
               Other Community Notes
             </h2>
             <SubjectButtons />
+
+            {/* Dropdown for Resource Types (Tags) */}
+            <div className="relative inline-block text-left mt-6">
+                <button
+                    onClick={() => setIsTagsDropdownOpen(!isTagsDropdownOpen)}
+                    className="px-4 py-2 rounded-lg border cursor-pointer border-gray-400 text-sm font-[501] text-[#153064] hover:bg-gray-50 transition-colors flex items-center"
+                    style={{ fontFamily: "Poppins, sans-serif" }}
+                >
+                    {tag ? formatTagName(tag) : "Filter by Tag"}
+                    {tag && (
+                      <span className="ml-2 text-xs bg-[#153064] text-white px-1.5 py-0.5 rounded-full">
+                        1
+                      </span>
+                    )}
+                </button>
+                {isTagsDropdownOpen && (
+                    <div className="absolute z-10 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5" style={{ fontFamily: "Poppins, sans-serif" }}>
+                        <div className="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
+                            <button
+                                onClick={() => {
+                                    setTag(null);
+                                    setIsTagsDropdownOpen(false);
+                                }}
+                                className="block px-4 py-2 text-sm text-gray-700 w-full text-left hover:bg-gray-100"
+                                role="menuitem"
+                            >
+                                All Tags
+                            </button>
+                            {/* Dynamically generate dropdown items based on unique tags */}
+                            {Object.keys(unitResources).reduce((tags, unit) => {
+                                const unitTags = unitResources[unit].map(group => group.heading);
+                                return [...new Set([...tags, ...unitTags])];
+                            }, []).map((uniqueTag) => (
+                                <button
+                                    key={uniqueTag}
+                                    onClick={() => {
+                                        setTag(uniqueTag);
+                                        setIsTagsDropdownOpen(false);
+                                    }}
+                                    className="block px-4 py-2 text-sm text-gray-700 w-full text-left hover:bg-gray-100"
+                                    role="menuitem"
+                                >
+                                    {formatTagName(uniqueTag)}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                )}
+            </div>
           </div>
 
           {/* General Resources */}
@@ -241,9 +310,8 @@ export default function IGCSEResources() {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
                 {unitResources["General"].map((resourceGroup, groupIndex) => (
                   resourceGroup.links.map((link, linkIndex) => (
-                    <Link key={groupIndex + '-' + linkIndex} href={link.url} style={{ fontFamily: 'Poppins, sans-serif' }} className={`${tag === null ? "block" : tag === resourceGroup.heading ? "block":"hidden"}`}>
+                    <Link key={groupIndex + '-' + linkIndex} href={link.url} style={{ fontFamily: 'Poppins, sans-serif' }} className={`${tag === null || tag === resourceGroup.heading ? "block" : "hidden"}`}>
                       <div className="cursor-pointer flex flex-col p-5 border h-fit border-gray-200 rounded-2xl shadow-md bg-white hover:shadow-xl transition-shadow duration-200 group sm:min-h-[120px] sm:min-w-[300px]" style={{ position: 'relative' }}>
-                        {/* <span className="text-sm font-semibold text-[#1A69FA] mb-1 tracking-tight uppercase" style={{ fontFamily: 'Poppins, sans-serif', letterSpacing: '0.04em' }}>{resourceGroup.heading}</span> */}
                         
                           <div className="inline-flex justify-between">
                             {link.name && (<p className="text-xl font-bold text-[#153064]">{link.name}</p>)}
@@ -255,7 +323,7 @@ export default function IGCSEResources() {
                             <p className="text-sm text-gray-600 mt-2 border-l-4 mb-2 border-blue-600 pl-2">{link.description}</p>
                           )}
                           <div className="flex flex-col justify-end items-end">
-                            {resourceGroup.heading && (<div className={`cursor-pointer mt-1 text-xs font-semibold tracking-tight uppercase w-fit px-2 py-0.5 ring ring-green-400 rounded-md transition-colors ${tag === null ? "sm:hover:bg-green-400 sm:hover:text-white text-green-400" : tag === resourceGroup.heading ? "bg-green-400 text-white sm:hover:text-green-400 sm:hover:bg-white":"sm:hover:bg-green-400 sm:hover:text-white text-green-400"}`} onClick={handleTag}>{resourceGroup.heading}</div>)}
+                            {resourceGroup.heading && (<div className={`cursor-pointer mt-1 text-xs font-semibold tracking-tight uppercase w-fit px-2 py-0.5 ring ring-green-400 rounded-md transition-colors ${tag === null ? "sm:hover:bg-green-400 sm:hover:text-white text-green-400" : tag === resourceGroup.heading ? "bg-green-400 text-white sm:hover:text-green-400 sm:hover:bg-white":"sm:hover:bg-green-400 sm:hover:text-white text-green-400"}`} onClick={(e) => { e.preventDefault(); setTag(resourceGroup.heading); }}>{formatTagName(resourceGroup.heading)}</div>)}
                             {link.last && (<p className="text-xs text-gray-600 mt-1 text-right">{link.contributor ? "Shared On ": "Shared On "}{new Date(link.last).toLocaleString(undefined, {year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'})}</p>)}
                           </div>
                         
@@ -267,7 +335,9 @@ export default function IGCSEResources() {
           )}
 
           {/* Unit-Based Resources */}
-          {units.map((unitData) => (
+          {units
+            .filter(unitData => unitResources[unitData.unit] && unitResources[unitData.unit].length > 0)
+            .map((unitData) => (
             <div key={unitData.unit} className="bg-white rounded-lg shadow-md mb-8 border border-gray-200 overflow-hidden">
               {/* Session Card styling, added overflow-hidden */}
               <div className="bg-[#2871F9] cursor-pointer text-white tracking-tight p-4 text-left font-bold text-xl sm:text-2xl"
@@ -279,9 +349,8 @@ export default function IGCSEResources() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 p-6">
                   {(unitResources[unitData.unit] || []).map((resourceGroup, groupIndex) => (
                     resourceGroup.links.map((link, linkIndex) => (
-                      <Link key={groupIndex + '-' + linkIndex} href={link.url} style={{ fontFamily: 'Poppins, sans-serif' }} className={`${tag === null ? "block" : tag === resourceGroup.heading ? "block":"hidden"}`}>
+                      <Link key={groupIndex + '-' + linkIndex} href={link.url} style={{ fontFamily: 'Poppins, sans-serif' }} className={`${tag === null || tag === resourceGroup.heading ? "block" : "hidden"}`}>
                       <div className="cursor-pointer flex flex-col p-5 border h-fit border-gray-200 rounded-2xl shadow-md bg-white hover:shadow-xl transition-shadow duration-200 group sm:min-h-[120px] sm:min-w-[300px]" style={{ position: 'relative' }}>
-                        {/* <span className="text-sm font-semibold text-[#1A69FA] mb-1 tracking-tight uppercase" style={{ fontFamily: 'Poppins, sans-serif', letterSpacing: '0.04em' }}>{resourceGroup.heading}</span> */}
                         
                           <div className="inline-flex justify-between">
                             {link.name && (<p className="text-xl font-bold text-[#153064]">{link.name}</p>)}
@@ -293,7 +362,7 @@ export default function IGCSEResources() {
                             <p className="text-sm text-gray-600 mt-2 border-l-4 mb-2 border-blue-600 pl-2">{link.description}</p>
                           )}
                           <div className="flex flex-col justify-end items-end">
-                            {resourceGroup.heading && (<div className={`cursor-pointer mt-1 text-xs font-semibold tracking-tight uppercase w-fit px-2 py-0.5 ring ring-green-400 rounded-md transition-colors ${tag === null ? "sm:hover:bg-green-400 sm:hover:text-white text-green-400" : tag === resourceGroup.heading ? "bg-green-400 text-white sm:hover:text-green-400 sm:hover:bg-white":"sm:hover:bg-green-400 sm:hover:text-white text-green-400"}`} onClick={handleTag}>{resourceGroup.heading}</div>)}
+                            {resourceGroup.heading && (<div className={`cursor-pointer mt-1 text-xs font-semibold tracking-tight uppercase w-fit px-2 py-0.5 ring ring-green-400 rounded-md transition-colors ${tag === null ? "sm:hover:bg-green-400 sm:hover:text-white text-green-400" : tag === resourceGroup.heading ? "bg-green-400 text-white sm:hover:text-green-400 sm:hover:bg-white":"sm:hover:bg-green-400 sm:hover:text-white text-green-400"}`} onClick={(e) => { e.preventDefault(); setTag(resourceGroup.heading); }}>{formatTagName(resourceGroup.heading)}</div>)}
                             {link.last && (<p className="text-xs text-gray-600 mt-1 text-right">{link.contributor ? "Shared On ": "Shared On "}{new Date(link.last).toLocaleString(undefined, {year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'})}</p>)}
                           </div>
                         
