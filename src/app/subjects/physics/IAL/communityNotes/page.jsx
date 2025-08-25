@@ -58,6 +58,8 @@ export default function IALResources() {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const [isTagsDropdownOpen, setIsTagsDropdownOpen] = useState(false);
+
   useReloadOnStuckLoading(loading);
 
   const toggleUnit = (unit) => {
@@ -188,7 +190,10 @@ export default function IALResources() {
       </main>
     );
   }
+
+  const[resourceTypeFilter, setResourceTypeFilter] = useState(null)
   const[tag, setTag] = useState(null)
+
   function handleTag(event){
     event.stopPropagation(); 
     event.preventDefault(); 
@@ -197,6 +202,17 @@ export default function IALResources() {
     }
     else{
       setTag(null)
+    }
+  }
+
+  function handleResourceTypeFilter(event){
+    setResourceTypeFilter(event.currentTarget.innerHTML) 
+    event.stopPropagation(); 
+    event.preventDefault(); 
+    if(resourceTypeFilter === null){
+    }
+    else{
+      setResourceTypeFilter(null)
     }
   }
 
@@ -216,6 +232,12 @@ export default function IALResources() {
       });
     }
   }, [unitResources]); // This runs after unitResources is populated
+
+  function formatTagName(name) {
+    if (!name) return '';
+    // Split the string by underscores and capitalize each word
+    return name.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+  }
   
   return (
     <>
@@ -240,6 +262,55 @@ export default function IALResources() {
               Other Community Notes
             </h2>
             <SubjectButtons />
+
+            {/* Dropdown for Resource Types (Tags) */}
+            <div className="relative inline-block text-left">
+              <button
+                onClick={() => setIsTagsDropdownOpen(!isTagsDropdownOpen)}
+                className="px-4 py-2 rounded-lg border cursor-pointer border-gray-400 text-sm font-[501] text-[#153064] hover:bg-gray-50 transition-colors flex items-center"
+                style={{ fontFamily: "Poppins, sans-serif" }}
+              >
+                {tag ? formatTagName(tag) : "Filter by Tag"}
+                {tag && (
+                  <span className="ml-2 text-xs bg-[#153064] text-white px-1.5 py-0.5 rounded-full">
+                    1
+                  </span>
+                )}
+              </button>
+              {isTagsDropdownOpen && (
+                <div className="absolute z-10 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5" style={{ fontFamily: "Poppins, sans-serif" }}>
+                  <div className="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
+                    <button
+                      onClick={() => {
+                        setTag(null);
+                        setIsTagsDropdownOpen(false);
+                      }}
+                      className="block px-4 py-2 text-sm text-gray-700 w-full text-left hover:bg-gray-100"
+                      role="menuitem"
+                    >
+                      All Tags
+                    </button>
+                    {/* Dynamically generate dropdown items based on unique tags */}
+                    {Object.keys(unitResources).reduce((tags, unit) => {
+                      const unitTags = unitResources[unit].map(group => group.heading);
+                      return [...new Set([...tags, ...unitTags])];
+                    }, []).map((uniqueTag) => (
+                      <button
+                        key={uniqueTag}
+                        onClick={() => {
+                          setTag(uniqueTag);
+                          setIsTagsDropdownOpen(false);
+                        }}
+                        className="block px-4 py-2 text-sm text-gray-700 w-full text-left hover:bg-gray-100"
+                        role="menuitem"
+                      >
+                        {formatTagName(uniqueTag)}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
 
           {/* General Resources */}
@@ -252,7 +323,7 @@ export default function IALResources() {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
                 {unitResources["General"].map((resourceGroup, groupIndex) => (
                   resourceGroup.links.map((link, linkIndex) => (
-                    <Link key={groupIndex + '-' + linkIndex} href={link.url} style={{ fontFamily: 'Poppins, sans-serif' }} className={`${tag === null ? "block" : tag === resourceGroup.heading ? "block":"hidden"}`}>
+                    <Link key={groupIndex + '-' + linkIndex} href={link.url} style={{ fontFamily: 'Poppins, sans-serif' }} className={`${(tag === null || tag === resourceGroup.heading) && (resourceTypeFilter === null || resourceTypeFilter === resourceGroup.heading) ? "block" : "hidden"}`}>
                       <div className="cursor-pointer flex flex-col p-5 border h-fit border-gray-200 rounded-2xl shadow-md bg-white hover:shadow-xl transition-shadow duration-200 group sm:min-h-[120px] sm:min-w-[300px]" style={{ position: 'relative' }}>
                         {/* <span className="text-sm font-semibold text-[#1A69FA] mb-1 tracking-tight uppercase" style={{ fontFamily: 'Poppins, sans-serif', letterSpacing: '0.04em' }}>{resourceGroup.heading}</span> */}
                         
@@ -266,7 +337,12 @@ export default function IALResources() {
                             <p className="text-sm text-gray-600 mt-2 border-l-4 mb-2 border-blue-600 pl-2">{link.description}</p>
                           )}
                           <div className="flex flex-col justify-end items-end">
-                            {resourceGroup.heading && (<div className={`cursor-pointer mt-1 text-xs font-semibold tracking-tight uppercase w-fit px-2 py-0.5 ring ring-green-400 rounded-md transition-colors ${tag === null ? "sm:hover:bg-green-400 sm:hover:text-white text-green-400" : tag === resourceGroup.heading ? "bg-green-400 text-white sm:hover:text-green-400 sm:hover:bg-white":"sm:hover:bg-green-400 sm:hover:text-white text-green-400"}`} onClick={handleTag}>{resourceGroup.heading}</div>)}
+                            {resourceGroup.heading && (
+                              <div className="flex gap-2">
+                                <div className={`cursor-pointer mt-1 text-xs font-semibold tracking-tight uppercase w-fit px-2 py-0.5 ring ring-green-400 rounded-md transition-colors ${tag === null ? "sm:hover:bg-green-400 sm:hover:text-white text-green-400" : tag === resourceGroup.heading ? "bg-green-400 text-white sm:hover:text-green-400 sm:hover:bg-white":"sm:hover:bg-green-400 sm:hover:text-white text-green-400"}`} onClick={handleTag}>{resourceGroup.heading}</div>
+
+                              </div>
+                            )}
                             {link.last && (<p className="text-xs text-gray-600 mt-1 text-right">{link.contributor ? "Shared On ": "Shared On "}{new Date(link.last).toLocaleString(undefined, {year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'})}</p>)}
                           </div>
                         
@@ -292,7 +368,7 @@ export default function IALResources() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 p-6">
                   {(unitResources[unitData.unit] || []).map((resourceGroup, groupIndex) => (
                     resourceGroup.links.map((link, linkIndex) => (
-                      <Link key={groupIndex + '-' + linkIndex} href={link.url} style={{ fontFamily: 'Poppins, sans-serif' }} className={`${tag === null ? "block" : tag === resourceGroup.heading ? "block":"hidden"}`}>
+                      <Link key={groupIndex + '-' + linkIndex} href={link.url} style={{ fontFamily: 'Poppins, sans-serif' }} className={`${(tag === null || tag === resourceGroup.heading) && (resourceTypeFilter === null || resourceTypeFilter === resourceGroup.heading) ? "block" : "hidden"}`}>
                       <div className="cursor-pointer flex flex-col p-5 border h-fit border-gray-200 rounded-2xl shadow-md bg-white hover:shadow-xl transition-shadow duration-200 group sm:min-h-[120px] sm:min-w-[300px]" style={{ position: 'relative' }}>
                         {/* <span className="text-sm font-semibold text-[#1A69FA] mb-1 tracking-tight uppercase" style={{ fontFamily: 'Poppins, sans-serif', letterSpacing: '0.04em' }}>{resourceGroup.heading}</span> */}
                         
@@ -306,7 +382,11 @@ export default function IALResources() {
                             <p className="text-sm text-gray-600 mt-2 border-l-4 mb-2 border-blue-600 pl-2">{link.description}</p>
                           )}
                           <div className="flex flex-col justify-end items-end">
-                            {resourceGroup.heading && (<div className={`cursor-pointer mt-1 text-xs font-semibold tracking-tight uppercase w-fit px-2 py-0.5 ring ring-green-400 rounded-md transition-colors ${tag === null ? "sm:hover:bg-green-400 sm:hover:text-white text-green-400" : tag === resourceGroup.heading ? "bg-green-400 text-white sm:hover:text-green-400 sm:hover:bg-white":"sm:hover:bg-green-400 sm:hover:text-white text-green-400"}`} onClick={handleTag}>{resourceGroup.heading}</div>)}
+                            {resourceGroup.heading && (
+                              <div className="flex gap-2">
+                                <div className={`cursor-pointer mt-1 text-xs font-semibold tracking-tight uppercase w-fit px-2 py-0.5 ring ring-green-400 rounded-md transition-colors ${tag === null ? "sm:hover:bg-green-400 sm:hover:text-white text-green-400" : tag === resourceGroup.heading ? "bg-green-400 text-white sm:hover:text-green-400 sm:hover:bg-white":"sm:hover:bg-green-400 sm:hover:text-white text-green-400"}`} onClick={handleTag}>{resourceGroup.heading}</div>
+                              </div>
+                            )}
                             {link.last && (<p className="text-xs text-gray-600 mt-1 text-right">{link.contributor ? "Shared On ": "Shared On "}{new Date(link.last).toLocaleString(undefined, {year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'})}</p>)}
                           </div>
                         
