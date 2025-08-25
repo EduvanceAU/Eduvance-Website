@@ -97,6 +97,7 @@ export default function IGCSEResources() {
       });
       setUnits(fetchedUnits);
       setExpandedUnits(fetchedUnits.reduce((acc, unit) => {
+        // Only initialize units that might have resources
         acc[unit.unit] = false;
         return acc;
       }, {}));
@@ -267,7 +268,9 @@ export default function IGCSEResources() {
           )}
 
           {/* Unit-Based Resources */}
-          {units.map((unitData) => (
+          {units
+            .filter(unitData => unitResources[unitData.unit] && unitResources[unitData.unit].length > 0)
+            .map((unitData) => (
             <div key={unitData.unit} className="bg-white rounded-lg shadow-md mb-8 border border-gray-200 overflow-hidden">
               {/* Session Card styling, added overflow-hidden */}
               <div className="bg-[#2871F9] cursor-pointer text-white tracking-tight p-4 text-left font-bold text-xl sm:text-2xl"
