@@ -28,8 +28,15 @@ const SubjectButtons = () => {
         .select('name')
         .order('name', { ascending: true })
         .eq('syllabus_type', 'IAL');
+      
       if (!error && data) {
-        setSubjects(data.map(subj => subj.name));
+        // Define the subjects you want to hide (IAL pages only)
+        const subjectsToHide = ['Economics', 'Further Mathematics', 'English Literature'];
+        
+        // Filter the fetched data to exclude the specified subjects
+        const filteredSubjects = data.filter(subj => !subjectsToHide.includes(subj.name));
+        
+        setSubjects(filteredSubjects.map(subj => subj.name));
       }
     }
     fetchSubjects();
@@ -50,6 +57,7 @@ const SubjectButtons = () => {
     </div>
   );
 };
+
 
 export default function IALResources() {
   const [units, setUnits] = useState([]);
