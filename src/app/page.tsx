@@ -259,7 +259,7 @@ export default function Main() {
       </section>
 
       {/* Testimonials Section */}
-      <section className="mt-[-120px] w-full py-24">
+      <section className="mt-[-120px] w-full py-10">
         <div className="container mx-auto px-4">
           <AutoScrollTestimonials />
         </div>
