@@ -46,9 +46,6 @@ const AutoScrollTestimonials = () => {
     </style>
       {/* Container with a background color that the blur will match */}
       <div className="dark:bg-gray-800 rounded-lg p-6">
-        <h2 className="text-3xl font-bold text-center mb-5">
-          What our community says
-        </h2>
         
         {/* Container for the scrolling testimonials */}
         <div className="group relative select-none overflow-hidden pt-5 w-full">
