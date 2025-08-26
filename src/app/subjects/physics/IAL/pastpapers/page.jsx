@@ -18,6 +18,26 @@ const subjectName = 'Physics';
 // Remove subjectSlug as it's not needed for this approach
 const subjectSlug = subjectName.toLowerCase().replace(/\s+/g, '-');
 
+// Color mapping function for specific tags
+const getTagColorClass = (tagName) => {
+  const tagColors = {
+    'homework': 'bg-blue-100 text-blue-800',
+    'quiz': 'bg-green-100 text-green-800',
+    'assignment': 'bg-purple-100 text-purple-800',
+    'project': 'bg-orange-100 text-orange-800',
+    'exam': 'bg-red-100 text-red-800',
+    'reading': 'bg-yellow-100 text-yellow-800',
+    'video': 'bg-pink-100 text-pink-800',
+    'tutorial': 'bg-indigo-100 text-indigo-800',
+    'lab': 'bg-teal-100 text-teal-800',
+    'discussion': 'bg-cyan-100 text-cyan-800',
+    // Add more specific mappings as needed
+  };
+  
+  // Return specific color if mapped, otherwise use a default
+  return tagColors[tagName.toLowerCase()] || 'bg-gray-100 text-gray-800';
+};
+
 const DISPLAY_START_YEAR = 2019;
 const DISPLAY_END_YEAR = 2024;
 const years = Array.from({ length: DISPLAY_END_YEAR - DISPLAY_START_YEAR + 1 }, (_, i) => DISPLAY_START_YEAR + i);
