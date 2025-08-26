@@ -258,18 +258,6 @@
 
 @layer utilities {
   .animate-scroll-testimonials {
-    animation: scroll-testimonials 30s linear infinite;
-  }
-  .animate-pause {
-    animation-play-state: paused;
-  }
-}
-
-@keyframes scroll-testimonials {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(-50%);
+    animation: scroll-testimonials 15s linear infinite;
   }
 }
