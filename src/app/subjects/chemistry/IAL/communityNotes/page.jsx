@@ -290,6 +290,7 @@ export default function IALResources() {
             </h2>
             <SubjectButtons />
 
+            {/* Dropdown for Resource Types (Tags) */}
             <div className="relative inline-block text-left">
               <button
                 onClick={() => setIsTagsDropdownOpen(!isTagsDropdownOpen)}

@@ -20,17 +20,14 @@ const examCode = 'WBI1/XBI11/YBI11';
 // Color mapping function for specific tags
 const getTagColorClass = (tagName) => {
   const tagColors = {
-    'homework': 'bg-blue-100 text-blue-800',
-    'quiz': 'bg-green-100 text-green-800',
-    'assignment': 'bg-purple-100 text-purple-800',
-    'project': 'bg-orange-100 text-orange-800',
-    'exam': 'bg-red-100 text-red-800',
-    'reading': 'bg-yellow-100 text-yellow-800',
-    'video': 'bg-pink-100 text-pink-800',
-    'tutorial': 'bg-indigo-100 text-indigo-800',
-    'lab': 'bg-teal-100 text-teal-800',
-    'discussion': 'bg-cyan-100 text-cyan-800',
-    // Add more specific mappings as needed
+    'note': 'bg-blue-100 text-blue-800',
+    'essay_questions': 'bg-green-100 text-green-800',
+    'assorted_papers': 'bg-orange-100 text-orange-800',
+    'commonly_asked_questions': 'bg-red-100 text-red-800',
+    'topic_question': 'bg-yellow-100 text-yellow-800',
+    'youtube_videos': 'bg-pink-100 text-pink-800',
+    'solved_papers': 'bg-indigo-100 text-indigo-800',
+    'extra_resource': 'bg-teal-100 text-teal-800',
   };
   
   // Return specific color if mapped, otherwise use a default
