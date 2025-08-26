@@ -7,48 +7,55 @@ const testimonials = [
   {
     content: "Eduvance is honestly the best. The resources are amazing, and the community is so supportive. It's helped me so much with my studies.",
     author: "Alex, University Student",
-    avatar: "/images/alex.png", // Replace with your image paths
+    avatar: "/bio.png"
   },
   {
     content: "I've never been part of a community that's so focused on helping each other out. The past papers and notes are a lifesaver.",
     author: "Samantha, High School Student",
-    avatar: "/images/samantha.png", // Replace with your image paths
+    avatar: "/bio.png"
   },
   {
     content: "The Discord server is incredible. You can get help with any subject, and the staff are super friendly and helpful. Highly recommend!",
     author: "David, College Freshman",
-    avatar: "/images/david.png", // Replace with your image paths
+    avatar: "/bio.png"
   },
   {
     content: "The quality of the notes and study guides is top-tier. I've seen a huge improvement in my grades since joining Eduvance.",
     author: "Jessica, Tutor",
-    avatar: "/images/jessica.png", // Replace with your image paths
+    avatar: "/bio.png"
   },
   {
     content: "I love the new UI! It's so clean and easy to use. The platform has everything I need in one place.",
     author: "Michael, Developer",
-    avatar: "/images/michael.png", // Replace with your image paths
+    avatar: "/bio.png"
   },
 ];
 
 const AutoScrollTestimonials = () => {
+  const totalWidth = testimonials.length * (320 + 32) //mx-4 = 16+16=32px <- This is why 32 and 320 was chosen by Specter, thus the 320
   return (
-    <div className="relative w-full overflow-hidden py-12">
+    <div className="relative w-full overflow-hidden py-8 sm:py-12">
+      <style jsx>{`@keyframes scroll-testimonials {
+        from { 
+          transform: translateX(0); 
+        }
+        to { 
+          transform: translateX(-${totalWidth}px); 
+        }
+      }`}
+    </style>
       {/* Container with a background color that the blur will match */}
       <div className="dark:bg-gray-800 rounded-lg p-6">
-        <h2 className="text-3xl font-bold text-center mb-10">
-          What our community says
-        </h2>
         
         {/* Container for the scrolling testimonials */}
-        <div className="relative">
-          <div className="flex animate-scroll-testimonials hover:animate-pause">
+        <div className="group relative select-none overflow-hidden pt-5 w-full">
+          <div className="flex animate-scroll-testimonials group-hover:[animation-play-state:paused]">
             {testimonials.concat(testimonials).map((testimonial, index) => (
               <div
                 key={index}
-                className="inline-block w-80 min-w-[320px] max-w-xs mx-4 p-6 bg-gray-100 dark:bg-gray-700 rounded-lg transition-transform transform hover:scale-105 duration-300"
+                className="flex-shrink-0 inline-block w-80 min-w-[320px] max-w-xs mx-4 p-6 bg-gray-100 dark:bg-gray-700 rounded-lg transition-transform transform hover:-translate-y-2.5 duration-300"
               >
-                <div className="flex items-start mb-4">
+                <div className="flex items-start mb-2">
                   <Image
                     src={testimonial.avatar}
                     alt={testimonial.author}

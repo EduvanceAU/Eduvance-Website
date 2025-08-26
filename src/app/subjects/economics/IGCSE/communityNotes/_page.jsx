@@ -13,9 +13,26 @@ const supabase = createClient(
 import SmallFoot from '@/components/smallFoot.jsx';
 
 // At the top, define variables for subjectName, syllabusType, and examCode
-const subjectName = 'Information Technology';
+const subjectName = 'Economics';
 const subjectSlug = subjectName.toLowerCase().replace(/\s+/g, '-');
-const examCode = '4IT1';
+const examCode = '4EC1';
+
+// Color mapping function for specific tags
+const getTagColorClass = (tagName) => {
+  const tagColors = {
+    'note': 'bg-blue-100 text-blue-800',
+    'essay_questions': 'bg-green-100 text-green-800',
+    'assorted_papers': 'bg-orange-100 text-orange-800',
+    'commonly_asked_questions': 'bg-red-100 text-red-800',
+    'topic_question': 'bg-yellow-100 text-yellow-800',
+    'youtube_videos': 'bg-pink-100 text-pink-800',
+    'solved_papers': 'bg-indigo-100 text-indigo-800',
+    'extra_resource': 'bg-teal-100 text-teal-800',
+  };
+  
+  // Return specific color if mapped, otherwise use a default
+  return tagColors[tagName.toLowerCase()] || 'bg-gray-100 text-gray-800';
+};
 
 // Add SubjectButtons component that fetches subjects dynamically
 const SubjectButtons = () => {
@@ -31,7 +48,7 @@ const SubjectButtons = () => {
       
       if (!error && data) {
         // Define the subjects you want to hide for IGCSE pages only
-        const subjectsToHide = ['Economics', 'Further Mathematics', 'IT'];
+        const subjectsToHide = ['Economics', 'Further Mathematics', 'Information Technology', 'English Literature'];
         
         // Filter the fetched data to exclude the specified subjects
         const filteredSubjects = data.filter(subj => !subjectsToHide.includes(subj.name));
@@ -218,17 +235,17 @@ export default function IGCSEResources() {
       <main className="min-h-screen bg-white flex flex-col items-center justify-start py-10 m-10">
         <div className="w-full max-w-5xl px-4">
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#000000] mb-8 text-left tracking-[-0.035em]" style={{ fontFamily: "Poppins, sans-serif" }}>
-            IGCSE <span className="bg-[#1A69FA] px-2 py-1 -rotate-1 inline-block"><span className="text-[#FFFFFF]">Information Technology</span></span> Community Notes
+            IGCSE <span className="bg-[#1A69FA] px-2 py-1 -rotate-1 inline-block"><span className="text-[#FFFFFF]">Economics</span></span> Community Notes
           </h1>
 
           <div className="inline-flex items-center justify-center px-4 py-2 mb-8 rounded-md" style={{ border: "1.5px solid #DBDBDB", fontFamily: "Poppins, sans-serif" }}>
             <span className="text-md font-medium text-black tracking-tight">
-              <span className="font-[501]">Exam code:</span> 4IT1
+              <span className="font-[501]">Exam code:</span> 4EC1
             </span>
           </div>
 
           <h3 className="text-sm sm:text-md lg:text-lg font-[500] leading-6 text-[#707070] mb-8 text-left max-w-4xl tracking-[-0.015em]" style={{ fontFamily: "Poppins, sans-serif" }}>
-            Access a wide range of Edexcel IGCSE Information Technology resources—all in one place. Whether you're brushing up on concepts or aiming to master exam strategies, these materials are designed to support your revision and boost your performance
+            Access a wide range of Edexcel IGCSE Economics resources—all in one place. Whether you're brushing up on concepts or aiming to master exam strategies, these materials are designed to support your revision and boost your performance
           </h3>
 
           <div className="w-full mb-8">
@@ -237,53 +254,76 @@ export default function IGCSEResources() {
             </h2>
             <SubjectButtons />
 
-            {/* Dropdown for Resource Types (Tags) */}
-            <div className="relative inline-block text-left mt-6">
-                <button
-                    onClick={() => setIsTagsDropdownOpen(!isTagsDropdownOpen)}
-                    className="px-4 py-2 rounded-lg border cursor-pointer border-gray-400 text-sm font-[501] text-[#153064] hover:bg-gray-50 transition-colors flex items-center"
-                    style={{ fontFamily: "Poppins, sans-serif" }}
-                >
-                    {tag ? formatTagName(tag) : "Filter by Tag"}
-                    {tag && (
-                      <span className="ml-2 text-xs bg-[#153064] text-white px-1.5 py-0.5 rounded-full">
-                        1
-                      </span>
-                    )}
-                </button>
-                {isTagsDropdownOpen && (
-                    <div className="absolute z-10 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5" style={{ fontFamily: "Poppins, sans-serif" }}>
-                        <div className="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
-                            <button
-                                onClick={() => {
-                                    setTag(null);
-                                    setIsTagsDropdownOpen(false);
-                                }}
-                                className="block px-4 py-2 text-sm text-gray-700 w-full text-left hover:bg-gray-100"
-                                role="menuitem"
-                            >
-                                All Tags
-                            </button>
-                            {/* Dynamically generate dropdown items based on unique tags */}
-                            {Object.keys(unitResources).reduce((tags, unit) => {
-                                const unitTags = unitResources[unit].map(group => group.heading);
-                                return [...new Set([...tags, ...unitTags])];
-                            }, []).map((uniqueTag) => (
-                                <button
-                                    key={uniqueTag}
-                                    onClick={() => {
-                                        setTag(uniqueTag);
-                                        setIsTagsDropdownOpen(false);
-                                    }}
-                                    className="block px-4 py-2 text-sm text-gray-700 w-full text-left hover:bg-gray-100"
-                                    role="menuitem"
-                                >
-                                    {formatTagName(uniqueTag)}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
+            <div className="relative inline-block text-left">
+              <button
+                onClick={() => setIsTagsDropdownOpen(!isTagsDropdownOpen)}
+                className="px-4 py-2 rounded-lg border cursor-pointer border-gray-400 text-sm font-[501] text-[#153064] hover:bg-gray-50 transition-colors flex items-center"
+                style={{ fontFamily: "Poppins, sans-serif" }}
+              >
+                {tag ? formatTagName(tag) : "Filter by Tag"}
+                {tag && (
+                  <span className="ml-2 text-xs bg-green-400 text-white p-0.5 rounded-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="white">
+                      <path d="M480-80 240-480l240-400 240 400L480-80Zm0-156 147-244-147-244-147 244 147 244Zm0-244Z"/>
+                    </svg>
+                  </span>
                 )}
+              </button>
+              {isTagsDropdownOpen && (
+                <div className="absolute z-10 bg-white shadow-lg rounded-lg mt-2 py-2 min-w-max w-full max-w-xs max-h-60 overflow-y-auto border border-gray-200">
+                  {/* All Tags Option */}
+                  <div
+                    onClick={() => {
+                      setTag(null);
+                      setIsTagsDropdownOpen(false);
+                    }}
+                    className={`cursor-pointer px-4 py-2 text-sm flex items-center transition-colors
+                      ${!tag ? 'bg-blue-50 text-blue-700' : 'hover:bg-gray-100 text-gray-900'}`}
+                    style={{ fontFamily: "Poppins, sans-serif" }}
+                  >
+                    {/* Square Checkbox */}
+                    <input
+                      type="checkbox"
+                      checked={!tag}
+                      onChange={() => {}} // onChange is required but we handle click on div
+                      className="form-checkbox h-4 w-4 text-blue-600 rounded mr-2"
+                    />
+                    {/* Colored Pill for All Tags */}
+                    <span className="mr-2 px-2 py-0.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-700">
+                      All Tags
+                    </span>
+                  </div>
+                  
+                  {/* Dynamically generate dropdown items based on unique tags */}
+                  {Object.keys(unitResources).reduce((tags, unit) => {
+                    const unitTags = unitResources[unit].map(group => group.heading);
+                    return [...new Set([...tags, ...unitTags])];
+                  }, []).map((uniqueTag, index) => (
+                    <div
+                      key={uniqueTag}
+                      onClick={() => {
+                        setTag(uniqueTag);
+                        setIsTagsDropdownOpen(false);
+                      }}
+                      className={`cursor-pointer px-4 py-2 text-sm flex items-center transition-colors
+                        ${tag === uniqueTag ? 'bg-blue-50 text-blue-700' : 'hover:bg-gray-100 text-gray-900'}`}
+                      style={{ fontFamily: "Poppins, sans-serif" }}
+                    >
+                      {/* Square Checkbox */}
+                      <input
+                        type="checkbox"
+                        checked={tag === uniqueTag}
+                        onChange={() => {}} // onChange is required but we handle click on div
+                        className="form-checkbox h-4 w-4 text-blue-600 rounded mr-2"
+                      />
+                      {/* Colored Pill for Tag */}
+                      <span className={`mr-2 px-2 py-0.5 rounded-full text-xs font-semibold ${getTagColorClass(uniqueTag)}`}>
+                        {formatTagName(uniqueTag)}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 

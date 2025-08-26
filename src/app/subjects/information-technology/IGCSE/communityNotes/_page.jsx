@@ -13,9 +13,26 @@ const supabase = createClient(
 import SmallFoot from '@/components/smallFoot.jsx';
 
 // At the top, define variables for subjectName, syllabusType, and examCode
-const subjectName = 'Further Mathematics';
+const subjectName = 'Information Technology';
 const subjectSlug = subjectName.toLowerCase().replace(/\s+/g, '-');
-const examCode = 'XFM01/YFM01';
+const examCode = '4IT1';
+
+// Color mapping function for specific tags
+const getTagColorClass = (tagName) => {
+  const tagColors = {
+    'note': 'bg-blue-100 text-blue-800',
+    'essay_questions': 'bg-green-100 text-green-800',
+    'assorted_papers': 'bg-orange-100 text-orange-800',
+    'commonly_asked_questions': 'bg-red-100 text-red-800',
+    'topic_question': 'bg-yellow-100 text-yellow-800',
+    'youtube_videos': 'bg-pink-100 text-pink-800',
+    'solved_papers': 'bg-indigo-100 text-indigo-800',
+    'extra_resource': 'bg-teal-100 text-teal-800',
+  };
+  
+  // Return specific color if mapped, otherwise use a default
+  return tagColors[tagName.toLowerCase()] || 'bg-gray-100 text-gray-800';
+};
 
 // Add SubjectButtons component that fetches subjects dynamically
 const SubjectButtons = () => {
@@ -27,11 +44,11 @@ const SubjectButtons = () => {
         .from('subjects')
         .select('name')
         .order('name', { ascending: true })
-        .eq('syllabus_type', 'IAL');
+        .eq('syllabus_type', 'IGCSE');
       
       if (!error && data) {
-        // Define the subjects you want to hide (IAL pages only)
-        const subjectsToHide = ['Economics', 'Further Mathematics', 'English Literature'];
+        // Define the subjects you want to hide for IGCSE pages only
+        const subjectsToHide = ['Economics', 'Further Mathematics', 'Information Technology', 'English Literature'];
         
         // Filter the fetched data to exclude the specified subjects
         const filteredSubjects = data.filter(subj => !subjectsToHide.includes(subj.name));
@@ -47,7 +64,7 @@ const SubjectButtons = () => {
       {subjects.map((name, index) => {
         const slug = name.toLowerCase().replace(/\s+/g, '-');
         return (
-          <Link key={index} href={`/subjects/${slug}/IAL/communityNotes`}>
+          <Link key={index} href={`/subjects/${slug}/IGCSE/communityNotes`}>
             <button className="px-4 py-2 cursor-pointer bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition">
               {name}
             </button>
@@ -58,16 +75,24 @@ const SubjectButtons = () => {
   );
 };
 
-export default function IALResources() {
+export default function IGCSEResources() {
   const [units, setUnits] = useState([]);
   const [expandedUnits, setExpandedUnits] = useState({});
   const [unitResources, setUnitResources] = useState({});
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // New state for the dropdown
   const [isTagsDropdownOpen, setIsTagsDropdownOpen] = useState(false);
+  const [tag, setTag] = useState(null);
 
   useReloadOnStuckLoading(loading);
+
+  // Helper function to format tag names
+  function formatTagName(name) {
+    if (!name) return '';
+    return name.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+  }
 
   const toggleUnit = (unit) => {
     setExpandedUnits(prev => ({
@@ -83,13 +108,16 @@ export default function IALResources() {
         .from('subjects')
         .select('units')
         .eq('name', subjectName)
-        .eq('syllabus_type', 'IAL')
+        .eq('syllabus_type', 'IGCSE')
         .single();
       if (subjectError || !subjectData) {
         setError(subjectError || new Error('Subject "Physics" not found.'));
         return;
       }
       let fetchedUnits = subjectData.units || [];
+      fetchedUnits = fetchedUnits.filter(unit =>
+        !unit.unit?.includes('R') && !unit.name?.includes('R')
+      );
       // Sort by unit number if possible, fallback to name
       fetchedUnits.sort((a, b) => {
         const getUnitNum = (u) => {
@@ -111,7 +139,6 @@ export default function IALResources() {
     fetchUnits();
   }, []);
 
-  // Updated fetchResources function with better error handling and debugging
   useEffect(() => {
     setLoading(true);
     const fetchResources = async () => {
@@ -120,48 +147,40 @@ export default function IALResources() {
           .from('subjects')
           .select('id')
           .eq('name', subjectName)
-          .eq('syllabus_type', 'IAL')
+          .eq('syllabus_type', 'IGCSE')
           .single();
 
         if (subjectError || !subjectData) {
-          console.error('Subject fetch error:', subjectError);
-          setError(subjectError || new Error(`Subject "further-mathematics" not found.`));
+          setError(subjectError || new Error('Subject "Physics" not found.'));
           setLoading(false);
           return;
         }
 
         const subjectId = subjectData.id;
-        console.log('Fetching resources for subject ID:', subjectId);
 
         const { data: resources, error: resourcesError } = await supabase
           .from('community_resource_requests')
           .select('*')
           .eq('subject_id', subjectId)
-          .eq('approved', 'Approved') // This ensures only approved resources are fetched
-          .order('unit_chapter_name', { ascending: true }) // Order by unit first
-          .order('resource_type', { ascending: true })     // Then by resource type
-          .order('title', { ascending: true });            // Finally by title
+          .order('title', { ascending: true })
+          .eq('approved', "Approved")
+          .order('submitted_at', { ascending: false });
 
         if (resourcesError) {
-          console.error('Resources fetch error:', resourcesError);
           setError(resourcesError);
           setLoading(false);
           return;
         }
 
-        console.log('Fetched approved resources:', resources?.length || 0);
-
         const groupedResources = {};
 
-        resources?.forEach((resource) => {
-          // Use unit_chapter_name if available, otherwise fallback to 'General'
+        resources.forEach((resource) => {
           const unit = resource.unit_chapter_name || 'General';
 
           if (!groupedResources[unit]) {
             groupedResources[unit] = [];
           }
 
-          // Find existing group for this resource type or create new one
           let group = groupedResources[unit].find((grp) => grp.heading === resource.resource_type);
           if (!group) {
             group = { heading: resource.resource_type, links: [] };
@@ -172,17 +191,13 @@ export default function IALResources() {
             name: resource.title,
             url: resource.link,
             description: resource.description,
-            contributor: resource.contributor_name || resource.uploaded_by_username, // Use contributor_name from table
-            last: resource.updated_at || resource.submitted_at, // Fallback to submitted_at if updated_at is null
-            approvedAt: resource.approved_at // Include approval date for reference
+            contributor: resource.uploaded_by_username,
+            last: resource.updated_at
           });
         });
-
-        console.log('Grouped resources:', groupedResources);
         setUnitResources(groupedResources);
         setLoading(false);
       } catch (error) {
-        console.error('Unexpected error:', error);
         setError(error);
         setLoading(false);
       }
@@ -196,31 +211,6 @@ export default function IALResources() {
         <p className="text-xl text-red-600">Error loading resources: {error.message}</p>
       </main>
     );
-  }
-
-  const[resourceTypeFilter, setResourceTypeFilter] = useState(null)
-  const[tag, setTag] = useState(null)
-
-  function handleTag(event){
-    event.stopPropagation(); 
-    event.preventDefault(); 
-    if(tag === null){
-      setTag(event.currentTarget.innerHTML) 
-    }
-    else{
-      setTag(null)
-    }
-  }
-
-  function handleResourceTypeFilter(event){
-    setResourceTypeFilter(event.currentTarget.innerHTML) 
-    event.stopPropagation(); 
-    event.preventDefault(); 
-    if(resourceTypeFilter === null){
-    }
-    else{
-      setResourceTypeFilter(null)
-    }
   }
 
   useEffect(() => {
@@ -239,29 +229,23 @@ export default function IALResources() {
       });
     }
   }, [unitResources]); // This runs after unitResources is populated
-
-  function formatTagName(name) {
-    if (!name) return '';
-    // Split the string by underscores and capitalize each word
-    return name.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
-  }
   
   return (
     <>
       <main className="min-h-screen bg-white flex flex-col items-center justify-start py-10 m-10">
         <div className="w-full max-w-5xl px-4">
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#000000] mb-8 text-left tracking-[-0.035em]" style={{ fontFamily: "Poppins, sans-serif" }}>
-            IAL <span className="bg-[#1A69FA] px-2 py-1 -rotate-1 inline-block"><span className="text-[#FFFFFF]">Further Mathematics</span></span> Community Notes
+            IGCSE <span className="bg-[#1A69FA] px-2 py-1 -rotate-1 inline-block"><span className="text-[#FFFFFF]">Information Technology</span></span> Community Notes
           </h1>
 
           <div className="inline-flex items-center justify-center px-4 py-2 mb-8 rounded-md" style={{ border: "1.5px solid #DBDBDB", fontFamily: "Poppins, sans-serif" }}>
             <span className="text-md font-medium text-black tracking-tight">
-              <span className="font-[501]">Exam code:</span> XFM01/YFM01
+              <span className="font-[501]">Exam code:</span> 4IT1
             </span>
           </div>
 
           <h3 className="text-sm sm:text-md lg:text-lg font-[500] leading-6 text-[#707070] mb-8 text-left max-w-4xl tracking-[-0.015em]" style={{ fontFamily: "Poppins, sans-serif" }}>
-            Access a wide range of Edexcel IAL Further Mathematics resources—all in one place. Whether you're brushing up on concepts or aiming to master exam strategies, these materials are designed to support your revision and boost your performance
+            Access a wide range of Edexcel IGCSE Information Technology resources—all in one place. Whether you're brushing up on concepts or aiming to master exam strategies, these materials are designed to support your revision and boost your performance
           </h3>
 
           <div className="w-full mb-8">
@@ -270,7 +254,6 @@ export default function IALResources() {
             </h2>
             <SubjectButtons />
 
-            {/* Dropdown for Resource Types (Tags) */}
             <div className="relative inline-block text-left">
               <button
                 onClick={() => setIsTagsDropdownOpen(!isTagsDropdownOpen)}
@@ -279,42 +262,66 @@ export default function IALResources() {
               >
                 {tag ? formatTagName(tag) : "Filter by Tag"}
                 {tag && (
-                  <span className="ml-2 text-xs bg-[#153064] text-white px-1.5 py-0.5 rounded-full">
-                    1
+                  <span className="ml-2 text-xs bg-green-400 text-white p-0.5 rounded-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="white">
+                      <path d="M480-80 240-480l240-400 240 400L480-80Zm0-156 147-244-147-244-147 244 147 244Zm0-244Z"/>
+                    </svg>
                   </span>
                 )}
               </button>
               {isTagsDropdownOpen && (
-                <div className="absolute z-10 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5" style={{ fontFamily: "Poppins, sans-serif" }}>
-                  <div className="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
-                    <button
+                <div className="absolute z-10 bg-white shadow-lg rounded-lg mt-2 py-2 min-w-max w-full max-w-xs max-h-60 overflow-y-auto border border-gray-200">
+                  {/* All Tags Option */}
+                  <div
+                    onClick={() => {
+                      setTag(null);
+                      setIsTagsDropdownOpen(false);
+                    }}
+                    className={`cursor-pointer px-4 py-2 text-sm flex items-center transition-colors
+                      ${!tag ? 'bg-blue-50 text-blue-700' : 'hover:bg-gray-100 text-gray-900'}`}
+                    style={{ fontFamily: "Poppins, sans-serif" }}
+                  >
+                    {/* Square Checkbox */}
+                    <input
+                      type="checkbox"
+                      checked={!tag}
+                      onChange={() => {}} // onChange is required but we handle click on div
+                      className="form-checkbox h-4 w-4 text-blue-600 rounded mr-2"
+                    />
+                    {/* Colored Pill for All Tags */}
+                    <span className="mr-2 px-2 py-0.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-700">
+                      All Tags
+                    </span>
+                  </div>
+                  
+                  {/* Dynamically generate dropdown items based on unique tags */}
+                  {Object.keys(unitResources).reduce((tags, unit) => {
+                    const unitTags = unitResources[unit].map(group => group.heading);
+                    return [...new Set([...tags, ...unitTags])];
+                  }, []).map((uniqueTag, index) => (
+                    <div
+                      key={uniqueTag}
                       onClick={() => {
-                        setTag(null);
+                        setTag(uniqueTag);
                         setIsTagsDropdownOpen(false);
                       }}
-                      className="block px-4 py-2 text-sm text-gray-700 w-full text-left hover:bg-gray-100"
-                      role="menuitem"
+                      className={`cursor-pointer px-4 py-2 text-sm flex items-center transition-colors
+                        ${tag === uniqueTag ? 'bg-blue-50 text-blue-700' : 'hover:bg-gray-100 text-gray-900'}`}
+                      style={{ fontFamily: "Poppins, sans-serif" }}
                     >
-                      All Tags
-                    </button>
-                    {/* Dynamically generate dropdown items based on unique tags */}
-                    {Object.keys(unitResources).reduce((tags, unit) => {
-                      const unitTags = unitResources[unit].map(group => group.heading);
-                      return [...new Set([...tags, ...unitTags])];
-                    }, []).map((uniqueTag) => (
-                      <button
-                        key={uniqueTag}
-                        onClick={() => {
-                          setTag(uniqueTag);
-                          setIsTagsDropdownOpen(false);
-                        }}
-                        className="block px-4 py-2 text-sm text-gray-700 w-full text-left hover:bg-gray-100"
-                        role="menuitem"
-                      >
+                      {/* Square Checkbox */}
+                      <input
+                        type="checkbox"
+                        checked={tag === uniqueTag}
+                        onChange={() => {}} // onChange is required but we handle click on div
+                        className="form-checkbox h-4 w-4 text-blue-600 rounded mr-2"
+                      />
+                      {/* Colored Pill for Tag */}
+                      <span className={`mr-2 px-2 py-0.5 rounded-full text-xs font-semibold ${getTagColorClass(uniqueTag)}`}>
                         {formatTagName(uniqueTag)}
-                      </button>
-                    ))}
-                  </div>
+                      </span>
+                    </div>
+                  ))}
                 </div>
               )}
             </div>
@@ -330,9 +337,8 @@ export default function IALResources() {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
                 {unitResources["General"].map((resourceGroup, groupIndex) => (
                   resourceGroup.links.map((link, linkIndex) => (
-                    <Link key={groupIndex + '-' + linkIndex} href={link.url} style={{ fontFamily: 'Poppins, sans-serif' }} className={`${(tag === null || tag === resourceGroup.heading) && (resourceTypeFilter === null || resourceTypeFilter === resourceGroup.heading) ? "block" : "hidden"}`}>
+                    <Link key={groupIndex + '-' + linkIndex} href={link.url} style={{ fontFamily: 'Poppins, sans-serif' }} className={`${tag === null || tag === resourceGroup.heading ? "block" : "hidden"}`}>
                       <div className="cursor-pointer flex flex-col p-5 border h-fit border-gray-200 rounded-2xl shadow-md bg-white hover:shadow-xl transition-shadow duration-200 group sm:min-h-[120px] sm:min-w-[300px]" style={{ position: 'relative' }}>
-                        {/* <span className="text-sm font-semibold text-[#1A69FA] mb-1 tracking-tight uppercase" style={{ fontFamily: 'Poppins, sans-serif', letterSpacing: '0.04em' }}>{resourceGroup.heading}</span> */}
                         
                           <div className="inline-flex justify-between">
                             {link.name && (<p className="text-xl font-bold text-[#153064]">{link.name}</p>)}
@@ -344,12 +350,7 @@ export default function IALResources() {
                             <p className="text-sm text-gray-600 mt-2 border-l-4 mb-2 border-blue-600 pl-2">{link.description}</p>
                           )}
                           <div className="flex flex-col justify-end items-end">
-                            {resourceGroup.heading && (
-                              <div className="flex gap-2">
-                                <div className={`cursor-pointer mt-1 text-xs font-semibold tracking-tight uppercase w-fit px-2 py-0.5 ring ring-green-400 rounded-md transition-colors ${tag === null ? "sm:hover:bg-green-400 sm:hover:text-white text-green-400" : tag === resourceGroup.heading ? "bg-green-400 text-white sm:hover:text-green-400 sm:hover:bg-white":"sm:hover:bg-green-400 sm:hover:text-white text-green-400"}`} onClick={handleTag}>{resourceGroup.heading}</div>
-
-                              </div>
-                            )}
+                            {resourceGroup.heading && (<div className={`cursor-pointer mt-1 text-xs font-semibold tracking-tight uppercase w-fit px-2 py-0.5 ring ring-green-400 rounded-md transition-colors ${tag === null ? "sm:hover:bg-green-400 sm:hover:text-white text-green-400" : tag === resourceGroup.heading ? "bg-green-400 text-white sm:hover:text-green-400 sm:hover:bg-white":"sm:hover:bg-green-400 sm:hover:text-white text-green-400"}`} onClick={(e) => { e.preventDefault(); setTag(resourceGroup.heading); }}>{formatTagName(resourceGroup.heading)}</div>)}
                             {link.last && (<p className="text-xs text-gray-600 mt-1 text-right">{link.contributor ? "Shared On ": "Shared On "}{new Date(link.last).toLocaleString(undefined, {year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'})}</p>)}
                           </div>
                         
@@ -375,9 +376,8 @@ export default function IALResources() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 p-6">
                   {(unitResources[unitData.unit] || []).map((resourceGroup, groupIndex) => (
                     resourceGroup.links.map((link, linkIndex) => (
-                      <Link key={groupIndex + '-' + linkIndex} href={link.url} style={{ fontFamily: 'Poppins, sans-serif' }} className={`${(tag === null || tag === resourceGroup.heading) && (resourceTypeFilter === null || resourceTypeFilter === resourceGroup.heading) ? "block" : "hidden"}`}>
+                      <Link key={groupIndex + '-' + linkIndex} href={link.url} style={{ fontFamily: 'Poppins, sans-serif' }} className={`${tag === null || tag === resourceGroup.heading ? "block" : "hidden"}`}>
                       <div className="cursor-pointer flex flex-col p-5 border h-fit border-gray-200 rounded-2xl shadow-md bg-white hover:shadow-xl transition-shadow duration-200 group sm:min-h-[120px] sm:min-w-[300px]" style={{ position: 'relative' }}>
-                        {/* <span className="text-sm font-semibold text-[#1A69FA] mb-1 tracking-tight uppercase" style={{ fontFamily: 'Poppins, sans-serif', letterSpacing: '0.04em' }}>{resourceGroup.heading}</span> */}
                         
                           <div className="inline-flex justify-between">
                             {link.name && (<p className="text-xl font-bold text-[#153064]">{link.name}</p>)}
@@ -389,11 +389,7 @@ export default function IALResources() {
                             <p className="text-sm text-gray-600 mt-2 border-l-4 mb-2 border-blue-600 pl-2">{link.description}</p>
                           )}
                           <div className="flex flex-col justify-end items-end">
-                            {resourceGroup.heading && (
-                              <div className="flex gap-2">
-                                <div className={`cursor-pointer mt-1 text-xs font-semibold tracking-tight uppercase w-fit px-2 py-0.5 ring ring-green-400 rounded-md transition-colors ${tag === null ? "sm:hover:bg-green-400 sm:hover:text-white text-green-400" : tag === resourceGroup.heading ? "bg-green-400 text-white sm:hover:text-green-400 sm:hover:bg-white":"sm:hover:bg-green-400 sm:hover:text-white text-green-400"}`} onClick={handleTag}>{resourceGroup.heading}</div>
-                              </div>
-                            )}
+                            {resourceGroup.heading && (<div className={`cursor-pointer mt-1 text-xs font-semibold tracking-tight uppercase w-fit px-2 py-0.5 ring ring-green-400 rounded-md transition-colors ${tag === null ? "sm:hover:bg-green-400 sm:hover:text-white text-green-400" : tag === resourceGroup.heading ? "bg-green-400 text-white sm:hover:text-green-400 sm:hover:bg-white":"sm:hover:bg-green-400 sm:hover:text-white text-green-400"}`} onClick={(e) => { e.preventDefault(); setTag(resourceGroup.heading); }}>{formatTagName(resourceGroup.heading)}</div>)}
                             {link.last && (<p className="text-xs text-gray-600 mt-1 text-right">{link.contributor ? "Shared On ": "Shared On "}{new Date(link.last).toLocaleString(undefined, {year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'})}</p>)}
                           </div>
                         
