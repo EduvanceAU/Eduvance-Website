@@ -48,7 +48,7 @@ const SubjectButtons = () => {
       
       if (!error && data) {
         // Define the subjects you want to hide for IGCSE pages only
-        const subjectsToHide = ['Economics', 'Further Mathematics', 'IT'];
+        const subjectsToHide = ['Economics', 'Further Mathematics', 'IT', 'English Literature'];
         
         // Filter the fetched data to exclude the specified subjects
         const filteredSubjects = data.filter(subj => !subjectsToHide.includes(subj.name));
