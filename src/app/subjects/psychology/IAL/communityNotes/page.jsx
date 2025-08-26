@@ -281,8 +281,8 @@ export default function IALResources() {
               >
                 {tag ? formatTagName(tag) : "Filter by Tag"}
                 {tag && (
-                  <span className="ml-2 text-xs bg-[#153064] text-white px-1.5 py-0.5 rounded-full">
-                    1
+                  <span className="ml-2 text-xs bg-green-400 text-white p-0.5 rounded-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="white"><path d="M480-80 240-480l240-400 240 400L480-80Zm0-156 147-244-147-244-147 244 147 244Zm0-244Z"/></svg>
                   </span>
                 )}
               </button>
