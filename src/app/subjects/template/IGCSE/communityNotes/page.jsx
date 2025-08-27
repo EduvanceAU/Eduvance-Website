@@ -17,6 +17,39 @@ const subjectName = '{subjectName}';
 const subjectSlug = subjectName.toLowerCase().replace(/\s+/g, '-');
 const examCode = '{examCode}';
 
+// Color mapping function for specific tags
+const getTagColorClass = (tagName) => {
+  const tagColors = {
+    'note': 'bg-blue-100 text-blue-800',
+    'essay_questions': 'bg-green-100 text-green-800',
+    'assorted_papers': 'bg-orange-100 text-orange-800',
+    'youtube_videos': 'bg-red-100 text-red-800',
+    'topic_question': 'bg-yellow-100 text-yellow-800',
+    'commonly_asked_questions': 'bg-pink-100 text-pink-800',
+    'solved_papers': 'bg-indigo-100 text-indigo-800',
+    'extra_resource': 'bg-teal-100 text-teal-800',
+  };
+  
+  // Return specific color if mapped, otherwise use a default
+  return tagColors[tagName.toLowerCase()] || 'bg-gray-100 text-gray-800';
+};
+
+// Function to get background color for the icon
+const getTagIconColor = (tagName) => {
+  const iconColors = {
+    'note': 'bg-blue-500',
+    'essay_questions': 'bg-green-500',
+    'assorted_papers': 'bg-orange-500',
+    'youtube_videos': 'bg-red-500',
+    'topic_question': 'bg-yellow-500',
+    'commonly_asked_questions': 'bg-pink-500',
+    'solved_papers': 'bg-indigo-500',
+    'extra_resource': 'bg-teal-500',
+  };
+  
+  return iconColors[tagName.toLowerCase()] || 'bg-gray-400';
+};
+
 // Add SubjectButtons component that fetches subjects dynamically
 const SubjectButtons = () => {
   const [subjects, setSubjects] = useState([]);
@@ -31,7 +64,7 @@ const SubjectButtons = () => {
       
       if (!error && data) {
         // Define the subjects you want to hide for IGCSE pages only
-        const subjectsToHide = ['Economics', 'Further Mathematics', 'IT'];
+        const subjectsToHide = ['Economics', 'Further Mathematics', 'Information Technology'];
         
         // Filter the fetched data to exclude the specified subjects
         const filteredSubjects = data.filter(subj => !subjectsToHide.includes(subj.name));
@@ -64,10 +97,30 @@ export default function IGCSEResources() {
   const [unitResources, setUnitResources] = useState({});
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [selectedTags, setSelectedTags] = useState([]);
 
-  // New state for the dropdown
   const [isTagsDropdownOpen, setIsTagsDropdownOpen] = useState(false);
-  const [tag, setTag] = useState(null);
+  // Function to toggle tag selection
+  const toggleTag = (tagName) => {
+    if (selectedTags.includes(tagName)) {
+      setSelectedTags(selectedTags.filter(t => t !== tagName));
+    } else {
+      setSelectedTags([...selectedTags, tagName]);
+    }
+  };
+
+  const [tag, setTag] = useState([]);
+
+  function handleTag(event){
+    event.stopPropagation(); 
+    event.preventDefault(); 
+    if(tag === null){
+      setTag(event.currentTarget.innerHTML) 
+    }
+    else{
+      setTag(null)
+    }
+  }
 
   useReloadOnStuckLoading(loading);
 
@@ -237,53 +290,70 @@ export default function IGCSEResources() {
             </h2>
             <SubjectButtons />
 
-            {/* Dropdown for Resource Types (Tags) */}
-            <div className="relative inline-block text-left mt-6">
-                <button
-                    onClick={() => setIsTagsDropdownOpen(!isTagsDropdownOpen)}
-                    className="px-4 py-2 rounded-lg border cursor-pointer border-gray-400 text-sm font-[501] text-[#153064] hover:bg-gray-50 transition-colors flex items-center"
-                    style={{ fontFamily: "Poppins, sans-serif" }}
-                >
-                    {tag ? formatTagName(tag) : "Filter by Tag"}
-                    {tag && (
-                      <span className="ml-2 text-xs bg-[#153064] text-white px-1.5 py-0.5 rounded-full">
-                        1
-                      </span>
-                    )}
-                </button>
-                {isTagsDropdownOpen && (
-                    <div className="absolute z-10 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5" style={{ fontFamily: "Poppins, sans-serif" }}>
-                        <div className="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
-                            <button
-                                onClick={() => {
-                                    setTag(null);
-                                    setIsTagsDropdownOpen(false);
-                                }}
-                                className="block px-4 py-2 text-sm text-gray-700 w-full text-left hover:bg-gray-100"
-                                role="menuitem"
-                            >
-                                All Tags
-                            </button>
-                            {/* Dynamically generate dropdown items based on unique tags */}
-                            {Object.keys(unitResources).reduce((tags, unit) => {
-                                const unitTags = unitResources[unit].map(group => group.heading);
-                                return [...new Set([...tags, ...unitTags])];
-                            }, []).map((uniqueTag) => (
-                                <button
-                                    key={uniqueTag}
-                                    onClick={() => {
-                                        setTag(uniqueTag);
-                                        setIsTagsDropdownOpen(false);
-                                    }}
-                                    className="block px-4 py-2 text-sm text-gray-700 w-full text-left hover:bg-gray-100"
-                                    role="menuitem"
-                                >
-                                    {formatTagName(uniqueTag)}
-                                </button>
-                            ))}
-                        </div>
+            <div className="relative inline-block text-left">
+              <button
+                onClick={() => setIsTagsDropdownOpen(!isTagsDropdownOpen)}
+                className="px-4 py-2 rounded-lg border cursor-pointer border-gray-400 text-sm font-[501] text-[#153064] hover:bg-gray-50 transition-colors flex items-center"
+                style={{ fontFamily: "Poppins, sans-serif" }}
+              >
+                {tag.length > 0 ? (
+                  <>
+                    {tag.length === 1 ? formatTagName(tag[0]) : `${tag.length} Tags Selected`}
+                    <div className="flex ml-2 space-x-1">
+                      {tag.slice(0, 3).map((selectedTag) => (
+                        <span
+                          key={selectedTag}
+                          className="text-xs bg-green-400 text-white p-0.5 rounded-full"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="16px" fill="white">
+                            <path d="M480-80 240-480l240-400 240 400L480-80Zm0-156 147-244-147-244-147 244 147 244Zm0-244Z"/>
+                          </svg>
+                        </span>
+                      ))}
+                      {tag.length > 3 && (
+                        <span className="text-xs bg-gray-400 text-white px-1.5 py-0.5 rounded-full">
+                          +{tag.length - 3}
+                        </span>
+                      )}
                     </div>
+                  </>
+                ) : (
+                  "Filter by Tag"
                 )}
+              </button>
+              {isTagsDropdownOpen && (
+                <div className="absolute z-10 bg-white shadow-lg rounded-lg mt-2 py-2 min-w-max w-full max-w-xs max-h-60 overflow-y-auto border border-gray-200">
+                  {/* Dynamically generate dropdown items based on unique tags */}
+                  {Object.keys(unitResources).reduce((tags, unit) => {
+                    const unitTags = unitResources[unit].map(group => group.heading);
+                    return [...new Set([...tags, ...unitTags])];
+                  }, []).map((uniqueTag, index) => (
+                    <div
+                      key={uniqueTag}
+                      onClick={() => {
+                        setTag(prev => 
+                          prev.includes(uniqueTag) 
+                            ? prev.filter(t => t !== uniqueTag)
+                            : [...prev, uniqueTag]
+                        );
+                      }}
+                      className={`cursor-pointer px-4 py-2 text-sm flex items-center transition-colors
+                        ${tag.includes(uniqueTag) ? 'bg-blue-50 text-blue-700' : 'hover:bg-gray-100 text-gray-900'}`}
+                      style={{ fontFamily: "Poppins, sans-serif" }}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={tag.includes(uniqueTag)}
+                        onChange={() => {}}
+                        className="form-checkbox h-4 w-4 text-blue-600 rounded mr-2"
+                      />
+                      <span className={`mr-2 px-2 py-0.5 rounded-full text-xs font-semibold ${getTagColorClass(uniqueTag)}`}>
+                        {formatTagName(uniqueTag)}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 
@@ -297,22 +367,40 @@ export default function IGCSEResources() {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
                 {unitResources["General"].map((resourceGroup, groupIndex) => (
                   resourceGroup.links.map((link, linkIndex) => (
-                    <Link key={groupIndex + '-' + linkIndex} href={link.url} style={{ fontFamily: 'Poppins, sans-serif' }} className={`${tag === null || tag === resourceGroup.heading ? "block" : "hidden"}`}>
+                    <Link key={groupIndex + '-' + linkIndex} href={link.url} style={{ fontFamily: 'Poppins, sans-serif' }} className={`${tag.length === 0 || tag.includes(resourceGroup.heading) ? "block" : "hidden"}`}>
                       <div className="cursor-pointer flex flex-col p-5 border h-fit border-gray-200 rounded-2xl shadow-md bg-white hover:shadow-xl transition-shadow duration-200 group sm:min-h-[120px] sm:min-w-[300px]" style={{ position: 'relative' }}>
                         
-                          <div className="inline-flex justify-between">
-                            {link.name && (<p className="text-xl font-bold text-[#153064]">{link.name}</p>)}
-                            <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                              <svg width="22" height="22" fill="none" stroke="#1A69FA" strokeWidth="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                        <div className="inline-flex justify-between">
+                          {link.name && (<p className="text-xl font-bold text-[#153064]">{link.name}</p>)}
+                          <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                            <svg width="22" height="22" fill="none" stroke="#1A69FA" strokeWidth="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                          </div>
+                        </div>
+                        {link.description && (
+                          <p className="text-sm text-gray-600 mt-2 border-l-4 mb-2 border-blue-600 pl-2">{link.description}</p>
+                        )}
+                        <div className="flex flex-col justify-end items-end">
+                          {resourceGroup.heading && (
+                            <div 
+                              className={`cursor-pointer mt-1 text-xs font-semibold tracking-tight uppercase w-fit px-2 py-0.5 rounded-md transition-colors ${
+                                tag.includes(resourceGroup.heading)
+                                  ? "bg-green-400 text-white" 
+                                  : "ring ring-green-400 text-green-400 sm:hover:bg-green-400 sm:hover:text-white"
+                              }`} 
+                              onClick={(e) => { 
+                                e.preventDefault(); 
+                                setTag(prev => 
+                                  prev.includes(resourceGroup.heading) 
+                                    ? prev.filter(t => t !== resourceGroup.heading)
+                                    : [...prev, resourceGroup.heading]
+                                ); 
+                              }}
+                            >
+                              {formatTagName(resourceGroup.heading)}
                             </div>
-                          </div>
-                          {link.description && (
-                            <p className="text-sm text-gray-600 mt-2 border-l-4 mb-2 border-blue-600 pl-2">{link.description}</p>
                           )}
-                          <div className="flex flex-col justify-end items-end">
-                            {resourceGroup.heading && (<div className={`cursor-pointer mt-1 text-xs font-semibold tracking-tight uppercase w-fit px-2 py-0.5 ring ring-green-400 rounded-md transition-colors ${tag === null ? "sm:hover:bg-green-400 sm:hover:text-white text-green-400" : tag === resourceGroup.heading ? "bg-green-400 text-white sm:hover:text-green-400 sm:hover:bg-white":"sm:hover:bg-green-400 sm:hover:text-white text-green-400"}`} onClick={(e) => { e.preventDefault(); setTag(resourceGroup.heading); }}>{formatTagName(resourceGroup.heading)}</div>)}
-                            {link.last && (<p className="text-xs text-gray-600 mt-1 text-right">{link.contributor ? "Shared On ": "Shared On "}{new Date(link.last).toLocaleString(undefined, {year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'})}</p>)}
-                          </div>
+                          {link.last && (<p className="text-xs text-gray-600 mt-1 text-right">{link.contributor ? "Shared On ": "Shared On "}{new Date(link.last).toLocaleString(undefined, {year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'})}</p>)}
+                        </div>
                         
                       </div>
                     </Link>))
@@ -336,8 +424,9 @@ export default function IGCSEResources() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 p-6">
                   {(unitResources[unitData.unit] || []).map((resourceGroup, groupIndex) => (
                     resourceGroup.links.map((link, linkIndex) => (
-                      <Link key={groupIndex + '-' + linkIndex} href={link.url} style={{ fontFamily: 'Poppins, sans-serif' }} className={`${tag === null || tag === resourceGroup.heading ? "block" : "hidden"}`}>
+                      <Link key={groupIndex + '-' + linkIndex} href={link.url} style={{ fontFamily: 'Poppins, sans-serif' }} className={`${tag.length === 0 || tag.includes(resourceGroup.heading) ? "block" : "hidden"}`}>
                       <div className="cursor-pointer flex flex-col p-5 border h-fit border-gray-200 rounded-2xl shadow-md bg-white hover:shadow-xl transition-shadow duration-200 group sm:min-h-[120px] sm:min-w-[300px]" style={{ position: 'relative' }}>
+                        {/* <span className="text-sm font-semibold text-[#1A69FA] mb-1 tracking-tight uppercase" style={{ fontFamily: 'Poppins, sans-serif', letterSpacing: '0.04em' }}>{resourceGroup.heading}</span> */}
                         
                           <div className="inline-flex justify-between">
                             {link.name && (<p className="text-xl font-bold text-[#153064]">{link.name}</p>)}
@@ -349,7 +438,25 @@ export default function IGCSEResources() {
                             <p className="text-sm text-gray-600 mt-2 border-l-4 mb-2 border-blue-600 pl-2">{link.description}</p>
                           )}
                           <div className="flex flex-col justify-end items-end">
-                            {resourceGroup.heading && (<div className={`cursor-pointer mt-1 text-xs font-semibold tracking-tight uppercase w-fit px-2 py-0.5 ring ring-green-400 rounded-md transition-colors ${tag === null ? "sm:hover:bg-green-400 sm:hover:text-white text-green-400" : tag === resourceGroup.heading ? "bg-green-400 text-white sm:hover:text-green-400 sm:hover:bg-white":"sm:hover:bg-green-400 sm:hover:text-white text-green-400"}`} onClick={(e) => { e.preventDefault(); setTag(resourceGroup.heading); }}>{formatTagName(resourceGroup.heading)}</div>)}
+                            {resourceGroup.heading && (
+                              <div 
+                                className={`cursor-pointer mt-1 text-xs font-semibold tracking-tight uppercase w-fit px-2 py-0.5 rounded-md transition-colors ${
+                                  tag.includes(resourceGroup.heading)
+                                    ? "bg-green-400 text-white" 
+                                    : "ring ring-green-400 text-green-400 sm:hover:bg-green-400 sm:hover:text-white"
+                                }`} 
+                                onClick={(e) => { 
+                                  e.preventDefault(); 
+                                  setTag(prev => 
+                                    prev.includes(resourceGroup.heading) 
+                                      ? prev.filter(t => t !== resourceGroup.heading)
+                                      : [...prev, resourceGroup.heading]
+                                  ); 
+                                }}
+                              >
+                                {formatTagName(resourceGroup.heading)}
+                              </div>
+                            )}
                             {link.last && (<p className="text-xs text-gray-600 mt-1 text-right">{link.contributor ? "Shared On ": "Shared On "}{new Date(link.last).toLocaleString(undefined, {year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'})}</p>)}
                           </div>
                         
