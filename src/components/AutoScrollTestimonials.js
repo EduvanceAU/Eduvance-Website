@@ -5,29 +5,29 @@ import { FaDiscord } from 'react-icons/fa';
 
 const testimonials = [
   {
-    content: "Eduvance is honestly the best. The resources are amazing, and the community is so supportive. It's helped me so much with my studies.",
-    author: "Alex, University Student",
-    avatar: "/bio.png"
+    content: "I joined Eduvance last year solely for the purpose of getting notes, however it truly is more than just an educational server. i think i've met some of the nicest people to ever exist, and i really am grateful for all of my friends there. the community in Eduvance is amazing, even the staff team; most of them are really kind and easy to get along with.",
+    author: "vern 🌱, A2 Student",
+    avatar: "/vern.webp"
   },
   {
-    content: "I've never been part of a community that's so focused on helping each other out. The past papers and notes are a lifesaver.",
-    author: "Samantha, High School Student",
-    avatar: "/bio.png"
+    content: "Eduvance has been like a second-home to me since its early days. It has been my go-to place for useful resources including past papers and thanks to those, I have been able to achieve great results and give back as a community contributor! Definitely one of the warmest places for sharing, connecting and suffering school in this hellish journey of IGCSEs and IALs!",
+    author: "Aeth_en 🎗️, A2 Student",
+    avatar: "/aethen.webp"
   },
   {
-    content: "The Discord server is incredible. You can get help with any subject, and the staff are super friendly and helpful. Highly recommend!",
-    author: "David, College Freshman",
-    avatar: "/bio.png"
+    content: "I joined Eduvance back in November 2024, and it has helped me soo much in my IGCSE and a levels, a server full of lovely people and helpful staff, would definitely recommend Edexcel students to join and benefit immensely",
+    author: "ThePearsonPrince, A2 Student",
+    avatar: "/pearsonprince.webp"
   },
   {
-    content: "The quality of the notes and study guides is top-tier. I've seen a huge improvement in my grades since joining Eduvance.",
-    author: "Jessica, Tutor",
-    avatar: "/bio.png"
+    content: "Eduvance really saved my IGCSEs as I relied heavily on the community notes. The notes are of very high quality and well written. The staff team also helped me a lot by giving instant replies whenever I had queries or made a report. The helpers are talented and always quick to respond. I would love to contribute to Eduvance in more ways in the future.",
+    author: "Ryan, A2 Student",
+    avatar: "/ryan.webp"
   },
   {
-    content: "I love the new UI! It's so clean and easy to use. The platform has everything I need in one place.",
-    author: "Michael, Developer",
-    avatar: "/bio.png"
+    content: "With all honesty , Eduvance has genuinely helped me a lot especially when I gave my exams , the amount of help I got from people was unbelievable and the resources available made it easier for me to do really well , it’s genuinely amazing and the people are always supportive and welling to help in a matter of seconds , will forever be grateful for this community and I’m just trying my best to repay this amazing treatment that I’ve gotten over the years !",
+    author: "! S, A2 Student",
+    avatar: "/7elc.webp"
   },
 ];
 
