@@ -34,6 +34,37 @@ const getTagColorClass = (tagName) => {
   return tagColors[tagName.toLowerCase()] || 'bg-gray-100 text-gray-800';
 };
 
+const getMainTagDesign = (tagName) => {
+  const tagColors = {
+    'note': 'ring ring-blue-300 text-blue-600 sm:hover:bg-blue-100 sm:hover:text-blue-800',
+    'essay_questions': 'ring ring-green-300 text-green-600 sm:hover:bg-green-100 sm:hover:text-green-800',
+    'assorted_papers': 'ring ring-orange-300 text-orange-600 sm:hover:bg-orange-100 sm:hover:text-orange-800',
+    'youtube_videos': 'ring ring-red-300 text-red-600 sm:hover:bg-red-100 sm:hover:text-red-800',
+    'topic_question': 'ring ring-yellow-300 text-yellow-600 sm:hover:bg-yellow-100 sm:hover:text-yellow-800',
+    'commonly_asked_questions': 'ring ring-pink-300 text-pink-600 sm:hover:bg-pink-100 sm:hover:text-pink-800',
+    'solved_papers': 'ring ring-indigo-300 text-indigo-600 sm:hover:bg-indigo-100 sm:hover:text-indigo-800',
+    'extra_resource': 'ring ring-teal-300 text-teal-600 sm:hover:bg-teal-100 sm:hover:text-teal-800',
+  };
+  
+  // Return specific color if mapped, otherwise use a default
+  return tagColors[tagName.toLowerCase()] || 'ring ring-gray-100 text-gray-100 sm:hover:bg-gray-100 sm:hover:text-gray-800';
+};
+// Function to get background color for the icon
+const getTagIconColor = (tagName) => {
+  const iconColors = {
+    'note': 'bg-blue-500',
+    'essay_questions': 'bg-green-500',
+    'assorted_papers': 'bg-orange-500',
+    'youtube_videos': 'bg-red-500',
+    'topic_question': 'bg-yellow-500',
+    'commonly_asked_questions': 'bg-pink-500',
+    'solved_papers': 'bg-indigo-500',
+    'extra_resource': 'bg-teal-500',
+  };
+  
+  return iconColors[tagName.toLowerCase()] || 'bg-gray-400';
+};
+
 // Add SubjectButtons component that fetches subjects dynamically
 const SubjectButtons = () => {
   const [subjects, setSubjects] = useState([]);
@@ -81,8 +112,17 @@ export default function IALResources() {
   const [unitResources, setUnitResources] = useState({});
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [selectedTags, setSelectedTags] = useState([]);
 
   const [isTagsDropdownOpen, setIsTagsDropdownOpen] = useState(false);
+  // Function to toggle tag selection
+  const toggleTag = (tagName) => {
+    if (selectedTags.includes(tagName)) {
+      setSelectedTags(selectedTags.filter(t => t !== tagName));
+    } else {
+      setSelectedTags([...selectedTags, tagName]);
+    }
+  };
 
   useReloadOnStuckLoading(loading);
 
@@ -103,7 +143,7 @@ export default function IALResources() {
         .eq('syllabus_type', 'IAL')
         .single();
       if (subjectError || !subjectData) {
-        setError(subjectError || new Error('Subject "Physics" not found.'));
+        setError(subjectError || new Error(`Subject not found:`, subjectName));;
         return;
       }
       let fetchedUnits = subjectData.units || [];
@@ -142,7 +182,7 @@ export default function IALResources() {
 
         if (subjectError || !subjectData) {
           console.error('Subject fetch error:', subjectError);
-          setError(subjectError || new Error(`Subject "chemistry" not found.`));
+          setError(subjectError || new Error(`Subject not found:`, subjectName));;
           setLoading(false);
           return;
         }
@@ -216,7 +256,7 @@ export default function IALResources() {
   }
 
   const[resourceTypeFilter, setResourceTypeFilter] = useState(null)
-  const[tag, setTag] = useState(null)
+  const [tag, setTag] = useState([]);
 
   function handleTag(event){
     event.stopPropagation(); 
@@ -287,20 +327,35 @@ export default function IALResources() {
             </h2>
             <SubjectButtons />
 
-            {/* Dropdown for Resource Types (Tags) */}
             <div className="relative inline-block text-left">
               <button
                 onClick={() => setIsTagsDropdownOpen(!isTagsDropdownOpen)}
                 className="px-4 py-2 rounded-lg border cursor-pointer border-gray-400 text-sm font-[501] text-[#153064] hover:bg-gray-50 transition-colors flex items-center"
                 style={{ fontFamily: "Poppins, sans-serif" }}
               >
-                {tag ? formatTagName(tag) : "Filter by Tag"}
-                {tag && (
-                  <span className="ml-2 text-xs bg-green-400 text-white p-0.5 rounded-full">
-                    <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="white">
-                      <path d="M480-80 240-480l240-400 240 400L480-80Zm0-156 147-244-147-244-147 244 147 244Zm0-244Z"/>
-                    </svg>
-                  </span>
+                {tag.length > 0 ? (
+                  <>
+                    {tag.length === 1 ? formatTagName(tag[0]) : `${tag.length} Tags Selected`}
+                    <div className="flex ml-2 space-x-1">
+                      {tag.slice(0, 3).map((selectedTag) => (
+                        <span
+                          key={selectedTag}
+                          className={`text-xs ${getTagIconColor(selectedTag)} text-white p-0.5 rounded-full`}
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="16px" fill="white">
+                            <path d="M480-80 240-480l240-400 240 400L480-80Zm0-156 147-244-147-244-147 244 147 244Zm0-244Z"/>
+                          </svg>
+                        </span>
+                      ))}
+                      {tag.length > 3 && (
+                        <span className="text-xs bg-gray-400 text-white px-1.5 py-0.5 rounded-full">
+                          +{tag.length - 3}
+                        </span>
+                      )}
+                    </div>
+                  </>
+                ) : (
+                  "Filter by Tag"
                 )}
               </button>
               {isTagsDropdownOpen && (
@@ -313,21 +368,22 @@ export default function IALResources() {
                     <div
                       key={uniqueTag}
                       onClick={() => {
-                        setTag(uniqueTag);
-                        setIsTagsDropdownOpen(false);
+                        setTag(prev => 
+                          prev.includes(uniqueTag) 
+                            ? prev.filter(t => t !== uniqueTag)
+                            : [...prev, uniqueTag]
+                        );
                       }}
                       className={`cursor-pointer px-4 py-2 text-sm flex items-center transition-colors
-                        ${tag === uniqueTag ? 'bg-blue-50 text-blue-700' : 'hover:bg-gray-100 text-gray-900'}`}
+                        ${tag.includes(uniqueTag) ? 'bg-blue-50 text-blue-700' : 'hover:bg-gray-100 text-gray-900'}`}
                       style={{ fontFamily: "Poppins, sans-serif" }}
                     >
-                      {/* Square Checkbox */}
                       <input
                         type="checkbox"
-                        checked={tag === uniqueTag}
-                        onChange={() => {}} // onChange is required but we handle click on div
+                        checked={tag.includes(uniqueTag)}
+                        onChange={() => {}}
                         className="form-checkbox h-4 w-4 text-blue-600 rounded mr-2"
                       />
-                      {/* Colored Pill for Tag */}
                       <span className={`mr-2 px-2 py-0.5 rounded-full text-xs font-semibold ${getTagColorClass(uniqueTag)}`}>
                         {formatTagName(uniqueTag)}
                       </span>
@@ -348,28 +404,40 @@ export default function IALResources() {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
                 {unitResources["General"].map((resourceGroup, groupIndex) => (
                   resourceGroup.links.map((link, linkIndex) => (
-                    <Link key={groupIndex + '-' + linkIndex} href={link.url} style={{ fontFamily: 'Poppins, sans-serif' }} className={`${(tag === null || tag === resourceGroup.heading) && (resourceTypeFilter === null || resourceTypeFilter === resourceGroup.heading) ? "block" : "hidden"}`}>
+                    <Link key={groupIndex + '-' + linkIndex} href={link.url} style={{ fontFamily: 'Poppins, sans-serif' }} className={`${tag.length === 0 || tag.includes(resourceGroup.heading) ? "block" : "hidden"}`}>
                       <div className="cursor-pointer flex flex-col p-5 border h-fit border-gray-200 rounded-2xl shadow-md bg-white hover:shadow-xl transition-shadow duration-200 group sm:min-h-[120px] sm:min-w-[300px]" style={{ position: 'relative' }}>
-                        {/* <span className="text-sm font-semibold text-[#1A69FA] mb-1 tracking-tight uppercase" style={{ fontFamily: 'Poppins, sans-serif', letterSpacing: '0.04em' }}>{resourceGroup.heading}</span> */}
                         
-                          <div className="inline-flex justify-between">
-                            {link.name && (<p className="text-xl font-bold text-[#153064]">{link.name}</p>)}
-                            <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                              <svg width="22" height="22" fill="none" stroke="#1A69FA" strokeWidth="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                        <div className="inline-flex justify-between">
+                          {link.name && (<p className="text-xl font-bold text-[#153064]">{link.name}</p>)}
+                          <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                            <svg width="22" height="22" fill="none" stroke="#1A69FA" strokeWidth="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                          </div>
+                        </div>
+                        {link.description && (
+                          <p className="text-sm text-gray-600 mt-2 border-l-4 mb-2 border-blue-600 pl-2">{link.description}</p>
+                        )}
+                        <div className="flex flex-col justify-end items-end">
+                          {resourceGroup.heading && (
+                            <div 
+                              className={`cursor-pointer mt-1 text-xs font-semibold tracking-tight uppercase w-fit px-2 py-0.5 rounded-md transition-colors ${
+                                tag.includes(resourceGroup.heading)
+                                  ? getTagColorClass(resourceGroup.heading) 
+                                  : getMainTagDesign(resourceGroup.heading)
+                              }`} 
+                              onClick={(e) => { 
+                                e.preventDefault(); 
+                                setTag(prev => 
+                                  prev.includes(resourceGroup.heading) 
+                                    ? prev.filter(t => t !== resourceGroup.heading)
+                                    : [...prev, resourceGroup.heading]
+                                ); 
+                              }}
+                            >
+                              {formatTagName(resourceGroup.heading)}
                             </div>
-                          </div>
-                          {link.description && (
-                            <p className="text-sm text-gray-600 mt-2 border-l-4 mb-2 border-blue-600 pl-2">{link.description}</p>
                           )}
-                          <div className="flex flex-col justify-end items-end">
-                            {resourceGroup.heading && (
-                              <div className="flex gap-2">
-                                <div className={`cursor-pointer mt-1 text-xs font-semibold tracking-tight uppercase w-fit px-2 py-0.5 ring ring-green-400 rounded-md transition-colors ${tag === null ? "sm:hover:bg-green-400 sm:hover:text-white text-green-400" : tag === resourceGroup.heading ? "bg-green-400 text-white sm:hover:text-green-400 sm:hover:bg-white":"sm:hover:bg-green-400 sm:hover:text-white text-green-400"}`} onClick={handleTag}>{resourceGroup.heading}</div>
-
-                              </div>
-                            )}
-                            {link.last && (<p className="text-xs text-gray-600 mt-1 text-right">{link.contributor ? "Shared On ": "Shared On "}{new Date(link.last).toLocaleString(undefined, {year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'})}</p>)}
-                          </div>
+                          {link.last && (<p className="text-xs text-gray-600 mt-1 text-right">{link.contributor ? "Shared On ": "Shared On "}{new Date(link.last).toLocaleString(undefined, {year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'})}</p>)}
+                        </div>
                         
                       </div>
                     </Link>))
@@ -393,7 +461,7 @@ export default function IALResources() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 p-6">
                   {(unitResources[unitData.unit] || []).map((resourceGroup, groupIndex) => (
                     resourceGroup.links.map((link, linkIndex) => (
-                      <Link key={groupIndex + '-' + linkIndex} href={link.url} style={{ fontFamily: 'Poppins, sans-serif' }} className={`${(tag === null || tag === resourceGroup.heading) && (resourceTypeFilter === null || resourceTypeFilter === resourceGroup.heading) ? "block" : "hidden"}`}>
+                      <Link key={groupIndex + '-' + linkIndex} href={link.url} style={{ fontFamily: 'Poppins, sans-serif' }} className={`${tag.length === 0 || tag.includes(resourceGroup.heading) ? "block" : "hidden"}`}>
                       <div className="cursor-pointer flex flex-col p-5 border h-fit border-gray-200 rounded-2xl shadow-md bg-white hover:shadow-xl transition-shadow duration-200 group sm:min-h-[120px] sm:min-w-[300px]" style={{ position: 'relative' }}>
                         {/* <span className="text-sm font-semibold text-[#1A69FA] mb-1 tracking-tight uppercase" style={{ fontFamily: 'Poppins, sans-serif', letterSpacing: '0.04em' }}>{resourceGroup.heading}</span> */}
                         
@@ -408,8 +476,22 @@ export default function IALResources() {
                           )}
                           <div className="flex flex-col justify-end items-end">
                             {resourceGroup.heading && (
-                              <div className="flex gap-2">
-                                <div className={`cursor-pointer mt-1 text-xs font-semibold tracking-tight uppercase w-fit px-2 py-0.5 ring ring-green-400 rounded-md transition-colors ${tag === null ? "sm:hover:bg-green-400 sm:hover:text-white text-green-400" : tag === resourceGroup.heading ? "bg-green-400 text-white sm:hover:text-green-400 sm:hover:bg-white":"sm:hover:bg-green-400 sm:hover:text-white text-green-400"}`} onClick={handleTag}>{resourceGroup.heading}</div>
+                              <div 
+                                className={`cursor-pointer mt-1 text-xs font-semibold tracking-tight uppercase w-fit px-2 py-0.5 rounded-md transition-colors ${
+                                  tag.includes(resourceGroup.heading)
+                                    ? getTagColorClass(resourceGroup.heading)
+                                    : getMainTagDesign(resourceGroup.heading)
+                                }`} 
+                                onClick={(e) => { 
+                                  e.preventDefault(); 
+                                  setTag(prev => 
+                                    prev.includes(resourceGroup.heading) 
+                                      ? prev.filter(t => t !== resourceGroup.heading)
+                                      : [...prev, resourceGroup.heading]
+                                  ); 
+                                }}
+                              >
+                                {formatTagName(resourceGroup.heading)}
                               </div>
                             )}
                             {link.last && (<p className="text-xs text-gray-600 mt-1 text-right">{link.contributor ? "Shared On ": "Shared On "}{new Date(link.last).toLocaleString(undefined, {year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'})}</p>)}
