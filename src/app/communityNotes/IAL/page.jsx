@@ -102,7 +102,7 @@ export default function IALCommunityNotesPage() {
         .eq('syllabus_type', 'IAL')
         .single();
       if (subjectError || !subjectData) {
-        setError(subjectError || new Error('Subject "{subjectName}" not found.'));
+        setError(subjectError || new Error(`Subject not found:`, subjectName));;
         return;
       }
       let fetchedUnits = subjectData.units || [];
@@ -139,7 +139,7 @@ export default function IALCommunityNotesPage() {
         .eq('syllabus_type', 'IAL')
         .single();
       if (subjectError || !subjectData) {
-        setError(subjectError || new Error('Subject "{subjectName}" not found.'));
+        setError(subjectError || new Error(`Subject not found:`, subjectName));;
         setLoading(false);
         return;
       }

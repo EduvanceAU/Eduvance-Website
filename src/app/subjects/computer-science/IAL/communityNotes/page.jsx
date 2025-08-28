@@ -77,7 +77,7 @@ export default function IALResources() {
         .eq('syllabus_type', 'IAL')
         .single();
       if (subjectError || !subjectData) {
-        setError(subjectError || new Error('Subject "Physics" not found.'));
+        setError(subjectError || new Error(`Subject not found:`, subjectName));;
         return;
       }
       let fetchedUnits = subjectData.units || [];
@@ -115,7 +115,7 @@ export default function IALResources() {
 
         if (subjectError || !subjectData) {
           console.error('Subject fetch error:', subjectError);
-          setError(subjectError || new Error(`Subject "computer-science" not found.`));
+          setError(subjectError || new Error(`Subject not found:`, subjectName));;
           setLoading(false);
           return;
         }

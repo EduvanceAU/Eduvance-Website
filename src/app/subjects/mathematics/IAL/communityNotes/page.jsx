@@ -34,6 +34,21 @@ const getTagColorClass = (tagName) => {
   return tagColors[tagName.toLowerCase()] || 'bg-gray-100 text-gray-800';
 };
 
+const getMainTagDesign = (tagName) => {
+  const tagColors = {
+    'note': 'ring ring-blue-300 text-blue-600 sm:hover:bg-blue-100 sm:hover:text-blue-800',
+    'essay_questions': 'ring ring-green-300 text-green-600 sm:hover:bg-green-100 sm:hover:text-green-800',
+    'assorted_papers': 'ring ring-orange-300 text-orange-600 sm:hover:bg-orange-100 sm:hover:text-orange-800',
+    'youtube_videos': 'ring ring-red-300 text-red-600 sm:hover:bg-red-100 sm:hover:text-red-800',
+    'topic_question': 'ring ring-yellow-300 text-yellow-600 sm:hover:bg-yellow-100 sm:hover:text-yellow-800',
+    'commonly_asked_questions': 'ring ring-pink-300 text-pink-600 sm:hover:bg-pink-100 sm:hover:text-pink-800',
+    'solved_papers': 'ring ring-indigo-300 text-indigo-600 sm:hover:bg-indigo-100 sm:hover:text-indigo-800',
+    'extra_resource': 'ring ring-teal-300 text-teal-600 sm:hover:bg-teal-100 sm:hover:text-teal-800',
+  };
+  
+  // Return specific color if mapped, otherwise use a default
+  return tagColors[tagName.toLowerCase()] || 'ring ring-gray-100 text-gray-100 sm:hover:bg-gray-100 sm:hover:text-gray-800';
+};
 // Function to get background color for the icon
 const getTagIconColor = (tagName) => {
   const iconColors = {
@@ -128,7 +143,7 @@ export default function IALResources() {
         .eq('syllabus_type', 'IAL')
         .single();
       if (subjectError || !subjectData) {
-        setError(subjectError || new Error('Subject "Physics" not found.'));
+        setError(subjectError || new Error(`Subject not found:`, subjectName));;
         return;
       }
       let fetchedUnits = subjectData.units || [];
@@ -167,7 +182,7 @@ export default function IALResources() {
 
         if (subjectError || !subjectData) {
           console.error('Subject fetch error:', subjectError);
-          setError(subjectError || new Error(`Subject not found:`, Mathematics));
+          setError(subjectError || new Error(`Subject not found:`, subjectName));;
           setLoading(false);
           return;
         }
@@ -325,7 +340,7 @@ export default function IALResources() {
                       {tag.slice(0, 3).map((selectedTag) => (
                         <span
                           key={selectedTag}
-                          className="text-xs bg-green-400 text-white p-0.5 rounded-full"
+                          className={`text-xs ${getTagIconColor(selectedTag)} text-white p-0.5 rounded-full`}
                         >
                           <svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="16px" fill="white">
                             <path d="M480-80 240-480l240-400 240 400L480-80Zm0-156 147-244-147-244-147 244 147 244Zm0-244Z"/>
@@ -406,8 +421,8 @@ export default function IALResources() {
                             <div 
                               className={`cursor-pointer mt-1 text-xs font-semibold tracking-tight uppercase w-fit px-2 py-0.5 rounded-md transition-colors ${
                                 tag.includes(resourceGroup.heading)
-                                  ? "bg-green-400 text-white" 
-                                  : "ring ring-green-400 text-green-400 sm:hover:bg-green-400 sm:hover:text-white"
+                                  ? getTagColorClass(resourceGroup.heading) 
+                                  : getMainTagDesign(resourceGroup.heading)
                               }`} 
                               onClick={(e) => { 
                                 e.preventDefault(); 
@@ -464,8 +479,8 @@ export default function IALResources() {
                               <div 
                                 className={`cursor-pointer mt-1 text-xs font-semibold tracking-tight uppercase w-fit px-2 py-0.5 rounded-md transition-colors ${
                                   tag.includes(resourceGroup.heading)
-                                    ? "bg-green-400 text-white" 
-                                    : "ring ring-green-400 text-green-400 sm:hover:bg-green-400 sm:hover:text-white"
+                                    ? getTagColorClass(resourceGroup.heading)
+                                    : getMainTagDesign(resourceGroup.heading)
                                 }`} 
                                 onClick={(e) => { 
                                   e.preventDefault(); 
