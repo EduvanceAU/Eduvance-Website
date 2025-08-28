@@ -5,34 +5,81 @@ import { FaDiscord } from 'react-icons/fa';
 
 const testimonials = [
   {
-    content: "Eduvance is honestly the best. The resources are amazing, and the community is so supportive. It's helped me so much with my studies.",
-    author: "Alex, University Student",
-    avatar: "/bio.png"
+    content: "I joined Eduvance last year solely for the purpose of getting notes, however it truly is more than just an educational server. i think i've met some of the nicest people to ever exist, and i really am grateful for all of my friends there. the community in Eduvance is amazing, even the staff team; most of them are really kind and easy to get along with.",
+    author: "vern 🌱",
+    avatar: "/vern.webp",
+    role: "Eduvance Member"
   },
   {
-    content: "I've never been part of a community that's so focused on helping each other out. The past papers and notes are a lifesaver.",
-    author: "Samantha, High School Student",
-    avatar: "/bio.png"
+    content: "The entire Eduvance community helped me out significantly throughout my studies. The people here are great and extremely helpful for anything you might need. I had several doubts about high school, universities, and career pathways and all of them have been cleared up by simply asking the great people over here. I had no idea how important a good environment was for my studies before I joined Eduvance. I am beyond grateful for the experience that I have had and I'm looking forward to the future",
+    author: "Booni",
+    avatar: "/booni.webp",
+    role: "Eduvance Member"
   },
   {
-    content: "The Discord server is incredible. You can get help with any subject, and the staff are super friendly and helpful. Highly recommend!",
-    author: "David, College Freshman",
-    avatar: "/bio.png"
+    content: "Eduvance is SPECTACULAR for Edexcel IAL students :3 The server is REALLY active, and people share notes all the time. They even have subject-specific helpers to give quick support for doubts. It’s one of the best places to find help and study materials for Edexcel IAL subjects 🙂",
+    author: "Croizzants⋆˚࿔",
+    avatar: "/croizzants.webp",
+    role: "Eduvance Member"
   },
   {
-    content: "The quality of the notes and study guides is top-tier. I've seen a huge improvement in my grades since joining Eduvance.",
-    author: "Jessica, Tutor",
-    avatar: "/bio.png"
+    content: "Don’t wanna state the obvious, but eduvance is one of the best communities out there. Literally filled with the nicest, sweetest people you’ll ever get to interact with 🙂 and some of the most helpful individuals and resources out there. The staff, bios, and APs all work together seamlessly to make sure everyone is safe, happy, and having a great time, making this server stand out.",
+    author: "Maroon",
+    avatar: "/maroon.webp",
+    role: "Eduvance Member"
   },
   {
-    content: "I love the new UI! It's so clean and easy to use. The platform has everything I need in one place.",
-    author: "Michael, Developer",
-    avatar: "/bio.png"
+    content: "Eduvance has been like a second-home to me since its early days. It has been my go-to place for useful resources including past papers and thanks to those, I have been able to achieve great results and give back as a community contributor! Definitely one of the warmest places for sharing, connecting and suffering school in this hellish journey of IGCSEs and IALs!",
+    author: "Aeth_en 🎗️",
+    avatar: "/aethen.webp",
+    role: "Community Contributor"
   },
+  {
+    content: "I joined Eduvance back in November 2024, and it has helped me soo much in my IGCSE and a levels, a server full of lovely people and helpful staff, would definitely recommend Edexcel students to join and benefit immensely",
+    author: "ThePearsonPrince",
+    avatar: "/pearsonprince.webp",
+    role: "Eduvance Member"
+  },
+  {
+    content: "Eduvance really saved my IGCSEs as I relied heavily on the community notes. The notes are of very high quality and well written. The staff team also helped me a lot by giving instant replies whenever I had queries or made a report. The helpers are talented and always quick to respond. I would love to contribute to Eduvance in more ways in the future.",
+    author: "Ryan",
+    avatar: "/ryan.webp",
+    role: "Community Contributor"
+  },
+  {
+    content: "With all honesty , Eduvance has genuinely helped me a lot especially when I gave my exams , the amount of help I got from people was unbelievable and the resources available made it easier for me to do really well , it’s genuinely amazing and the people are always supportive and welling to help in a matter of seconds , will forever be grateful for this community and I’m just trying my best to repay this amazing treatment that I’ve gotten over the years !",
+    author: "! S",
+    avatar: "/7elc.webp",
+    role: "Community Contributor"
+  },
+  {
+    content: "I joined Eduvance back in November 2024, and it has helped me soo much in my IGCSE and a levels, a server full of lovely people and helpful staff, would definitely recommend Edexcel students to join and benefit immensely",
+    author: "Abosmady :3",
+    avatar: "/abosmady.webp",
+    role: "Eduvance Member"
+  },
+  {
+    content: "Eduvance really saved my IGCSEs as I relied heavily on the community notes. The notes are of very high quality and well written. The staff team also helped me a lot by giving instant replies whenever I had queries or made a report. The helpers are talented and always quick to respond. I would love to contribute to Eduvance in more ways in the future.",
+    author: "Elk",
+    avatar: "/elk.webp",
+    role: "Eduvance Staff"
+  },
+  {
+    content: "With all honesty , Eduvance has genuinely helped me a lot especially when I gave my exams , the amount of help I got from people was unbelievable and the resources available made it easier for me to do really well , it’s genuinely amazing and the people are always supportive and welling to help in a matter of seconds , will forever be grateful for this community and I’m just trying my best to repay this amazing treatment that I’ve gotten over the years !",
+    author: "Draxo",
+    avatar: "/draxo.webp",
+    role: "Community Contributor"
+  },
+  {
+    content: "With all honesty , Eduvance has genuinely helped me a lot especially when I gave my exams , the amount of help I got from people was unbelievable and the resources available made it easier for me to do really well , it’s genuinely amazing and the people are always supportive and welling to help in a matter of seconds , will forever be grateful for this community and I’m just trying my best to repay this amazing treatment that I’ve gotten over the years !",
+    author: "TOM",
+    avatar: "/tom.webp",
+    role: "Community Contributor"
+  }
 ];
 
 const AutoScrollTestimonials = () => {
-  const totalWidth = testimonials.length * (320 + 32) //mx-4 = 16+16=32px <- This is why 32 and 320 was chosen by Specter, thus the 320
+  const totalWidth = testimonials.length * (360 + 32) //mx-4 = 16+16=32px <- This is why 32 and 320 was chosen by Specter, thus the 320
   return (
     <div className="relative w-full overflow-hidden py-8 sm:py-12">
       <style jsx>{`@keyframes scroll-testimonials {
@@ -53,7 +100,7 @@ const AutoScrollTestimonials = () => {
             {testimonials.concat(testimonials).map((testimonial, index) => (
               <div
                 key={index}
-                className="flex-shrink-0 inline-block w-80 min-w-[320px] max-w-xs mx-4 p-6 bg-gray-100 dark:bg-gray-700 rounded-lg transition-transform transform hover:-translate-y-2.5 duration-300"
+                className="flex-shrink-0 inline-block w-80 min-w-[360px] max-w-xs mx-4 p-6 bg-gray-100 dark:bg-gray-700 border-solid border border-gray-200 rounded-lg transition-transform transform hover:-translate-y-2.5 duration-300"
               >
                 <div className="flex items-start mb-2">
                   <Image
@@ -67,11 +114,11 @@ const AutoScrollTestimonials = () => {
                     <p className="font-semibold text-lg">{testimonial.author}</p>
                     <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
                       <FaDiscord className="mr-1" />
-                      Eduvance Member
+                      {testimonial.role}
                     </div>
                   </div>
                 </div>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed break-words">
+                <p className="text-gray-700 dark:text-gray-300 leading-relaxed break-words text-md">
                   "{testimonial.content}"
                 </p>
               </div>

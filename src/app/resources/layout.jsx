@@ -7,9 +7,9 @@ export const metadata = {
   description:
     "Browse a diverse library of shared resources — including notes, study guides, slides, and question banks — contributed by both students and teachers. These materials are here to support your learning and foster a more open, collaborative approach to education!",
   icons: {
-    icon: "/BlueSolo.svg",
-    shortcut: "/BlueSolo.svg",
-    apple: "/BlueSolo.svg",
+    icon: "/CircularLogo.png",
+    shortcut: "/CircularLogo.png",
+    apple: "/CircularLogo.png",
   },
   openGraph: {
     title: "Resources",

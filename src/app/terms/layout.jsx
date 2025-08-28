@@ -7,9 +7,9 @@ export const metadata = {
   description:
     `Read our Terms of Service to understand the rules, responsibilities, and guidelines for using our website or app. This agreement outlines your rights, limitations, and acceptable use of our services. By accessing our platform, you agree to these terms that help ensure a safe and fair experience for everyone.`,
   icons: {
-    icon: "/BlueSolo.svg",
-    shortcut: "/BlueSolo.svg",
-    apple: "/BlueSolo.svg",
+    icon: "/CircularLogo.png",
+    shortcut: "/CircularLogo.png",
+    apple: "/CircularLogo.png",
   },
   openGraph: {
     title: `Terms of Service`,
