@@ -32,7 +32,7 @@ const testimonials = [
 ];
 
 const AutoScrollTestimonials = () => {
-  const totalWidth = testimonials.length * (320 + 32) //mx-4 = 16+16=32px <- This is why 32 and 320 was chosen by Specter, thus the 320
+  const totalWidth = testimonials.length * (360 + 32) //mx-4 = 16+16=32px <- This is why 32 and 320 was chosen by Specter, thus the 320
   return (
     <div className="relative w-full overflow-hidden py-8 sm:py-12">
       <style jsx>{`@keyframes scroll-testimonials {
@@ -53,7 +53,7 @@ const AutoScrollTestimonials = () => {
             {testimonials.concat(testimonials).map((testimonial, index) => (
               <div
                 key={index}
-                className="flex-shrink-0 inline-block w-80 min-w-[320px] max-w-xs mx-4 p-6 bg-gray-100 dark:bg-gray-700 rounded-lg transition-transform transform hover:-translate-y-2.5 duration-300"
+                className="flex-shrink-0 inline-block w-80 min-w-[360px] max-w-xs mx-4 p-6 bg-gray-100 dark:bg-gray-700 border-solid border border-gray-200 rounded-lg transition-transform transform hover:-translate-y-2.5 duration-300"
               >
                 <div className="flex items-start mb-2">
                   <Image
@@ -71,7 +71,7 @@ const AutoScrollTestimonials = () => {
                     </div>
                   </div>
                 </div>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed break-words">
+                <p className="text-gray-700 dark:text-gray-300 leading-relaxed break-words text-md">
                   "{testimonial.content}"
                 </p>
               </div>
