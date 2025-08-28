@@ -6,29 +6,76 @@ import { FaDiscord } from 'react-icons/fa';
 const testimonials = [
   {
     content: "I joined Eduvance last year solely for the purpose of getting notes, however it truly is more than just an educational server. i think i've met some of the nicest people to ever exist, and i really am grateful for all of my friends there. the community in Eduvance is amazing, even the staff team; most of them are really kind and easy to get along with.",
-    author: "vern 🌱, A2 Student",
-    avatar: "/vern.webp"
+    author: "vern 🌱",
+    avatar: "/vern.webp",
+    role: "Eduvance Member"
+  },
+  {
+    content: "The entire Eduvance community helped me out significantly throughout my studies. The people here are great and extremely helpful for anything you might need. I had several doubts about high school, universities, and career pathways and all of them have been cleared up by simply asking the great people over here. I had no idea how important a good environment was for my studies before I joined Eduvance. I am beyond grateful for the experience that I have had and I'm looking forward to the future",
+    author: "Booni",
+    avatar: "/booni.webp",
+    role: "Eduvance Member"
+  },
+  {
+    content: "Eduvance is SPECTACULAR for Edexcel IAL students :3 The server is REALLY active, and people share notes all the time. They even have subject-specific helpers to give quick support for doubts. It’s one of the best places to find help and study materials for Edexcel IAL subjects 🙂",
+    author: "Croizzants⋆˚࿔",
+    avatar: "/croizzants.webp",
+    role: "Eduvance Member"
+  },
+  {
+    content: "Don’t wanna state the obvious, but eduvance is one of the best communities out there. Literally filled with the nicest, sweetest people you’ll ever get to interact with 🙂 and some of the most helpful individuals and resources out there. The staff, bios, and APs all work together seamlessly to make sure everyone is safe, happy, and having a great time, making this server stand out.",
+    author: "Maroon",
+    avatar: "/maroon.webp",
+    role: "Eduvance Member"
   },
   {
     content: "Eduvance has been like a second-home to me since its early days. It has been my go-to place for useful resources including past papers and thanks to those, I have been able to achieve great results and give back as a community contributor! Definitely one of the warmest places for sharing, connecting and suffering school in this hellish journey of IGCSEs and IALs!",
-    author: "Aeth_en 🎗️, A2 Student",
-    avatar: "/aethen.webp"
+    author: "Aeth_en 🎗️",
+    avatar: "/aethen.webp",
+    role: "Community Contributor"
   },
   {
     content: "I joined Eduvance back in November 2024, and it has helped me soo much in my IGCSE and a levels, a server full of lovely people and helpful staff, would definitely recommend Edexcel students to join and benefit immensely",
-    author: "ThePearsonPrince, A2 Student",
-    avatar: "/pearsonprince.webp"
+    author: "ThePearsonPrince",
+    avatar: "/pearsonprince.webp",
+    role: "Eduvance Member"
   },
   {
     content: "Eduvance really saved my IGCSEs as I relied heavily on the community notes. The notes are of very high quality and well written. The staff team also helped me a lot by giving instant replies whenever I had queries or made a report. The helpers are talented and always quick to respond. I would love to contribute to Eduvance in more ways in the future.",
-    author: "Ryan, A2 Student",
-    avatar: "/ryan.webp"
+    author: "Ryan",
+    avatar: "/ryan.webp",
+    role: "Community Contributor"
   },
   {
     content: "With all honesty , Eduvance has genuinely helped me a lot especially when I gave my exams , the amount of help I got from people was unbelievable and the resources available made it easier for me to do really well , it’s genuinely amazing and the people are always supportive and welling to help in a matter of seconds , will forever be grateful for this community and I’m just trying my best to repay this amazing treatment that I’ve gotten over the years !",
-    author: "! S, A2 Student",
-    avatar: "/7elc.webp"
+    author: "! S",
+    avatar: "/7elc.webp",
+    role: "Community Contributor"
   },
+  {
+    content: "I joined Eduvance back in November 2024, and it has helped me soo much in my IGCSE and a levels, a server full of lovely people and helpful staff, would definitely recommend Edexcel students to join and benefit immensely",
+    author: "Abosmady :3",
+    avatar: "/abosmady.webp",
+    role: "Eduvance Member"
+  },
+  {
+    content: "Eduvance really saved my IGCSEs as I relied heavily on the community notes. The notes are of very high quality and well written. The staff team also helped me a lot by giving instant replies whenever I had queries or made a report. The helpers are talented and always quick to respond. I would love to contribute to Eduvance in more ways in the future.",
+    author: "Elk",
+    avatar: "/elk.webp",
+    role: "Eduvance Staff"
+  },
+  {
+    content: "With all honesty , Eduvance has genuinely helped me a lot especially when I gave my exams , the amount of help I got from people was unbelievable and the resources available made it easier for me to do really well , it’s genuinely amazing and the people are always supportive and welling to help in a matter of seconds , will forever be grateful for this community and I’m just trying my best to repay this amazing treatment that I’ve gotten over the years !",
+    author: "Draxo",
+    avatar: "/draxo.webp",
+    role: "Community Contributor"
+  },
+  {
+    content: "With all honesty , Eduvance has genuinely helped me a lot especially when I gave my exams , the amount of help I got from people was unbelievable and the resources available made it easier for me to do really well , it’s genuinely amazing and the people are always supportive and welling to help in a matter of seconds , will forever be grateful for this community and I’m just trying my best to repay this amazing treatment that I’ve gotten over the years !",
+    author: "TOM",
+    avatar: "/tom.webp",
+    role: "Community Contributor"
+  }
 ];
 
 const AutoScrollTestimonials = () => {
@@ -67,7 +114,7 @@ const AutoScrollTestimonials = () => {
                     <p className="font-semibold text-lg">{testimonial.author}</p>
                     <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
                       <FaDiscord className="mr-1" />
-                      Eduvance Member
+                      {testimonial.role}
                     </div>
                   </div>
                 </div>
