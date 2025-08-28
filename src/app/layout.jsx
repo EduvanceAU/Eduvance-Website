@@ -23,9 +23,9 @@ export const metadata = {
   description:
     "Education drives progress. Eduvance helps you learn, revise, and stay ahead in your academic journey.",
   icons: {
-    icon: "/BlueSolo.svg",
-    shortcut: "/BlueSolo.svg",
-    apple: "/BlueSolo.svg",
+    icon: "/CircularLogo.png",
+    shortcut: "/CircularLogo.png",
+    apple: "/CircularLogo.png",
   },
   openGraph: {
     title: "Eduvance",
