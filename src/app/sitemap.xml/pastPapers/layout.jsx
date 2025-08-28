@@ -7,9 +7,9 @@ export const metadata = {
   description:
     `Browse a complete repository of past papers, sorted by year and session. Perfect for timed practice or marking scheme review — your go-to resource for efficient, up-to-date exam preparation!`,
   icons: {
-    icon: "/BlueSolo.svg",
-    shortcut: "/BlueSolo.svg",
-    apple: "/BlueSolo.svg",
+    icon: "/CircularLogo.png",
+    shortcut: "/CircularLogo.png",
+    apple: "/CircularLogo.png",
   },
   openGraph: {
     title: `Past Papers`,

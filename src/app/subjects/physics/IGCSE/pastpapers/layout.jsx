@@ -13,9 +13,9 @@ export const metadata = {
   description:
     `Browse a complete repository of ${refsyllabusType} ${refName} past papers, sorted by year and session. Perfect for timed practice or marking scheme review — your go-to resource for efficient, up-to-date exam preparation!`,
   icons: {
-    icon: "/BlueSolo.svg",
-    shortcut: "/BlueSolo.svg",
-    apple: "/BlueSolo.svg",
+    icon: "/CircularLogo.png",
+    shortcut: "/CircularLogo.png",
+    apple: "/CircularLogo.png",
   },
   openGraph: {
     title: `${refsyllabusType} ${refName}`,

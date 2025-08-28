@@ -7,9 +7,9 @@ export const metadata = {
   description:
     `Learn what behavior is expected, what’s prohibited, and how we handle violations. By participating in our platform, you agree to uphold these standards and contribute to a positive, supportive community experience.`,
   icons: {
-    icon: "/BlueSolo.svg",
-    shortcut: "/BlueSolo.svg",
-    apple: "/BlueSolo.svg",
+    icon: "/CircularLogo.png",
+    shortcut: "/CircularLogo.png",
+    apple: "/CircularLogo.png",
   },
   openGraph: {
     title: `Community Guidelines`,

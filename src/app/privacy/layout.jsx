@@ -7,9 +7,9 @@ export const metadata = {
   description:
     `Learn how we collect, use, and protect your personal information. Our Privacy Policy outlines your data rights, the security measures we take, and how we ensure transparency. Review this policy to understand how your privacy is handled when using our services or interacting with our platform.`,
   icons: {
-    icon: "/BlueSolo.svg",
-    shortcut: "/BlueSolo.svg",
-    apple: "/BlueSolo.svg",
+    icon: "/CircularLogo.png",
+    shortcut: "/CircularLogo.png",
+    apple: "/CircularLogo.png",
   },
   openGraph: {
     title: `Privacy Policy`,
