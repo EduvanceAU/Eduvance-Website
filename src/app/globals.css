@@ -258,6 +258,6 @@
 
 @layer utilities {
   .animate-scroll-testimonials {
-    animation: scroll-testimonials 15s linear infinite;
+    animation: scroll-testimonials 30s linear infinite;
   }
 }
