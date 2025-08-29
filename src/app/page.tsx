@@ -13,7 +13,6 @@ import Headline from '@/assets/png/Headline.png'
 import Page from '@/assets/png/Page.png'
 import WhiteDiscordLogo from '@/assets/png/WhiteDiscordLogo.png'
 import QuotationMarks from '@/assets/png/QuotationMarks.png'
-
 import dynamic from 'next/dynamic';
 
 import AutoScrollTestimonials from '@/components/AutoScrollTestimonials';
@@ -68,17 +67,35 @@ const ScrollingColumn: React.FC<ScrollingColumnProps> = ({ direction, count = 15
 
 export default function Main() {
   useEffect(() => {
-    const chars = "abcdefghijklmnopqrstuvwxyzαβγδεζηθικλμνξοπρστυφχψωABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!?%$*#";
-    const bg = document.querySelector(".random")
-    const randomChar = () => chars[Math.floor(Math.random() * (chars.length))],
-    randomString = (length) => Array.from(Array(length)).map(randomChar).join("");
-    bg.innerHTML = randomString(3000);    
-    setInterval(() => {
-      bg.innerHTML = randomString(3000);
-    }, 450);
-  }, [])
+    const matrix = document.getElementById("matrix") as HTMLCanvasElement;
+    if (!matrix) return;
 
-  
+    const width = (matrix.width = window.innerWidth);
+    const height = (matrix.height = window.innerHeight);
+    const ctx = matrix.getContext("2d");
+    if (!ctx) return;
+
+    const letters = Array(256).fill(0);
+
+    const draw = () => {
+      ctx.fillStyle = "rgba(54, 124, 255, 0.05)"; // For future reference, this is the background, make sure it's 0.05
+      ctx.fillRect(0, 0, width, height);
+      ctx.fillStyle = "#36eef7"; // For future reference, this is the text color
+      ctx.font = "12px monospace";
+      letters.forEach((y_pos, index) => {
+        const chars = "abcdefghijklmnopqrstuvwxyzαβγδεζηθικλμνξοπρστυφχψωABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!?%$*#";
+        const text = chars[Math.floor(Math.random() * chars.length)];
+        const x_pos = index * 15;
+        ctx.fillText(text, x_pos, y_pos);
+        letters[index] = y_pos > height + Math.random() * 10000 ? 0 : y_pos + 10;
+      });
+    };
+
+    const interval = setInterval(draw, 60);
+
+    return () => clearInterval(interval);
+  }, []);
+
   const discord = "https://discord.gg/eduvance-community-983670206889099264"
   const[member_count, setmembercount] = useState("")
   useEffect(() =>{
@@ -119,9 +136,8 @@ export default function Main() {
               </button>
             </a>
 
-            <div className='select-none break-all random w-full h-full absolute inset-0 place-content-around text-center z-[-2] text-white opacity-20 text-xs sm:text-base tracking-[0.5rem] sm:tracking-[1rem]' style={{ fontFamily: 'Poppins, sans-serif', maskImage: 'radial-gradient(circle, black 5%, transparent 100%)' }}>
+            <canvas id="matrix" className='select-none break-all w-full h-full absolute inset-0 place-content-around z-[-2] opacity-65' style={{ maskImage: 'radial-gradient(circle, black 5%, transparent 100%)' }}/>            
 
-            </div>
             {/* Decorative Images (Positioned with absolute so they don't mess layout) */}
             <Image
               src={DocWidgets}
