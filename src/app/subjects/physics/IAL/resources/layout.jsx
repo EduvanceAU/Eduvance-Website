@@ -13,9 +13,9 @@ export const metadata = {
   description:
     `Discover original Eduvance resources for ${refsyllabusType} ${refName}, crafted to simplify tough topics and support your revision. Designed with care and clarity to help you study smarter!`,
   icons: {
-    icon: "/CircularLogo.png",
-    shortcut: "/CircularLogo.png",
-    apple: "/CircularLogo.png",
+    icon: "/BlueSolo.svg",
+    shortcut: "/BlueSolo.svg",
+    apple: "/BlueSolo.svg",
   },
   openGraph: {
     title: `${refsyllabusType} ${refName}`,

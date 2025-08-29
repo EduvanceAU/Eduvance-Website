@@ -10,9 +10,9 @@ export const metadata = {
   description:
     `Explore all-in-one study tools for ${refName} — from curated revision guides and official past papers to peer-shared notes. Perfect for reviewing concepts, preparing for exams, or finding simplified explanations, everything you need is right here to boost your learning and help you stay ahead!`,
   icons: {
-    icon: "/CircularLogo.png",
-    shortcut: "/CircularLogo.png",
-    apple: "/CircularLogo.png",
+    icon: "/BlueSolo.svg",
+    shortcut: "/BlueSolo.svg",
+    apple: "/BlueSolo.svg",
   },
   openGraph: {
     title: subjectName,
