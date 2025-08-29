@@ -59,19 +59,19 @@ const testimonials = [
     role: "Eduvance Member"
   },
   {
-    content: "Eduvance really saved my IGCSEs as I relied heavily on the community notes. The notes are of very high quality and well written. The staff team also helped me a lot by giving instant replies whenever I had queries or made a report. The helpers are talented and always quick to respond. I would love to contribute to Eduvance in more ways in the future.",
+    content: "Being a long-time member of Eduvance, I can confidently say it's been an incredibly supportive place for my academic journey. They've provided me with the essential resources I needed to succeed. The sense of community is strong, and being surrounded by like-minded individuals truly makes me feel at home. It's an environment where I've received the most support for my studies and felt a true sense of belonging.",
     author: "Elk",
     avatar: "/elk.webp",
     role: "Eduvance Member"
   },
   {
-    content: "With all honesty , Eduvance has genuinely helped me a lot especially when I gave my exams , the amount of help I got from people was unbelievable and the resources available made it easier for me to do really well , it’s genuinely amazing and the people are always supportive and welling to help in a matter of seconds , will forever be grateful for this community and I’m just trying my best to repay this amazing treatment that I’ve gotten over the years !",
+    content: "I’ve been on the Eduvance Discord since my IGCSE days, and it’s been a huge help. I didn’t go to school, so this server was my main source for clearing doubts and understanding some tricky past paper questions. I’ve met some amazing people here who really motivated me to aim higher. Now I’m in A2 and I still get help, and contributing here and there has made me think deeper about concepts. Honestly, it’s an awesome community to learn and grow with!",
     author: "Draxo",
     avatar: "/draxo.webp",
     role: "Community Contributor"
   },
   {
-    content: "With all honesty , Eduvance has genuinely helped me a lot especially when I gave my exams , the amount of help I got from people was unbelievable and the resources available made it easier for me to do really well , it’s genuinely amazing and the people are always supportive and welling to help in a matter of seconds , will forever be grateful for this community and I’m just trying my best to repay this amazing treatment that I’ve gotten over the years !",
+    content: "The thing about Eduvance is that it is an extremely useful asset to all students using it for there IGCSE or IAL exams. I really love Eduvance due to there extremely supportive discord server and their incredibly friendly staff team and also there huge collection of A* guaranteed notes. I really would like to wish the very best for the future of Eduvance.",
     author: "TOM",
     avatar: "/tom.webp",
     role: "Community Moderator"
