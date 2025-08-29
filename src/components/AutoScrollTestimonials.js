@@ -17,6 +17,12 @@ const testimonials = [
     role: "Eduvance Member"
   },
   {
+    content: "Eduvance has completely changed the way I study. Being part of such a supportive community pushed me to stay consistent, and I’ve seen both myself and others make incredible academic comebacks. The late-night VCs, study sessions that turn into hours of jokes, and even the random fun in general chat make it all feel less like studying with strangers and more like being part of a family.",
+    author: "Cryssi",
+    avatar: "/cryssi.webp",
+    role: "Eduvance Member"
+  },
+  {
     content: "Eduvance is SPECTACULAR for Edexcel IAL students :3 The server is REALLY active, and people share notes all the time. They even have subject-specific helpers to give quick support for doubts. It’s one of the best places to find help and study materials for Edexcel IAL subjects 🙂",
     author: "Croizzants⋆˚࿔",
     avatar: "/croizzants.webp",
