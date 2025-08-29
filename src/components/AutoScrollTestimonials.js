@@ -62,7 +62,7 @@ const testimonials = [
     content: "Eduvance really saved my IGCSEs as I relied heavily on the community notes. The notes are of very high quality and well written. The staff team also helped me a lot by giving instant replies whenever I had queries or made a report. The helpers are talented and always quick to respond. I would love to contribute to Eduvance in more ways in the future.",
     author: "Elk",
     avatar: "/elk.webp",
-    role: "Eduvance Staff"
+    role: "Eduvance Member"
   },
   {
     content: "With all honesty , Eduvance has genuinely helped me a lot especially when I gave my exams , the amount of help I got from people was unbelievable and the resources available made it easier for me to do really well , it’s genuinely amazing and the people are always supportive and welling to help in a matter of seconds , will forever be grateful for this community and I’m just trying my best to repay this amazing treatment that I’ve gotten over the years !",
@@ -74,7 +74,7 @@ const testimonials = [
     content: "With all honesty , Eduvance has genuinely helped me a lot especially when I gave my exams , the amount of help I got from people was unbelievable and the resources available made it easier for me to do really well , it’s genuinely amazing and the people are always supportive and welling to help in a matter of seconds , will forever be grateful for this community and I’m just trying my best to repay this amazing treatment that I’ve gotten over the years !",
     author: "TOM",
     avatar: "/tom.webp",
-    role: "Community Contributor"
+    role: "Community Moderator"
   }
 ];
 
