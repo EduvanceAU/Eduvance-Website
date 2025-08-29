@@ -66,36 +66,6 @@ const ScrollingColumn: React.FC<ScrollingColumnProps> = ({ direction, count = 15
 };
 
 export default function Main() {
-  useEffect(() => {
-    const matrix = document.getElementById("matrix") as HTMLCanvasElement;
-    if (!matrix) return;
-
-    const width = (matrix.width = window.innerWidth);
-    const height = (matrix.height = window.innerHeight);
-    const ctx = matrix.getContext("2d");
-    if (!ctx) return;
-
-    const letters = Array(256).fill(0);
-
-    const draw = () => {
-      ctx.fillStyle = "rgba(54, 124, 255, 0.05)"; // For future reference, this is the background, make sure it's 0.05
-      ctx.fillRect(0, 0, width, height);
-      ctx.fillStyle = "#36eef7"; // For future reference, this is the text color
-      ctx.font = "12px monospace";
-      letters.forEach((y_pos, index) => {
-        const chars = "abcdefghijklmnopqrstuvwxyzαβγδεζηθικλμνξοπρστυφχψωABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!?%$*#";
-        const text = chars[Math.floor(Math.random() * chars.length)];
-        const x_pos = index * 15;
-        ctx.fillText(text, x_pos, y_pos);
-        letters[index] = y_pos > height + Math.random() * 10000 ? 0 : y_pos + 10;
-      });
-    };
-
-    const interval = setInterval(draw, 60);
-
-    return () => clearInterval(interval);
-  }, []);
-
   const discord = "https://discord.gg/eduvance-community-983670206889099264"
   const[member_count, setmembercount] = useState("")
   useEffect(() =>{
@@ -108,9 +78,10 @@ export default function Main() {
     <>
       <Home dontShowload showExtra/>
       {/* Hero Section */}
+      <div className='flex flex-col justify-evenly gap-[100px]'>
       <section className="w-full min-h-screen flex flex-col relative pt-16">
         {/* Gradient Box in Background */}
-        <div className="flex text-center flex-col gap-4 max-sm:gap-2 max-sm:justify-start max-sm:pt-5 items-center justify-center absolute w-[95vw] h-[85vh] bg-gradient-to-b from-[#4E8CFF] to-[#0C60FB] rounded-2xl shadow-xl z-0 left-1/2 transform -translate-x-1/2 mb-[-50px] overflow-hidden" >
+        <div className="flex text-center flex-col gap-4 max-sm:gap-2 max-sm:justify-start max-sm:pt-5 items-center justify-center absolute w-[95vw] h-[85vh] bg-gradient-to-b from-[#4E8CFF] to-[#0C60FB] rounded-2xl shadow-xl z-0 left-1/2 transform -translate-x-1/2 mb-[-50px]" >
           
 
             <Image src={Headline} alt="Headline" className="pointer-events-none w-[800px] h-auto z-10" />
@@ -136,15 +107,17 @@ export default function Main() {
               </button>
             </a>
 
-            <canvas id="matrix" className='select-none break-all w-full h-full absolute inset-0 place-content-around z-[-2] opacity-65' style={{ maskImage: 'radial-gradient(circle, black 5%, transparent 100%)' }}/>            
-
             {/* Decorative Images (Positioned with absolute so they don't mess layout) */}
+            <Image
+              src={bgCrypto}
+              alt="Decorative Crypto"
+              className="absolute left-1/2 transform -translate-x-1/2 w-full h-auto z-10"
+            />
             <Image
               src={DocWidgets}
               alt="DocWidgets"
               className="pointer-events-none absolute top-[50%] sm:top-[90%] w-[300px] sm:w-[300px] h-auto transform sm:-translate-y-40 translate-y-10 left-[-20px] z-0"
             />
-
           
         </div>
       </section>
@@ -168,7 +141,7 @@ export default function Main() {
           <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-white to-transparent z-10"></div> {/* Adjust 'from-white' to your background color if needed */}
         </div>
       </section>
-
+      </div>
       {/* Study Materials Section */}
       <section className="w-full py-24 relative top-[-500px]">
         <div className="relative flex items-center justify-center text-center top-[-200px]">
