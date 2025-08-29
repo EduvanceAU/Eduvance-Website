@@ -102,11 +102,11 @@ const AutoScrollTestimonials = () => {
         
         {/* Container for the scrolling testimonials */}
         <div className="group relative select-none overflow-hidden pt-5 w-full">
-          <div className="flex animate-scroll-testimonials group-hover:[animation-play-state:paused]">
+          <div className="flex items-start animate-scroll-testimonials group-hover:[animation-play-state:paused]">
             {testimonials.concat(testimonials).map((testimonial, index) => (
               <div
                 key={index}
-                className="flex-shrink-0 inline-block w-80 min-w-[360px] max-w-xs mx-4 p-6 bg-gray-100 dark:bg-gray-700 border-solid border border-gray-200 rounded-lg transition-transform transform hover:-translate-y-2.5 duration-300"
+                className="flex-shrink-0 w-80 min-w-[360px] mx-4 p-6 bg-gray-100 dark:bg-gray-700 border-solid border border-gray-200 rounded-lg transition-transform transform hover:-translate-y-2.5 duration-300"
               >
                 <div className="flex items-start mb-2">
                   <Image
