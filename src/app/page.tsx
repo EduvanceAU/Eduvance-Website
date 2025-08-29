@@ -13,7 +13,6 @@ import Headline from '@/assets/png/Headline.png'
 import Page from '@/assets/png/Page.png'
 import WhiteDiscordLogo from '@/assets/png/WhiteDiscordLogo.png'
 import QuotationMarks from '@/assets/png/QuotationMarks.png'
-
 import dynamic from 'next/dynamic';
 
 import AutoScrollTestimonials from '@/components/AutoScrollTestimonials';
@@ -67,16 +66,6 @@ const ScrollingColumn: React.FC<ScrollingColumnProps> = ({ direction, count = 15
 };
 
 export default function Main() {
-  useEffect(() => {
-    const chars = "abcdefghijklmnopqrstuvwxyzαβγδεζηθικλμνξοπρστυφχψωABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!?%$*#";
-    const bg = document.querySelector(".random")
-    const randomChar = () => chars[Math.floor(Math.random() * (chars.length))],
-    randomString = (length) => Array.from(Array(length)).map(randomChar).join("");
-    bg.innerHTML = randomString(3000);    
-    setInterval(() => {
-      bg.innerHTML = randomString(3000);
-    }, 120);
-  }, [])
   const discord = "https://discord.gg/eduvance-community-983670206889099264"
   const[member_count, setmembercount] = useState("")
   useEffect(() =>{
@@ -89,9 +78,10 @@ export default function Main() {
     <>
       <Home dontShowload showExtra/>
       {/* Hero Section */}
+      <div className='flex flex-col justify-evenly gap-[100px]'>
       <section className="w-full min-h-screen flex flex-col relative pt-16">
         {/* Gradient Box in Background */}
-        <div className="flex text-center flex-col gap-4 max-sm:gap-2 max-sm:justify-start max-sm:pt-5 items-center justify-center absolute w-[95vw] h-[85vh] bg-gradient-to-b from-[#4E8CFF] to-[#0C60FB] rounded-2xl shadow-xl z-0 left-1/2 transform -translate-x-1/2 mb-[-50px] overflow-hidden" >
+        <div className="flex text-center flex-col gap-4 max-sm:gap-2 max-sm:justify-start max-sm:pt-5 items-center justify-center absolute w-[95vw] h-[85vh] bg-gradient-to-b from-[#4E8CFF] to-[#0C60FB] rounded-2xl shadow-xl z-0 left-1/2 transform -translate-x-1/2 mb-[-50px]" >
           
 
             <Image src={Headline} alt="Headline" className="pointer-events-none w-[800px] h-auto z-10" />
@@ -117,16 +107,17 @@ export default function Main() {
               </button>
             </a>
 
-            <div className='select-none break-all random w-full h-full absolute inset-0 place-content-around text-center z-[-2] text-white opacity-20 text-xs sm:text-base tracking-[0.5rem] sm:tracking-[1rem]' style={{ fontFamily: 'Poppins, sans-serif', maskImage: 'radial-gradient(circle, black 5%, transparent 100%)' }}>
-
-            </div>
             {/* Decorative Images (Positioned with absolute so they don't mess layout) */}
+            <Image
+              src={bgCrypto}
+              alt="Decorative Crypto"
+              className="absolute left-1/2 transform -translate-x-1/2 w-full h-auto z-10"
+            />
             <Image
               src={DocWidgets}
               alt="DocWidgets"
               className="pointer-events-none absolute top-[50%] sm:top-[90%] w-[300px] sm:w-[300px] h-auto transform sm:-translate-y-40 translate-y-10 left-[-20px] z-0"
             />
-
           
         </div>
       </section>
@@ -150,7 +141,7 @@ export default function Main() {
           <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-white to-transparent z-10"></div> {/* Adjust 'from-white' to your background color if needed */}
         </div>
       </section>
-
+      </div>
       {/* Study Materials Section */}
       <section className="w-full py-24 relative top-[-500px]">
         <div className="relative flex items-center justify-center text-center top-[-200px]">

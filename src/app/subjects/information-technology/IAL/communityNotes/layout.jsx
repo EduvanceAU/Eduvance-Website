@@ -13,9 +13,9 @@ export const metadata = {
   description:
     `Discover clear, concise notes and study guides for ${refsyllabusType} ${refName}, created by students and teachers who get what works. Ideal for exam preparation or topic review, these resources are made to support your learning every step of the way!`,
   icons: {
-    icon: "/CircularLogo.png",
-    shortcut: "/CircularLogo.png",
-    apple: "/CircularLogo.png",
+    icon: "/BlueSolo.svg",
+    shortcut: "/BlueSolo.svg",
+    apple: "/BlueSolo.svg",
   },
   openGraph: {
     title: `${refsyllabusType} ${refName}`,
