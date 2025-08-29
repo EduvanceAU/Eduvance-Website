@@ -75,8 +75,10 @@ export default function Main() {
     bg.innerHTML = randomString(3000);    
     setInterval(() => {
       bg.innerHTML = randomString(3000);
-    }, 120);
+    }, 450);
   }, [])
+
+  
   const discord = "https://discord.gg/eduvance-community-983670206889099264"
   const[member_count, setmembercount] = useState("")
   useEffect(() =>{
