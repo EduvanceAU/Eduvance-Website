@@ -98,7 +98,7 @@ const AutoScrollTestimonials = () => {
       }`}
     </style>
       {/* Container with a background color that the blur will match */}
-      <div className="dark:bg-gray-800 rounded-lg p-6">
+      <div className="dark:bg-gray-800 rounded-lg sm:p-6">
         
         {/* Container for the scrolling testimonials */}
         <div className="group relative select-none overflow-hidden pt-5 w-full">
@@ -133,12 +133,12 @@ const AutoScrollTestimonials = () => {
 
           {/* Left-side blur overlay that matches the background color */}
           <div
-            className="absolute top-0 left-0 h-full w-24 z-10 bg-gradient-to-r from-white dark:from-gray-800 via-transparent to-transparent"
+            className="hidden sm:block absolute top-0 left-0 h-full w-24 z-10 bg-gradient-to-r from-white dark:from-gray-800 via-transparent to-transparent"
           ></div>
           
           {/* Right-side blur overlay that matches the background color */}
           <div
-            className="absolute top-0 right-0 h-full w-24 z-10 bg-gradient-to-l from-white dark:from-gray-800 via-transparent to-transparent"
+            className="hidden sm:block absolute top-0 right-0 h-full w-24 z-10 bg-gradient-to-l from-white dark:from-gray-800 via-transparent to-transparent"
           ></div>
         </div>
       </div>
