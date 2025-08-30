@@ -288,7 +288,7 @@ export default function Main() {
                   Head of Community
                 </h2>
                 <div className="mt-2 text-gray-700 leading-5 text-balance">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                When we started Eduvance, our goal was simple: build a space where students could learn, share, and grow together. What began as a small idea is now a thriving community of thousands helping each other every day.
                 </div>
               </div>
             </div>
@@ -310,7 +310,7 @@ export default function Main() {
                   Head of Technical Development
                 </h2>
                 <div className="mt-2 text-gray-700 leading-5 text-balance">
-                  Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                Eduvance was built with one promise: accessibility for every student. By putting community first and technology at the service of learning, we’re making sure that anyone, anywhere, can thrive academically.
                 </div>
               </div>
             </div>
