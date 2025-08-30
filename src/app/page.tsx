@@ -282,7 +282,7 @@ export default function Main() {
               </div>
               <div className="flex-1">
                 <h1 className="font-semibold text-2xl tracking-normal sm:text-3xl sm:tracking-[-1.5px] sm:max-w-[550px] max-w-[350px] mx-auto z-20" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                  YourLocalAP, Founder
+                  YourLocalAP
                 </h1>
                 <h2 className="font-[550] text-lg tracking-normal sm:text-xl sm:tracking-[-0.3px] sm:max-w-[550px] max-w-[350px] mx-auto z-20" style={{ fontFamily: 'Poppins, sans-serif' }}>
                   Head of Community
@@ -304,7 +304,7 @@ export default function Main() {
               </div>
               <div className="flex-1">
                 <h1 className="font-semibold text-2xl tracking-normal sm:text-3xl sm:tracking-[-1.5px] sm:max-w-[550px] max-w-[350px] mx-auto z-20" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                  Biomeac, Founder
+                  Biomeac
                 </h1>
                 <h2 className="font-[550] text-lg tracking-normal sm:text-xl sm:tracking-[-0.3px] sm:max-w-[550px] max-w-[350px] mx-auto z-20" style={{ fontFamily: 'Poppins, sans-serif' }}>
                   Head of Technical Development
