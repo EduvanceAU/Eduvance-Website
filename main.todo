@@ -71,6 +71,12 @@ New Resources Pages Update :
    ✔ Updated folder name from sub links to subjects @done(25-07-12 16:16)
    ✔ Added universal auth system for easy user experience @done(25-07-12 16:16)
 
+   ✔ Update tabs so empty tabs are hidden
+   ✔ Update tag filter system for visual button
+   ✔ Update tag filter system for colour mapping
+   ✔ Update tag filter dropdown with multiple choice system
+   ✔ Update tag filter system for all pages
+
 Other Pages:
    ✔ Other miscellaneous pages for the website (About Eduvance, IGCSE/A Levels, Grading System Explained, FAQs and more) @done(25-07-21 11:37)
       - More (Header)
