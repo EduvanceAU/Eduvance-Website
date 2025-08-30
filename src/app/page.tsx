@@ -78,10 +78,9 @@ export default function Main() {
     <>
       <Home dontShowload showExtra/>
       {/* Hero Section */}
-      <div className='flex flex-col justify-evenly gap-[100px]'>
       <section className="w-full min-h-screen flex flex-col relative pt-16">
         {/* Gradient Box in Background */}
-        <div className="flex text-center flex-col gap-4 max-sm:gap-2 max-sm:justify-start max-sm:pt-5 items-center justify-center absolute w-[95vw] h-[85vh] bg-gradient-to-b from-[#4E8CFF] to-[#0C60FB] rounded-2xl shadow-xl z-0 left-1/2 transform -translate-x-1/2 mb-[-50px]" >
+        <div className="flex text-center flex-col gap-4 max-sm:gap-2 max-sm:justify-start max-sm:pt-5 items-center justify-center absolute w-[95vw] h-[85vh] bg-gradient-to-b from-[#4E8CFF] to-[#0C60FB] rounded-2xl shadow-xl z-50 left-1/2 transform -translate-x-1/2 mb-[-50px]" >
           
 
             <Image src={Headline} alt="Headline" className="pointer-events-none w-[800px] h-auto z-10" />
@@ -116,7 +115,7 @@ export default function Main() {
             <Image
               src={DocWidgets}
               alt="DocWidgets"
-              className="pointer-events-none absolute top-[50%] sm:top-[90%] w-[300px] sm:w-[300px] h-auto transform sm:-translate-y-40 translate-y-10 left-[-20px] z-0"
+              className="pointer-events-none absolute top-[50%] sm:top-[90%] w-[300px] sm:w-[300px] h-auto transform sm:-translate-y-40 translate-y-10 left-[-20px] z-40"
             />
           
         </div>
@@ -141,7 +140,6 @@ export default function Main() {
           <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-white to-transparent z-10"></div> {/* Adjust 'from-white' to your background color if needed */}
         </div>
       </section>
-      </div>
       {/* Study Materials Section */}
       <section className="w-full py-24 relative top-[-500px]">
         <div className="relative flex items-center justify-center text-center top-[-200px]">
@@ -176,7 +174,7 @@ export default function Main() {
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <div
-              className="inline-block px-6 py-0.6 border-2 border-[#4B89FD] rounded-full text-black font-semibold tracking-[-0.7px] text-lg mb-8"
+              className="inline-block px-4 py-2 sm:px-6 sm:py-0.6 border-2 border-[#4B89FD] rounded-full text-black font-semibold tracking-[-0.7px] text-sm sm:text-lg mb-4 sm:mb-8"
               style={{ fontFamily: 'Poppins, sans-serif' }}
             >
               Trusted by {member_count} Students worldwide and counting!
@@ -196,7 +194,7 @@ export default function Main() {
             </h1>
 
             <h3
-              className="font-medium text-[21px] tracking-[-0.7px] leading-[20px] max-w-[520px] mx-auto mt-8"
+              className="font-medium text-[21px] tracking-[-0.7px] leading-[20px] max-w-[520px] mx-auto mt-6 sm:mt-8"
               style={{ fontFamily: 'Poppins, sans-serif' }}
             >
               Connect instantly with like-minded learners. Ask questions, share resources, and stay motivated — all in one place
@@ -207,7 +205,7 @@ export default function Main() {
               href={discord}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-block mt-15 "
+              className="inline-block mt-8 sm:mt-15 "
             >
               <button
                 className="cursor-pointer bg-[#3F82FD] hover:bg-[#143166] text-white border-5 border-[#B1CCFF] border-opacity-50 px-9 py-3 rounded-full text-xl poppins-semibold flex items-center gap-5 transition-all duration-500 ease-in-out shadow-[inset_0_0_30px_rgba(255,255,255,0.4),inset_0_0_60px_rgba(63,130,253,0.6)] hover:shadow-[inset_0_0_40px_rgba(255,255,255,0.3),inset_0_0_80px_rgba(20,49,102,0.8)]"
@@ -257,7 +255,7 @@ export default function Main() {
       </section>
 
       {/* Word from Our Founders Section */}
-      <section className='mt-[-120px] relative w-full py-10'>
+      <section className='relative w-full pb-10'>
         <h1
           className="font-semibold text-3xl tracking-tighter sm:text-5xl sm:tracking-[-3px] sm:max-w-[550px] max-w-[350px] mx-auto z-20 mb-12"
           style={{ fontFamily: 'Poppins, sans-serif' }}
@@ -273,11 +271,11 @@ export default function Main() {
             
             {/* Founder 1 */}
             <div className="flex items-start gap-4">
-              <div className="w-16 h-16 rounded-full bg-gray-300 overflow-hidden flex-shrink-0">
+              <div className="aspect-square w-16 rounded-full bg-gray-300 overflow-hidden flex-shrink-0">
                 <img 
                   src="/localap.webp" 
                   alt="Founder profile" 
-                  className="w-full h-full object-cover"
+                  className="aspect-square w-full object-cover"
                 />
               </div>
               <div className="flex-1">
@@ -295,11 +293,11 @@ export default function Main() {
             
             {/* Founder 2 */}
             <div className="flex items-start gap-4">
-              <div className="w-16 h-16 rounded-full bg-gray-300 overflow-hidden flex-shrink-0">
+              <div className="aspect-square w-16 rounded-full bg-gray-300 overflow-hidden flex-shrink-0">
                 <img 
                   src="/bio.png" 
                   alt="Founder profile" 
-                  className="w-full h-full object-cover"
+                  className="aspect-square w-full object-cover"
                 />
               </div>
               <div className="flex-1">
