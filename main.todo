@@ -71,6 +71,12 @@ New Resources Pages Update :
    ✔ Updated folder name from sub links to subjects @done(25-07-12 16:16)
    ✔ Added universal auth system for easy user experience @done(25-07-12 16:16)
 
+   ✔ Update tabs so empty tabs are hidden
+   ✔ Update tag filter system for visual button
+   ✔ Update tag filter system for colour mapping
+   ✔ Update tag filter dropdown with multiple choice system
+   ✔ Update tag filter system for all pages
+
 Other Pages:
    ✔ Other miscellaneous pages for the website (About Eduvance, IGCSE/A Levels, Grading System Explained, FAQs and more) @done(25-07-21 11:37)
       - More (Header)
@@ -169,6 +175,18 @@ Final Stage Todo :
    ✔ Past Paper upload mechanism integration to both staff dashboards @done(25-07-30 06:15)
    ✔ Website loading animation experiment + designs for logo animation @done(25-07-30 06:15)
    ✔ Update all subject's past papers with the latest links @done(25-07-29 11:27)
+
+   ✔ Add Testimonial Scroll Section
+   ✔ Update Testimonial Scroll Section for Blur Effect
+   ✔ Add community testimonials with correct names and PFPs
+   ✔ Update testimonial card to showcase member role in community
+   ✔ Update testimonial card with variable length
+
+   ✔ Add Word from Founders Section base UI @done(25-08-30 13:23)
+   ✔ Add content to Founders section @done(25-08-30 13:23)
+   ✔ Update Founder Titles and Add mock text to the div @done(25-08-30 13:23)
+   ✔ Add Ad images to the section @done(25-08-30 13:23)
+   ☐ Make the Founders section responsive
 
 Later Todo :
    ☐ Add a credits page
