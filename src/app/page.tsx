@@ -264,66 +264,70 @@ export default function Main() {
         </h1>
 
         {/* Content Container */}
-        <div className="max-w-6xl mx-auto px-4 flex flex-col lg:flex-row gap-8 items-start">
+        <div className="max-w-6xl mx-auto px-4 flex flex-col gap-8">
           
-          {/* Left Side - Founder Profiles */}
-          <div className="flex-1 space-y-8">
+          {/* Founder Profiles - Centered on mobile */}
+          <div className="flex flex-col lg:flex-row lg:flex-1 gap-8 items-center lg:items-start">
             
-            {/* Founder 1 */}
-            <div className="flex items-start gap-4">
-              <div className="aspect-square w-16 rounded-full bg-gray-300 overflow-hidden flex-shrink-0">
-                <img 
-                  src="/localap.webp" 
-                  alt="Founder profile" 
-                  className="aspect-square w-full object-cover"
-                />
-              </div>
-              <div className="flex-1">
-                <h1 className="font-semibold text-2xl tracking-normal sm:text-3xl sm:tracking-[-1.5px] sm:max-w-[550px] max-w-[350px] mx-auto z-20" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                  YourLocalAP
-                </h1>
-                <h2 className="font-[550] text-lg tracking-normal sm:text-xl sm:tracking-[-0.3px] sm:max-w-[550px] max-w-[350px] mx-auto z-20" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                  Head of Community
-                </h2>
-                <div className="mt-2 text-gray-700 leading-5 text-balance">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+            <div className="w-full lg:flex-1 space-y-8 max-w-2xl lg:max-w-none">
+              
+              {/* Founder 1 */}
+              <div className="flex items-start gap-4">
+                <div className="w-16 h-16 rounded-full bg-gray-300 overflow-hidden flex-shrink-0">
+                  <img 
+                    src="/localap.webp" 
+                    alt="Founder profile" 
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="flex-1">
+                  <h1 className="font-semibold text-2xl tracking-normal sm:text-3xl sm:tracking-[-1.5px] z-20" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                    YourLocalAP
+                  </h1>
+                  <h2 className="font-[550] text-lg tracking-normal sm:text-xl sm:tracking-[-0.3px] z-20" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                    Head of Community
+                  </h2>
+                  <div className="mt-2 text-gray-700 leading-5 text-balance">
+                  When we started Eduvance, our goal was simple: build a space where students could learn, share, and grow together. What began as a small idea is now a thriving community of thousands helping each other every day.
+                  </div>
                 </div>
               </div>
-            </div>
-            
-            {/* Founder 2 */}
-            <div className="flex items-start gap-4">
-              <div className="aspect-square w-16 rounded-full bg-gray-300 overflow-hidden flex-shrink-0">
-                <img 
-                  src="/bio.png" 
-                  alt="Founder profile" 
-                  className="aspect-square w-full object-cover"
-                />
-              </div>
-              <div className="flex-1">
-                <h1 className="font-semibold text-2xl tracking-normal sm:text-3xl sm:tracking-[-1.5px] sm:max-w-[550px] max-w-[350px] mx-auto z-20" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                  Biomeac
-                </h1>
-                <h2 className="font-[550] text-lg tracking-normal sm:text-xl sm:tracking-[-0.3px] sm:max-w-[550px] max-w-[350px] mx-auto z-20" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                  Head of Technical Development
-                </h2>
-                <div className="mt-2 text-gray-700 leading-5 text-balance">
-                  Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+              
+              {/* Founder 2 */}
+              <div className="flex items-start gap-4">
+                <div className="w-16 h-16 rounded-full bg-gray-300 overflow-hidden flex-shrink-0">
+                  <img 
+                    src="/bio.png" 
+                    alt="Founder profile" 
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="flex-1">
+                  <h1 className="font-semibold text-2xl tracking-normal sm:text-3xl sm:tracking-[-1.5px] z-20" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                    Biomeac
+                  </h1>
+                  <h2 className="font-[550] text-lg tracking-normal sm:text-xl sm:tracking-[-0.3px] z-20" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                    Head of Technical Development
+                  </h2>
+                  <div className="mt-2 text-gray-700 leading-5 text-balance">
+                  Eduvance was built with one promise: accessibility for every student. By putting community first and technology at the service of learning, we're making sure that anyone, anywhere, can thrive academically.
+                  </div>
                 </div>
               </div>
+              
             </div>
             
-          </div>
-          
-          {/* Right Side - Image with Link */}
-          <div className="flex-1 flex justify-center items-center">
-            <a href="https://www.instagram.com/eduvance.au/" target="_blank" rel="noopener noreferrer" className="block">
-              <img 
-                src="/Ads.svg" 
-                alt="Check out our Socials" 
-                className="w-full max-w-md h-auto transition-transform duration-300 hover:-translate-y-2"
-              />
-            </a>
+            {/* Image - Right side on desktop, centered below on mobile */}
+            <div className="w-full lg:flex-1 flex justify-center items-center order-2 lg:order-1">
+              <a href="https://www.instagram.com/eduvance.au/" target="_blank" rel="noopener noreferrer" className="block">
+                <img 
+                  src="/Ads.svg" 
+                  alt="Check out our Socials" 
+                  className="w-full max-w-md lg:max-w-sm xl:max-w-md h-auto transition-transform duration-300 hover:-translate-y-2"
+                />
+              </a>
+            </div>
+            
           </div>
           
         </div>
