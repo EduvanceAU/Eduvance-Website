@@ -255,6 +255,81 @@ export default function Main() {
           <AutoScrollTestimonials />
         </div>
       </section>
+
+      {/* Word from Our Founders Section */}
+      <section className='mt-[-120px] relative w-full py-10'>
+        <h1
+          className="font-semibold text-3xl tracking-tighter sm:text-5xl sm:tracking-[-3px] sm:max-w-[550px] max-w-[350px] mx-auto z-20 mb-12"
+          style={{ fontFamily: 'Poppins, sans-serif' }}
+        >
+          Word from Our Founders
+        </h1>
+
+        {/* Content Container */}
+        <div className="max-w-6xl mx-auto px-4 flex flex-col lg:flex-row gap-8 items-start">
+          
+          {/* Left Side - Founder Profiles */}
+          <div className="flex-1 space-y-8">
+            
+            {/* Founder 1 */}
+            <div className="flex items-start gap-4">
+              <div className="w-16 h-16 rounded-full bg-gray-300 overflow-hidden flex-shrink-0">
+                <img 
+                  src="/localap.webp" 
+                  alt="Founder profile" 
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="flex-1">
+                <h1 className="font-semibold text-2xl tracking-normal sm:text-3xl sm:tracking-[-1.5px] sm:max-w-[550px] max-w-[350px] mx-auto z-20" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                  YourLocalAP, Founder
+                </h1>
+                <h2 className="font-[550] text-lg tracking-normal sm:text-xl sm:tracking-[-0.3px] sm:max-w-[550px] max-w-[350px] mx-auto z-20" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                  Head of Community
+                </h2>
+                <div className="mt-2 text-gray-700 leading-5 text-balance">
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                </div>
+              </div>
+            </div>
+            
+            {/* Founder 2 */}
+            <div className="flex items-start gap-4">
+              <div className="w-16 h-16 rounded-full bg-gray-300 overflow-hidden flex-shrink-0">
+                <img 
+                  src="/bio.png" 
+                  alt="Founder profile" 
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="flex-1">
+                <h1 className="font-semibold text-2xl tracking-normal sm:text-3xl sm:tracking-[-1.5px] sm:max-w-[550px] max-w-[350px] mx-auto z-20" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                  Biomeac, Founder
+                </h1>
+                <h2 className="font-[550] text-lg tracking-normal sm:text-xl sm:tracking-[-0.3px] sm:max-w-[550px] max-w-[350px] mx-auto z-20" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                  Head of Technical Development
+                </h2>
+                <div className="mt-2 text-gray-700 leading-5 text-balance">
+                  Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                </div>
+              </div>
+            </div>
+            
+          </div>
+          
+          {/* Right Side - Image with Link */}
+          <div className="flex-1 flex justify-center items-center">
+            <a href="https://www.instagram.com/eduvance.au/" target="_blank" rel="noopener noreferrer" className="block">
+              <img 
+                src="/Ads.svg" 
+                alt="Check out our Socials" 
+                className="w-full max-w-md h-auto transition-transform duration-300 hover:-translate-y-2"
+              />
+            </a>
+          </div>
+          
+        </div>
+      </section>
       
       {/* Footer Section */}
       <footer className="w-full bg-[#357BFD] pt-15 sm:pt-24 pb-8">

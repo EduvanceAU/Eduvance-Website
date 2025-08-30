@@ -182,8 +182,11 @@ Final Stage Todo :
    ✔ Update testimonial card to showcase member role in community
    ✔ Update testimonial card with variable length
 
-   ☐ Add Word from Founders Section base UI
-   ☐ Add content to Founders section
+   ✔ Add Word from Founders Section base UI @done(25-08-30 13:23)
+   ✔ Add content to Founders section @done(25-08-30 13:23)
+   ✔ Update Founder Titles and Add mock text to the div @done(25-08-30 13:23)
+   ✔ Add Ad images to the section @done(25-08-30 13:23)
+   ☐ Make the Founders section responsive
 
 Later Todo :
    ☐ Add a credits page
