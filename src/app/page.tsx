@@ -220,9 +220,9 @@ export default function Main() {
           <div className="relative">
             <div className="flex flex-col lg:flex-row  items-stretch  mt-24">
               <TestimonialCard
-                content="Bro Eduvance.au is actually carrying rn 😭 the new UI? chef's kiss fr 💅🏻 admin panel finally usable (we made it y'all 😭). Mobile still kinda crunchy ngl but overall? smooth ✨ Sidebar's clean, Discord login bangs 🔥 flow's tight. Devs cooking hard at 3am 🔥 pls fix the scroll bug before I cry again 😩. Love this team fr 🤍"
-                icon="/map.png"
-                headline="Mapleon, Senior Moderator"
+                content="Eduvance has honestly been AMAZING for my A Levels. Their resources for Economics, Business, and Math made studying so much easier and less stressful. I even got an A in Economics because of them. But what really sets Eduvance apart is the community. Being a senior moderator has been so rewarding, and the Discord server is full of skilled members who are always ready to help. Eduvance isn’t just about studying, it’s a supportive community you can truly rely on"
+                icon="/juju.webp"
+                headline="CrashOutJuJu, Senior Moderator"
                 rotation="rotate-[-2deg]"
                 imageClassName="rounded-full"
               />

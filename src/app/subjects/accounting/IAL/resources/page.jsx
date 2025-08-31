@@ -2,13 +2,13 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { supabase } from "../lib/supabaseClient"; // Ensure this path is correct
-import { useSupabaseAuth } from "@/components/client/SupabaseAuthContext"; // Ensure this path is correct
+import { supabase } from "../lib/supabaseClient";
+import { useSupabaseAuth } from "@/components/client/SupabaseAuthContext";
 import SmallFoot from '@/components/smallFoot.jsx';
 import { Auth } from '@supabase/auth-ui-react';
 import { ThemeSupa } from '@supabase/auth-ui-shared';
 import {Frown} from 'lucide-react'
-import { useParams } from 'next/navigation'; // Import useParams
+import { useParams, usePathname } from 'next/navigation'; // Add usePathname
 
 const SubjectButtons = () => {
   const [subjects, setSubjects] = useState([]);
@@ -43,7 +43,6 @@ const SubjectButtons = () => {
   );
 };
 
-// LikeDislikeButtons is now a stateless component
 function LikeDislikeButtons({ noteId, likeCount = 0, dislikeCount = 0, userVote, onVote }) {
   return (
     <div className="flex items-center gap-3 mt-3">
@@ -65,17 +64,55 @@ function LikeDislikeButtons({ noteId, likeCount = 0, dislikeCount = 0, userVote,
   );
 }
 
-// Helper to clamp counts to >= 0
 function clamp(n) { return n < 0 ? 0 : n; }
 
 export default function IALCommunityNotesPage() {
-  const params = useParams(); // Get params from the URL
-  const { slug } = params; // Extract the slug
+  const params = useParams();
+  const pathname = usePathname(); // Alternative way to get URL info
+  
+  // Multiple ways to extract the slug
+  const getSlugFromParams = () => {
+    console.log('Debug - Raw params:', params);
+    console.log('Debug - Pathname:', pathname);
+    
+    // Method 1: Direct from params
+    if (params?.slug) {
+      const slug = Array.isArray(params.slug) ? params.slug[0] : params.slug;
+      console.log('Debug - Slug from params.slug:', slug);
+      return slug;
+    }
+    
+    // Method 2: From pathname parsing
+    if (pathname) {
+      const pathParts = pathname.split('/');
+      console.log('Debug - Path parts:', pathParts);
+      const subjectIndex = pathParts.findIndex(part => part === 'subjects');
+      if (subjectIndex !== -1 && pathParts[subjectIndex + 1]) {
+        const slug = pathParts[subjectIndex + 1];
+        console.log('Debug - Slug from pathname:', slug);
+        return slug;
+      }
+    }
+    
+    // Method 3: From URL directly (client-side only)
+    if (typeof window !== 'undefined') {
+      const urlPath = window.location.pathname;
+      console.log('Debug - Window pathname:', urlPath);
+      const match = urlPath.match(/\/subjects\/([^\/]+)/);
+      if (match) {
+        const slug = match[1];
+        console.log('Debug - Slug from window.location:', slug);
+        return slug;
+      }
+    }
+    
+    console.log('Debug - No slug found');
+    return null;
+  };
 
-  // Derive subjectName from slug
-  const [subjectName, setSubjectName] = useState(null); // Initialize as null
-  const [examCode, setExamCode] = useState(null); // State to hold the fetched exam code
-
+  const [slug, setSlug] = useState(null);
+  const [subjectName, setSubjectName] = useState(null);
+  const [examCode, setExamCode] = useState(null);
   const { session, user, loading: authLoading } = useSupabaseAuth();
   const [units, setUnits] = useState([]);
   const [expandedUnits, setExpandedUnits] = useState({});
@@ -90,6 +127,26 @@ export default function IALCommunityNotesPage() {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // Extract slug on mount and when params change
+  useEffect(() => {
+    const extractedSlug = getSlugFromParams();
+    console.log('Debug - Extracted slug:', extractedSlug);
+    setSlug(extractedSlug);
+  }, [params, pathname]);
+
+  // Debug logging for loading states
+  useEffect(() => {
+    console.log('Debug - Loading states:', {
+      authLoading,
+      loading,
+      subjectName,
+      examCode,
+      slug,
+      session: !!session,
+      params,
+      pathname
+    });
+  }, [authLoading, loading, subjectName, examCode, slug, session, params, pathname]);
 
   const toggleUnit = (unit) => {
     setExpandedUnits(prev => ({
@@ -98,69 +155,121 @@ export default function IALCommunityNotesPage() {
     }));
   };
 
-  // Effect to derive subjectName from slug and then fetch examCode
+  // Effect to derive subjectName from slug and fetch examCode
   useEffect(() => {
+    console.log('Debug - Slug effect triggered:', { slug });
+    
     if (!slug) {
-      setLoading(true); // Still loading if no slug yet
+      console.log('Debug - No slug, staying in loading state');
+      return; // Don't set loading to true here, let it resolve naturally
+    }
+
+    const derivedSubjectName = slug
+      .replace(/-/g, ' ')
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+    
+    console.log('Debug - Derived subject name:', derivedSubjectName);
+    setSubjectName(derivedSubjectName);
+
+    async function fetchExamCodeForSubject() {
+      console.log('Debug - Fetching exam code for:', derivedSubjectName);
+      setError(null);
+      
+      try {
+        // First try exact match
+        let { data, error } = await supabase
+          .from('subjects')
+          .select('code, name')
+          .eq('name', derivedSubjectName)
+          .eq('syllabus_type', 'IAL')
+          .single();
+
+        console.log('Debug - Exact match result:', { data, error });
+
+        // If exact match fails, try case-insensitive search
+        if (error || !data) {
+          console.log('Debug - Trying case-insensitive search...');
+          const { data: flexibleData, error: flexibleError } = await supabase
+            .from('subjects')
+            .select('code, name')
+            .ilike('name', derivedSubjectName)
+            .eq('syllabus_type', 'IAL')
+            .limit(1)
+            .single();
+
+          console.log('Debug - Flexible search result:', { flexibleData, flexibleError });
+          
+          if (flexibleError || !flexibleData) {
+            // If still no match, try partial match
+            console.log('Debug - Trying partial match search...');
+            const { data: partialData, error: partialError } = await supabase
+              .from('subjects')
+              .select('code, name')
+              .ilike('name', `%${derivedSubjectName}%`)
+              .eq('syllabus_type', 'IAL')
+              .limit(1);
+
+            console.log('Debug - Partial search result:', { partialData, partialError });
+
+            if (partialError || !partialData || partialData.length === 0) {
+              console.warn(`Subject "${derivedSubjectName}" not found in database`);
+              setExamCode('N/A');
+              // Don't set error - just continue with N/A
+            } else {
+              console.log('Debug - Found with partial match:', partialData[0]);
+              setExamCode(partialData[0].code || 'N/A');
+              setSubjectName(partialData[0].name); // Use the actual DB name
+            }
+          } else {
+            console.log('Debug - Found with flexible search:', flexibleData);
+            setExamCode(flexibleData.code || 'N/A');
+            setSubjectName(flexibleData.name); // Use the actual DB name
+          }
+        } else {
+          console.log('Debug - Exact match found:', data);
+          setExamCode(data.code || 'N/A');
+          setSubjectName(data.name); // Use the actual DB name
+        }
+        
+      } catch (err) {
+        console.error('Unexpected error while fetching exam code:', err);
+        setExamCode('N/A');
+        // Don't set error for exam code issues - continue loading
+      }
+    }
+    
+    fetchExamCodeForSubject();
+  }, [slug]);
+
+  // Fetch units from subject table
+  useEffect(() => {
+    console.log('Debug - Units effect triggered:', { subjectName, authLoading });
+    
+    if (!subjectName || authLoading) {
+      console.log('Debug - Waiting for subject name or auth to load');
       return;
     }
 
-    // Convert slug back to approximate subject name for fetching
-    const decodedSlug = Array.isArray(slug) ? slug[0] : slug;
-    const derivedSubjectName = decodedSlug.replace(/-/g, ' ').split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
-    setSubjectName(derivedSubjectName); // Set the subject name state
-
-    async function fetchExamCodeForSubject() {
-      setLoading(true); // Set loading while fetching subject details and exam code
-      setError(null);
-      try {
-        const { data, error } = await supabase
-          .from('subjects')
-          .select('code') // Select only the 'code' column
-          .eq('name', derivedSubjectName) // Filter by the derived subject's name
-          .eq('syllabus_type', 'IAL') // And syllabus type
-          .single(); // Expecting only one row
-
-        if (error) {
-          console.error('Error fetching exam code:', error.message);
-          setError(error);
-          setExamCode('N/A');
-          setLoading(false);
-          return;
-        }
-
-        if (data && data.code) {
-          setExamCode(data.code);
-        } else {
-          setExamCode('N/A');
-          console.warn(`Subject "${derivedSubjectName}" not found or has no associated exam code.`);
-        }
-        setLoading(false); // Finished loading subject details and exam code
-      } catch (err) {
-        console.error('An unexpected error occurred while fetching exam code:', err);
-        setError(new Error('Failed to load exam code.'));
-        setExamCode('N/A');
-        setLoading(false);
-      }
-    }
-    fetchExamCodeForSubject();
-  }, [slug]); // Re-run when the slug changes
-
-  // Fetch units from subject table (now depends on subjectName being set)
-  useEffect(() => {
-    if (!subjectName || authLoading) return; // Wait for subjectName to be set and auth to load
-
     const fetchUnits = async () => {
+      console.log('Debug - Fetching units for:', subjectName);
+      
       const { data: subjectData, error: subjectError } = await supabase
         .from('subjects')
         .select('units')
         .eq('name', subjectName)
         .eq('syllabus_type', 'IAL')
         .single();
+        
+      console.log('Debug - Units response:', { subjectData, subjectError });
+        
       if (subjectError || !subjectData) {
-        setError(subjectError || new Error(`Subject not found:`, subjectName));;
+        console.error('Debug - Units fetch failed:', subjectError);
+        setError(subjectError || new Error(`Subject not found: ${subjectName}`));
         return;
       }
+      
       let fetchedUnits = subjectData.units || [];
       fetchedUnits.sort((a, b) => {
         const getUnitNum = (u) => {
@@ -172,22 +281,31 @@ export default function IALCommunityNotesPage() {
         if (numA !== numB) return numA - numB;
         return (a.name || '').localeCompare(b.name || '');
       });
+      
+      console.log('Debug - Units processed:', fetchedUnits);
       setUnits(fetchedUnits);
       setExpandedUnits(fetchedUnits.reduce((acc, unit) => {
         acc[unit.unit] = true;
         return acc;
       }, {}));
     };
+    
     fetchUnits();
-  }, [authLoading, subjectName]); // Depend on subjectName
+  }, [authLoading, subjectName]);
 
-  // Fetch notes (now depends on subjectName being set)
+  // Fetch notes
   useEffect(() => {
-    if (!subjectName || authLoading) return; // Wait for subjectName to be set and auth to load
+    console.log('Debug - Notes effect triggered:', { subjectName, authLoading });
+    
+    if (!subjectName || authLoading) {
+      console.log('Debug - Waiting for subject name or auth for notes');
+      return;
+    }
 
     async function fetchNotes() {
-      setLoading(true);
+      console.log('Debug - Fetching notes for:', subjectName);
       setError(null);
+      
       // Get subject id for subjectName IAL
       const { data: subjectData, error: subjectError } = await supabase
         .from('subjects')
@@ -195,12 +313,19 @@ export default function IALCommunityNotesPage() {
         .eq('name', subjectName)
         .eq('syllabus_type', 'IAL')
         .single();
+        
+      console.log('Debug - Subject ID response:', { subjectData, subjectError });
+        
       if (subjectError || !subjectData) {
-        setError(subjectError || new Error(`Subject not found:`, subjectName));;
+        console.error('Debug - Subject ID fetch failed:', subjectError);
+        setError(subjectError || new Error(`Subject not found: ${subjectName}`));
         setLoading(false);
         return;
       }
+      
       const subjectId = subjectData.id;
+      console.log('Debug - Subject ID:', subjectId);
+      
       // Fetch approved community notes for this subject
       const { data: notes, error: notesError } = await supabase
         .from('community_resource_requests')
@@ -208,11 +333,16 @@ export default function IALCommunityNotesPage() {
         .eq('subject_id', subjectId)
         .eq('approved', "Approved")
         .order('submitted_at', { ascending: false });
+        
+      console.log('Debug - Notes response:', { notes, notesError });
+        
       if (notesError) {
+        console.error('Debug - Notes fetch failed:', notesError);
         setError(notesError);
         setLoading(false);
         return;
       }
+      
       // Group notes by unit
       const grouped = {};
       notes.forEach((note) => {
@@ -220,13 +350,16 @@ export default function IALCommunityNotesPage() {
         if (!grouped[unit]) grouped[unit] = [];
         grouped[unit].push(note);
       });
+      
+      console.log('Debug - Grouped notes:', grouped);
       setUnitNotes(grouped);
-      // Optionally, update userVotes from localStorage again (in case of SSR)
+      
+      // Update userVotes from localStorage
       setUserVotes((prev) => {
         const updated = { ...prev };
         notes.forEach(note => {
           if (updated[note.id] === undefined) {
-            updated[note.id] = null; // Initialize with null if not found
+            updated[note.id] = null;
           }
         });
         if (typeof window !== 'undefined') {
@@ -234,17 +367,57 @@ export default function IALCommunityNotesPage() {
         }
         return updated;
       });
+      
+      console.log('Debug - Notes fetch complete, setting loading to false');
       setLoading(false);
     }
+    
     fetchNotes();
-  }, [session, authLoading, subjectName]); // Depend on subjectName
+  }, [session, authLoading, subjectName]);
 
+  // Timeout fallback to prevent infinite loading
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      if (loading && !error) {
+        console.warn('Debug - Timeout reached, forcing loading to false');
+        setLoading(false);
+        if (!examCode) {
+          setExamCode('N/A');
+        }
+      }
+    }, 15000); // 15 second timeout
 
-  // Render loading state if auth is still loading, or if notes/examCode are not yet fetched
-  if (authLoading || loading || !subjectName || !examCode) { // Ensure subjectName and examCode are available
+    return () => clearTimeout(timeout);
+  }, [loading, error, examCode]);
+
+  // Debug the final loading condition
+  const shouldShowLoading = authLoading || loading || !subjectName;
+  console.log('Debug - Should show loading:', {
+    shouldShowLoading,
+    authLoading,
+    loading,
+    subjectName: !!subjectName,
+    examCode: !!examCode,
+    slug: !!slug
+  });
+
+  // Render loading state
+  if (shouldShowLoading) {
     return (
       <main className="min-h-screen bg-white flex items-center justify-center">
-        <p className="text-xl text-gray-600">Loading Eduvance notes...</p>
+        <div className="text-center">
+          <p className="text-xl text-gray-600">Loading Eduvance notes...</p>
+          <p className="text-sm text-gray-400 mt-2">
+            Auth: {authLoading ? 'Loading' : 'Ready'} | 
+            Data: {loading ? 'Loading' : 'Ready'} | 
+            Subject: {subjectName ? 'Ready' : 'Missing'} | 
+            Code: {examCode || 'Missing'} |
+            Slug: {slug || 'Missing'}
+          </p>
+          <p className="text-xs text-gray-300 mt-1">
+            URL: {typeof window !== 'undefined' ? window.location.pathname : 'SSR'}
+          </p>
+        </div>
       </main>
     );
   }
@@ -267,7 +440,15 @@ export default function IALCommunityNotesPage() {
   if (error) {
     return (
       <main className="min-h-screen bg-white flex items-center justify-center">
-        <p className="text-xl text-red-600">Error loading Eduvance notes: {error.message}</p>
+        <div className="text-center">
+          <p className="text-xl text-red-600">Error loading Eduvance notes: {error.message}</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500"
+          >
+            Retry
+          </button>
+        </div>
       </main>
     );
   }
@@ -289,7 +470,7 @@ export default function IALCommunityNotesPage() {
               className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#000000] mb-8 text-left tracking-[-0.035em]"
               style={{ fontFamily: "Poppins, sans-serif" }}
             >
-              IAL <span className="bg-[#1A69FA] px-2 py-1 -rotate-1 inline-block"><span className="text-[#FFFFFF]">Accounting</span></span> Eduvance Notes
+              IAL <span className="bg-[#1A69FA] px-2 py-1 -rotate-1 inline-block"><span className="text-[#FFFFFF]">{subjectName}</span></span> Eduvance Notes
             </h1>
 
             <div
@@ -300,7 +481,7 @@ export default function IALCommunityNotesPage() {
               }}
             >
               <span className="text-md font-medium text-black tracking-tight">
-                <span className="font-[501]">Exam code:</span> WAC1/XAC11/YAC11 {/* This now uses the state */}
+                <span className="font-[501]">Exam code:</span> {examCode || 'N/A'}
               </span>
             </div>
 
@@ -308,7 +489,7 @@ export default function IALCommunityNotesPage() {
               className="text-sm sm:text-md lg:text-lg font-[500] leading-6 text-[#707070] mb-8 text-left max-w-4xl tracking-[-0.015em]"
               style={{ fontFamily: "Poppins, sans-serif" }}
             >
-              Explore our collection of Edexcel A Level Accounting community-contributed resources, including detailed notes, explanations, and revision tips. These resources are perfect for deepening your understanding, clarifying tricky concepts, and supporting your study alongside past papers.
+              Explore our collection of Edexcel A Level {subjectName} community-contributed resources, including detailed notes, explanations, and revision tips. These resources are perfect for deepening your understanding, clarifying tricky concepts, and supporting your study alongside past papers.
             </h3>
 
             <div className="w-full mb-8">
@@ -347,48 +528,39 @@ export default function IALCommunityNotesPage() {
                               <div className="cursor-pointer mt-1 text-xs font-semibold tracking-tight uppercase w-fit px-2 py-0.5 text-green-400 ring ring-green-400 rounded-md hover:bg-green-400 hover:text-white transition-colors">{note.resource_type}</div>
                               {note.submitted_at && <p className="text-xs text-gray-600 mt-1 text-right">Shared On {new Date(note.submitted_at).toLocaleString(undefined, {year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'})}</p>}
                             </div>
-                            {/* Like/Dislike System */}
                             <LikeDislikeButtons
                               noteId={note.id}
                               likeCount={note.like_count}
                               dislikeCount={note.dislike_count}
                               userVote={userVotes[note.id] || null}
                               onVote={async (type) => {
-                                // type: 'like', 'dislike', or null (for unvote)
                                 const prevVote = userVotes[note.id] || null;
                                 let newLikeCount = note.like_count || 0;
                                 let newDislikeCount = note.dislike_count || 0;
                                 if (type === null) {
-                                  // Unvote: decrement the previous vote
                                   if (prevVote === 'like') newLikeCount = clamp(newLikeCount - 1);
                                   if (prevVote === 'dislike') newDislikeCount = clamp(newDislikeCount - 1);
                                 } else if (type === 'like') {
                                   if (prevVote === 'like') {
-                                    // Toggle off like
                                     newLikeCount = clamp(newLikeCount - 1);
                                     type = null;
                                   } else {
-                                    // Like (and remove dislike if present)
                                     newLikeCount = newLikeCount + 1;
                                     if (prevVote === 'dislike') newDislikeCount = clamp(newDislikeCount - 1);
                                   }
                                 } else if (type === 'dislike') {
                                   if (prevVote === 'dislike') {
-                                    // Toggle off dislike
                                     newDislikeCount = clamp(newDislikeCount - 1);
                                     type = null;
                                   } else {
-                                    // Dislike (and remove like if present)
                                     newDislikeCount = newDislikeCount + 1;
                                     if (prevVote === 'like') newLikeCount = clamp(newLikeCount - 1);
                                   }
                                 }
-                                // Update Supabase
                                 await supabase
                                   .from('community_resource_requests')
                                   .update({ like_count: newLikeCount, dislike_count: newDislikeCount })
                                   .eq('id', note.id);
-                                // Update local state
                                 setUnitNotes((prev) => {
                                   const updated = { ...prev };
                                   updated[unit.unit] = updated[unit.unit].map((n) =>
@@ -398,10 +570,9 @@ export default function IALCommunityNotesPage() {
                                   );
                                   return updated;
                                 });
-                                // Update userVotes
                                 setUserVotes((prev) => {
                                   const updated = { ...prev, [note.id]: type };
-                                  if (!type) delete updated[note.id]; // Remove if unvoted
+                                  if (!type) delete updated[note.id];
                                   if (typeof window !== 'undefined') {
                                     localStorage.setItem('community_note_votes', JSON.stringify(updated));
                                   }
