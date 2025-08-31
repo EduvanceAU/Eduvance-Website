@@ -31,7 +31,7 @@ async function checkDriveFile(fileId) {
 }
 
 async function checkResources() {
-  const { data, error } = await supabase.from('resources').select('*');
+  const { data, error } = await supabase.from('community_resource_requests').select('*');
   if (error) throw error;
 
   for (let row of data) {
@@ -40,7 +40,7 @@ async function checkResources() {
     if (!fileId) {
       console.log('Unapproved');
       await supabase
-      .from('resources')
+      .from('community_resource_requests')
       .update({ approved: 'Unapproved' })
       .eq('id', row.id);
       continue;
@@ -49,7 +49,7 @@ async function checkResources() {
     const exists = await checkDriveFile(fileId);
     if (!exists) {
       const { error: updateError } = await supabase
-        .from('resources')
+        .from('community_resource_requests')
         .update({ approved: 'Unapproved' })
         .eq('id', row.id);
       if (updateError) console.error(updateError);

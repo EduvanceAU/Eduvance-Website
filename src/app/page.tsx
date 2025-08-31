@@ -78,10 +78,9 @@ export default function Main() {
     <>
       <Home dontShowload showExtra/>
       {/* Hero Section */}
-      <div className='flex flex-col justify-evenly gap-[100px]'>
       <section className="w-full min-h-screen flex flex-col relative pt-16">
         {/* Gradient Box in Background */}
-        <div className="flex text-center flex-col gap-4 max-sm:gap-2 max-sm:justify-start max-sm:pt-5 items-center justify-center absolute w-[95vw] h-[85vh] bg-gradient-to-b from-[#4E8CFF] to-[#0C60FB] rounded-2xl shadow-xl z-0 left-1/2 transform -translate-x-1/2 mb-[-50px]" >
+        <div className="flex text-center flex-col gap-4 max-sm:gap-2 max-sm:justify-start max-sm:pt-5 items-center justify-center absolute w-[95vw] h-[85vh] bg-gradient-to-b from-[#4E8CFF] to-[#0C60FB] rounded-2xl shadow-xl z-50 left-1/2 transform -translate-x-1/2 mb-[-50px]" >
           
 
             <Image src={Headline} alt="Headline" className="pointer-events-none w-[800px] h-auto z-10" />
@@ -116,7 +115,7 @@ export default function Main() {
             <Image
               src={DocWidgets}
               alt="DocWidgets"
-              className="pointer-events-none absolute top-[50%] sm:top-[90%] w-[300px] sm:w-[300px] h-auto transform sm:-translate-y-40 translate-y-10 left-[-20px] z-0"
+              className="pointer-events-none absolute top-[50%] sm:top-[90%] w-[300px] sm:w-[300px] h-auto transform sm:-translate-y-40 translate-y-10 left-[-20px] z-40"
             />
           
         </div>
@@ -141,7 +140,6 @@ export default function Main() {
           <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-white to-transparent z-10"></div> {/* Adjust 'from-white' to your background color if needed */}
         </div>
       </section>
-      </div>
       {/* Study Materials Section */}
       <section className="w-full py-24 relative top-[-500px]">
         <div className="relative flex items-center justify-center text-center top-[-200px]">
@@ -176,7 +174,7 @@ export default function Main() {
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <div
-              className="inline-block px-6 py-0.6 border-2 border-[#4B89FD] rounded-full text-black font-semibold tracking-[-0.7px] text-lg mb-8"
+              className="inline-block px-4 py-2 sm:px-6 sm:py-0.6 border-2 border-[#4B89FD] rounded-full text-black font-semibold tracking-[-0.7px] text-sm sm:text-lg mb-4 sm:mb-8"
               style={{ fontFamily: 'Poppins, sans-serif' }}
             >
               Trusted by {member_count} Students worldwide and counting!
@@ -196,7 +194,7 @@ export default function Main() {
             </h1>
 
             <h3
-              className="font-medium text-[21px] tracking-[-0.7px] leading-[20px] max-w-[520px] mx-auto mt-8"
+              className="font-medium text-[21px] tracking-[-0.7px] leading-[20px] max-w-[520px] mx-auto mt-6 sm:mt-8"
               style={{ fontFamily: 'Poppins, sans-serif' }}
             >
               Connect instantly with like-minded learners. Ask questions, share resources, and stay motivated — all in one place
@@ -207,7 +205,7 @@ export default function Main() {
               href={discord}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-block mt-15 "
+              className="inline-block mt-8 sm:mt-15 "
             >
               <button
                 className="cursor-pointer bg-[#3F82FD] hover:bg-[#143166] text-white border-5 border-[#B1CCFF] border-opacity-50 px-9 py-3 rounded-full text-xl poppins-semibold flex items-center gap-5 transition-all duration-500 ease-in-out shadow-[inset_0_0_30px_rgba(255,255,255,0.4),inset_0_0_60px_rgba(63,130,253,0.6)] hover:shadow-[inset_0_0_40px_rgba(255,255,255,0.3),inset_0_0_80px_rgba(20,49,102,0.8)]"
@@ -230,17 +228,17 @@ export default function Main() {
               />
 
               <TestimonialCard
-                content="Eduvance is seriously one of the slickest, most community-driven edu platforms out there. Every design and feature feels intentional—mobile's clean. But honestly, it's the people that make it—staff actually know regulars, and feedback turns into real changes. It's not just a notes dump, it's a whole vibe. From early server boosts to now helping thousands, Eduvance is straight-up him"
-                icon="/maryam.png"
-                headline="Maryam, Head Moderator"
+                content="As a 2nd year computer engineering student who finished ALs in 2024, i truly and unbiasedly believe eduvance is the best resource and community for A Levels. The experience throughout the few years has given us a solid idea of what students NEED. Why? Because it is led by current & graduated students. A free place to build upon your knowledge with a great potential to make friends, is exactly what I needed, and I believe Eduvance had a huge positive impact on my school and exam grades! Studying would've been truly WAY harder without them."
+                icon="/hydro.webp"
+                headline="Hydrosky, Head Moderator"
                 rotation="rotate-[1deg]"
                 imageClassName="rounded-full"
               />
 
               <TestimonialCard
-                content="Eduvance.au has grown into way more than just a past papers site—it’s a full ecosystem now. From responsive mobile layouts to secret side projects (that we barely keep under wraps), the devs really care about UX, not just content. Whether it’s skilled roles, server boosts, or the legit Minecraft server coming soon, it all builds this weird but productive culture. People move on, but the impact stays real."
-                icon="/bio.png"
-                headline="Biomeac, Co-Founder"
+                content="I joined Eduvance looking for academic material and found a lot more than that. The assortment of resources and community contributed notes are really helpful and helped me with my AS exams especially. I got the opportunity to work on Eduvance myself, from UX development to content curation, I enjoy working with the team and can't wait to see where this will take us"
+                icon="/specter.jpg"
+                headline="Specter, Lead UX Developer"
                 rotation="rotate-[-1.5deg]"
                 imageClassName="rounded-full"
               />
@@ -257,7 +255,7 @@ export default function Main() {
       </section>
 
       {/* Word from Our Founders Section */}
-      <section className='mt-[-120px] relative w-full py-10'>
+      <section className='relative w-full pb-10'>
         <h1
           className="font-semibold text-3xl tracking-tighter sm:text-5xl sm:tracking-[-3px] sm:max-w-[550px] max-w-[350px] mx-auto z-20 mb-12"
           style={{ fontFamily: 'Poppins, sans-serif' }}
@@ -266,66 +264,70 @@ export default function Main() {
         </h1>
 
         {/* Content Container */}
-        <div className="max-w-6xl mx-auto px-4 flex flex-col lg:flex-row gap-8 items-start">
+        <div className="max-w-6xl mx-auto px-4 flex flex-col gap-8">
           
-          {/* Left Side - Founder Profiles */}
-          <div className="flex-1 space-y-8">
+          {/* Founder Profiles - Centered on mobile */}
+          <div className="flex flex-col lg:flex-row lg:flex-1 gap-8 items-center lg:items-start">
             
-            {/* Founder 1 */}
-            <div className="flex items-start gap-4">
-              <div className="w-16 h-16 rounded-full bg-gray-300 overflow-hidden flex-shrink-0">
-                <img 
-                  src="/localap.webp" 
-                  alt="Founder profile" 
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div className="flex-1">
-                <h1 className="font-semibold text-2xl tracking-normal sm:text-3xl sm:tracking-[-1.5px] sm:max-w-[550px] max-w-[350px] mx-auto z-20" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                  YourLocalAP
-                </h1>
-                <h2 className="font-[550] text-lg tracking-normal sm:text-xl sm:tracking-[-0.3px] sm:max-w-[550px] max-w-[350px] mx-auto z-20" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                  Head of Community
-                </h2>
-                <div className="mt-2 text-gray-700 leading-5 text-balance">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+            <div className="w-full lg:flex-1 space-y-8 max-w-2xl lg:max-w-none">
+              
+              {/* Founder 1 */}
+              <div className="flex items-start gap-4">
+                <div className="w-16 h-16 rounded-full bg-gray-300 overflow-hidden flex-shrink-0">
+                  <img 
+                    src="/localap.webp" 
+                    alt="Founder profile" 
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="flex-1">
+                  <h1 className="font-semibold text-2xl tracking-normal sm:text-3xl sm:tracking-[-1.5px] z-20" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                    YourLocalAP
+                  </h1>
+                  <h2 className="font-[550] text-lg tracking-normal sm:text-xl sm:tracking-[-0.3px] z-20" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                    Head of Community
+                  </h2>
+                  <div className="mt-2 text-gray-700 leading-5 text-balance">
+                  When we started Eduvance, our goal was simple: build a space where students could learn, share, and grow together. What began as a small idea is now a thriving community of thousands helping each other every day.
+                  </div>
                 </div>
               </div>
-            </div>
-            
-            {/* Founder 2 */}
-            <div className="flex items-start gap-4">
-              <div className="w-16 h-16 rounded-full bg-gray-300 overflow-hidden flex-shrink-0">
-                <img 
-                  src="/bio.png" 
-                  alt="Founder profile" 
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div className="flex-1">
-                <h1 className="font-semibold text-2xl tracking-normal sm:text-3xl sm:tracking-[-1.5px] sm:max-w-[550px] max-w-[350px] mx-auto z-20" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                  Biomeac
-                </h1>
-                <h2 className="font-[550] text-lg tracking-normal sm:text-xl sm:tracking-[-0.3px] sm:max-w-[550px] max-w-[350px] mx-auto z-20" style={{ fontFamily: 'Poppins, sans-serif' }}>
-                  Head of Technical Development
-                </h2>
-                <div className="mt-2 text-gray-700 leading-5 text-balance">
-                  Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+              
+              {/* Founder 2 */}
+              <div className="flex items-start gap-4">
+                <div className="w-16 h-16 rounded-full bg-gray-300 overflow-hidden flex-shrink-0">
+                  <img 
+                    src="/bio.png" 
+                    alt="Founder profile" 
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="flex-1">
+                  <h1 className="font-semibold text-2xl tracking-normal sm:text-3xl sm:tracking-[-1.5px] z-20" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                    Biomeac
+                  </h1>
+                  <h2 className="font-[550] text-lg tracking-normal sm:text-xl sm:tracking-[-0.3px] z-20" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                    Head of Technical Development
+                  </h2>
+                  <div className="mt-2 text-gray-700 leading-5 text-balance">
+                  Eduvance was built with one promise: accessibility for every student. By putting community first and technology at the service of learning, we're making sure that anyone, anywhere, can thrive academically.
+                  </div>
                 </div>
               </div>
+              
             </div>
             
-          </div>
-          
-          {/* Right Side - Image with Link */}
-          <div className="flex-1 flex justify-center items-center">
-            <a href="https://www.instagram.com/eduvance.au/" target="_blank" rel="noopener noreferrer" className="block">
-              <img 
-                src="/Ads.svg" 
-                alt="Check out our Socials" 
-                className="w-full max-w-md h-auto transition-transform duration-300 hover:-translate-y-2"
-              />
-            </a>
+            {/* Image - Right side on desktop, centered below on mobile */}
+            <div className="w-full lg:flex-1 flex justify-center items-center order-2 lg:order-1">
+              <a href="https://www.instagram.com/eduvance.au/" target="_blank" rel="noopener noreferrer" className="block">
+                <img 
+                  src="/Ads.svg" 
+                  alt="Check out our Socials" 
+                  className="w-full max-w-md lg:max-w-sm xl:max-w-md h-auto transition-transform duration-300 hover:-translate-y-2"
+                />
+              </a>
+            </div>
+            
           </div>
           
         </div>
