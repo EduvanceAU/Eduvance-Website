@@ -8,7 +8,7 @@ import SmallFoot from '@/components/smallFoot.jsx';
 import { Auth } from '@supabase/auth-ui-react';
 import { ThemeSupa } from '@supabase/auth-ui-shared';
 import {Frown} from 'lucide-react'
-import { useParams } from 'next/navigation'; // Import useParams
+import { useParams, usePathname } from 'next/navigation'; // Import useParams
 
 const SubjectButtons = () => {
   const [subjects, setSubjects] = useState([]);
@@ -69,12 +69,41 @@ function LikeDislikeButtons({ noteId, likeCount = 0, dislikeCount = 0, userVote,
 function clamp(n) { return n < 0 ? 0 : n; }
 
 export default function IALCommunityNotesPage() {
-  const params = useParams(); // Get params from the URL
-  const { slug } = params; // Extract the slug
+  const params = useParams();
+  const pathname = usePathname();
+  
+  // Multiple ways to extract the slug
+  const getSlugFromParams = () => {
+    // Method 1: Direct from params
+    if (params?.slug) {
+      const slug = Array.isArray(params.slug) ? params.slug[0] : params.slug;
+      return slug;
+    }
+    
+    // Method 2: From pathname parsing
+    if (pathname) {
+      const pathParts = pathname.split('/');
+      const subjectIndex = pathParts.findIndex(part => part === 'subjects');
+      if (subjectIndex !== -1 && pathParts[subjectIndex + 1]) {
+        return pathParts[subjectIndex + 1];
+      }
+    }
+    
+    // Method 3: From URL directly (client-side only)
+    if (typeof window !== 'undefined') {
+      const urlPath = window.location.pathname;
+      const match = urlPath.match(/\/subjects\/([^\/]+)/);
+      if (match) {
+        return match[1];
+      }
+    }
+    
+    return null;
+  };
 
-  // Derive subjectName from slug
-  const [subjectName, setSubjectName] = useState(null); // Initialize as null
-  const [examCode, setExamCode] = useState(null); // State to hold the fetched exam code
+  const [slug, setSlug] = useState(null);
+  const [subjectName, setSubjectName] = useState(null);
+  const [examCode, setExamCode] = useState(null);
 
   const { session, user, loading: authLoading } = useSupabaseAuth();
   const [units, setUnits] = useState([]);
@@ -90,6 +119,11 @@ export default function IALCommunityNotesPage() {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // Extract slug on mount and when params change
+  useEffect(() => {
+    const extractedSlug = getSlugFromParams();
+    setSlug(extractedSlug);
+  }, [params, pathname]);
 
   const toggleUnit = (unit) => {
     setExpandedUnits(prev => ({
@@ -101,50 +135,71 @@ export default function IALCommunityNotesPage() {
   // Effect to derive subjectName from slug and then fetch examCode
   useEffect(() => {
     if (!slug) {
-      setLoading(true); // Still loading if no slug yet
-      return;
+      return; // Don't set loading to true here
     }
 
-    // Convert slug back to approximate subject name for fetching
-    const decodedSlug = Array.isArray(slug) ? slug[0] : slug;
-    const derivedSubjectName = decodedSlug.replace(/-/g, ' ').split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
-    setSubjectName(derivedSubjectName); // Set the subject name state
+    const derivedSubjectName = slug
+      .replace(/-/g, ' ')
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+    
+    setSubjectName(derivedSubjectName);
 
     async function fetchExamCodeForSubject() {
-      setLoading(true); // Set loading while fetching subject details and exam code
       setError(null);
+      
       try {
-        const { data, error } = await supabase
+        // First try exact match
+        let { data, error } = await supabase
           .from('subjects')
-          .select('code') // Select only the 'code' column
-          .eq('name', derivedSubjectName) // Filter by the derived subject's name
-          .eq('syllabus_type', 'IAL') // And syllabus type
-          .single(); // Expecting only one row
+          .select('code, name')
+          .eq('name', derivedSubjectName)
+          .eq('syllabus_type', 'IAL')
+          .single();
 
-        if (error) {
-          console.error('Error fetching exam code:', error.message);
-          setError(error);
-          setExamCode('N/A');
-          setLoading(false);
-          return;
-        }
+        // If exact match fails, try case-insensitive search
+        if (error || !data) {
+          const { data: flexibleData, error: flexibleError } = await supabase
+            .from('subjects')
+            .select('code, name')
+            .ilike('name', derivedSubjectName)
+            .eq('syllabus_type', 'IAL')
+            .limit(1)
+            .single();
+          
+          if (flexibleError || !flexibleData) {
+            // Try partial match
+            const { data: partialData, error: partialError } = await supabase
+              .from('subjects')
+              .select('code, name')
+              .ilike('name', `%${derivedSubjectName}%`)
+              .eq('syllabus_type', 'IAL')
+              .limit(1);
 
-        if (data && data.code) {
-          setExamCode(data.code);
+            if (partialError || !partialData || partialData.length === 0) {
+              setExamCode('N/A');
+            } else {
+              setExamCode(partialData[0].code || 'N/A');
+              setSubjectName(partialData[0].name);
+            }
+          } else {
+            setExamCode(flexibleData.code || 'N/A');
+            setSubjectName(flexibleData.name);
+          }
         } else {
-          setExamCode('N/A');
-          console.warn(`Subject "${derivedSubjectName}" not found or has no associated exam code.`);
+          setExamCode(data.code || 'N/A');
+          setSubjectName(data.name);
         }
-        setLoading(false); // Finished loading subject details and exam code
+        
       } catch (err) {
-        console.error('An unexpected error occurred while fetching exam code:', err);
-        setError(new Error('Failed to load exam code.'));
+        console.error('Unexpected error while fetching exam code:', err);
         setExamCode('N/A');
-        setLoading(false);
       }
     }
+    
     fetchExamCodeForSubject();
-  }, [slug]); // Re-run when the slug changes
+  }, [slug]);
 
   // Fetch units from subject table (now depends on subjectName being set)
   useEffect(() => {
@@ -158,7 +213,7 @@ export default function IALCommunityNotesPage() {
         .eq('syllabus_type', 'IAL')
         .single();
       if (subjectError || !subjectData) {
-        setError(subjectError || new Error(`Subject not found:`, subjectName));;
+        setError(subjectError || new Error(`Subject not found: ${subjectName}`));
         return;
       }
       let fetchedUnits = subjectData.units || [];
@@ -186,7 +241,6 @@ export default function IALCommunityNotesPage() {
     if (!subjectName || authLoading) return; // Wait for subjectName to be set and auth to load
 
     async function fetchNotes() {
-      setLoading(true);
       setError(null);
       // Get subject id for subjectName IAL
       const { data: subjectData, error: subjectError } = await supabase
@@ -196,7 +250,7 @@ export default function IALCommunityNotesPage() {
         .eq('syllabus_type', 'IAL')
         .single();
       if (subjectError || !subjectData) {
-        setError(subjectError || new Error(`Subject not found:`, subjectName));;
+        setError(subjectError || new Error(`Subject not found: ${subjectName}`));
         setLoading(false);
         return;
       }
@@ -239,9 +293,22 @@ export default function IALCommunityNotesPage() {
     fetchNotes();
   }, [session, authLoading, subjectName]); // Depend on subjectName
 
+  // Add timeout fallback
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      if (loading && !error) {
+        setLoading(false);
+        if (!examCode) {
+          setExamCode('N/A');
+        }
+      }
+    }, 15000);
 
-  // Render loading state if auth is still loading, or if notes/examCode are not yet fetched
-  if (authLoading || loading || !subjectName || !examCode) { // Ensure subjectName and examCode are available
+    return () => clearTimeout(timeout);
+  }, [loading, error, examCode]);
+
+  // Render loading state if auth is still loading, or if notes are not yet fetched
+  if (authLoading || loading || !subjectName) { // Removed !examCode condition
     return (
       <main className="min-h-screen bg-white flex items-center justify-center">
         <p className="text-xl text-gray-600">Loading Eduvance notes...</p>
