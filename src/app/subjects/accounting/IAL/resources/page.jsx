@@ -68,51 +68,41 @@ function clamp(n) { return n < 0 ? 0 : n; }
 
 export default function IALCommunityNotesPage() {
   const params = useParams();
-  const pathname = usePathname(); // Alternative way to get URL info
+  const pathname = usePathname();
   
   // Multiple ways to extract the slug
   const getSlugFromParams = () => {
-    console.log('Debug - Raw params:', params);
-    console.log('Debug - Pathname:', pathname);
-    
     // Method 1: Direct from params
     if (params?.slug) {
       const slug = Array.isArray(params.slug) ? params.slug[0] : params.slug;
-      console.log('Debug - Slug from params.slug:', slug);
       return slug;
     }
     
     // Method 2: From pathname parsing
     if (pathname) {
       const pathParts = pathname.split('/');
-      console.log('Debug - Path parts:', pathParts);
       const subjectIndex = pathParts.findIndex(part => part === 'subjects');
       if (subjectIndex !== -1 && pathParts[subjectIndex + 1]) {
-        const slug = pathParts[subjectIndex + 1];
-        console.log('Debug - Slug from pathname:', slug);
-        return slug;
+        return pathParts[subjectIndex + 1];
       }
     }
     
     // Method 3: From URL directly (client-side only)
     if (typeof window !== 'undefined') {
       const urlPath = window.location.pathname;
-      console.log('Debug - Window pathname:', urlPath);
       const match = urlPath.match(/\/subjects\/([^\/]+)/);
       if (match) {
-        const slug = match[1];
-        console.log('Debug - Slug from window.location:', slug);
-        return slug;
+        return match[1];
       }
     }
     
-    console.log('Debug - No slug found');
     return null;
   };
 
   const [slug, setSlug] = useState(null);
   const [subjectName, setSubjectName] = useState(null);
   const [examCode, setExamCode] = useState(null);
+
   const { session, user, loading: authLoading } = useSupabaseAuth();
   const [units, setUnits] = useState([]);
   const [expandedUnits, setExpandedUnits] = useState({});
@@ -130,23 +120,8 @@ export default function IALCommunityNotesPage() {
   // Extract slug on mount and when params change
   useEffect(() => {
     const extractedSlug = getSlugFromParams();
-    console.log('Debug - Extracted slug:', extractedSlug);
     setSlug(extractedSlug);
   }, [params, pathname]);
-
-  // Debug logging for loading states
-  useEffect(() => {
-    console.log('Debug - Loading states:', {
-      authLoading,
-      loading,
-      subjectName,
-      examCode,
-      slug,
-      session: !!session,
-      params,
-      pathname
-    });
-  }, [authLoading, loading, subjectName, examCode, slug, session, params, pathname]);
 
   const toggleUnit = (unit) => {
     setExpandedUnits(prev => ({
@@ -155,13 +130,10 @@ export default function IALCommunityNotesPage() {
     }));
   };
 
-  // Effect to derive subjectName from slug and fetch examCode
+  // Effect to derive subjectName from slug and then fetch examCode
   useEffect(() => {
-    console.log('Debug - Slug effect triggered:', { slug });
-    
     if (!slug) {
-      console.log('Debug - No slug, staying in loading state');
-      return; // Don't set loading to true here, let it resolve naturally
+      return; // Don't set loading to true here
     }
 
     const derivedSubjectName = slug
@@ -170,11 +142,9 @@ export default function IALCommunityNotesPage() {
       .map(word => word.charAt(0).toUpperCase() + word.slice(1))
       .join(' ');
     
-    console.log('Debug - Derived subject name:', derivedSubjectName);
     setSubjectName(derivedSubjectName);
 
     async function fetchExamCodeForSubject() {
-      console.log('Debug - Fetching exam code for:', derivedSubjectName);
       setError(null);
       
       try {
@@ -186,11 +156,8 @@ export default function IALCommunityNotesPage() {
           .eq('syllabus_type', 'IAL')
           .single();
 
-        console.log('Debug - Exact match result:', { data, error });
-
         // If exact match fails, try case-insensitive search
         if (error || !data) {
-          console.log('Debug - Trying case-insensitive search...');
           const { data: flexibleData, error: flexibleError } = await supabase
             .from('subjects')
             .select('code, name')
@@ -198,12 +165,9 @@ export default function IALCommunityNotesPage() {
             .eq('syllabus_type', 'IAL')
             .limit(1)
             .single();
-
-          console.log('Debug - Flexible search result:', { flexibleData, flexibleError });
           
           if (flexibleError || !flexibleData) {
-            // If still no match, try partial match
-            console.log('Debug - Trying partial match search...');
+            // Try partial match
             const { data: partialData, error: partialError } = await supabase
               .from('subjects')
               .select('code, name')
@@ -211,65 +175,45 @@ export default function IALCommunityNotesPage() {
               .eq('syllabus_type', 'IAL')
               .limit(1);
 
-            console.log('Debug - Partial search result:', { partialData, partialError });
-
             if (partialError || !partialData || partialData.length === 0) {
-              console.warn(`Subject "${derivedSubjectName}" not found in database`);
               setExamCode('N/A');
-              // Don't set error - just continue with N/A
             } else {
-              console.log('Debug - Found with partial match:', partialData[0]);
               setExamCode(partialData[0].code || 'N/A');
-              setSubjectName(partialData[0].name); // Use the actual DB name
+              setSubjectName(partialData[0].name);
             }
           } else {
-            console.log('Debug - Found with flexible search:', flexibleData);
             setExamCode(flexibleData.code || 'N/A');
-            setSubjectName(flexibleData.name); // Use the actual DB name
+            setSubjectName(flexibleData.name);
           }
         } else {
-          console.log('Debug - Exact match found:', data);
           setExamCode(data.code || 'N/A');
-          setSubjectName(data.name); // Use the actual DB name
+          setSubjectName(data.name);
         }
         
       } catch (err) {
         console.error('Unexpected error while fetching exam code:', err);
         setExamCode('N/A');
-        // Don't set error for exam code issues - continue loading
       }
     }
     
     fetchExamCodeForSubject();
   }, [slug]);
 
-  // Fetch units from subject table
+  // Fetch units from subject table (now depends on subjectName being set)
   useEffect(() => {
-    console.log('Debug - Units effect triggered:', { subjectName, authLoading });
-    
-    if (!subjectName || authLoading) {
-      console.log('Debug - Waiting for subject name or auth to load');
-      return;
-    }
+    if (!subjectName || authLoading) return; // Wait for subjectName to be set and auth to load
 
     const fetchUnits = async () => {
-      console.log('Debug - Fetching units for:', subjectName);
-      
       const { data: subjectData, error: subjectError } = await supabase
         .from('subjects')
         .select('units')
         .eq('name', subjectName)
         .eq('syllabus_type', 'IAL')
         .single();
-        
-      console.log('Debug - Units response:', { subjectData, subjectError });
-        
       if (subjectError || !subjectData) {
-        console.error('Debug - Units fetch failed:', subjectError);
         setError(subjectError || new Error(`Subject not found: ${subjectName}`));
         return;
       }
-      
       let fetchedUnits = subjectData.units || [];
       fetchedUnits.sort((a, b) => {
         const getUnitNum = (u) => {
@@ -281,31 +225,21 @@ export default function IALCommunityNotesPage() {
         if (numA !== numB) return numA - numB;
         return (a.name || '').localeCompare(b.name || '');
       });
-      
-      console.log('Debug - Units processed:', fetchedUnits);
       setUnits(fetchedUnits);
       setExpandedUnits(fetchedUnits.reduce((acc, unit) => {
         acc[unit.unit] = true;
         return acc;
       }, {}));
     };
-    
     fetchUnits();
-  }, [authLoading, subjectName]);
+  }, [authLoading, subjectName]); // Depend on subjectName
 
-  // Fetch notes
+  // Fetch notes (now depends on subjectName being set)
   useEffect(() => {
-    console.log('Debug - Notes effect triggered:', { subjectName, authLoading });
-    
-    if (!subjectName || authLoading) {
-      console.log('Debug - Waiting for subject name or auth for notes');
-      return;
-    }
+    if (!subjectName || authLoading) return; // Wait for subjectName to be set and auth to load
 
     async function fetchNotes() {
-      console.log('Debug - Fetching notes for:', subjectName);
       setError(null);
-      
       // Get subject id for subjectName IAL
       const { data: subjectData, error: subjectError } = await supabase
         .from('subjects')
@@ -313,19 +247,12 @@ export default function IALCommunityNotesPage() {
         .eq('name', subjectName)
         .eq('syllabus_type', 'IAL')
         .single();
-        
-      console.log('Debug - Subject ID response:', { subjectData, subjectError });
-        
       if (subjectError || !subjectData) {
-        console.error('Debug - Subject ID fetch failed:', subjectError);
         setError(subjectError || new Error(`Subject not found: ${subjectName}`));
         setLoading(false);
         return;
       }
-      
       const subjectId = subjectData.id;
-      console.log('Debug - Subject ID:', subjectId);
-      
       // Fetch approved community notes for this subject
       const { data: notes, error: notesError } = await supabase
         .from('community_resource_requests')
@@ -333,16 +260,11 @@ export default function IALCommunityNotesPage() {
         .eq('subject_id', subjectId)
         .eq('approved', "Approved")
         .order('submitted_at', { ascending: false });
-        
-      console.log('Debug - Notes response:', { notes, notesError });
-        
       if (notesError) {
-        console.error('Debug - Notes fetch failed:', notesError);
         setError(notesError);
         setLoading(false);
         return;
       }
-      
       // Group notes by unit
       const grouped = {};
       notes.forEach((note) => {
@@ -350,16 +272,13 @@ export default function IALCommunityNotesPage() {
         if (!grouped[unit]) grouped[unit] = [];
         grouped[unit].push(note);
       });
-      
-      console.log('Debug - Grouped notes:', grouped);
       setUnitNotes(grouped);
-      
-      // Update userVotes from localStorage
+      // Optionally, update userVotes from localStorage again (in case of SSR)
       setUserVotes((prev) => {
         const updated = { ...prev };
         notes.forEach(note => {
           if (updated[note.id] === undefined) {
-            updated[note.id] = null;
+            updated[note.id] = null; // Initialize with null if not found
           }
         });
         if (typeof window !== 'undefined') {
@@ -367,57 +286,30 @@ export default function IALCommunityNotesPage() {
         }
         return updated;
       });
-      
-      console.log('Debug - Notes fetch complete, setting loading to false');
       setLoading(false);
     }
-    
     fetchNotes();
-  }, [session, authLoading, subjectName]);
+  }, [session, authLoading, subjectName]); // Depend on subjectName
 
-  // Timeout fallback to prevent infinite loading
+  // Add timeout fallback
   useEffect(() => {
     const timeout = setTimeout(() => {
       if (loading && !error) {
-        console.warn('Debug - Timeout reached, forcing loading to false');
         setLoading(false);
         if (!examCode) {
           setExamCode('N/A');
         }
       }
-    }, 15000); // 15 second timeout
+    }, 15000);
 
     return () => clearTimeout(timeout);
   }, [loading, error, examCode]);
 
-  // Debug the final loading condition
-  const shouldShowLoading = authLoading || loading || !subjectName;
-  console.log('Debug - Should show loading:', {
-    shouldShowLoading,
-    authLoading,
-    loading,
-    subjectName: !!subjectName,
-    examCode: !!examCode,
-    slug: !!slug
-  });
-
-  // Render loading state
-  if (shouldShowLoading) {
+  // Render loading state if auth is still loading, or if notes are not yet fetched
+  if (authLoading || loading || !subjectName) { // Removed !examCode condition
     return (
       <main className="min-h-screen bg-white flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-xl text-gray-600">Loading Eduvance notes...</p>
-          <p className="text-sm text-gray-400 mt-2">
-            Auth: {authLoading ? 'Loading' : 'Ready'} | 
-            Data: {loading ? 'Loading' : 'Ready'} | 
-            Subject: {subjectName ? 'Ready' : 'Missing'} | 
-            Code: {examCode || 'Missing'} |
-            Slug: {slug || 'Missing'}
-          </p>
-          <p className="text-xs text-gray-300 mt-1">
-            URL: {typeof window !== 'undefined' ? window.location.pathname : 'SSR'}
-          </p>
-        </div>
+        <p className="text-xl text-gray-600">Loading Eduvance notes...</p>
       </main>
     );
   }
@@ -440,15 +332,7 @@ export default function IALCommunityNotesPage() {
   if (error) {
     return (
       <main className="min-h-screen bg-white flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-xl text-red-600">Error loading Eduvance notes: {error.message}</p>
-          <button 
-            onClick={() => window.location.reload()} 
-            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500"
-          >
-            Retry
-          </button>
-        </div>
+        <p className="text-xl text-red-600">Error loading Eduvance notes: {error.message}</p>
       </main>
     );
   }
