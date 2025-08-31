@@ -98,7 +98,7 @@ export default function Subject({ searchParams }) {
                       <Link
                         href={`/subjects/english-literature/IAL/communityNotes`}
                         className="transition-all duration-300 h-40 rounded-xl font-[550] tracking-[-0.5px] border-[1.5px] border-[#B0B0B0] flex items-end justify-start pl-4 pb-4 text-gray-400 bg-gray-200 hover:text-gray-500 hover:bg-gray-300 bg-blend-multiply cursor-not-allowed"
-                        style={{ backgroundImage: "url('/PPQ Background.svg')", backgroundSize: 'cover', backgroundPosition: 'center' }}
+                        style={{ backgroundImage: "url('/PPQ Background.svg')", backgroundSize: 'cover', backgroundPosition: 'center', opacity: 0.7 }}
                       >
                         Community Resources
                       </Link>
@@ -135,7 +135,7 @@ export default function Subject({ searchParams }) {
                       <Link
                         href={`/subjects/english-literature/IGCSE/communityNotes`}
                         className="transition-all duration-300 h-40 rounded-xl font-[550] tracking-[-0.5px] border-[1.5px] border-[#B0B0B0] flex items-end justify-start pl-4 pb-4 text-gray-400 bg-gray-200 hover:text-gray-500 hover:bg-gray-300 bg-blend-multiply cursor-not-allowed"
-                        style={{ backgroundImage: "url('/PPQ Background.svg')", backgroundSize: 'cover', backgroundPosition: 'center' }}
+                        style={{ backgroundImage: "url('/PPQ Background.svg')", backgroundSize: 'cover', backgroundPosition: 'center', opacity: 0.7 }}
                       >
                         Community Resources
                       </Link>
