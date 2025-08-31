@@ -228,17 +228,17 @@ export default function Main() {
               />
 
               <TestimonialCard
-                content="Eduvance is seriously one of the slickest, most community-driven edu platforms out there. Every design and feature feels intentional—mobile's clean. But honestly, it's the people that make it—staff actually know regulars, and feedback turns into real changes. It's not just a notes dump, it's a whole vibe. From early server boosts to now helping thousands, Eduvance is straight-up him"
-                icon="/maryam.png"
-                headline="Maryam, Head Moderator"
+                content="As a 2nd year computer engineering student who finished ALs in 2024, i truly and unbiasedly believe eduvance is the best resource and community for A Levels. The experience throughout the few years has given us a solid idea of what students NEED. Why? Because it is led by current & graduated students. A free place to build upon your knowledge with a great potential to make friends, is exactly what I needed, and I believe Eduvance had a huge positive impact on my school and exam grades! Studying would've been truly WAY harder without them."
+                icon="/hydro.webp"
+                headline="Hydrosky, Head Moderator"
                 rotation="rotate-[1deg]"
                 imageClassName="rounded-full"
               />
 
               <TestimonialCard
-                content="Eduvance.au has grown into way more than just a past papers site—it’s a full ecosystem now. From responsive mobile layouts to secret side projects (that we barely keep under wraps), the devs really care about UX, not just content. Whether it’s skilled roles, server boosts, or the legit Minecraft server coming soon, it all builds this weird but productive culture. People move on, but the impact stays real."
-                icon="/bio.png"
-                headline="Biomeac, Co-Founder"
+                content="I joined Eduvance looking for academic material and found a lot more than that. The assortment of resources and community contributed notes are really helpful and helped me with my AS exams especially. I got the opportunity to work on Eduvance myself, from UX development to content curation, I enjoy working with the team and can't wait to see where this will take us"
+                icon="/specter.jpg"
+                headline="Specter, Lead UX Developer"
                 rotation="rotate-[-1.5deg]"
                 imageClassName="rounded-full"
               />
