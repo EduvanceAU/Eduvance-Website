@@ -80,7 +80,7 @@ export default function Main() {
       {/* Hero Section */}
       <section className="w-full min-h-screen flex flex-col relative pt-16">
         {/* Gradient Box in Background */}
-        <div className="flex text-center flex-col gap-4 max-sm:gap-2 max-sm:justify-start max-sm:pt-5 items-center justify-center absolute w-[95vw] h-[85vh] bg-gradient-to-b from-[#4E8CFF] to-[#0C60FB] rounded-2xl shadow-xl z-50 left-1/2 transform -translate-x-1/2 mb-[-50px]" >
+        <div className="flex text-center flex-col gap-4 max-sm:gap-2 max-sm:justify-start max-sm:pt-5 items-center justify-center absolute w-[95vw] h-[85vh] bg-gradient-to-b from-[#4E8CFF] to-[#0C60FB] rounded-2xl shadow-xl z-20 left-1/2 transform -translate-x-1/2 mb-[-50px]" >
           
 
             <Image src={Headline} alt="Headline" className="pointer-events-none w-[800px] h-auto z-10" />
@@ -115,7 +115,7 @@ export default function Main() {
             <Image
               src={DocWidgets}
               alt="DocWidgets"
-              className="pointer-events-none absolute top-[50%] sm:top-[90%] w-[300px] sm:w-[300px] h-auto transform sm:-translate-y-40 translate-y-10 left-[-20px] z-40"
+              className="pointer-events-none absolute top-[50%] sm:top-[90%] w-[300px] sm:w-[300px] h-auto transform sm:-translate-y-40 translate-y-10 left-[-20px] z-15"
             />
           
         </div>
