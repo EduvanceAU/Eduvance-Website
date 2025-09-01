@@ -186,7 +186,10 @@ Final Stage Todo :
    ✔ Add content to Founders section @done(25-08-30 13:23)
    ✔ Update Founder Titles and Add mock text to the div @done(25-08-30 13:23)
    ✔ Add Ad images to the section @done(25-08-30 13:23)
-   ☐ Make the Founders section responsive
+   ✔ Make the Founders section responsive @done(25-09-01 16:40)
+
+   ☐ Change all the eduvance notes database tables to have the correct fields and structure
+   ☐ Add blur overlay to disabled community notes pages and ensure no accessibility issues
 
 Later Todo :
    ☐ Add a credits page
