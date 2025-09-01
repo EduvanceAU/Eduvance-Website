@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { createClient } from '@supabase/supabase-js';
 import { useReloadOnStuckLoading } from '@/utils/reloadOnStuckLoading';
+import {Frown} from 'lucide-react'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -15,7 +16,7 @@ import SmallFoot from '@/components/smallFoot.jsx';
 // At the top, define variables for subjectName, syllabusType, and examCode
 const subjectName = 'English Literature';
 const subjectSlug = subjectName.toLowerCase().replace(/\s+/g, '-');
-const examCode = '4ET1';
+const examCode = 'WET0/XET01/YET01';
 
 // Color mapping function for specific tags
 const getTagColorClass = (tagName) => {
@@ -75,11 +76,11 @@ const SubjectButtons = () => {
         .from('subjects')
         .select('name')
         .order('name', { ascending: true })
-        .eq('syllabus_type', 'IGCSE');
+        .eq('syllabus_type', 'IAL');
       
       if (!error && data) {
-        // Define the subjects you want to hide for IGCSE pages only
-        const subjectsToHide = ['Economics', 'Further Mathematics', 'Information Technology'];
+        // Define the subjects you want to hide (IAL pages only)
+        const subjectsToHide = ['Economics', 'Further Mathematics', 'English Literature'];
         
         // Filter the fetched data to exclude the specified subjects
         const filteredSubjects = data.filter(subj => !subjectsToHide.includes(subj.name));
@@ -95,7 +96,7 @@ const SubjectButtons = () => {
       {subjects.map((name, index) => {
         const slug = name.toLowerCase().replace(/\s+/g, '-');
         return (
-          <Link key={index} href={`/subjects/${slug}/IGCSE/communityNotes`}>
+          <Link key={index} href={`/subjects/${slug}/IAL/communityNotes`}>
             <button className="px-4 py-2 cursor-pointer bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition">
               {name}
             </button>
@@ -106,7 +107,7 @@ const SubjectButtons = () => {
   );
 };
 
-export default function IGCSEResources() {
+export default function IALResources() {
   const [units, setUnits] = useState([]);
   const [expandedUnits, setExpandedUnits] = useState({});
   const [unitResources, setUnitResources] = useState({});
@@ -124,26 +125,7 @@ export default function IGCSEResources() {
     }
   };
 
-  const [tag, setTag] = useState([]);
-
-  function handleTag(event){
-    event.stopPropagation(); 
-    event.preventDefault(); 
-    if(tag === null){
-      setTag(event.currentTarget.innerHTML) 
-    }
-    else{
-      setTag(null)
-    }
-  }
-
   useReloadOnStuckLoading(loading);
-
-  // Helper function to format tag names
-  function formatTagName(name) {
-    if (!name) return '';
-    return name.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
-  }
 
   const toggleUnit = (unit) => {
     setExpandedUnits(prev => ({
@@ -159,16 +141,13 @@ export default function IGCSEResources() {
         .from('subjects')
         .select('units')
         .eq('name', subjectName)
-        .eq('syllabus_type', 'IGCSE')
+        .eq('syllabus_type', 'IAL')
         .single();
       if (subjectError || !subjectData) {
         setError(subjectError || new Error(`Subject not found:`, subjectName));;
         return;
       }
       let fetchedUnits = subjectData.units || [];
-      fetchedUnits = fetchedUnits.filter(unit =>
-        !unit.unit?.includes('R') && !unit.name?.includes('R')
-      );
       // Sort by unit number if possible, fallback to name
       fetchedUnits.sort((a, b) => {
         const getUnitNum = (u) => {
@@ -190,6 +169,7 @@ export default function IGCSEResources() {
     fetchUnits();
   }, []);
 
+  // Updated fetchResources function with better error handling and debugging
   useEffect(() => {
     setLoading(true);
     const fetchResources = async () => {
@@ -198,40 +178,48 @@ export default function IGCSEResources() {
           .from('subjects')
           .select('id')
           .eq('name', subjectName)
-          .eq('syllabus_type', 'IGCSE')
+          .eq('syllabus_type', 'IAL')
           .single();
 
         if (subjectError || !subjectData) {
+          console.error('Subject fetch error:', subjectError);
           setError(subjectError || new Error(`Subject not found:`, subjectName));;
           setLoading(false);
           return;
         }
 
         const subjectId = subjectData.id;
+        console.log('Fetching resources for subject ID:', subjectId);
 
         const { data: resources, error: resourcesError } = await supabase
-          .from('community_resource_requests')
+          .from('resources')
           .select('*')
           .eq('subject_id', subjectId)
-          .order('title', { ascending: true })
-          .eq('approved', "Approved")
-          .order('submitted_at', { ascending: false });
+          .eq('approved', 'Approved') // This ensures only approved resources are fetched
+          .order('unit_chapter_name', { ascending: true }) // Order by unit first
+          .order('resource_type', { ascending: true })     // Then by resource type
+          .order('title', { ascending: true });            // Finally by title
 
         if (resourcesError) {
+          console.error('Resources fetch error:', resourcesError);
           setError(resourcesError);
           setLoading(false);
           return;
         }
 
+        console.log('Fetched approved resources:', resources?.length || 0);
+
         const groupedResources = {};
 
-        resources.forEach((resource) => {
+        resources?.forEach((resource) => {
+          // Use unit_chapter_name if available, otherwise fallback to 'General'
           const unit = resource.unit_chapter_name || 'General';
 
           if (!groupedResources[unit]) {
             groupedResources[unit] = [];
           }
 
+          // Find existing group for this resource type or create new one
           let group = groupedResources[unit].find((grp) => grp.heading === resource.resource_type);
           if (!group) {
             group = { heading: resource.resource_type, links: [] };
@@ -242,13 +230,17 @@ export default function IGCSEResources() {
             name: resource.title,
             url: resource.link,
             description: resource.description,
-            contributor: resource.uploaded_by_username,
-            last: resource.updated_at
+            contributor: resource.contributor_name || resource.uploaded_by_username, // Use contributor_name from table
+            last: resource.updated_at || resource.submitted_at, // Fallback to submitted_at if updated_at is null
+            approvedAt: resource.approved_at // Include approval date for reference
           });
         });
+
+        console.log('Grouped resources:', groupedResources);
         setUnitResources(groupedResources);
         setLoading(false);
       } catch (error) {
+        console.error('Unexpected error:', error);
         setError(error);
         setLoading(false);
       }
@@ -262,6 +254,31 @@ export default function IGCSEResources() {
         <p className="text-xl text-red-600">Error loading resources: {error.message}</p>
       </main>
     );
+  }
+
+  const[resourceTypeFilter, setResourceTypeFilter] = useState(null)
+  const [tag, setTag] = useState([]);
+
+  function handleTag(event){
+    event.stopPropagation(); 
+    event.preventDefault(); 
+    if(tag === null){
+      setTag(event.currentTarget.innerHTML) 
+    }
+    else{
+      setTag(null)
+    }
+  }
+
+  function handleResourceTypeFilter(event){
+    setResourceTypeFilter(event.currentTarget.innerHTML) 
+    event.stopPropagation(); 
+    event.preventDefault(); 
+    if(resourceTypeFilter === null){
+    }
+    else{
+      setResourceTypeFilter(null)
+    }
   }
 
   useEffect(() => {
@@ -280,23 +297,45 @@ export default function IGCSEResources() {
       });
     }
   }, [unitResources]); // This runs after unitResources is populated
+
+  function formatTagName(name) {
+    if (!name) return '';
+    // Split the string by underscores and capitalize each word
+    return name.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+  }
   
   return (
     <>
+    <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-xs animate-fade-in bg-black/10">
+      <div className="flex items-center flex-col justify-center bg-white rounded-xl mx-5 p-10 text-center">
+        <span className="flex items-center justify-center gap-2 flex-wrap sm:flex-nowrap">
+          <Frown className="stroke-[#1A69FA]"/> 
+          <p>Community Notes are currently unavailable.</p>
+        </span>
+        <p>Keep an eye out on our Discord Server for the release date!</p>
+      </div>
+    </div>
+      
+    <div className="blur-sm pointer-events-none select-none">
+      <h1>Community Notes are currently unavailable.</h1>
+      <div>Community Notes are currently unavailable.</div>
+      
       <main className="min-h-screen bg-white flex flex-col items-center justify-start py-10 m-10">
+
+
         <div className="w-full max-w-5xl px-4">
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#000000] mb-8 text-left tracking-[-0.035em]" style={{ fontFamily: "Poppins, sans-serif" }}>
-            IGCSE <span className="bg-[#1A69FA] px-2 py-1 -rotate-1 inline-block"><span className="text-[#FFFFFF]">English Literature</span></span> Community Notes
+            IAL <span className="bg-[#1A69FA] px-2 py-1 -rotate-1 inline-block"><span className="text-[#FFFFFF]">English Literature</span></span> Community Notes
           </h1>
 
           <div className="inline-flex items-center justify-center px-4 py-2 mb-8 rounded-md" style={{ border: "1.5px solid #DBDBDB", fontFamily: "Poppins, sans-serif" }}>
             <span className="text-md font-medium text-black tracking-tight">
-              <span className="font-[501]">Exam code:</span> 4ET1
+              <span className="font-[501]">Exam code:</span> WEC1/XEC11/YEC11
             </span>
           </div>
 
           <h3 className="text-sm sm:text-md lg:text-lg font-[500] leading-6 text-[#707070] mb-8 text-left max-w-4xl tracking-[-0.015em]" style={{ fontFamily: "Poppins, sans-serif" }}>
-            Access a wide range of Edexcel IGCSE English Literature resources—all in one place. Whether you're brushing up on concepts or aiming to master exam strategies, these materials are designed to support your revision and boost your performance
+            Access a wide range of Edexcel IAL English Literature resources—all in one place. Whether you're brushing up on concepts or aiming to master exam strategies, these materials are designed to support your revision and boost your performance
           </h3>
 
           <div className="w-full mb-8">
@@ -484,6 +523,9 @@ export default function IGCSEResources() {
           ))}
         </div>
       </main>
+
+    </div>
+      
       <SmallFoot />
     </>
   );
