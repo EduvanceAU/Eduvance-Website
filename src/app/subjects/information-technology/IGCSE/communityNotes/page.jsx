@@ -5,6 +5,8 @@ import { useState, useEffect } from "react";
 import { createClient } from '@supabase/supabase-js';
 import { useReloadOnStuckLoading } from '@/utils/reloadOnStuckLoading';
 
+import {Frown} from 'lucide-react'
+
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
@@ -13,9 +15,9 @@ const supabase = createClient(
 import SmallFoot from '@/components/smallFoot.jsx';
 
 // At the top, define variables for subjectName, syllabusType, and examCode
-const subjectName = 'Further Mathematics';
+const subjectName = 'Information Technology';
 const subjectSlug = subjectName.toLowerCase().replace(/\s+/g, '-');
-const examCode = '4PM1';
+const examCode = '4IT1';
 
 // Color mapping function for specific tags
 const getTagColorClass = (tagName) => {
@@ -210,7 +212,7 @@ export default function IGCSEResources() {
         const subjectId = subjectData.id;
 
         const { data: resources, error: resourcesError } = await supabase
-          .from('community_resource_requests')
+          .from('resources')
           .select('*')
           .eq('subject_id', subjectId)
           .order('title', { ascending: true })
@@ -283,20 +285,36 @@ export default function IGCSEResources() {
   
   return (
     <>
+    <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-xs animate-fade-in bg-black/10">
+      <div className="flex items-center flex-col justify-center bg-white rounded-xl mx-5 p-10 text-center">
+        <span className="flex items-center justify-center gap-2 flex-wrap sm:flex-nowrap">
+          <Frown className="stroke-[#1A69FA]"/> 
+          <p>Community Notes are currently unavailable.</p>
+        </span>
+        <p>Keep an eye out on our Discord Server for the release date!</p>
+      </div>
+    </div>
+      
+    <div className="blur-sm pointer-events-none select-none">
+      <h1>Community Notes are currently unavailable.</h1>
+      <div>Community Notes are currently unavailable.</div>
+      
       <main className="min-h-screen bg-white flex flex-col items-center justify-start py-10 m-10">
+
+
         <div className="w-full max-w-5xl px-4">
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#000000] mb-8 text-left tracking-[-0.035em]" style={{ fontFamily: "Poppins, sans-serif" }}>
-            IGCSE <span className="bg-[#1A69FA] px-2 py-1 -rotate-1 inline-block"><span className="text-[#FFFFFF]">Further Mathematics</span></span> Community Notes
+            IAL <span className="bg-[#1A69FA] px-2 py-1 -rotate-1 inline-block"><span className="text-[#FFFFFF]">Information Technology</span></span> Community Notes
           </h1>
 
           <div className="inline-flex items-center justify-center px-4 py-2 mb-8 rounded-md" style={{ border: "1.5px solid #DBDBDB", fontFamily: "Poppins, sans-serif" }}>
             <span className="text-md font-medium text-black tracking-tight">
-              <span className="font-[501]">Exam code:</span> 4PM1
+              <span className="font-[501]">Exam code:</span> WEC1/XEC11/YEC11
             </span>
           </div>
 
           <h3 className="text-sm sm:text-md lg:text-lg font-[500] leading-6 text-[#707070] mb-8 text-left max-w-4xl tracking-[-0.015em]" style={{ fontFamily: "Poppins, sans-serif" }}>
-            Access a wide range of Edexcel IGCSE Further Mathematics resources—all in one place. Whether you're brushing up on concepts or aiming to master exam strategies, these materials are designed to support your revision and boost your performance
+            Access a wide range of Edexcel IAL Information Technology resources—all in one place. Whether you're brushing up on concepts or aiming to master exam strategies, these materials are designed to support your revision and boost your performance
           </h3>
 
           <div className="w-full mb-8">
@@ -484,6 +502,9 @@ export default function IGCSEResources() {
           ))}
         </div>
       </main>
+
+    </div>
+      
       <SmallFoot />
     </>
   );

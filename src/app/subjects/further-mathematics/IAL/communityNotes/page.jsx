@@ -5,6 +5,8 @@ import { useState, useEffect } from "react";
 import { createClient } from '@supabase/supabase-js';
 import { useReloadOnStuckLoading } from '@/utils/reloadOnStuckLoading';
 
+import {Frown} from 'lucide-react'
+
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
@@ -191,7 +193,7 @@ export default function IALResources() {
         console.log('Fetching resources for subject ID:', subjectId);
 
         const { data: resources, error: resourcesError } = await supabase
-          .from('community_resource_requests')
+          .from('resources')
           .select('*')
           .eq('subject_id', subjectId)
           .eq('approved', 'Approved') // This ensures only approved resources are fetched
@@ -305,7 +307,23 @@ export default function IALResources() {
   
   return (
     <>
+    <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-xs animate-fade-in bg-black/10">
+      <div className="flex items-center flex-col justify-center bg-white rounded-xl mx-5 p-10 text-center">
+        <span className="flex items-center justify-center gap-2 flex-wrap sm:flex-nowrap">
+          <Frown className="stroke-[#1A69FA]"/> 
+          <p>Community Notes are currently unavailable.</p>
+        </span>
+        <p>Keep an eye out on our Discord Server for the release date!</p>
+      </div>
+    </div>
+      
+    <div className="blur-sm pointer-events-none select-none">
+      <h1>Community Notes are currently unavailable.</h1>
+      <div>Community Notes are currently unavailable.</div>
+      
       <main className="min-h-screen bg-white flex flex-col items-center justify-start py-10 m-10">
+
+
         <div className="w-full max-w-5xl px-4">
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#000000] mb-8 text-left tracking-[-0.035em]" style={{ fontFamily: "Poppins, sans-serif" }}>
             IAL <span className="bg-[#1A69FA] px-2 py-1 -rotate-1 inline-block"><span className="text-[#FFFFFF]">Further Mathematics</span></span> Community Notes
@@ -313,7 +331,7 @@ export default function IALResources() {
 
           <div className="inline-flex items-center justify-center px-4 py-2 mb-8 rounded-md" style={{ border: "1.5px solid #DBDBDB", fontFamily: "Poppins, sans-serif" }}>
             <span className="text-md font-medium text-black tracking-tight">
-              <span className="font-[501]">Exam code:</span> XFM01/YFM01
+              <span className="font-[501]">Exam code:</span> WEC1/XEC11/YEC11
             </span>
           </div>
 
@@ -506,6 +524,9 @@ export default function IALResources() {
           ))}
         </div>
       </main>
+
+    </div>
+      
       <SmallFoot />
     </>
   );
