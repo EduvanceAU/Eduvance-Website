@@ -198,5 +198,5 @@ Later Todo :
    ✔ Update footer link's colour transition for smoother UI @done(25-08-15 14:19)
    ☐ Hide the side scroll bar
 
-   ☐ Update vercel analytics setting
-   ☐ Test and Ensure working analytics data collection with vercel
+   ✔ Update vercel analytics setting @done(25-09-02 09:50)
+   ✔ Test and Ensure working analytics data collection with vercel @done(25-09-02 09:50)
