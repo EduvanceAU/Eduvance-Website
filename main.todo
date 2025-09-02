@@ -188,13 +188,15 @@ Final Stage Todo :
    ✔ Add Ad images to the section @done(25-08-30 13:23)
    ✔ Make the Founders section responsive @done(25-09-01 16:40)
 
-   ☐ Change all the eduvance notes database tables to have the correct fields and structure
-   ☐ Add blur overlay to disabled community notes pages and ensure no accessibility issues
+   ✔ Change all the eduvance notes database tables to have the correct fields and structure @done(25-09-01 18:37)
+   ✔ Add blur overlay to disabled community notes pages and ensure no accessibility issues @done(25-09-01 18:37)
 
 Later Todo :
-   ☐ Add a credits page
-   ☐ Update the testimonials
+   ✔ Update the testimonials @done(25-09-01 18:37)
    ✔ Update side bar links @done(25-08-11 22:08)
    ✔ Update resources pages button title @done(25-08-15 14:16)
    ✔ Update footer link's colour transition for smoother UI @done(25-08-15 14:19)
    ☐ Hide the side scroll bar
+
+   ☐ Update vercel analytics setting
+   ☐ Test and Ensure working analytics data collection with vercel
