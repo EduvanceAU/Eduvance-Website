@@ -3,8 +3,59 @@ const { createClient } = require('@supabase/supabase-js');
 const fs = require('fs');
 const path = require('path');
 const readline = require('readline');
+const fetch = require('node-fetch'); // Add node-fetch polyfill for better compatibility
+const { spawn } = require('child_process');
 require('dotenv').config(); // Load environment variables from .env file
 
+// Network diagnostics and utilities
+class NetworkDiagnostics {
+  static async checkDNSResolution(hostname) {
+    return new Promise((resolve) => {
+      const nslookup = spawn('nslookup', [hostname]);
+      let output = '';
+      let errorOutput = '';
+      
+      nslookup.stdout.on('data', (data) => {
+        output += data.toString();
+      });
+      
+      nslookup.stderr.on('data', (data) => {
+        errorOutput += data.toString();
+      });
+      
+      nslookup.on('close', (code) => {
+        resolve({
+          success: code === 0 && output.includes('Address:'),
+          output,
+          error: errorOutput,
+          code
+        });
+      });
+      
+      // Timeout after 5 seconds
+      setTimeout(() => {
+        nslookup.kill();
+        resolve({ success: false, error: 'DNS lookup timeout', code: -1 });
+      }, 5000);
+    });
+  }
+  
+  static async testConnection(url) {
+    try {
+      console.log(`🔍 Testing connection to: ${url}`);
+      const response = await fetch(url, { 
+        method: 'HEAD', 
+        timeout: 5000,
+        agent: false
+      });
+      console.log(`✅ Connection successful - Status: ${response.status}`);
+      return { success: true, status: response.status };
+    } catch (error) {
+      console.log(`❌ Connection failed: ${error.message}`);
+      return { success: false, error: error.message, code: error.code };
+    }
+  }
+}
 // --- Supabase Client Initialization ---
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY; // Using service_role key for seeding
@@ -14,11 +65,13 @@ if (!supabaseUrl || !supabaseServiceRoleKey) {
   process.exit(1);
 }
 
-// Initialize Supabase client with the service_role key.
-// This client bypasses RLS policies, allowing inserts even if RLS is enabled.
+// Initialize Supabase client with the service_role key and proper configuration
 const supabase = createClient(supabaseUrl, supabaseServiceRoleKey, {
   auth: {
     persistSession: false // No need to persist session for a one-off script
+  },
+  db: {
+    schema: 'public' // Explicitly set the schema to 'public'
   }
 });
 
@@ -42,23 +95,35 @@ function askQuestion(question) {
 // Helper function to get existing subjects from database
 async function getExistingSubjects() {
   console.log('🔍 Fetching existing subjects from database...');
-  const { data: existingSubjects, error } = await supabase
-    .from('subjects')
-    .select('id, name, code, syllabus_type');
   
-  if (error) {
-    console.error('❌ Error fetching existing subjects:', error.message);
+  try {
+    const { data: existingSubjects, error } = await supabase
+      .from('subjects')
+      .select('id, name, code, syllabus_type');
+    
+    if (error) {
+      console.error('❌ Error fetching existing subjects:', error.message);
+      console.error('Error details:', error);
+      throw error;
+    }
+    
+    console.log(`✅ Found ${existingSubjects.length} existing subjects in database.`);
+    return existingSubjects;
+  } catch (error) {
+    console.error('❌ Failed to fetch existing subjects:', error);
     throw error;
   }
-  
-  console.log(`✅ Found ${existingSubjects.length} existing subjects in database.`);
-  return existingSubjects;
 }
 
 // Helper function to scan for available subjects in data directory
 function scanAvailableSubjects() {
   console.log(`\n🔍 Scanning directory: ${DATA_IMPORT_DIR}`);
   const availableSubjects = new Map(); // Map: 'subject_unique_key' -> { name, syllabus_type, directory_path, json_files_count }
+
+  if (!fs.existsSync(DATA_IMPORT_DIR)) {
+    console.warn(`\n⚠️ Directory '${DATA_IMPORT_DIR}' does not exist. Please create it and add your data.`);
+    return availableSubjects;
+  }
 
   const syllabusTypeDirs = fs.readdirSync(DATA_IMPORT_DIR, { withFileTypes: true })
                              .filter(dirent => dirent.isDirectory())
@@ -374,20 +439,27 @@ async function seedDatabase() {
     // Insert/Update Exam Sessions
     console.log('\n⏳ Inserting/updating exam sessions...');
     const examSessionsToUpsert = Array.from(examSessionsMap.values());
-    const { data: upsertedExamSessions, error: examsError } = await supabase
-        .from('exam_sessions')
-        .upsert(examSessionsToUpsert, { onConflict: 'session,year' })
-        .select('id, session, year');
+    
+    try {
+      const { data: upsertedExamSessions, error: examsError } = await supabase
+          .from('exam_sessions')
+          .upsert(examSessionsToUpsert, { onConflict: 'session,year' })
+          .select('id, session, year');
 
-    if (examsError) {
-        console.error('  ❌ Error inserting exam sessions:', examsError.message);
-        throw examsError;
+      if (examsError) {
+          console.error('  ❌ Error inserting exam sessions:', examsError.message);
+          console.error('  Error details:', examsError);
+          throw examsError;
+      }
+
+      upsertedExamSessions.forEach(session => {
+          finalExamSessionsMap.set(`${session.session}-${session.year}`, session.id);
+      });
+      console.log('  ✅ Exam sessions processed successfully.');
+    } catch (error) {
+      console.error('  ❌ Failed to process exam sessions:', error);
+      throw error;
     }
-
-    upsertedExamSessions.forEach(session => {
-        finalExamSessionsMap.set(`${session.session}-${session.year}`, session.id);
-    });
-    console.log('  ✅ Exam sessions processed successfully.');
 
     // Prepare Papers for Insertion using actual DB IDs
     console.log(`\n⏳ Preparing ${papersToInsert.size} papers for insertion...`);
@@ -414,25 +486,30 @@ async function seedDatabase() {
     // Insert Papers in batches
     console.log(`\n⏳ Inserting ${finalPapersToInsert.length} papers in batches of ${BATCH_SIZE}...`);
     let totalInserted = 0;
-    let totalSkipped = 0;
 
     for (let i = 0; i < finalPapersToInsert.length; i += BATCH_SIZE) {
       const batch = finalPapersToInsert.slice(i, i + BATCH_SIZE);
       console.log(`  📦 Processing batch ${Math.floor(i / BATCH_SIZE) + 1}/${Math.ceil(finalPapersToInsert.length / BATCH_SIZE)} (${batch.length} records)...`);
       
-      const { data: insertedPapers, error: papersError } = await supabase
-        .from('papers')
-        .upsert(batch, { onConflict: 'subject_id,exam_session_id,unit_code' })
-        .select('unit_code');
-      
-      if (papersError) {
-          console.error(`    ❌ Error inserting papers batch ${Math.floor(i / BATCH_SIZE) + 1}:`, papersError.message);
-          throw papersError;
-      }
-      
-      if (insertedPapers) {
-        totalInserted += insertedPapers.length;
-        console.log(`    ✅ Batch completed: ${insertedPapers.length} papers processed`);
+      try {
+        const { data: insertedPapers, error: papersError } = await supabase
+          .from('papers')
+          .upsert(batch, { onConflict: 'subject_id,exam_session_id,unit_code' })
+          .select('unit_code');
+        
+        if (papersError) {
+            console.error(`    ❌ Error inserting papers batch ${Math.floor(i / BATCH_SIZE) + 1}:`, papersError.message);
+            console.error('    Error details:', papersError);
+            throw papersError;
+        }
+        
+        if (insertedPapers) {
+          totalInserted += insertedPapers.length;
+          console.log(`    ✅ Batch completed: ${insertedPapers.length} papers processed`);
+        }
+      } catch (error) {
+        console.error(`    ❌ Failed to process batch ${Math.floor(i / BATCH_SIZE) + 1}:`, error);
+        throw error;
       }
     }
 
@@ -448,6 +525,8 @@ async function seedDatabase() {
     console.error('\n❌ An unhandled error occurred during seeding:', error.message);
     if (error.details) console.error('Details:', error.details);
     if (error.hint) console.error('Hint:', error.hint);
+    if (error.code) console.error('Code:', error.code);
+    console.error('Full error object:', error);
     process.exit(1);
   } finally {
     // Ensure readline interface is closed
@@ -456,5 +535,22 @@ async function seedDatabase() {
     }
   }
 }
+
+// Handle process termination gracefully
+process.on('SIGINT', () => {
+  console.log('\n\n🛑 Process interrupted by user. Cleaning up...');
+  if (!rl.closed) {
+    rl.close();
+  }
+  process.exit(0);
+});
+
+process.on('SIGTERM', () => {
+  console.log('\n\n🛑 Process terminated. Cleaning up...');
+  if (!rl.closed) {
+    rl.close();
+  }
+  process.exit(0);
+});
 
 seedDatabase();

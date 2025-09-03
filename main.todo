@@ -200,3 +200,9 @@ Later Todo :
 
    ✔ Update vercel analytics setting @done(25-09-02 09:50)
    ✔ Test and Ensure working analytics data collection with vercel @done(25-09-02 09:50)
+
+Backup and Data Recovery Todo :
+   ☐ Refactor data into the database and seed database with data
+   ☐ Refactor all old resources table data and merge to check for copy
+   ☐ Enable security measures on Vercel and Supabase
+   ☐ Redeploy vercel instance and update PM
