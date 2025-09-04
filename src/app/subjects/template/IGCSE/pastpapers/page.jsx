@@ -2,9 +2,6 @@
 
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
-import { supabase } from "../../client/supabaseClient";
-import { useSupabaseAuth } from "@/components/client/SupabaseAuthContext";
-import { useRouter } from 'next/navigation';
 import SmallFoot from '@/components/smallFoot.jsx';
 
 const sessions = [
@@ -22,25 +19,19 @@ const DISPLAY_START_YEAR = 2019;
 const DISPLAY_END_YEAR = 2024;
 const years = Array.from({ length: DISPLAY_END_YEAR - DISPLAY_START_YEAR + 1 }, (_, i) => DISPLAY_START_YEAR + i);
 
-// Add SubjectButtons component that fetches subjects dynamically
+// Add SubjectButtons component that fetches subjects dynamically (MySQL API)
 const SubjectButtons = () => {
   const [subjects, setSubjects] = useState([]);
 
   useEffect(() => {
     async function fetchSubjects() {
-      console.debug('SubjectButtons: Attempting to fetch subjects for IGCSE.');
-      const { data, error } = await supabase
-        .from('subjects')
-        .select('name')
-        .order('name', { ascending: true })
-        .eq('syllabus_type', 'IGCSE');
-      if (!error && data) {
-        setSubjects(data.map(subj => subj.name));
-        console.debug('SubjectButtons: Successfully fetched subjects:', data.map(subj => subj.name));
-      } else if (error) {
-        console.error('SubjectButtons: Error fetching subjects:', error.message);
-      } else {
-        console.warn('SubjectButtons: No data returned for subjects.');
+      try {
+        const res = await fetch('/api/mysql/subjects?type=IGCSE', { cache: 'no-store' });
+        const json = await res.json();
+        if (!res.ok) throw new Error(json.error || 'Failed to load subjects');
+        setSubjects((json.subjects || []).map(s => s.name));
+      } catch (e) {
+        console.error('SubjectButtons: Error fetching subjects:', e.message);
       }
     }
     fetchSubjects();
@@ -98,7 +89,6 @@ export default function IGCSEPastPapersPage() {
   const [error, setError] = useState(null);
   const [units, setUnits] = useState([]);
   const [expandedUnits, setExpandedUnits] = useState({});
-  const { session } = useSupabaseAuth();
   const [examCode, setExamCode] = useState(''); // State to hold the dynamically fetched exam code
 
   const [showYearDropdown, setShowYearDropdown] = useState(false);
@@ -121,48 +111,15 @@ export default function IGCSEPastPapersPage() {
     setError(null); // Clear any previous errors
 
     try {
-      // Fetch subject ID and CODE
-      const { data: subjectData, error: subjectError } = await supabase
-        .from('subjects')
-        .select('id, code') // Make sure to select 'code' here
-        .eq('name', subjectName)
-        .eq('syllabus_type', 'IGCSE')
-        .single();
+      const subjRes = await fetch(`/api/mysql/subject?name=${encodeURIComponent(subjectName)}&type=IGCSE`, { cache: 'no-store' });
+      const subjJson = await subjRes.json();
+      if (!subjRes.ok) throw new Error(subjJson.error || 'Subject not found');
+      setExamCode(subjJson.subject?.code || 'N/A');
 
-      if (subjectError || !subjectData) {
-        const errMsg = subjectError ? subjectError.message : `Subject "${subjectName}" not found.`;
-        setError(new Error(errMsg));
-        console.error('fetchPapers: Error fetching subject ID and code:', errMsg);
-        return;
-      }
-
-      const subjectId = subjectData.id;
-      setExamCode(subjectData.code || 'N/A'); // Set the exam code from the fetched data
-      console.debug('fetchPapers: Subject ID found:', subjectId, 'Exam Code:', subjectData.code);
-
-      const { data, error: papersError } = await supabase
-        .from('papers')
-        .select(`
-          id,
-          unit_code,
-          question_paper_link,
-          mark_scheme_link,
-          examiner_report_link,
-          exam_sessions!inner ( session, year )
-        `)
-        .eq('subject_id', subjectId)
-        .order('unit_code', { ascending: true });
-
-      if (papersError) {
-        setError(papersError);
-        console.error('fetchPapers: Error fetching papers data:', papersError.message);
-      } else if (data && data.length > 0) {
-        setPapers(data);
-        console.debug('fetchPapers: Successfully fetched papers:', data);
-      } else {
-        setPapers([]); // Ensure papers array is empty if no data
-        console.warn('fetchPapers: No past papers found for the selected subject.');
-      }
+      const res = await fetch(`/api/mysql/papers?subject=${encodeURIComponent(subjectName)}&type=IGCSE`, { cache: 'no-store' });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || 'Failed to load papers');
+      setPapers(json.papers || []);
     } catch (err) {
       console.error('fetchPapers: An unexpected error occurred during paper fetch:', err);
       setError(new Error('An unexpected error occurred while fetching papers.'));
@@ -173,20 +130,10 @@ export default function IGCSEPastPapersPage() {
   const fetchUnits = async () => {
     console.debug('fetchUnits: Attempting to fetch units...');
     try {
-      const { data: subjectData, error: subjectError } = await supabase
-        .from('subjects')
-        .select('units')
-        .eq('name', subjectName)
-        .eq('syllabus_type', 'IGCSE')
-        .single();
-
-      if (subjectError || !subjectData) {
-        const errMsg = subjectError ? subjectError.message : `Subject "${subjectName}" not found for units.`;
-        setError(new Error(errMsg));
-        console.error('fetchUnits: Error fetching subject units:', errMsg);
-        return;
-      }
-      let fetchedUnits = subjectData.units || [];
+      const subjRes = await fetch(`/api/mysql/subject?name=${encodeURIComponent(subjectName)}&type=IGCSE`, { cache: 'no-store' });
+      const subjJson = await subjRes.json();
+      if (!subjRes.ok) throw new Error(subjJson.error || 'Subject not found for units');
+      let fetchedUnits = subjJson.subject?.units || [];
       
       fetchedUnits.sort((a, b) => {
         const getUnitNum = (u) => {
@@ -316,29 +263,29 @@ export default function IGCSEPastPapersPage() {
 
     // Spec filter
     if (selectedSpec === 'new') {
-      if (paper.exam_sessions?.year < NEW_SPEC_YEAR_START) {
+      if (paper.year < NEW_SPEC_YEAR_START) {
         includePaper = false;
       }
     } else if (selectedSpec === 'old') {
-      if (paper.exam_sessions?.year > OLD_SPEC_YEAR_END) {
+      if (paper.year > OLD_SPEC_YEAR_END) {
         includePaper = false;
       }
     }
 
     // Year filter
     if (selectedYears.length > 0) {
-      if (!selectedYears.includes(paper.exam_sessions?.year)) {
+      if (!selectedYears.includes(paper.year)) {
         includePaper = false;
       }
     }
-    console.debug(`Paper ${paper.id} (Unit: ${paper.unit_code}, Year: ${paper.exam_sessions?.year}, Session: ${paper.exam_sessions?.session}) filter result: ${includePaper}`);
+    console.debug(`Paper ${paper.id} (Unit: ${paper.unit_code}, Year: ${paper.year}, Session: ${paper.session}) filter result: ${includePaper}`);
     return includePaper;
   });
 
   // Group papers by year and session for easier rendering
   const groupedPapers = filteredPapers.reduce((acc, paper) => {
-    const year = paper.exam_sessions?.year;
-    const session = paper.exam_sessions?.session;
+    const year = paper.year;
+    const session = paper.session;
     const unitCode = paper.unit_code;
 
     if (!year || !session) return acc;

@@ -29,6 +29,7 @@
     "gsap": "^3.13.0",
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.525.0",
+    "mysql2": "^3.14.4",
     "next": "15.3.1",
     "node-fetch": "^2.7.0",
     "pdf-lib": "^1.17.1",
