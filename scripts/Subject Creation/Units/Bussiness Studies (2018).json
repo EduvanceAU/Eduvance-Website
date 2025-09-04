@@ -1,0 +1,22 @@
+[
+	{
+		"name": "Marketing and people",
+		"code": "WBS11",
+		"unit": "Unit 1"
+	},
+	{
+		"name": "Managing business activities",
+		"code": "WBS12",
+		"unit": "Unit 2"
+	},
+	{
+		"name": "Business decisions and strategy",
+		"code": "WBS13",
+		"unit": "Unit 3"
+	},
+    {
+		"name": "Global business",
+		"code": "WBS14",
+		"unit": "Unit 4"
+	}
+]

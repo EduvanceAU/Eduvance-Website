@@ -1,0 +1,22 @@
+[
+	{
+		"name": "Digital Technologies Fundamentals",
+		"code": "WIT11",
+		"unit": "Unit 1"
+	},
+	{
+		"name": "Web Development & Coding",
+		"code": "WIT12",
+		"unit": "Unit 2"
+	},
+	{
+		"name": "Data Management & IT Systems",
+		"code": "WIT13",
+		"unit": "Unit 3"
+	},
+	{
+		"name": "Relational Databases",
+		"code": "WIT14",
+		"unit": "Unit 4"
+	}
+]
