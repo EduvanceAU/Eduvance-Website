@@ -3,6 +3,7 @@
 
 import { createClient } from '@supabase/supabase-js';
 // Pasted from staffAccess
+export const dynamic = "force-dynamic";
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'YOUR_SUPABASE_PROJECT_URL';
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'YOUR_SUPABASE_ANON_KEY';
 
