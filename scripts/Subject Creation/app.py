@@ -42,7 +42,7 @@ for file in os.listdir("./Units"):
     
     syllabus_type = "IGCSE"
     code = f"4{unique}1"
-    units = [{"name": "Paper 1", "code": f"{code}/1", "unit": "1"}, {"name": "Paper 2", "code": f"{code}/2", "unit": "2"}, {"name": "Paper 1R", "code": f"{code}/1R", "unit": "1R"}, {"name": "Paper 2R", "code": f"{code}/2R", "unit": "2R"}]
+    units = [{"name": "Paper 1", "code": "1", "unit": "Paper 1"}, {"name": "Paper 2", "code": "2", "unit": "Paper 2"}, {"name": "Paper 1R", "code": "1R", "unit": "Paper 1R"}, {"name": "Paper 2R", "code": "2R", "unit": "Paper 2R"}]
     response = (
         supabase.table("subjects")
         .insert({
