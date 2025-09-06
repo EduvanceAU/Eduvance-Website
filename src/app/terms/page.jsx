@@ -47,32 +47,46 @@ export default function Guidelines() {
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#000000] text-left tracking-[-0.035em]" style={{ fontFamily: "Poppins, sans-serif" }}>
               <span className="bg-[#1A69FA] px-2 py-1 -rotate-1 inline-block"><span className="text-[#FFFFFF]">Terms</span></span> of Service 
             </h1>
-            <p className='my-2'>Last Updated August 7th 2025</p>
+            <p className='my-2'>Last Updated September 6th 2025</p>
             <p>By using Eduvance.au, you agree with these terms.</p>
           </div>
           <Guideline title="1. Basic Rules" content={
             <ul className="list-disc ml-10 space-y-2 text-left">
-              <li>Don’t break the law.</li> 
-              <li>Don’t spam or abuse the platform.</li>
-              <li>Don’t upload anything you don’t have the right to share.</li>
-              <li>We may suspend access to users who violate these terms.</li>
+              <li>Adhere strictly to the laws of your country</li> 
+              <li>Prohibited activities include spam, abuse, DDoS, and brute-forcing attempts on the platform or related platforms.</li>
+              <li>Uploading content and links without the right to share or republish is prohibited, and such content will be removed.</li>
+              <li>Any violation of the above terms may result in a possible suspension of access to the website’s contents.</li>
             </ul>
           }/> 
           <Guideline title="2. Accounts" content={<ul className="list-disc ml-10 space-y-2 text-left">
-              <li>You must provide a valid email to register.</li> 
-              <li>You’re responsible for activity on your account.</li>
+              <li>A valid email address is required for registration.</li> 
+              <li>We are not responsible for the activities on your account; only you are responsible for the activities of your account.</li>
+              <li>We reserve the right to terminate your account without prior notice if we find it unsuitable for usage.</li>
             </ul>}/> 
           <Guideline title="3. Content" content={<div>You retain ownership of anything you submit. <br/> By submitting content, you give us a non-exclusive, royalty-free license to:
             <ul className="list-disc ml-10 space-y-2 text-left">
-              <li>Display it publicly</li> 
-              <li>Watermark it</li>
-              <li>Share it within the platform</li>
-              <li>You can reuse your content elsewhere. Removal requests will be handled case by case</li>
+              <li>You retain ownership of any data submitted to the website, assuming you are the true owner of the data.</li> 
+              <li>By submitting content (i.e., documents, links, videos, etc.), excluding account details, you grant us a non-exclusive, royalty-free license to:</li>
+              <ul className="list-disc ml-6 mt-2 space-y-1">
+                <li>Display the content publicly.</li>
+                <li>Modify the content, including watermarking.</li>
+                <li>Share the content within the platform and related platforms.</li>
+                <li>Submit the content elsewhere.</li>
+                <li>Requests to remove content will be handled individually.</li>
+                <li>You are not permitted to upload offensive or politically motivated content to the platform.</li>
+              </ul>
             </ul>
           </div>
           }/> 
-          <Guideline title="4. Copyright" content={<p>If you are the original creator of content posted without permission, contact us.</p>}/> 
-          <Guideline title="5. No Guarantees" content={<p>This site is provided “as-is.” We make no guarantees about uptime, accuracy, or availability. Use at your own risk.</p>}/> 
+          <Guideline title="4. Copyright" content={<p>If content posted on the platform or related platforms is owned or copyrighted by you or your organization, please contact us</p>}/> 
+          <Guideline title="5. Risk" content={<div>You retain ownership of anything you submit. <br/> By submitting content, you give us a non-exclusive, royalty-free license to:
+            <ul className="list-disc ml-10 space-y-2 text-left">
+              <li>This site is provided “as-is.” We make no guarantees about uptime, accuracy, or availability.</li>
+              <li>By submitting content (i.e., documents, links, videos, etc.), excluding account details, you grant us a non-exclusive, royalty-free license to:</li>
+              <li>Eduvance.au and related platforms are owned and maintained by students and non-professionals; please use them at your own risk.</li>
+            </ul>
+          </div>
+          }/>
         </div>
       </main>
       <SmallFoot />
