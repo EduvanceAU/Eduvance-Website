@@ -40,7 +40,12 @@ async function main() {
     process.exit(1);
   }
 
-  // 1. Create Supabase Auth user
+  // Hash the email for storage
+  const email_hash = await bcrypt.hash(email, 10);
+  // Hash the password for staff_users table
+  const password_hash = await bcrypt.hash(password, 10);
+
+  // 1. Create Supabase Auth user (still needs plain text email for auth)
   const { data: authData, error: authError } = await supabase.auth.admin.createUser({
     email,
     password,
@@ -54,14 +59,12 @@ async function main() {
   }
 
   const userId = authData.user.id;
-  // Hash the password for staff_users table
-  const password_hash = await bcrypt.hash(password, 10);
 
-  // 2. Insert into staff_users with the same id
+  // 2. Insert into staff_users with hashed email
   const { data, error } = await supabase.from('staff_users').insert({
     id: userId,
     username,
-    email,
+    email: email_hash, // Store hashed email
     password_hash,
     role: staffRole
   }).select();
