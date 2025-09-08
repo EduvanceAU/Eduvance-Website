@@ -202,7 +202,7 @@ Later Todo :
    ✔ Test and Ensure working analytics data collection with vercel @done(25-09-02 09:50)
 
 Backup and Data Recovery Todo :
-   ☐ Refactor data into the database and seed database with data
-   ☐ Refactor all old resources table data and merge to check for copy
-   ☐ Enable security measures on Vercel and Supabase
-   ☐ Redeploy vercel instance and update PM
+   ✔ Refactor data into the database and seed database with data @done(25-09-08 16:54)
+   ✔ Refactor all old resources table data and merge to check for copy @done(25-09-08 16:54)
+   ✔ Enable security measures on Vercel and Supabase @done(25-09-08 16:54)
+   ✔ Redeploy vercel instance and update PM @done(25-09-08 16:54)
