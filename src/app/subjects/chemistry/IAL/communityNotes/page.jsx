@@ -191,7 +191,7 @@ export default function IALResources() {
         console.log('Fetching resources for subject ID:', subjectId);
 
         const { data: resources, error: resourcesError } = await supabase
-          .from('community_resource_requests')
+          .from('community_resource_requests_public')
           .select('*')
           .eq('subject_id', subjectId)
           .eq('approved', 'Approved') // This ensures only approved resources are fetched

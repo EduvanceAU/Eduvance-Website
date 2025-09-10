@@ -201,7 +201,7 @@ export default function IGCSEResources() {
         const subjectId = subjectData.id;
 
         const { data: resources, error: resourcesError } = await supabase
-          .from('community_resource_requests')
+          .from('community_resource_requests_public')
           .select('*')
           .eq('subject_id', subjectId)
           .order('title', { ascending: true })

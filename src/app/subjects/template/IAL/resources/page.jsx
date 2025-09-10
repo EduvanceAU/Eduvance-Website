@@ -203,7 +203,7 @@ export default function IALCommunityNotesPage() {
       const subjectId = subjectData.id;
       // Fetch approved community notes for this subject
       const { data: notes, error: notesError } = await supabase
-        .from('community_resource_requests')
+        .from('community_resource_requests_public')
         .select('*, like_count, dislike_count')
         .eq('subject_id', subjectId)
         .eq('approved', "Approved")
@@ -385,7 +385,7 @@ export default function IALCommunityNotesPage() {
                                 }
                                 // Update Supabase
                                 await supabase
-                                  .from('community_resource_requests')
+                                  .from('community_resource_requests_public')
                                   .update({ like_count: newLikeCount, dislike_count: newDislikeCount })
                                   .eq('id', note.id);
                                 // Update local state

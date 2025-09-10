@@ -104,11 +104,9 @@ function Home(props) {
     setLoadingSubjects(true); // Set loading to true at the start of fetch
     console.debug('Attempting to fetch subjects from Supabase...');
     try {
-      const { data, error } = await supabase
-        .from('subjects')
-        .select('name, syllabus_type')
-        .order('name', { ascending: true });
-
+      const apiRes = await fetch("/api/subjectList")
+      const { data, error } = await apiRes.json()
+      console.log(data)
       if (error) {
         console.error('Error fetching subjects:', error.message);
         setLoadingSubjects(false); // Set loading to false on error

@@ -119,7 +119,7 @@ export default function ContributorUploadResource() {
     const unitValue = unitChapter.trim() === '' ? 'General' : unitChapter.trim();
   
     const { error } = await supabase
-      .from('community_resource_requests')
+      .from('community_resource_requests_public')
       .insert({
         contributor_name: contributorName,
         contributor_email: contributorEmail,
